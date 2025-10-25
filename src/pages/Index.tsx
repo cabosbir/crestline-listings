@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import PropertyCard from "@/components/PropertyCard";
@@ -95,9 +96,11 @@ const Index = () => {
           </div>
 
           <div className="text-center">
-            <Button variant="luxury" size="lg">
-              View All Properties <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/properties">
+              <Button variant="luxury" size="lg">
+                View All Properties <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -123,14 +126,18 @@ const Index = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {teamMembers.map((member, index) => (
-              <TeamMemberCard key={index} {...member} />
+              <Link to="/team" key={index}>
+                <TeamMemberCard {...member} />
+              </Link>
             ))}
           </div>
 
           <div className="text-center">
-            <Button variant="outline" size="lg">
-              Meet Our Full Team <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link to="/team">
+              <Button variant="outline" size="lg">
+                Meet Our Full Team <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -148,9 +155,11 @@ const Index = () => {
               <p className="text-primary-foreground/80 mb-6">
                 Let us help you find your dream property with expert guidance and personalized service.
               </p>
-              <Button variant="hero" size="lg" className="w-full">
-                Start Your Search
-              </Button>
+              <Link to="/properties">
+                <Button variant="hero" size="lg" className="w-full">
+                  Start Your Search
+                </Button>
+              </Link>
             </div>
 
             {/* Sellers */}
@@ -159,9 +168,11 @@ const Index = () => {
               <p className="text-accent-foreground/80 mb-6">
                 Get a free property evaluation and discover how we can maximize your home's value.
               </p>
-              <Button variant="default" size="lg" className="w-full">
-                Free Home Evaluation
-              </Button>
+              <Link to="/contact">
+                <Button variant="default" size="lg" className="w-full">
+                  Free Home Evaluation
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
