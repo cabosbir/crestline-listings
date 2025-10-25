@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -6,6 +7,7 @@ import AgentBioCard from "@/components/AgentBioCard";
 import { Button } from "@/components/ui/button";
 
 const Team = () => {
+  const navigate = useNavigate();
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
 
   const agents = [
@@ -96,7 +98,8 @@ const Team = () => {
   ];
 
   const handleViewBio = (agentId: number) => {
-    console.log(`Viewing bio for agent ${agentId}`);
+    // Navigate to individual agent detail page
+    navigate(`/team/${agentId}`);
   };
 
   return (
