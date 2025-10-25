@@ -25,7 +25,7 @@ const AgentBioCard = ({
   onViewBio
 }: AgentBioCardProps) => {
   
-  const handleViewBioClick = (e: React.MouseEvent) => {
+  const handleViewBioClick = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
     console.log('View Bio clicked for:', name);
@@ -74,18 +74,18 @@ const AgentBioCard = ({
         )}
       </div>
       
-      <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 pointer-events-none group-hover:pointer-events-auto">
-        <div className="bg-white rounded-xl p-5 shadow-2xl space-y-3 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+      <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-300 z-50">
+        <div className="bg-white rounded-xl p-5 shadow-2xl space-y-3 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 relative z-50">
           {(phone || email) && (
             <div className="space-y-2 text-sm text-gray-700">
               {phone && (
-                <a href={`tel:${phone}`} className="flex items-center gap-2 hover:text-yellow-600 transition-colors">
+                <a href={`tel:${phone}`} className="flex items-center gap-2 hover:text-yellow-600 transition-colors pointer-events-auto">
                   <Phone className="w-4 h-4" />
                   <span>{phone}</span>
                 </a>
               )}
               {email && (
-                <a href={`mailto:${email}`} className="flex items-center gap-2 hover:text-yellow-600 transition-colors">
+                <a href={`mailto:${email}`} className="flex items-center gap-2 hover:text-yellow-600 transition-colors pointer-events-auto">
                   <Mail className="w-4 h-4" />
                   <span className="truncate">{email}</span>
                 </a>
@@ -96,7 +96,7 @@ const AgentBioCard = ({
           <div className="flex gap-2 pt-2">
             <button
               onClick={handleViewBioClick}
-              className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition-colors text-sm"
+              className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
             >
               View Full Bio
             </button>
@@ -106,7 +106,7 @@ const AgentBioCard = ({
                 e.stopPropagation();
                 window.location.href = '/contact';
               }}
-              className="flex-1 border border-gray-300 hover:bg-gray-100 font-medium py-2 px-4 rounded-md transition-colors text-sm"
+              className="flex-1 border border-gray-300 hover:bg-gray-100 font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
             >
               Contact
             </button>
