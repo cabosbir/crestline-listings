@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -8,6 +9,11 @@ import { Phone, Mail, Award, Globe, ArrowLeft, Home } from "lucide-react";
 const AgentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   // Agent data - matches Team.tsx
   const agents = [
