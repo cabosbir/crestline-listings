@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -15,17 +16,42 @@ import {
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 const Contact = () => {
+  const [searchParams] = useSearchParams();
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     inquiryType: '',
     propertyType: '',
+    preferredAgent: '',
     message: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
+
+  // Pre-fill agent if coming from agent page
+  useEffect(() => {
+    const agentFromUrl = searchParams.get('agent');
+    if (agentFromUrl) {
+      setFormData(prev => ({
+        ...prev,
+        preferredAgent: agentFromUrl,
+        message: `I would like to discuss properties with ${agentFromUrl}.`
+      }));
+    }
+  }, [searchParams]);
+
+  // List of agents - matches Team.tsx
+  const agents = [
+    { id: 1, name: "Michael Chen", email: "michael@luxurycoastal.com" },
+    { id: 2, name: "Sarah Johnson", email: "sarah@luxurycoastal.com" },
+    { id: 3, name: "David Martinez", email: "david@luxurycoastal.com" },
+    { id: 4, name: "Emily Thompson", email: "emily@luxurycoastal.com" },
+    { id: 5, name: "Robert Kim", email: "robert@luxurycoastal.com" },
+    { id: 6, name: "Jessica Rodriguez", email: "jessica@luxurycoastal.com" }
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,12 +59,19 @@ const Contact = () => {
     setSubmitStatus('');
     
     try {
+      // Find selected agent's email
+      const selectedAgent = agents.find(a => a.name === formData.preferredAgent);
+      const agentEmail = selectedAgent?.email;
+
       const response = await fetch('/api/send-contact-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          agentEmail, // Include agent email for routing
+        })
       });
 
       const data = await response.json();
@@ -51,6 +84,7 @@ const Contact = () => {
           phone: '',
           inquiryType: '',
           propertyType: '',
+          preferredAgent: '',
           message: ''
         });
       } else {
@@ -166,7 +200,12 @@ const Contact = () => {
                 {submitStatus === 'success' && (
                   <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                     <strong>✓ Message sent successfully!</strong>
-                    <p className="text-sm mt-1">We'll respond within 24 hours. Check your email for confirmation.</p>
+                    <p className="text-sm mt-1">
+                      {formData.preferredAgent 
+                        ? `${formData.preferredAgent} will respond within 24 hours.` 
+                        : "We'll respond within 24 hours."
+                      } Check your email for confirmation.
+                    </p>
                   </div>
                 )}
 
@@ -244,25 +283,50 @@ const Contact = () => {
                   </div>
                 </div>
 
-                <div className="mb-6">
-                  <label htmlFor="property-type" className="block text-sm font-medium text-foreground mb-2">
-                    Property Type of Interest
-                  </label>
-                  <Select
-                    value={formData.propertyType}
-                    onValueChange={(value) => setFormData({...formData, propertyType: value})}
-                    disabled={isSubmitting}
-                  >
-                    <SelectTrigger id="property-type">
-                      <SelectValue placeholder="Select property type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="villa">Villa</SelectItem>
-                      <SelectItem value="condo">Condo</SelectItem>
-                      <SelectItem value="penthouse">Penthouse</SelectItem>
-                      <SelectItem value="estate">Estate</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label htmlFor="property-type" className="block text-sm font-medium text-foreground mb-2">
+                      Property Type of Interest
+                    </label>
+                    <Select
+                      value={formData.propertyType}
+                      onValueChange={(value) => setFormData({...formData, propertyType: value})}
+                      disabled={isSubmitting}
+                    >
+                      <SelectTrigger id="property-type">
+                        <SelectValue placeholder="Select property type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="villa">Villa</SelectItem>
+                        <SelectItem value="condo">Condo</SelectItem>
+                        <SelectItem value="penthouse">Penthouse</SelectItem>
+                        <SelectItem value="estate">Estate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="preferred-agent" className="block text-sm font-medium text-foreground mb-2">
+                      Preferred Agent
+                    </label>
+                    <Select
+                      value={formData.preferredAgent}
+                      onValueChange={(value) => setFormData({...formData, preferredAgent: value})}
+                      disabled={isSubmitting}
+                    >
+                      <SelectTrigger id="preferred-agent">
+                        <SelectValue placeholder="Select an agent (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="no-preference">No Preference</SelectItem>
+                        {agents.map((agent) => (
+                          <SelectItem key={agent.id} value={agent.name}>
+                            {agent.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="mb-6">
