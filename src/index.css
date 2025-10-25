@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Luxury Real Estate Color Palette */
+    --background: 0 0% 100%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    /* Deep ocean navy - primary brand color */
+    --primary: 215 45% 20%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 215 40% 35%;
+    
+    /* Warm gold accent - luxury touch */
+    --accent: 40 85% 55%;
+    --accent-foreground: 215 45% 20%;
+    --accent-light: 40 75% 65%;
+
+    /* Soft neutrals */
+    --secondary: 210 20% 95%;
+    --secondary-foreground: 215 25% 15%;
+
+    --muted: 210 15% 92%;
+    --muted-foreground: 215 15% 45%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 20% 88%;
+    --input: 210 20% 88%;
+    --ring: 215 45% 20%;
+
+    --radius: 0.75rem;
+
+    /* Luxury gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(215 45% 20%), hsl(215 50% 30%));
+    --gradient-accent: linear-gradient(135deg, hsl(40 85% 55%), hsl(40 75% 65%));
+    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
+    
+    /* Elegant shadows */
+    --shadow-elegant: 0 10px 40px -10px hsl(215 45% 20% / 0.2);
+    --shadow-hover: 0 20px 60px -15px hsl(215 45% 20% / 0.3);
+    --shadow-gold: 0 8px 30px -8px hsl(40 85% 55% / 0.4);
+    
+    /* Smooth transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 215 30% 12%;
+    --foreground: 0 0% 95%;
+
+    --card: 215 25% 15%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 215 25% 15%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 40 85% 55%;
+    --primary-foreground: 215 30% 12%;
+    --primary-light: 40 75% 65%;
+
+    --accent: 215 40% 35%;
+    --accent-foreground: 0 0% 95%;
+    --accent-light: 215 35% 45%;
+
+    --secondary: 215 20% 20%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 215 20% 18%;
+    --muted-foreground: 210 10% 60%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 20% 25%;
+    --input: 215 20% 25%;
+    --ring: 40 85% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  .gradient-overlay {
+    background: var(--gradient-overlay);
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-fast {
+    transition: var(--transition-fast);
+  }
+}

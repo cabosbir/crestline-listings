@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/send-contact-email.js": {
+      "maxDuration": 30,
+      "memory": 512
+    }
+  }
+}
