@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, phone, inquiryType, propertyType, message } = req.body;
+    const { name, email, phone, inquiryType, propertyType, preferredAgent, agentEmail, message } = req.body;
 
     // Validate required fields
     if (!name || !email || !message) {
@@ -72,12 +72,22 @@ export default async function handler(req, res) {
     const inquiryName = inquiryTypes[inquiryType] || inquiryType || 'Not specified';
     const propertyName = propertyTypes[propertyType] || propertyType || 'Not specified';
 
+    // Determine email recipients
+    const officeEmail = process.env.OFFICE_EMAIL || 'info@luxurycoastal.com';
+    let emailRecipients = [officeEmail];
+    
+    // Add agent email if an agent was selected
+    if (agentEmail && agentEmail !== officeEmail) {
+      emailRecipients.push(agentEmail);
+    }
+
     // Prepare email HTML for business
     const businessEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
           <h2 style="color: white; margin: 0; font-size: 28px;">🏡 New Contact Form Inquiry</h2>
           <p style="color: #bfdbfe; margin: 10px 0 0 0;">Luxury Coastal Real Estate</p>
+          ${preferredAgent ? `<p style="color: #fbbf24; margin: 10px 0 0 0; font-weight: bold;">⭐ Requested Agent: ${preferredAgent}</p>` : ''}
         </div>
         
         <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb;">
@@ -93,6 +103,7 @@ export default async function handler(req, res) {
             <h3 style="margin-top: 0; color: #1f2937;">🏠 Inquiry Details:</h3>
             <p style="margin: 8px 0;"><strong>Inquiry Type:</strong> ${inquiryName}</p>
             <p style="margin: 8px 0;"><strong>Property Interest:</strong> ${propertyName}</p>
+            ${preferredAgent ? `<p style="margin: 8px 0;"><strong>Preferred Agent:</strong> <span style="color: #ea580c; font-weight: bold;">${preferredAgent}</span></p>` : '<p style="margin: 8px 0;"><strong>Preferred Agent:</strong> No preference</p>'}
           </div>
           
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -102,7 +113,7 @@ export default async function handler(req, res) {
           
           <div style="background: #fef2f2; padding: 20px; border-radius: 8px; border-left: 4px solid #ef4444;">
             <p style="margin: 0; font-weight: bold; color: #991b1b;">⚠️ Action Required:</p>
-            <p style="margin: 10px 0 0 0; color: #7f1d1d;">Contact this client within 24 hours to discuss their real estate needs.</p>
+            <p style="margin: 10px 0 0 0; color: #7f1d1d;">${preferredAgent ? `${preferredAgent}, please` : 'Please'} contact this client within 24 hours to discuss their real estate needs.</p>
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #fecaca;">
               <p style="margin: 5px 0;">📞 <a href="tel:${phone}" style="color: #dc2626;">${phone || 'No phone provided'}</a></p>
               <p style="margin: 5px 0;">📧 <a href="mailto:${email}" style="color: #dc2626;">Reply to client</a></p>
@@ -118,11 +129,11 @@ export default async function handler(req, res) {
       </div>
     `;
 
-    // Send email to business
+    // Send email to business (and agent if selected)
     const mailOptions = {
       from: process.env.OFFICE_EMAIL || 'info@luxurycoastal.com',
-      to: process.env.OFFICE_EMAIL || 'info@luxurycoastal.com',
-      subject: `🏡 New ${inquiryName} Inquiry - ${name}`,
+      to: emailRecipients.join(', '),
+      subject: `🏡 New ${inquiryName} Inquiry${preferredAgent ? ` for ${preferredAgent}` : ''} - ${name}`,
       html: businessEmailHtml,
       replyTo: email
     };
@@ -141,13 +152,13 @@ export default async function handler(req, res) {
           <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">Dear ${name},</p>
           
           <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-            We've received your inquiry and appreciate your interest in working with us for your real estate needs. Our team of luxury property specialists is reviewing your request.
+            We've received your inquiry and appreciate your interest in working with us for your real estate needs. ${preferredAgent ? `<strong>${preferredAgent}</strong> and our team of luxury property specialists are` : 'Our team of luxury property specialists is'} reviewing your request.
           </p>
           
           <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #2563eb;">
             <h3 style="margin-top: 0; color: #1e40af; font-size: 18px;">What Happens Next?</h3>
             <p style="margin: 10px 0; color: #374151;">✅ We'll review your request carefully</p>
-            <p style="margin: 10px 0; color: #374151;">📞 Our team will contact you within 24 hours</p>
+            <p style="margin: 10px 0; color: #374151;">📞 ${preferredAgent ? `${preferredAgent} will` : 'Our team will'} contact you within 24 hours</p>
             <p style="margin: 10px 0; color: #374151;">🏡 We'll discuss your property needs and answer any questions</p>
             <p style="margin: 10px 0; color: #374151;">📅 Schedule a consultation or property viewing at your convenience</p>
           </div>
@@ -156,6 +167,7 @@ export default async function handler(req, res) {
             <h3 style="margin-top: 0; color: #1f2937; font-size: 18px;">Your Inquiry Summary:</h3>
             <p style="margin: 8px 0; color: #374151;"><strong>Inquiry Type:</strong> ${inquiryName}</p>
             <p style="margin: 8px 0; color: #374151;"><strong>Property Interest:</strong> ${propertyName}</p>
+            ${preferredAgent ? `<p style="margin: 8px 0; color: #374151;"><strong>Your Agent:</strong> ${preferredAgent}</p>` : ''}
             <div style="background: white; padding: 15px; border-radius: 4px; margin-top: 15px;">
               <p style="margin: 0; color: #6b7280; font-size: 14px; font-style: italic; white-space: pre-wrap;">${message}</p>
             </div>
@@ -165,6 +177,7 @@ export default async function handler(req, res) {
             <h3 style="margin-top: 0; color: #1f2937; font-size: 18px;">Need Immediate Assistance?</h3>
             <p style="margin: 8px 0; color: #374151;">📱 <strong>Call/Text:</strong> <a href="tel:+1234567890" style="color: #2563eb;">+1 (234) 567-8900</a></p>
             <p style="margin: 8px 0; color: #374151;">📧 <strong>Email:</strong> <a href="mailto:info@luxurycoastal.com" style="color: #2563eb;">info@luxurycoastal.com</a></p>
+            ${agentEmail ? `<p style="margin: 8px 0; color: #374151;">👤 <strong>${preferredAgent}:</strong> <a href="mailto:${agentEmail}" style="color: #2563eb;">${agentEmail}</a></p>` : ''}
             <p style="margin: 8px 0; color: #374151;">🏢 <strong>Office Hours:</strong> Monday - Friday, 9 AM - 6 PM</p>
           </div>
           
@@ -183,7 +196,7 @@ export default async function handler(req, res) {
           
           <p style="font-size: 16px; color: #374151;">
             Best regards,<br>
-            <strong style="color: #1e40af;">The Luxury Coastal Real Estate Team</strong>
+            <strong style="color: #1e40af;">${preferredAgent ? preferredAgent + ' & ' : ''}The Luxury Coastal Real Estate Team</strong>
           </p>
         </div>
         
@@ -201,17 +214,22 @@ export default async function handler(req, res) {
     const clientMailOptions = {
       from: process.env.OFFICE_EMAIL || 'info@luxurycoastal.com',
       to: email,
-      subject: 'We Received Your Inquiry - Luxury Coastal Real Estate',
+      subject: `We Received Your Inquiry${preferredAgent ? ` - ${preferredAgent}` : ''} - Luxury Coastal Real Estate`,
       html: clientEmailHtml
     };
 
     await transporter.sendMail(clientMailOptions);
 
-    console.log('✅ Contact form emails sent successfully to:', email);
+    console.log('✅ Contact form emails sent successfully');
+    console.log('   Client:', email);
+    console.log('   Office:', emailRecipients.join(', '));
+    if (preferredAgent) console.log('   Agent:', preferredAgent);
     
     return res.status(200).json({ 
       success: true, 
-      message: 'Thank you! Your inquiry has been sent successfully. We\'ll contact you within 24 hours.'
+      message: preferredAgent 
+        ? `Thank you! Your inquiry has been sent to ${preferredAgent}. We'll contact you within 24 hours.`
+        : 'Thank you! Your inquiry has been sent successfully. We\'ll contact you within 24 hours.'
     });
 
   } catch (error) {
