@@ -98,8 +98,19 @@ const Team = () => {
   ];
 
   const handleViewBio = (agentId: number) => {
-    // Navigate to individual agent detail page
-    navigate(`/team/${agentId}`);
+    console.log('handleViewBio called with agentId:', agentId);
+    const agent = agents.find(a => a.id === agentId);
+    console.log('Found agent:', agent?.name);
+    
+    try {
+      // Navigate to individual agent detail page
+      navigate(`/team/${agentId}`);
+      console.log('Navigation triggered to:', `/team/${agentId}`);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Fallback to window.location if navigate fails
+      window.location.href = `/team/${agentId}`;
+    }
   };
 
   return (
