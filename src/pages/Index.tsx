@@ -45,26 +45,27 @@ const Index = () => {
     },
   ];
 
+  // Team members with professional headshots matching the /team page
   const teamMembers = [
-    {
-      name: "Sarah Martinez",
-      title: "Founder & Lead Agent",
-      image: property1,
-    },
     {
       name: "Michael Chen",
       title: "Senior Real Estate Advisor",
-      image: property2,
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop&crop=faces",
     },
     {
-      name: "Elena Rodriguez",
+      name: "Sarah Johnson",
       title: "Luxury Property Specialist",
-      image: property3,
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1200&fit=crop&crop=faces",
     },
     {
-      name: "David Thompson",
-      title: "International Sales Director",
-      image: property1,
+      name: "David Martinez",
+      title: "Commercial Real Estate Expert",
+      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1200&fit=crop&crop=faces",
+    },
+    {
+      name: "Emily Thompson",
+      title: "Residential Specialist",
+      image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&h=1200&fit=crop&crop=faces",
     },
   ];
 
