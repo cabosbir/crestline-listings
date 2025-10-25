@@ -10,9 +10,28 @@ const AgentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Scroll to top when page loads
+  // Aggressive scroll to top when page loads
   useEffect(() => {
+    // Method 1: Immediate scroll
     window.scrollTo(0, 0);
+    
+    // Method 2: Document scroll
+    if (document.documentElement) {
+      document.documentElement.scrollTop = 0;
+    }
+    if (document.body) {
+      document.body.scrollTop = 0;
+    }
+    
+    // Method 3: After render
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, 0);
+    
+    // Method 4: After all content loads
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, 100);
   }, [id]);
 
   // Agent data - matches Team.tsx
