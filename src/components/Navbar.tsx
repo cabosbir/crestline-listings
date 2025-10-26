@@ -19,10 +19,13 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-primary">
-              BAJA INTERNATIONAL <span className="text-accent">REALTY</span>
+          <Link to="/" className="flex flex-col">
+            <h1 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
+              <span className="text-accent">B</span>I<span className="text-accent">R</span>
             </h1>
+            <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wider -mt-1">
+              Baja International Realty
+            </p>
           </Link>
 
           {/* Desktop Navigation */}

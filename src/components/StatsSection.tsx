@@ -2,11 +2,11 @@ import statsBackground from "@/assets/stats-bg.jpg";
 
 const StatsSection = () => {
   const stats = [
-    { number: "85", label: "Combined Years of Experience" },
-    { number: "2,200+", label: "Homes & Properties Sold" },
-    { number: "65K", label: "Total Email Subscribers" },
-    { number: "100%", label: "Committed to Our Clients" },
-    { number: "$800M+", label: "Combined Sales Since 2014" },
+    { number: "85", label: "Combined Years of\nExperience" },
+    { number: "2,200+", label: "Homes & Properties\nSold" },
+    { number: "65K", label: "Total Email\nSubscribers" },
+    { number: "100%", label: "Committed to\nOur Clients" },
+    { number: "$800M+", label: "Combined Sales\nSince 2014" },
   ];
 
   return (
@@ -31,7 +31,7 @@ const StatsSection = () => {
               <div className="text-5xl md:text-6xl font-bold text-accent mb-4">
                 {stat.number}
               </div>
-              <p className="text-primary-foreground uppercase text-sm tracking-wide font-medium">
+              <p className="text-primary-foreground uppercase text-xs md:text-sm tracking-wide font-medium whitespace-pre-line leading-relaxed">
                 {stat.label}
               </p>
             </div>
