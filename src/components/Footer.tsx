@@ -32,10 +32,10 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <h2 className="text-3xl font-bold mb-4">
-              Luxury <span className="text-accent">Coastal</span>
+              BAJA INTERNATIONAL <span className="text-accent">REALTY</span>
             </h2>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
-              Your premier destination for luxury oceanfront properties and exclusive real estate opportunities in paradise.
+              Your trusted partner for luxury real estate in Cabo San Lucas and Baja California Sur.
             </p>
 
             {/* Contact Info */}
@@ -43,19 +43,19 @@ const Footer = () => {
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
                 <span className="text-sm text-primary-foreground/80">
-                  123 Ocean Drive, Paradise City, PC 12345
+                  Blvd. Marina, Cabo San Lucas, BCS, Mexico
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-accent flex-shrink-0" />
-                <a href="tel:+1234567890" className="text-sm text-primary-foreground/80 hover:text-accent transition-fast">
-                  +1 (234) 567-8900
+                <a href="tel:+526121698328" className="text-sm text-primary-foreground/80 hover:text-accent transition-fast">
+                  +52 612 169 8328
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-accent flex-shrink-0" />
-                <a href="mailto:info@luxurycoastal.com" className="text-sm text-primary-foreground/80 hover:text-accent transition-fast">
-                  info@luxurycoastal.com
+                <a href="mailto:cabosbir@gmail.com" className="text-sm text-primary-foreground/80 hover:text-accent transition-fast">
+                  cabosbir@gmail.com
                 </a>
               </div>
             </div>
@@ -148,7 +148,7 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
-          <p>© 2024 Luxury Coastal Realty. All rights reserved.</p>
+          <p>© 2025 BAJA INTERNATIONAL REALTY. All rights reserved.</p>
           <div className="flex gap-6">
             <Link to="/privacy" className="hover:text-accent transition-fast">
               Privacy Policy

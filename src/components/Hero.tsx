@@ -24,10 +24,10 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
         <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          LUXURY COASTAL REAL ESTATE
+          BAJA INTERNATIONAL REALTY
         </h1>
         <p className="text-xl md:text-2xl text-primary-foreground/90 mb-12 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-          Discover Your Dream Oceanfront Property in Paradise
+          Discover Your Dream Property in Cabo San Lucas & Baja California Sur
         </p>
 
         {/* Search Bar */}
@@ -42,10 +42,12 @@ const Hero = () => {
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="downtown">Downtown</SelectItem>
+                <SelectItem value="downtown">Downtown Cabo</SelectItem>
                 <SelectItem value="beachfront">Beachfront</SelectItem>
                 <SelectItem value="golf">Golf Communities</SelectItem>
                 <SelectItem value="marina">Marina District</SelectItem>
+                <SelectItem value="corridor">Tourist Corridor</SelectItem>
+                <SelectItem value="sanjose">San José del Cabo</SelectItem>
               </SelectContent>
             </Select>
 

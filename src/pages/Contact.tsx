@@ -45,12 +45,12 @@ const Contact = () => {
 
   // List of agents - matches Team.tsx
   const agents = [
-    { id: 1, name: "Michael Chen", email: "michael@luxurycoastal.com" },
-    { id: 2, name: "Sarah Johnson", email: "sarah@luxurycoastal.com" },
-    { id: 3, name: "David Martinez", email: "david@luxurycoastal.com" },
-    { id: 4, name: "Emily Thompson", email: "emily@luxurycoastal.com" },
-    { id: 5, name: "Robert Kim", email: "robert@luxurycoastal.com" },
-    { id: 6, name: "Jessica Rodriguez", email: "jessica@luxurycoastal.com" }
+    { id: 1, name: "Michael Chen", email: "michael@bajainternationalrealty.com" },
+    { id: 2, name: "Sarah Johnson", email: "sarah@bajainternationalrealty.com" },
+    { id: 3, name: "David Martinez", email: "david@bajainternationalrealty.com" },
+    { id: 4, name: "Emily Thompson", email: "emily@bajainternationalrealty.com" },
+    { id: 5, name: "Robert Kim", email: "robert@bajainternationalrealty.com" },
+    { id: 6, name: "Jessica Rodriguez", email: "jessica@bajainternationalrealty.com" }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,7 +110,7 @@ const Contact = () => {
             Contact Us
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl">
-            Let's discuss your real estate goals. Our team is ready to help you find your perfect property.
+            Let's discuss your real estate goals. Our team is ready to help you find your perfect property in Cabo San Lucas.
           </p>
         </div>
       </section>
@@ -124,7 +124,7 @@ const Contact = () => {
               <div>
                 <h2 className="text-3xl font-bold text-foreground mb-6">Get in Touch</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  Whether you're looking to buy, sell, or invest in luxury real estate, we're here to help. Reach out today for a consultation.
+                  Whether you're looking to buy, sell, or invest in luxury real estate in Cabo San Lucas, we're here to help. Reach out today for a consultation.
                 </p>
               </div>
 
@@ -139,8 +139,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Address</h3>
                     <p className="text-muted-foreground text-sm">
-                      123 Ocean Drive<br />
-                      Paradise City, PC 12345
+                      Blvd. Marina<br />
+                      Cabo San Lucas, BCS, Mexico
                     </p>
                   </div>
                 </div>
@@ -154,8 +154,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Phone</h3>
                     <p className="text-muted-foreground text-sm">
-                      US: +1 (234) 567-8900<br />
-                      Local: +52 (123) 456-7890
+                      MX: +52 612 169 8328<br />
+                      US: Toll Free (Coming Soon)
                     </p>
                   </div>
                 </div>
@@ -169,7 +169,7 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
                     <p className="text-muted-foreground text-sm">
-                      info@luxurycoastal.com
+                      cabosbir@gmail.com
                     </p>
                   </div>
                 </div>
@@ -212,7 +212,7 @@ const Contact = () => {
                 {submitStatus === 'error' && (
                   <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                     <strong>✗ Failed to send message.</strong>
-                    <p className="text-sm mt-1">Please call us at +1 (234) 567-8900 or email info@luxurycoastal.com</p>
+                    <p className="text-sm mt-1">Please call us at +52 612 169 8328 or email cabosbir@gmail.com</p>
                   </div>
                 )}
                 
@@ -254,7 +254,7 @@ const Contact = () => {
                     <Input 
                       id="phone" 
                       type="tel" 
-                      placeholder="+1 (234) 567-8900"
+                      placeholder="+52 (612) 169-8328"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
                       disabled={isSubmitting}
@@ -336,7 +336,7 @@ const Contact = () => {
                   <Textarea 
                     id="message" 
                     required 
-                    placeholder="Tell us about your real estate needs..."
+                    placeholder="Tell us about your real estate needs in Cabo San Lucas..."
                     className="min-h-32"
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
@@ -376,7 +376,7 @@ const Contact = () => {
               <div className="text-center">
                 <MapPin className="h-16 w-16 mx-auto mb-4 text-accent" />
                 <p className="font-medium">Interactive Map</p>
-                <p className="text-sm">123 Ocean Drive, Paradise City</p>
+                <p className="text-sm">Blvd. Marina, Cabo San Lucas, BCS</p>
               </div>
             </div>
           </div>

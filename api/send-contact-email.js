@@ -35,7 +35,7 @@ export default async function handler(req, res) {
       console.error('OFFICE_APP_PASSWORD not configured');
       return res.status(500).json({ 
         success: false, 
-        error: 'Email service not configured. Please contact us directly at info@luxurycoastal.com' 
+        error: 'Email service not configured. Please contact us directly at cabosbir@gmail.com' 
       });
     }
 
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.OFFICE_EMAIL || 'info@luxurycoastal.com',
+        user: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
         pass: process.env.OFFICE_APP_PASSWORD
       }
     });
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
     const propertyName = propertyTypes[propertyType] || propertyType || 'Not specified';
 
     // Determine email recipients
-    const officeEmail = process.env.OFFICE_EMAIL || 'info@luxurycoastal.com';
+    const officeEmail = process.env.OFFICE_EMAIL || 'cabosbir@gmail.com';
     let emailRecipients = [officeEmail];
     
     // Add agent email if an agent was selected
@@ -86,7 +86,7 @@ export default async function handler(req, res) {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
           <h2 style="color: white; margin: 0; font-size: 28px;">🏡 New Contact Form Inquiry</h2>
-          <p style="color: #bfdbfe; margin: 10px 0 0 0;">Luxury Coastal Real Estate</p>
+          <p style="color: #bfdbfe; margin: 10px 0 0 0;">BAJA INTERNATIONAL REALTY</p>
           ${preferredAgent ? `<p style="color: #fbbf24; margin: 10px 0 0 0; font-weight: bold;">⭐ Requested Agent: ${preferredAgent}</p>` : ''}
         </div>
         
@@ -123,7 +123,7 @@ export default async function handler(req, res) {
         
         <div style="background: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; border-top: none;">
           <p style="margin: 0; color: #6b7280; font-size: 12px;">
-            Luxury Coastal Real Estate | 123 Ocean Drive, Paradise City
+            BAJA INTERNATIONAL REALTY | Blvd. Marina, Cabo San Lucas, BCS, Mexico
           </p>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default async function handler(req, res) {
 
     // Send email to business (and agent if selected)
     const mailOptions = {
-      from: process.env.OFFICE_EMAIL || 'info@luxurycoastal.com',
+      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
       to: emailRecipients.join(', '),
       subject: `🏡 New ${inquiryName} Inquiry${preferredAgent ? ` for ${preferredAgent}` : ''} - ${name}`,
       html: businessEmailHtml,
@@ -145,14 +145,14 @@ export default async function handler(req, res) {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
           <h2 style="color: white; margin: 0; font-size: 28px;">Thank You for Your Inquiry!</h2>
-          <p style="color: #bfdbfe; margin: 10px 0 0 0;">Luxury Coastal Real Estate</p>
+          <p style="color: #bfdbfe; margin: 10px 0 0 0;">BAJA INTERNATIONAL REALTY</p>
         </div>
         
         <div style="background: #ffffff; padding: 30px;">
           <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">Dear ${name},</p>
           
           <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-            We've received your inquiry and appreciate your interest in working with us for your real estate needs. ${preferredAgent ? `<strong>${preferredAgent}</strong> and our team of luxury property specialists are` : 'Our team of luxury property specialists is'} reviewing your request.
+            We've received your inquiry and appreciate your interest in working with us for your real estate needs in Cabo San Lucas. ${preferredAgent ? `<strong>${preferredAgent}</strong> and our team of luxury property specialists are` : 'Our team of luxury property specialists is'} reviewing your request.
           </p>
           
           <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #2563eb;">
@@ -175,46 +175,46 @@ export default async function handler(req, res) {
           
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 25px 0;">
             <h3 style="margin-top: 0; color: #1f2937; font-size: 18px;">Need Immediate Assistance?</h3>
-            <p style="margin: 8px 0; color: #374151;">📱 <strong>Call/Text:</strong> <a href="tel:+1234567890" style="color: #2563eb;">+1 (234) 567-8900</a></p>
-            <p style="margin: 8px 0; color: #374151;">📧 <strong>Email:</strong> <a href="mailto:info@luxurycoastal.com" style="color: #2563eb;">info@luxurycoastal.com</a></p>
+            <p style="margin: 8px 0; color: #374151;">📱 <strong>Call/Text:</strong> <a href="tel:+526121698328" style="color: #2563eb;">+52 612 169 8328</a></p>
+            <p style="margin: 8px 0; color: #374151;">📧 <strong>Email:</strong> <a href="mailto:cabosbir@gmail.com" style="color: #2563eb;">cabosbir@gmail.com</a></p>
             ${agentEmail ? `<p style="margin: 8px 0; color: #374151;">👤 <strong>${preferredAgent}:</strong> <a href="mailto:${agentEmail}" style="color: #2563eb;">${agentEmail}</a></p>` : ''}
             <p style="margin: 8px 0; color: #374151;">🏢 <strong>Office Hours:</strong> Monday - Friday, 9 AM - 6 PM</p>
           </div>
           
           <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 25px 0;">
             <h3 style="margin-top: 0; color: #1f2937; font-size: 18px;">🏡 Our Services:</h3>
-            <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Luxury Property Sales & Acquisitions</p>
+            <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Luxury Property Sales & Acquisitions in Cabo San Lucas</p>
             <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Investment Property Consulting</p>
-            <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Property Management</p>
+            <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Property Management in Baja California Sur</p>
             <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Market Analysis & Valuation</p>
             <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Exclusive Off-Market Opportunities</p>
           </div>
           
           <p style="font-size: 16px; color: #374151; margin-top: 30px;">
-            We look forward to helping you find your perfect property!
+            We look forward to helping you find your perfect property in Cabo San Lucas!
           </p>
           
           <p style="font-size: 16px; color: #374151;">
             Best regards,<br>
-            <strong style="color: #1e40af;">${preferredAgent ? preferredAgent + ' & ' : ''}The Luxury Coastal Real Estate Team</strong>
+            <strong style="color: #1e40af;">${preferredAgent ? preferredAgent + ' & ' : ''}The Baja International Realty Team</strong>
           </p>
         </div>
         
         <div style="background: #1f2937; padding: 25px; text-align: center; border-radius: 0 0 8px 8px;">
           <p style="margin: 5px 0; color: white; font-size: 14px; font-weight: bold;">Your Trusted Luxury Real Estate Partner</p>
           <p style="margin: 5px 0; color: #9ca3af; font-size: 12px;">Licensed | Professional | Experienced</p>
-          <p style="margin: 5px 0; color: #9ca3af; font-size: 12px;">123 Ocean Drive, Paradise City, PC 12345</p>
+          <p style="margin: 5px 0; color: #9ca3af; font-size: 12px;">Blvd. Marina, Cabo San Lucas, BCS, Mexico</p>
           <p style="margin: 15px 0 5px 0;">
-            <a href="https://luxurycoastal.com" style="color: #60a5fa; text-decoration: none;">www.luxurycoastal.com</a>
+            <a href="https://bajainternationalrealty.com" style="color: #60a5fa; text-decoration: none;">www.bajainternationalrealty.com</a>
           </p>
         </div>
       </div>
     `;
 
     const clientMailOptions = {
-      from: process.env.OFFICE_EMAIL || 'info@luxurycoastal.com',
+      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
       to: email,
-      subject: `We Received Your Inquiry${preferredAgent ? ` - ${preferredAgent}` : ''} - Luxury Coastal Real Estate`,
+      subject: `We Received Your Inquiry${preferredAgent ? ` - ${preferredAgent}` : ''} - Baja International Realty`,
       html: clientEmailHtml
     };
 
@@ -237,7 +237,7 @@ export default async function handler(req, res) {
     
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to send inquiry. Please try calling us directly at +1 (234) 567-8900',
+      error: 'Failed to send inquiry. Please try calling us directly at +52 612 169 8328',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }

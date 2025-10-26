@@ -21,7 +21,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <h1 className="text-2xl font-bold text-primary">
-              Luxury <span className="text-accent">Coastal</span>
+              BAJA INTERNATIONAL <span className="text-accent">REALTY</span>
             </h1>
           </Link>
 
@@ -37,10 +37,10 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="flex items-center space-x-4 ml-4">
-              <a href="tel:+1234567890" className="text-muted-foreground hover:text-accent transition-fast">
+              <a href="tel:+526121698328" className="text-muted-foreground hover:text-accent transition-fast">
                 <Phone className="h-5 w-5" />
               </a>
-              <a href="mailto:info@luxurycoastal.com" className="text-muted-foreground hover:text-accent transition-fast">
+              <a href="mailto:cabosbir@gmail.com" className="text-muted-foreground hover:text-accent transition-fast">
                 <Mail className="h-5 w-5" />
               </a>
               <Button variant="luxury" size="sm">
@@ -73,10 +73,10 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="flex items-center space-x-4 px-2 pt-4">
-                <a href="tel:+1234567890" className="text-muted-foreground hover:text-accent transition-fast">
+                <a href="tel:+526121698328" className="text-muted-foreground hover:text-accent transition-fast">
                   <Phone className="h-5 w-5" />
                 </a>
-                <a href="mailto:info@luxurycoastal.com" className="text-muted-foreground hover:text-accent transition-fast">
+                <a href="mailto:cabosbir@gmail.com" className="text-muted-foreground hover:text-accent transition-fast">
                   <Mail className="h-5 w-5" />
                 </a>
               </div>
