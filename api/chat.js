@@ -91,10 +91,10 @@ IMPORTANT GUIDELINES:
 Keep responses concise, friendly, and focused on helping the user find their dream property in Cabo San Lucas.`
     };
 
-    // Call Groq API
+    // Call Groq API with llama-3.1-70b-versatile (best for real estate conversations)
     const chatCompletion = await groq.chat.completions.create({
       messages: [systemPrompt, ...messages],
-      model: "mixtral-8x7b-32768",
+      model: "llama-3.1-70b-versatile", // Excellent for detailed real estate discussions
       temperature: 0.7,
       max_tokens: 1024,
       top_p: 1,
@@ -119,6 +119,13 @@ Keep responses concise, friendly, and focused on helping the user find their dre
       return res.status(500).json({
         success: false,
         message: "I'm having trouble connecting right now. Please reach out to our team at cabosbir@gmail.com or call +52 612 169 8328."
+      });
+    }
+
+    if (error.status === 400 && error.message?.includes('model')) {
+      return res.status(500).json({
+        success: false,
+        message: "Our AI assistant is being updated. Please contact our team directly at cabosbir@gmail.com or +52 612 169 8328."
       });
     }
 
