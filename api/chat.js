@@ -91,10 +91,10 @@ IMPORTANT GUIDELINES:
 Keep responses concise, friendly, and focused on helping the user find their dream property in Cabo San Lucas.`
     };
 
-    // Call Groq API with llama-3.1-70b-versatile (best for real estate conversations)
+    // Call Groq API with llama-3.3-70b-versatile (current production model)
     const chatCompletion = await groq.chat.completions.create({
       messages: [systemPrompt, ...messages],
-      model: "llama-3.1-70b-versatile", // Excellent for detailed real estate discussions
+      model: "llama-3.3-70b-versatile", // Current production model - replaces deprecated 3.1
       temperature: 0.7,
       max_tokens: 1024,
       top_p: 1,
