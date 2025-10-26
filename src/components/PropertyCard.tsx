@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Bed, Bath, Maximize, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 interface PropertyCardProps {
+  id?: number;
   image: string;
   price: string;
   title: string;
@@ -12,11 +14,19 @@ interface PropertyCardProps {
   sqft: string;
 }
 
-const PropertyCard = ({ image, price, title, location, beds, baths, sqft }: PropertyCardProps) => {
+const PropertyCard = ({ id, image, price, title, location, beds, baths, sqft }: PropertyCardProps) => {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    if (id) {
+      navigate(`/property/${id}`);
+    }
+  };
+
   return (
     <Card className="group overflow-hidden border-border hover:shadow-hover transition-smooth cursor-pointer">
       {/* Image */}
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-64 overflow-hidden" onClick={handleViewDetails}>
         <img 
           src={image} 
           alt={title}
@@ -53,7 +63,11 @@ const PropertyCard = ({ image, price, title, location, beds, baths, sqft }: Prop
           </div>
         </div>
 
-        <Button variant="outline" className="w-full">
+        <Button 
+          variant="outline" 
+          className="w-full"
+          onClick={handleViewDetails}
+        >
           View Details
         </Button>
       </div>

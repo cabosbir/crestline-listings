@@ -17,6 +17,7 @@ import property3 from "@/assets/property-3.jpg";
 const Index = () => {
   const featuredProperties = [
     {
+      id: 1,
       image: property1,
       price: "$2,850,000",
       title: "Beachfront Paradise Villa",
@@ -26,6 +27,7 @@ const Index = () => {
       sqft: "4,500 sq ft",
     },
     {
+      id: 2,
       image: property2,
       price: "$3,200,000",
       title: "Golf Course Estate",
@@ -35,6 +37,7 @@ const Index = () => {
       sqft: "3,800 sq ft",
     },
     {
+      id: 3,
       image: property3,
       price: "$4,500,000",
       title: "Oceanfront Penthouse",
