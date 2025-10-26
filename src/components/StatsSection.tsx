@@ -4,7 +4,6 @@ const StatsSection = () => {
   const stats = [
     { number: "85", label: "Combined Years of\nExperience" },
     { number: "2,200+", label: "Homes & Properties\nSold" },
-    { number: "65K", label: "Total Email\nSubscribers" },
     { number: "100%", label: "Committed to\nOur Clients" },
     { number: "$800M+", label: "Combined Sales\nSince 2014" },
   ];
@@ -21,17 +20,17 @@ const StatsSection = () => {
           IT'S KNOWLEDGE
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-6xl mx-auto">
           {stats.map((stat, index) => (
             <div 
               key={index}
               className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="text-5xl md:text-6xl font-bold text-accent mb-4">
+              <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-accent mb-4">
                 {stat.number}
               </div>
-              <p className="text-primary-foreground uppercase text-xs md:text-sm tracking-wide font-medium whitespace-pre-line leading-relaxed">
+              <p className="text-primary-foreground uppercase text-sm md:text-base tracking-wide font-medium whitespace-pre-line leading-relaxed">
                 {stat.label}
               </p>
             </div>
