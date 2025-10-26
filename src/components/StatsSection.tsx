@@ -20,11 +20,11 @@ const StatsSection = () => {
           IT'S KNOWLEDGE
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-6xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-8 md:gap-16 lg:gap-20 max-w-7xl mx-auto">
           {stats.map((stat, index) => (
             <div 
               key={index}
-              className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000"
+              className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 min-w-[140px] md:min-w-[180px]"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-accent mb-4">
