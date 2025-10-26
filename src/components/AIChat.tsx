@@ -17,7 +17,7 @@ const AIChat = ({ onClose }: AIChatProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hello! I'm your AI assistant for Baja International Realty. I can help you with questions about properties in Cabo San Lucas, pricing, neighborhoods, and more. How can I assist you today?",
+      content: "Hello! I'm your assistant for Baja International Realty. I can help you with questions about properties in Cabo San Lucas, pricing, neighborhoods, and more. How can I assist you today?",
       timestamp: new Date()
     }
   ]);
@@ -99,8 +99,8 @@ const AIChat = ({ onClose }: AIChatProps) => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-primary text-primary-foreground">
         <div>
-          <h3 className="text-lg font-bold">AI Real Estate Assistant</h3>
-          <p className="text-xs text-primary-foreground/80">Powered by Groq AI</p>
+          <h3 className="text-lg font-bold">Real Estate Assistant</h3>
+          <p className="text-xs text-primary-foreground/80">Powered by BIR</p>
         </div>
         <Button
           variant="ghost"
@@ -171,7 +171,7 @@ const AIChat = ({ onClose }: AIChatProps) => {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          AI responses are informational. For official inquiries, <a href="/contact" className="text-accent hover:underline">contact our team</a>.
+          Responses are informational. For official inquiries, <a href="/contact" className="text-accent hover:underline">contact our team</a>.
         </p>
       </div>
     </div>
