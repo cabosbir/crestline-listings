@@ -68,7 +68,7 @@ const About = () => {
             About Baja International Realty
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl">
-            Your trusted partner in luxury real estate in Cabo San Lucas & Baja California Sur since 2014
+            Your trusted partner in luxury real estate in Cabo San Lucas & Baja California Sur
           </p>
         </div>
       </section>
