@@ -1,6 +1,6 @@
-import Groq from "groq-sdk";
+const Groq = require("groq-sdk").default;
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -129,4 +129,4 @@ Keep responses concise, friendly, and focused on helping the user find their dre
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
-}
+};
