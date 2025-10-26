@@ -41,12 +41,12 @@ const About = () => {
     {
       icon: Award,
       title: "Proven Excellence",
-      description: "Award-winning team with decades of combined experience in luxury real estate markets.",
+      description: "Award-winning team with decades of combined experience in Cabo San Lucas luxury real estate.",
     },
     {
       icon: TrendingUp,
       title: "Market Expertise",
-      description: "Deep local knowledge and cutting-edge market insights to give you a competitive advantage.",
+      description: "Deep local knowledge of Baja California Sur and cutting-edge market insights to give you a competitive advantage.",
     },
     {
       icon: Heart,
@@ -64,10 +64,10 @@ const About = () => {
       <section className="pt-32 pb-16 bg-secondary">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-            About Luxury Coastal
+            About Baja International Realty
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl">
-            Your trusted partner in luxury oceanfront real estate since 2014
+            Your trusted partner in luxury real estate in Cabo San Lucas & Baja California Sur since 2014
           </p>
         </div>
       </section>
@@ -80,20 +80,20 @@ const About = () => {
               <h2 className="text-4xl font-bold text-foreground mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Founded in 2014, Luxury Coastal Realty was born from a passion for connecting people with their dream properties in paradise. What started as a small family business has grown into one of the region's most respected luxury real estate firms.
+                  Founded in 2014, Baja International Realty was born from a passion for connecting people with their dream properties in Cabo San Lucas and throughout Baja California Sur. What started as a boutique agency has grown into one of the region's most respected luxury real estate firms.
                 </p>
                 <p>
-                  Our founders, who relocated from the United States and Canada, brought with them decades of real estate expertise and a vision to create a client-focused agency that combines local knowledge with international standards of service.
+                  Our founders, who relocated from the United States and Canada, brought with them decades of real estate expertise and a vision to create a client-focused agency that combines intimate local knowledge with international standards of service.
                 </p>
                 <p>
-                  Today, we've successfully helped over 2,200 families find their perfect oceanfront property, managing over $800 million in sales. But beyond the numbers, we're most proud of the lasting relationships we've built and the trust our clients place in us.
+                  Today, we've successfully helped over 2,200 families find their perfect property in paradise, managing over $800 million in sales. But beyond the numbers, we're most proud of the lasting relationships we've built and the trust our clients place in us throughout their Baja real estate journey.
                 </p>
               </div>
             </div>
             <div className="relative h-96 lg:h-full min-h-[400px]">
               <img 
                 src={property1} 
-                alt="Our office" 
+                alt="Cabo San Lucas luxury property" 
                 className="w-full h-full object-cover rounded-2xl shadow-elegant"
               />
             </div>
@@ -147,7 +147,7 @@ const About = () => {
               Meet Our Team
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Experienced professionals dedicated to your real estate success
+              Experienced professionals dedicated to your real estate success in Cabo San Lucas
             </p>
           </div>
 
@@ -167,22 +167,22 @@ const About = () => {
               Awards & Recognition
             </h2>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-              Recognized for excellence in luxury real estate
+              Recognized for excellence in Baja California Sur luxury real estate
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="text-5xl font-bold text-accent mb-2">2024</div>
-              <p className="text-primary-foreground/90">Top Luxury Agency</p>
+              <p className="text-primary-foreground/90">Top Luxury Agency<br />Cabo San Lucas</p>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-accent mb-2">A+</div>
-              <p className="text-primary-foreground/90">BBB Rating</p>
+              <p className="text-primary-foreground/90">Client Service<br />Rating</p>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-accent mb-2">5★</div>
-              <p className="text-primary-foreground/90">Client Satisfaction</p>
+              <p className="text-primary-foreground/90">Client Satisfaction<br />Score</p>
             </div>
           </div>
         </div>
