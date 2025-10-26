@@ -9,17 +9,17 @@ import {
   Home, Calendar, CheckCircle2 
 } from "lucide-react";
 
+// Uncomment when FlexMLS is ready
+// import { fetchPropertyById } from "@/services/flexMlsService";
+
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Scroll to top when page loads
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [id]);
-
-  // Sample property data - in production this would come from an API
-  const properties = [
+  // Mock data - will be replaced by FlexMLS
+  const mockProperties = [
     {
       id: 1,
       title: "Beachfront Paradise Villa",
@@ -116,8 +116,73 @@ const PropertyDetail = () => {
     }
   ];
 
-  const property = properties.find(p => p.id === parseInt(id || "0"));
+  // Load property data
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    loadProperty();
+  }, [id]);
 
+  const loadProperty = async () => {
+    setLoading(true);
+    try {
+      // TODO: Uncomment when FlexMLS is configured
+      /*
+      const mlsProperty = await fetchPropertyById(id);
+      if (mlsProperty) {
+        // Convert MLS property to your format
+        const convertedProperty = {
+          id: mlsProperty.id,
+          title: `${mlsProperty.address.streetNumber} ${mlsProperty.address.streetName}`,
+          price: `$${mlsProperty.price.toLocaleString()}`,
+          location: mlsProperty.address.city,
+          fullLocation: `${mlsProperty.address.city}, ${mlsProperty.address.state}`,
+          beds: mlsProperty.bedrooms,
+          baths: mlsProperty.bathrooms,
+          sqft: `${mlsProperty.squareFeet.toLocaleString()} sq ft`,
+          lotSize: `${mlsProperty.lotSize.toLocaleString()} sqft`,
+          yearBuilt: mlsProperty.yearBuilt,
+          propertyType: mlsProperty.propertyType,
+          status: mlsProperty.status,
+          image: mlsProperty.photos[0]?.url || '',
+          images: mlsProperty.photos.map(p => p.url),
+          description: mlsProperty.description,
+          features: mlsProperty.features
+        };
+        setProperty(convertedProperty);
+      } else {
+        setProperty(null);
+      }
+      */
+      
+      // For now, use mock data
+      const foundProperty = mockProperties.find(p => p.id === parseInt(id || "0"));
+      setProperty(foundProperty || null);
+    } catch (error) {
+      console.error('Error loading property:', error);
+      // Fallback to mock data on error
+      const foundProperty = mockProperties.find(p => p.id === parseInt(id || "0"));
+      setProperty(foundProperty || null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-xl text-muted-foreground">Loading property...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Property not found
   if (!property) {
     return (
       <div className="min-h-screen bg-background">
@@ -294,10 +359,25 @@ const PropertyDetail = () => {
                     
                     <div className="text-sm text-muted-foreground mb-2">Share Property</div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('Link copied to clipboard!');
+                        }}
+                      >
                         Copy Link
                       </Button>
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => {
+                          window.location.href = `mailto:?subject=${encodeURIComponent(property.title)}&body=${encodeURIComponent(window.location.href)}`;
+                        }}
+                      >
                         Email
                       </Button>
                     </div>

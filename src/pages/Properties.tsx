@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -15,9 +16,14 @@ import property1 from "@/assets/property-1.jpg";
 import property2 from "@/assets/property-2.jpg";
 import property3 from "@/assets/property-3.jpg";
 
+// Uncomment when FlexMLS is ready
+// import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
+
 const Properties = () => {
-  const properties = [
+  // Mock data - will be replaced by FlexMLS
+  const mockProperties = [
     {
+      id: 1,
       image: property1,
       price: "$2,850,000",
       title: "Beachfront Paradise Villa",
@@ -27,6 +33,7 @@ const Properties = () => {
       sqft: "4,500 sq ft",
     },
     {
+      id: 2,
       image: property2,
       price: "$3,200,000",
       title: "Golf Course Estate",
@@ -36,6 +43,7 @@ const Properties = () => {
       sqft: "3,800 sq ft",
     },
     {
+      id: 3,
       image: property3,
       price: "$4,500,000",
       title: "Oceanfront Penthouse",
@@ -45,6 +53,7 @@ const Properties = () => {
       sqft: "3,200 sq ft",
     },
     {
+      id: 4,
       image: property1,
       price: "$1,950,000",
       title: "Modern Coastal Residence",
@@ -54,6 +63,7 @@ const Properties = () => {
       sqft: "3,500 sq ft",
     },
     {
+      id: 5,
       image: property2,
       price: "$2,450,000",
       title: "Luxury Villa with Pool",
@@ -63,6 +73,7 @@ const Properties = () => {
       sqft: "4,200 sq ft",
     },
     {
+      id: 6,
       image: property3,
       price: "$3,750,000",
       title: "Exclusive Waterfront Estate",
@@ -72,6 +83,56 @@ const Properties = () => {
       sqft: "5,800 sq ft",
     },
   ];
+
+  const [properties, setProperties] = useState(mockProperties);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    propertyType: 'all',
+    location: 'all',
+    priceRange: 'all',
+    bedrooms: 'all'
+  });
+  const [sortBy, setSortBy] = useState('newest');
+
+  // Load properties - switch to FlexMLS when ready
+  useEffect(() => {
+    loadProperties();
+  }, [filters]);
+
+  const loadProperties = async () => {
+    setLoading(true);
+    try {
+      // TODO: Uncomment when FlexMLS is configured
+      /*
+      const mlsListings = await fetchListings({
+        city: filters.location !== 'all' ? filters.location : undefined,
+        propertyType: filters.propertyType !== 'all' ? filters.propertyType : undefined,
+        bedrooms: filters.bedrooms !== 'all' ? parseInt(filters.bedrooms) : undefined,
+      });
+      const convertedProperties = mlsListings.map(convertMLSToPropertyCard);
+      setProperties(convertedProperties);
+      */
+      
+      // For now, use mock data
+      setProperties(mockProperties);
+    } catch (error) {
+      console.error('Error loading properties:', error);
+      setProperties(mockProperties); // Fallback to mock data
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (filterType: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  const applyFilters = () => {
+    loadProperties();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,7 +155,7 @@ const Properties = () => {
       <section className="py-8 border-b border-border sticky top-20 bg-background/95 backdrop-blur-md z-30">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap gap-4 items-center">
-            <Select>
+            <Select onValueChange={(value) => handleFilterChange('propertyType', value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Property Type" />
               </SelectTrigger>
@@ -106,7 +167,7 @@ const Properties = () => {
               </SelectContent>
             </Select>
 
-            <Select>
+            <Select onValueChange={(value) => handleFilterChange('location', value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
@@ -118,7 +179,7 @@ const Properties = () => {
               </SelectContent>
             </Select>
 
-            <Select>
+            <Select onValueChange={(value) => handleFilterChange('priceRange', value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Price Range" />
               </SelectTrigger>
@@ -132,7 +193,7 @@ const Properties = () => {
               </SelectContent>
             </Select>
 
-            <Select>
+            <Select onValueChange={(value) => handleFilterChange('bedrooms', value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Bedrooms" />
               </SelectTrigger>
@@ -145,7 +206,7 @@ const Properties = () => {
               </SelectContent>
             </Select>
 
-            <Button variant="luxury" className="ml-auto">
+            <Button variant="luxury" className="ml-auto" onClick={applyFilters}>
               Apply Filters
             </Button>
           </div>
@@ -159,7 +220,7 @@ const Properties = () => {
             <p className="text-muted-foreground">
               Showing <span className="font-semibold text-foreground">{properties.length}</span> properties
             </p>
-            <Select>
+            <Select onValueChange={setSortBy}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -172,11 +233,36 @@ const Properties = () => {
             </Select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.map((property, index) => (
-              <PropertyCard key={index} {...property} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-xl text-muted-foreground">Loading properties...</p>
+            </div>
+          ) : properties.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-xl text-muted-foreground">No properties found matching your criteria</p>
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => {
+                  setFilters({
+                    propertyType: 'all',
+                    location: 'all',
+                    priceRange: 'all',
+                    bedrooms: 'all'
+                  });
+                  loadProperties();
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {properties.map((property, index) => (
+                <PropertyCard key={property.id || index} {...property} />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           <div className="flex justify-center mt-12">
