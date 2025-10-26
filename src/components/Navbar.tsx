@@ -8,10 +8,8 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Properties", href: "/properties" },
-    { name: "Communities", href: "/communities" },
     { name: "About", href: "/about" },
     { name: "Team", href: "/team" },
-    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -46,9 +44,11 @@ const Navbar = () => {
               <a href="mailto:cabosbir@gmail.com" className="text-muted-foreground hover:text-accent transition-fast">
                 <Mail className="h-5 w-5" />
               </a>
-              <Button variant="luxury" size="sm">
-                Schedule Call
-              </Button>
+              <Link to="/contact">
+                <Button variant="luxury" size="sm">
+                  Schedule Showing
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -83,9 +83,11 @@ const Navbar = () => {
                   <Mail className="h-5 w-5" />
                 </a>
               </div>
-              <Button variant="luxury" size="sm" className="w-full">
-                Schedule Call
-              </Button>
+              <Link to="/contact" onClick={() => setIsOpen(false)}>
+                <Button variant="luxury" size="sm" className="w-full">
+                  Schedule Showing
+                </Button>
+              </Link>
             </div>
           </div>
         )}
