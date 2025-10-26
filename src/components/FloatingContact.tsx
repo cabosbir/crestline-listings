@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Phone, Mail, MessageCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AIChat from "@/components/AIChat";
 
 const FloatingContact = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,7 +33,7 @@ const FloatingContact = () => {
           className="rounded-full shadow-hover"
           asChild
         >
-          <a href="tel:+1234567890" title="Call Us">
+          <a href="tel:+526121698328" title="Call Us">
             <Phone className="h-5 w-5" />
           </a>
         </Button>
@@ -41,7 +43,7 @@ const FloatingContact = () => {
           className="rounded-full shadow-hover"
           asChild
         >
-          <a href="mailto:info@luxurycoastal.com" title="Email Us">
+          <a href="mailto:cabosbir@gmail.com" title="Email Us">
             <Mail className="h-5 w-5" />
           </a>
         </Button>
@@ -49,11 +51,10 @@ const FloatingContact = () => {
           variant="luxury"
           size="icon"
           className="rounded-full shadow-gold"
-          asChild
+          onClick={() => setIsChatOpen(true)}
+          title="AI Assistant"
         >
-          <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" title="WhatsApp">
-            <MessageCircle className="h-5 w-5" />
-          </a>
+          <MessageCircle className="h-5 w-5" />
         </Button>
         <Button
           variant="default"
@@ -61,7 +62,7 @@ const FloatingContact = () => {
           className="rounded-full shadow-hover"
           asChild
         >
-          <a href="/contact" title="Schedule Call">
+          <a href="/contact" title="Schedule Showing">
             <Calendar className="h-5 w-5" />
           </a>
         </Button>
@@ -76,7 +77,7 @@ const FloatingContact = () => {
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent"
             asChild
           >
-            <a href="tel:+1234567890">
+            <a href="tel:+526121698328">
               <Phone className="h-5 w-5 mb-1" />
               <span className="text-xs">Call</span>
             </a>
@@ -87,7 +88,7 @@ const FloatingContact = () => {
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent"
             asChild
           >
-            <a href="mailto:info@luxurycoastal.com">
+            <a href="mailto:cabosbir@gmail.com">
               <Mail className="h-5 w-5 mb-1" />
               <span className="text-xs">Email</span>
             </a>
@@ -96,12 +97,10 @@ const FloatingContact = () => {
             variant="ghost"
             size="sm"
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent"
-            asChild
+            onClick={() => setIsChatOpen(true)}
           >
-            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
-              <MessageCircle className="h-5 w-5 mb-1" />
-              <span className="text-xs">WhatsApp</span>
-            </a>
+            <MessageCircle className="h-5 w-5 mb-1" />
+            <span className="text-xs">AI Chat</span>
           </Button>
           <Button
             variant="ghost"
@@ -116,6 +115,22 @@ const FloatingContact = () => {
           </Button>
         </div>
       </div>
+
+      {/* AI Chat Modal */}
+      {isChatOpen && (
+        <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsChatOpen(false)}
+          />
+          
+          {/* Chat Container */}
+          <div className="relative w-full lg:w-96 h-[80vh] lg:h-[600px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
+            <AIChat onClose={() => setIsChatOpen(false)} />
+          </div>
+        </div>
+      )}
     </>
   );
 };
