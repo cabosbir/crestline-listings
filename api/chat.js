@@ -1,6 +1,6 @@
-const Groq = require("groq-sdk").default;
+import Groq from "groq-sdk";
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,7 +30,8 @@ module.exports = async function handler(req, res) {
     if (!process.env.GROQ_API_KEY) {
       console.error('GROQ_API_KEY not configured');
       return res.status(500).json({ 
-        error: 'AI service not configured. Please contact us directly at cabosbir@gmail.com or +52 612 169 8328' 
+        success: false,
+        message: 'AI service not configured. Please contact us at cabosbir@gmail.com or +52 612 169 8328' 
       });
     }
 
@@ -93,7 +94,7 @@ Keep responses concise, friendly, and focused on helping the user find their dre
     // Call Groq API
     const chatCompletion = await groq.chat.completions.create({
       messages: [systemPrompt, ...messages],
-      model: "mixtral-8x7b-32768", // Fast and capable model
+      model: "mixtral-8x7b-32768",
       temperature: 0.7,
       max_tokens: 1024,
       top_p: 1,
@@ -117,16 +118,14 @@ Keep responses concise, friendly, and focused on helping the user find their dre
     if (error.status === 401) {
       return res.status(500).json({
         success: false,
-        error: 'AI service authentication failed. Please contact us directly.',
         message: "I'm having trouble connecting right now. Please reach out to our team at cabosbir@gmail.com or call +52 612 169 8328."
       });
     }
 
     return res.status(500).json({
       success: false,
-      error: 'Failed to get AI response',
-      message: "I apologize, but I'm experiencing technical difficulties. Please contact our team directly at cabosbir@gmail.com or +52 612 169 8328 for immediate assistance.",
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: "I apologize, but I'm experiencing technical difficulties. Please contact our team at cabosbir@gmail.com or +52 612 169 8328.",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
-};
+}
