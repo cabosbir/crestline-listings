@@ -1,8 +1,10 @@
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import TeamMemberCard from "@/components/TeamMemberCard";
-import { Award, Users, TrendingUp, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Award, Users, TrendingUp, Heart, ArrowRight } from "lucide-react";
 
 import property1 from "@/assets/property-1.jpg";
 
@@ -150,10 +152,18 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {teamMembers.map((member, index) => (
               <TeamMemberCard key={index} {...member} />
             ))}
+          </div>
+
+          <div className="text-center">
+            <Link to="/team">
+              <Button variant="outline" size="lg">
+                Meet Our Full Team <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
