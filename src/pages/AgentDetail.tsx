@@ -198,7 +198,7 @@ const AgentDetail = () => {
       name: "Don Weis", // TODO: Fill in
       title: "Real Estate Broker", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593106/a-striking-professional-portrait-photogr_vAIjUNR2SYqhwv4TWNVjQw_V5Ybq_VVQ5yUqnA2doncgg_blb6fj.jpg", // TODO: Replace with Cloudinary
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761595234/a-striking-professional-portrait-photogr_l5VA-wc2QNShw3oqxpo-sw_EVxaU0fVTGmOEm-axYtq1Q_lmi7ch.jpg", // TODO: Replace with Cloudinary
       phone: "+52 624 129 6245", // TODO: Fill in
       email: "agent12@bajainternationalrealty.com", // TODO: Fill in
       yearsExperience: 30, // TODO: Fill in
