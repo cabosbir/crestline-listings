@@ -5,12 +5,15 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import AgentBioCard from "@/components/AgentBioCard";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Team = () => {
   const navigate = useNavigate();
-  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const agentsPerPage = 6;
 
   const agents = [
+    // PAGE 1 - Agents 1-6
     {
       id: 1,
       name: "Bob Van Patten",
@@ -23,7 +26,7 @@ const Team = () => {
       propertiesSold: 120,
       bio: "Bob specializes in luxury waterfront estates in Cabo San Lucas with over 15 years of experience in high-end real estate. His deep knowledge of Baja California Sur coastal properties and exceptional negotiation skills have earned him recognition as a top producer.",
       certifications: ["REALTOR®", "CRS", "CLHMS"],
-      languages: ["English",]
+      languages: ["English"]
     },
     {
       id: 2,
@@ -94,8 +97,100 @@ const Team = () => {
       bio: "Jessica's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas, combined with her exceptional marketing skills, consistently delivers outstanding results for her clients in the competitive urban luxury market.",
       certifications: ["REALTOR®", "CLHMS", "GRI"],
       languages: ["English", "Spanish"]
-    }
+    },
+    
+    // PAGE 2 - Agents 7-12 (TODO: Fill in these 6 agents)
+    {
+      id: 7,
+      name: "Agent 7 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent7@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added...", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 8,
+      name: "Agent 8 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent8@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added...", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 9,
+      name: "Agent 9 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent9@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added...", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 10,
+      name: "Agent 10 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent10@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added...", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 11,
+      name: "Agent 11 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent11@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added...", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 12,
+      name: "Agent 12 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent12@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added...", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
   ];
+
+  // Calculate pagination
+  const totalPages = Math.ceil(agents.length / agentsPerPage);
+  const indexOfLastAgent = currentPage * agentsPerPage;
+  const indexOfFirstAgent = indexOfLastAgent - agentsPerPage;
+  const currentAgents = agents.slice(indexOfFirstAgent, indexOfLastAgent);
 
   const handleViewBio = (agentId: number) => {
     console.log('handleViewBio called with agentId:', agentId);
@@ -103,14 +198,17 @@ const Team = () => {
     console.log('Found agent:', agent?.name);
     
     try {
-      // Navigate to individual agent detail page
       navigate(`/team/${agentId}`);
       console.log('Navigation triggered to:', `/team/${agentId}`);
     } catch (error) {
       console.error('Navigation error:', error);
-      // Fallback to window.location if navigate fails
       window.location.href = `/team/${agentId}`;
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -164,10 +262,14 @@ const Team = () => {
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Each member of our team brings unique expertise and a commitment to exceptional service in Cabo San Lucas
               </p>
+              <p className="text-sm text-muted-foreground mt-4">
+                Showing {indexOfFirstAgent + 1}-{Math.min(indexOfLastAgent, agents.length)} of {agents.length} agents
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {agents.map((agent) => (
+            {/* Agents Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {currentAgents.map((agent) => (
                 <AgentBioCard
                   key={agent.id}
                   name={agent.name}
@@ -182,6 +284,50 @@ const Team = () => {
                 />
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-12">
+                {/* Previous Button */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                  Previous
+                </Button>
+
+                {/* Page Numbers */}
+                <div className="flex gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "luxury" : "outline"}
+                      size="lg"
+                      onClick={() => handlePageChange(page)}
+                      className="min-w-[50px]"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Next Button */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-2"
+                >
+                  Next
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </section>

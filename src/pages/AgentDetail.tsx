@@ -34,8 +34,9 @@ const AgentDetail = () => {
     }, 100);
   }, [id]);
 
-  // Agent data - matches Team.tsx
+  // Agent data - MUST MATCH Team.tsx exactly
   const agents = [
+    // PAGE 1 - Agents 1-6
     {
       id: 1,
       name: "Bob Van Patten",
@@ -46,7 +47,7 @@ const AgentDetail = () => {
       email: "robertvanpatten2@gmail.com",
       yearsExperience: 15,
       propertiesSold: 120,
-      bio: "Bob specializes in luxury waterfront estates with over 15 years of experience in high-end real estate. His deep knowledge of coastal properties and exceptional negotiation skills have earned him recognition as a top producer. He has successfully closed deals worth over $150M and has been consistently ranked as a top performer in the luxury real estate market.",
+      bio: "Bob specializes in luxury waterfront estates in Cabo San Lucas with over 15 years of experience in high-end real estate. His deep knowledge of Baja California Sur coastal properties and exceptional negotiation skills have earned him recognition as a top producer. He has successfully closed deals worth over $150M and has been consistently ranked as a top performer in the luxury real estate market.",
       certifications: ["REALTOR®", "CRS", "CLHMS"],
       languages: ["English"]
     },
@@ -56,25 +57,25 @@ const AgentDetail = () => {
       title: "Luxury Property Specialist",
       specialization: "Oceanfront Estates",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
-      phone: "+1 (234) 567-8901",
+      phone: "+52 612 169 8328",
       email: "Erika@bajainternationalrealty.com",
       yearsExperience: 12,
       propertiesSold: 180,
-      bio: "Erika's passion for luxury coastal living and her commitment to client satisfaction have made her one of the most sought-after agents in the region. She specializes in oceanfront estates and investment properties, providing comprehensive market analysis and personalized service to every client.",
+      bio: "Erika's passion for luxury coastal living in Cabo San Lucas and her commitment to client satisfaction have made her one of the most sought-after agents in the region. She specializes in oceanfront estates and investment properties throughout Baja California Sur, providing comprehensive market analysis and personalized service to every client.",
       certifications: ["REALTOR®", "GRI", "ABR"],
       languages: ["English", "Spanish"]
     },
     {
       id: 3,
       name: "Alfonso Puente",
-      title: "Sale Real Estate Manager",
+      title: "Commercial Real Estate Expert",
       specialization: "Commercial & Investment",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527627/a-professional-studio-portrait-of-a-man-_S6bglg3cQJWT-QOkKh1KJA_v9luvyZPR_enll2ChvpwPg_yaa5rv.jpg",
       phone: "+52 624 188 8681",
       email: "alfonso@bircabo.com",
       yearsExperience: 18,
       propertiesSold: 205,
-      bio: "With nearly two decades of experience, Alfonso excels in commercial real estate and investment properties. His strategic approach and market insights help clients maximize their real estate investments and build successful portfolios.",
+      bio: "With nearly two decades of experience in Cabo San Lucas, Alfonso excels in commercial real estate and investment properties. His strategic approach and deep market insights help clients maximize their real estate investments in Baja California Sur and build successful portfolios.",
       certifications: ["REALTOR®", "CCIM", "CPM"],
       languages: ["English", "Spanish"]
     },
@@ -84,11 +85,11 @@ const AgentDetail = () => {
       title: "Residential Specialist",
       specialization: "Family Homes & Condos",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761529186/a-cinematic-portrait-photograph-of-a-wom_SYAgJzHOSaipBDiMYgqKLQ_l77_oUgEScSHf-1PFYhhAw_ct10gu.jpg",
-      phone: "+1 (234) 567-8903",
+      phone: "+52 612 169 8328",
       email: "Cozbi@bajainternationalrealty.com",
       yearsExperience: 8,
       propertiesSold: 105,
-      bio: "Cozbi brings enthusiasm and dedication to every transaction. Specializing in family homes and condominiums, she guides first-time buyers and growing families through the home buying process with care and expertise.",
+      bio: "Cozbi brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums, she guides first-time buyers and growing families through the home buying process with care and expertise. Her warm approach and attention to detail ensure a smooth experience for all her clients.",
       certifications: ["REALTOR®", "ABR", "SRS"],
       languages: ["English", "Spanish"]
     },
@@ -98,13 +99,13 @@ const AgentDetail = () => {
       title: "Investment Property Advisor",
       specialization: "Investment & Portfolio",
       image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+1 (234) 567-8904",
-      email: "robert@luxurycoastal.com",
+      phone: "+52 612 169 8328",
+      email: "robert@bajainternationalrealty.com",
       yearsExperience: 20,
       propertiesSold: 510,
-      bio: "Robert is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios. His analytical approach and market knowledge deliver exceptional results.",
+      bio: "Robert is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.",
       certifications: ["REALTOR®", "CCIM", "CRS"],
-      languages: ["English", "Korean", "Japanese"]
+      languages: ["English", "Korean", "Japanese", "Spanish"]
     },
     {
       id: 6,
@@ -112,14 +113,100 @@ const AgentDetail = () => {
       title: "Luxury Condo Specialist",
       specialization: "High-Rise & Penthouses",
       image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+1 (234) 567-8905",
-      email: "jessica@luxurycoastal.com",
+      phone: "+52 612 169 8328",
+      email: "jessica@bajainternationalrealty.com",
       yearsExperience: 10,
       propertiesSold: 240,
-      bio: "Jessica's expertise in luxury high-rise condominiums and penthouses, combined with her exceptional marketing skills, consistently delivers outstanding results for her clients in the competitive urban luxury market.",
+      bio: "Jessica's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas, combined with her exceptional marketing skills, consistently delivers outstanding results for her clients in the competitive urban luxury market. Her network and negotiation prowess ensure the best deals for buyers and sellers alike.",
       certifications: ["REALTOR®", "CLHMS", "GRI"],
       languages: ["English", "Spanish"]
-    }
+    },
+    
+    // PAGE 2 - Agents 7-12 (TODO: Fill in these 6 agents)
+    {
+      id: 7,
+      name: "Agent 7 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent7@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 8,
+      name: "Agent 8 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent8@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 9,
+      name: "Agent 9 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent9@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 10,
+      name: "Agent 10 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent10@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 11,
+      name: "Agent 11 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent11@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
+    {
+      id: 12,
+      name: "Agent 12 Name", // TODO: Fill in
+      title: "Real Estate Advisor", // TODO: Fill in
+      specialization: "Luxury Properties", // TODO: Fill in
+      image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      phone: "+52 612 169 8328", // TODO: Fill in
+      email: "agent12@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 10, // TODO: Fill in
+      propertiesSold: 150, // TODO: Fill in
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      certifications: ["REALTOR®"], // TODO: Fill in
+      languages: ["English", "Spanish"] // TODO: Fill in
+    },
   ];
 
   const agent = agents.find(a => a.id === parseInt(id || "0"));
