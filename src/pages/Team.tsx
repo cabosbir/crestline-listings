@@ -144,14 +144,14 @@ const Team = () => {
     },
     {
       id: 10,
-      name: "Agent 10 Name", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
+      name: "Edgar Pacheco", // TODO: Fill in
+      title: "Real Estate & IT Advisor", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761591979/a-cinematic-portrait-photograph-of-a-man_7-TWoWUzTw2XtfR9N7flMg_TuXG-6x-QFu5RRhXBvCQWg_xetche.jpg", // TODO: Replace with Cloudinary
       phone: "+52 612 169 8328", // TODO: Fill in
-      email: "agent10@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
+      email: "Edgar@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 2, // TODO: Fill in
+      propertiesSold: 15, // TODO: Fill in
       bio: "Agent bio to be added...", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
