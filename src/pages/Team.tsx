@@ -130,12 +130,12 @@ const Team = () => {
     },
     {
       id: 9,
-      name: "Agent 9 Name", // TODO: Fill in
+      name: "Zuzu Name?", // TODO: Fill in
       title: "Real Estate Advisor", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
-      phone: "+52 612 169 8328", // TODO: Fill in
-      email: "agent9@bajainternationalrealty.com", // TODO: Fill in
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg", // TODO: Replace with Cloudinary
+      phone: "+1 808 226 6120", // TODO: Fill in
+      email: "Zuzu@bajainternationalrealty.com", // TODO: Fill in
       yearsExperience: 10, // TODO: Fill in
       propertiesSold: 150, // TODO: Fill in
       bio: "Agent bio to be added...", // TODO: Fill in
@@ -172,14 +172,14 @@ const Team = () => {
     },
     {
       id: 12,
-      name: "Agent 12 Name", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
+      name: "Don Weis", // TODO: Fill in
+      title: "Real Estate Broker", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
-      phone: "+52 612 169 8328", // TODO: Fill in
-      email: "agent12@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593106/a-striking-professional-portrait-photogr_vAIjUNR2SYqhwv4TWNVjQw_V5Ybq_VVQ5yUqnA2doncgg_blb6fj.jpg", // TODO: Replace with Cloudinary
+      phone: "+52 624 129 6245", // TODO: Fill in
+      email: "DonWeis@bajainternationalrealty.com", // TODO: Fill in
+      yearsExperience: 30, // TODO: Fill in
+      propertiesSold: 300, // TODO: Fill in
       bio: "Agent bio to be added...", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
