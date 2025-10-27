@@ -139,15 +139,15 @@ const AgentDetail = () => {
     },
     {
       id: 8,
-      name: "Agent 8 Name", // TODO: Fill in
+      name: "David Scott Piper", // TODO: Fill in
       title: "Real Estate Advisor", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
-      phone: "+52 612 169 8328", // TODO: Fill in
-      email: "agent8@bajainternationalrealty.com", // TODO: Fill in
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg", // TODO: Replace with Cloudinary
+      phone: "+52 624 317 0297", // TODO: Fill in
+      email: "David@bajainternationalrealty.com", // TODO: Fill in
       yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
-      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      propertiesSold: 105, // TODO: Fill in
+      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
     },
