@@ -56,7 +56,7 @@ const Index = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
     },
     {
-      name: "Erika Johnson",
+      name: "Erika Aispuro",
       title: "Luxury Property Specialist",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
     },
