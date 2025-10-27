@@ -44,7 +44,7 @@ const Team = () => {
       name: "Alfonso Puente",
       title: "Commercial Real Estate Expert",
       specialization: "Commercial & Investment",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527004/Edg_6_igakpk.png",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527627/a-professional-studio-portrait-of-a-man-_S6bglg3cQJWT-QOkKh1KJA_v9luvyZPR_enll2ChvpwPg_yaa5rv.jpg",
       phone: "+52 624 188 8681",
       email: "alfonso@bircabo.com",
       yearsExperience: 18,
