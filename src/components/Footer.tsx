@@ -13,7 +13,7 @@ const Footer = () => {
     ],
     company: [
       { name: "About Us", href: "/about" },
-      { name: "Our Team", href: "/about#team" },
+      { name: "Our Team", href: "/team" },
       { name: "Careers", href: "/careers" },
       { name: "Contact", href: "/contact" },
     ],
@@ -62,13 +62,27 @@ const Footer = () => {
 
             {/* Social Media */}
             <div className="flex gap-4">
-              <a href="#" className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth">
+              <a 
+                href="https://www.facebook.com/BajaInternationalRealty" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth"
+                aria-label="Visit our Facebook page"
+              >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth">
+              <a 
+                href="#" 
+                className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth opacity-50 cursor-not-allowed"
+                aria-label="Instagram (coming soon)"
+              >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth">
+              <a 
+                href="#" 
+                className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth opacity-50 cursor-not-allowed"
+                aria-label="LinkedIn (coming soon)"
+              >
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>
