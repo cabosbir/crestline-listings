@@ -173,7 +173,7 @@ const Team = () => {
       name: "Don Weis",
       title: "Real Estate Broker",
       specialization: "Luxury Properties",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761595234/a-striking-professional-portrait-photogr_l5VA-wc2QNShw3oqxpo-sw_EVxaU0fVTGmOEm-axYtq1Q_lmi7ch.jpg",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg",
       phone: "+52 624 129 6245",
       email: "DonWeis@bajainternationalrealty.com",
       yearsExperience: 30,
