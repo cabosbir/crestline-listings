@@ -55,17 +55,17 @@ const Team = () => {
     },
     {
       id: 4,
-      name: "Emily Thompson",
+      name: "Cozbi Sanchez",
       title: "Residential Specialist",
       specialization: "Family Homes & Condos",
-      image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761529186/a-cinematic-portrait-photograph-of-a-wom_SYAgJzHOSaipBDiMYgqKLQ_l77_oUgEScSHf-1PFYhhAw_ct10gu.jpg",
       phone: "+52 612 169 8328",
-      email: "emily@bajainternationalrealty.com",
+      email: "Cozbi@bajainternationalrealty.com",
       yearsExperience: 8,
-      propertiesSold: 195,
-      bio: "Emily brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums, she guides first-time buyers and growing families through the home buying process with care and expertise.",
+      propertiesSold: 105,
+      bio: "Cozbi brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums, she guides first-time buyers and growing families through the home buying process with care and expertise.",
       certifications: ["REALTOR®", "ABR", "SRS"],
-      languages: ["English", "French", "Spanish"]
+      languages: ["English", "Spanish"]
     },
     {
       id: 5,

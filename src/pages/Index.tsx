@@ -66,9 +66,9 @@ const Index = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527627/a-professional-studio-portrait-of-a-man-_S6bglg3cQJWT-QOkKh1KJA_v9luvyZPR_enll2ChvpwPg_yaa5rv.jpg",
     },
     {
-      name: "Emily Thompson",
+      name: "Cozbi Sanchez",
       title: "Residential Specialist",
-      image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761529186/a-cinematic-portrait-photograph-of-a-wom_SYAgJzHOSaipBDiMYgqKLQ_l77_oUgEScSHf-1PFYhhAw_ct10gu.jpg",
     },
   ];
 
