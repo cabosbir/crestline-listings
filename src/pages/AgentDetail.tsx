@@ -170,7 +170,7 @@ const AgentDetail = () => {
       name: "Edgar Pacheco", // TODO: Fill in
       title: "Real Estate & IT Advisor", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761591979/a-cinematic-portrait-photograph-of-a-man_7-TWoWUzTw2XtfR9N7flMg_TuXG-6x-QFu5RRhXBvCQWg_xetche.jpg", // TODO: Replace with Cloudinary
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761598127/a-professional-studio-portrait-photograp_dnE69CqgQwKMvDj_boYW5A_sWO9IE8FSuKtnjTWshya2g_lvnjuh.jpg", // TODO: Replace with Cloudinary
       phone: "+52 612 169 8328", // TODO: Fill in
       email: "Edgar@bajainternationalrealty.com", // TODO: Fill in
       yearsExperience: 2, // TODO: Fill in

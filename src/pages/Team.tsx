@@ -145,7 +145,7 @@ const Team = () => {
       name: "Edgar Pacheco",
       title: "Real Estate & IT Advisor",
       specialization: "Luxury Properties",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761591979/a-cinematic-portrait-photograph-of-a-man_7-TWoWUzTw2XtfR9N7flMg_TuXG-6x-QFu5RRhXBvCQWg_xetche.jpg",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761598127/a-professional-studio-portrait-photograp_dnE69CqgQwKMvDj_boYW5A_sWO9IE8FSuKtnjTWshya2g_lvnjuh.jpg",
       phone: "+52 612 169 8328",
       email: "Edgar@bajainternationalrealty.com",
       yearsExperience: 2,
