@@ -61,9 +61,9 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1200&fit=crop&crop=faces",
     },
     {
-      name: "David Martinez",
+      name: "Alfonso Puente",
       title: "Commercial Real Estate Expert",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527627/a-professional-studio-portrait-of-a-man-_S6bglg3cQJWT-QOkKh1KJA_v9luvyZPR_enll2ChvpwPg_yaa5rv.jpg",
     },
     {
       name: "Emily Thompson",
