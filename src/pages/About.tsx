@@ -12,24 +12,24 @@ const About = () => {
   // Updated team members with proper headshots matching Team.tsx
   const teamMembers = [
     {
-      name: "Michael Chen",
+      name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
     },
     {
-      name: "Sarah Johnson",
+      name: "Erika Johnson",
       title: "Luxury Property Specialist",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
     },
     {
-      name: "David Martinez",
+      name: "Alfonso Puente",
       title: "Commercial Real Estate Expert",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527627/a-professional-studio-portrait-of-a-man-_S6bglg3cQJWT-QOkKh1KJA_v9luvyZPR_enll2ChvpwPg_yaa5rv.jpg",
     },
     {
-      name: "Emily Thompson",
+      name: "Cozbi Sanchez",
       title: "Residential Specialist",
-      image: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761529186/a-cinematic-portrait-photograph-of-a-wom_SYAgJzHOSaipBDiMYgqKLQ_l77_oUgEScSHf-1PFYhhAw_ct10gu.jpg",
     },
   ];
 
