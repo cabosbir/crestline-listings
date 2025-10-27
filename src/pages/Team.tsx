@@ -130,7 +130,7 @@ const Team = () => {
     },
     {
       id: 9,
-      name: "Zuzu Name?", // TODO: Fill in
+      name: "Zuzu Vieira", // TODO: Fill in
       title: "Real Estate Advisor", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg", // TODO: Replace with Cloudinary
