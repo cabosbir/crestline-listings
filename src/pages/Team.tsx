@@ -72,17 +72,17 @@ const Team = () => {
     },
     {
       id: 5,
-      name: "Robert Kim",
+      name: "Hector Mendoza",
       title: "Investment Property Advisor",
       specialization: "Investment & Portfolio",
-      image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+52 612 169 8328",
-      email: "robert@bajainternationalrealty.com",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761582971/a-meticulously-crafted-portrait-photogra_mYQPdq9WQSWo-pvakiW_Yw_xsfP9GCST6CP-VnQtn3QSA_sybk55.jpg",
+      phone: "+52 624 211 4879",
+      email: "Hector@bajainternationalrealty.com",
       yearsExperience: 20,
-      propertiesSold: 510,
-      bio: "Robert is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and market knowledge deliver exceptional results.",
+      propertiesSold: 110,
+      bio: "Hector is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and market knowledge deliver exceptional results.",
       certifications: ["REALTOR®", "CCIM", "CRS"],
-      languages: ["English", "Korean", "Japanese", "Spanish"]
+      languages: ["English", "Spanish"]
     },
     {
       id: 6,
