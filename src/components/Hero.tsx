@@ -23,19 +23,23 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
-        <h1 className="text-5xl md:text-7xl font-bold text-primary-foreground mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        {/* Main Heading - Mobile Responsive */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-primary-foreground mb-4 md:mb-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 leading-tight">
           BAJA INTERNATIONAL REALTY
         </h1>
-        <p className="text-lg md:text-xl lg:text-2xl text-primary-foreground/90 mb-12 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200 whitespace-nowrap">
-          Discover Your Dream Property in Cabo San Lucas & Baja California Sur
+        
+        {/* Subheading - Mobile Responsive with line break */}
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary-foreground/90 mb-8 md:mb-12 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200 px-2">
+          Discover Your Dream Property in <br className="sm:hidden" />
+          Cabo San Lucas & Baja California Sur
         </p>
 
         {/* Search Bar */}
-        <div className="bg-background/95 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-hover max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="bg-background/95 backdrop-blur-md p-4 md:p-6 lg:p-8 rounded-2xl shadow-hover max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
             {/* Location */}
             <Select>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-11 md:h-12">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <SelectValue placeholder="Location" />
@@ -53,7 +57,7 @@ const Hero = () => {
 
             {/* Property Type */}
             <Select>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-11 md:h-12">
                 <div className="flex items-center gap-2">
                   <Home className="h-4 w-4 text-muted-foreground" />
                   <SelectValue placeholder="Property Type" />
@@ -69,7 +73,7 @@ const Hero = () => {
 
             {/* Bedrooms */}
             <Select>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-11 md:h-12">
                 <div className="flex items-center gap-2">
                   <Bed className="h-4 w-4 text-muted-foreground" />
                   <SelectValue placeholder="Bedrooms" />
@@ -86,7 +90,7 @@ const Hero = () => {
 
             {/* Price Range */}
             <Select>
-              <SelectTrigger className="h-12">
+              <SelectTrigger className="h-11 md:h-12">
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                   <SelectValue placeholder="Price Range" />
@@ -102,7 +106,7 @@ const Hero = () => {
             </Select>
 
             {/* Search Button */}
-            <Button variant="luxury" size="lg" className="h-12 md:col-span-2 lg:col-span-1">
+            <Button variant="luxury" size="lg" className="h-11 md:h-12 md:col-span-2 lg:col-span-1">
               <Search className="h-4 w-4 mr-2" />
               Search
             </Button>
@@ -111,7 +115,7 @@ const Hero = () => {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
         <div className="w-6 h-10 border-2 border-primary-foreground/50 rounded-full p-1">
           <div className="w-1.5 h-3 bg-primary-foreground/50 rounded-full mx-auto" />
         </div>
