@@ -89,7 +89,7 @@ const Team = () => {
       name: "Cristy Cavazos",
       title: "Luxury Condo Specialist",
       specialization: "High-Rise & Penthouses",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761586303/Edg_7_qtfa0d.png",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761586969/Edg_7_ynnal4.png",
       phone: "+52 624 178 0825",
       email: "Cristina.cavazos@grupoveq.com",
       yearsExperience: 10,
