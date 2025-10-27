@@ -51,9 +51,9 @@ const Index = () => {
   // Team members with professional headshots matching the /team page
   const teamMembers = [
     {
-      name: "Michael Chen",
+      name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop&crop=faces",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
     },
     {
       name: "Sarah Johnson",
