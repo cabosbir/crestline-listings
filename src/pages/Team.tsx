@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,11 +9,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Team = () => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
-  const agentsPerPage = 6;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const agents = [
-    // PAGE 1 - Agents 1-6
     {
       id: 1,
       name: "Bob Van Patten",
@@ -24,7 +24,7 @@ const Team = () => {
       email: "robertvanpatten2@gmail.com",
       yearsExperience: 15,
       propertiesSold: 120,
-      bio: "Bob specializes in luxury waterfront estates in Cabo San Lucas with over 15 years of experience in high-end real estate. His deep knowledge of Baja California Sur coastal properties and exceptional negotiation skills have earned him recognition as a top producer.",
+      bio: "Bob specializes in luxury waterfront estates in Cabo San Lucas with over 15 years of experience in high-end real estate.",
       certifications: ["REALTOR®", "CRS", "CLHMS"],
       languages: ["English"]
     },
@@ -38,7 +38,7 @@ const Team = () => {
       email: "Erika80@gmail.com",
       yearsExperience: 12,
       propertiesSold: 180,
-      bio: "Erika's passion for luxury coastal living in Cabo San Lucas and her commitment to client satisfaction have made her one of the most sought-after agents in the region. She specializes in oceanfront estates and investment properties throughout Baja California Sur.",
+      bio: "Erika's passion for luxury coastal living in Cabo San Lucas and her commitment to client satisfaction have made her one of the most sought-after agents.",
       certifications: ["REALTOR®", "GRI", "ABR"],
       languages: ["English", "Spanish"]
     },
@@ -52,7 +52,7 @@ const Team = () => {
       email: "alfonso@bircabo.com",
       yearsExperience: 18,
       propertiesSold: 205,
-      bio: "With nearly two decades of experience in Cabo San Lucas, Alfonso excels in commercial real estate and investment properties. His strategic approach and deep market insights help clients maximize their real estate investments in Baja California Sur.",
+      bio: "With nearly two decades of experience in Cabo San Lucas, Alfonso excels in commercial real estate and investment properties.",
       certifications: ["REALTOR®", "CCIM", "CPM"],
       languages: ["English", "Spanish"]
     },
@@ -66,7 +66,7 @@ const Team = () => {
       email: "Cozbi@bajainternationalrealty.com",
       yearsExperience: 8,
       propertiesSold: 105,
-      bio: "Cozbi brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums, she guides first-time buyers and growing families through the home buying process with care and expertise.",
+      bio: "Cozbi brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums.",
       certifications: ["REALTOR®", "ABR", "SRS"],
       languages: ["English", "Spanish"]
     },
@@ -80,7 +80,7 @@ const Team = () => {
       email: "Hector@bajainternationalrealty.com",
       yearsExperience: 20,
       propertiesSold: 110,
-      bio: "Hector is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and market knowledge deliver exceptional results.",
+      bio: "Hector is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios.",
       certifications: ["REALTOR®", "CCIM", "CRS"],
       languages: ["English", "Spanish"]
     },
@@ -94,12 +94,10 @@ const Team = () => {
       email: "Cristina.cavazos@grupoveq.com",
       yearsExperience: 10,
       propertiesSold: 240,
-      bio: "Cristy's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas, combined with her exceptional marketing skills, consistently delivers outstanding results for her clients in the competitive urban luxury market.",
+      bio: "Cristy's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas consistently delivers outstanding results.",
       certifications: ["REALTOR®", "CLHMS", "GRI"],
       languages: ["English", "Spanish"]
     },
-    
-    // PAGE 2 - Agents 7-12
     {
       id: 7,
       name: "Marisol Tort",
@@ -110,7 +108,7 @@ const Team = () => {
       email: "mtortricardi@gmail.com",
       yearsExperience: 10,
       propertiesSold: 150,
-      bio: "Marisol is an experienced real estate professional that brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
+      bio: "Marisol is an experienced real estate professional that brings dedication and expertise to every transaction in Cabo San Lucas.",
       certifications: ["REALTOR®"],
       languages: ["English", "Spanish"]
     },
@@ -124,7 +122,7 @@ const Team = () => {
       email: "David@bajainternationalrealty.com",
       yearsExperience: 10,
       propertiesSold: 105,
-      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.",
+      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
       certifications: ["REALTOR®"],
       languages: ["English", "Spanish"]
     },
@@ -184,8 +182,6 @@ const Team = () => {
       certifications: ["REALTOR®"],
       languages: ["English", "Spanish"]
     },
-    
-    // PAGE 3 - Agents 13-14
     {
       id: 13,
       name: "Agent 13 Name",
@@ -196,7 +192,7 @@ const Team = () => {
       email: "agent13@bajainternationalrealty.com",
       yearsExperience: 10,
       propertiesSold: 150,
-      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
+      bio: "Agent bio to be added...",
       certifications: ["REALTOR®"],
       languages: ["English", "Spanish"]
     },
@@ -210,17 +206,11 @@ const Team = () => {
       email: "agent14@bajainternationalrealty.com",
       yearsExperience: 10,
       propertiesSold: 150,
-      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
+      bio: "Agent bio to be added...",
       certifications: ["REALTOR®"],
       languages: ["English", "Spanish"]
     },
   ];
-
-  // Calculate pagination
-  const totalPages = Math.ceil(agents.length / agentsPerPage);
-  const indexOfLastAgent = currentPage * agentsPerPage;
-  const indexOfFirstAgent = indexOfLastAgent - agentsPerPage;
-  const currentAgents = agents.slice(indexOfFirstAgent, indexOfLastAgent);
 
   const handleViewBio = (agentId: number) => {
     console.log('handleViewBio called with agentId:', agentId);
@@ -236,17 +226,28 @@ const Team = () => {
     }
   };
 
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const checkScrollButtons = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 400; // Adjust scroll distance
+      const newScrollLeft = direction === 'left' 
+        ? scrollContainerRef.current.scrollLeft - scrollAmount
+        : scrollContainerRef.current.scrollLeft + scrollAmount;
+      
+      scrollContainerRef.current.scrollTo({
+        left: newScrollLeft,
+        behavior: 'smooth'
+      });
+      
+      // Update button states after scroll
+      setTimeout(checkScrollButtons, 300);
     }
   };
 
@@ -292,82 +293,72 @@ const Team = () => {
         </div>
       </section>
 
-      {/* Team Grid */}
+      {/* Team Carousel */}
       <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-foreground mb-4">Our Expert Advisors</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
                 Each member of our team brings unique expertise and a commitment to exceptional service in Cabo San Lucas
               </p>
-              <p className="text-sm text-muted-foreground mt-4">
-                Showing {indexOfFirstAgent + 1}-{Math.min(indexOfLastAgent, agents.length)} of {agents.length} agents
+              <p className="text-sm text-muted-foreground">
+                {agents.length} expert agents ready to assist you
               </p>
             </div>
 
-            {/* Agents Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {currentAgents.map((agent) => (
-                <AgentBioCard
-                  key={agent.id}
-                  name={agent.name}
-                  title={agent.title}
-                  image={agent.image}
-                  phone={agent.phone}
-                  email={agent.email}
-                  specialization={agent.specialization}
-                  propertiesSold={agent.propertiesSold}
-                  yearsExperience={agent.yearsExperience}
-                  onViewBio={() => handleViewBio(agent.id)}
-                />
-              ))}
+            {/* Horizontal Scroll Container */}
+            <div className="relative">
+              {/* Left Arrow */}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => scroll('left')}
+                disabled={!canScrollLeft}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-16 w-16 rounded-full shadow-xl bg-white hover:bg-gray-50 disabled:opacity-30"
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </Button>
+
+              {/* Scrollable Agent Cards */}
+              <div 
+                ref={scrollContainerRef}
+                onScroll={checkScrollButtons}
+                className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-16"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {agents.map((agent) => (
+                  <div key={agent.id} className="flex-shrink-0 w-[380px]">
+                    <AgentBioCard
+                      name={agent.name}
+                      title={agent.title}
+                      image={agent.image}
+                      phone={agent.phone}
+                      email={agent.email}
+                      specialization={agent.specialization}
+                      propertiesSold={agent.propertiesSold}
+                      yearsExperience={agent.yearsExperience}
+                      onViewBio={() => handleViewBio(agent.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Right Arrow */}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => scroll('right')}
+                disabled={!canScrollRight}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-16 w-16 rounded-full shadow-xl bg-white hover:bg-gray-50 disabled:opacity-30"
+              >
+                <ChevronRight className="h-8 w-8" />
+              </Button>
             </div>
 
-            {/* Horizontal Navigation Controls */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-6 mt-12">
-                {/* Previous Button */}
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={handlePrevious}
-                  disabled={currentPage === 1}
-                  className="flex items-center gap-2 min-w-[140px]"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                  Previous
-                </Button>
-
-                {/* Page Indicator */}
-                <div className="flex items-center gap-2 px-6 py-3 bg-secondary rounded-lg border">
-                  <span className="text-sm text-muted-foreground">Page</span>
-                  <span className="text-2xl font-bold text-accent">{currentPage}</span>
-                  <span className="text-sm text-muted-foreground">of {totalPages}</span>
-                </div>
-
-                {/* Next Button */}
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={handleNext}
-                  disabled={currentPage === totalPages}
-                  className="flex items-center gap-2 min-w-[140px]"
-                >
-                  Next
-                  <ChevronRight className="h-5 w-5" />
-                </Button>
-              </div>
-            )}
-
-            {/* Optional: Progress Bar */}
-            <div className="mt-8 max-w-md mx-auto">
-              <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-accent to-accent-dark transition-all duration-300 ease-out"
-                  style={{ width: `${(currentPage / totalPages) * 100}%` }}
-                />
-              </div>
+            {/* Scroll Hint */}
+            <div className="text-center mt-8 text-sm text-muted-foreground">
+              <p>← Scroll to explore all our team members →</p>
             </div>
           </div>
         </div>
