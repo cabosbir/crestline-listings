@@ -48,7 +48,7 @@ const Index = () => {
     },
   ];
 
-  // Team members with professional headshots matching the /team page
+  // Team members - Updated with real photos
   const teamMembers = [
     {
       name: "Bob Van Patten",
