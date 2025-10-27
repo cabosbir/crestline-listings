@@ -66,17 +66,17 @@ const AgentDetail = () => {
     },
     {
       id: 3,
-      name: "David Martinez",
-      title: "Commercial Real Estate Expert",
+      name: "Alfonso Puente",
+      title: "Sale Real Estate Manager",
       specialization: "Commercial & Investment",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+1 (234) 567-8902",
-      email: "david@luxurycoastal.com",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527004/Edg_6_igakpk.png",
+      phone: "+52 624 188 8681",
+      email: "alfonso@bircabo.com",
       yearsExperience: 18,
-      propertiesSold: 450,
-      bio: "With nearly two decades of experience, David excels in commercial real estate and investment properties. His strategic approach and market insights help clients maximize their real estate investments and build successful portfolios.",
+      propertiesSold: 205,
+      bio: "With nearly two decades of experience, Alfonso excels in commercial real estate and investment properties. His strategic approach and market insights help clients maximize their real estate investments and build successful portfolios.",
       certifications: ["REALTOR®", "CCIM", "CPM"],
-      languages: ["English", "Spanish", "Portuguese"]
+      languages: ["English", "Spanish"]
     },
     {
       id: 4,

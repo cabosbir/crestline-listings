@@ -41,17 +41,17 @@ const Team = () => {
     },
     {
       id: 3,
-      name: "David Martinez",
+      name: "Alfonso Puente",
       title: "Commercial Real Estate Expert",
       specialization: "Commercial & Investment",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+52 612 169 8328",
-      email: "david@bajainternationalrealty.com",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761527004/Edg_6_igakpk.png",
+      phone: "+52 624 188 8681",
+      email: "alfonso@bircabo.com",
       yearsExperience: 18,
-      propertiesSold: 450,
-      bio: "With nearly two decades of experience in Cabo San Lucas, David excels in commercial real estate and investment properties. His strategic approach and deep market insights help clients maximize their real estate investments in Baja California Sur.",
+      propertiesSold: 205,
+      bio: "With nearly two decades of experience in Cabo San Lucas, Alfonso excels in commercial real estate and investment properties. His strategic approach and deep market insights help clients maximize their real estate investments in Baja California Sur.",
       certifications: ["REALTOR®", "CCIM", "CPM"],
-      languages: ["English", "Spanish", "Portuguese"]
+      languages: ["English", "Spanish"]
     },
     {
       id: 4,
