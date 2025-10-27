@@ -6,8 +6,6 @@ import TeamMemberCard from "@/components/TeamMemberCard";
 import { Button } from "@/components/ui/button";
 import { Award, Users, TrendingUp, Heart, ArrowRight } from "lucide-react";
 
-import property1 from "@/assets/property-1.jpg";
-
 const About = () => {
   // Updated team members with proper headshots matching Team.tsx
   const teamMembers = [
@@ -81,7 +79,7 @@ const About = () => {
               <h2 className="text-4xl font-bold text-foreground mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Founded in 2014, Baja International Realty was born from a passion for connecting people with their dream properties in Cabo San Lucas and throughout Baja California Sur. What started as a boutique agency has grown into one of the region's most respected luxury real estate firms.
+                  Founded in 1987, Baja International Realty was born from a passion for connecting people with their dream properties in Cabo San Lucas and throughout Baja California Sur. What started as a boutique agency has grown into one of the region's most respected luxury real estate firms.
                 </p>
                 <p>
                   Our founders, who relocated from the United States and Canada, brought with them decades of real estate expertise and a vision to create a client-focused agency that combines intimate local knowledge with international standards of service.
@@ -93,8 +91,8 @@ const About = () => {
             </div>
             <div className="relative h-96 lg:h-full min-h-[400px]">
               <img 
-                src={property1} 
-                alt="Cabo San Lucas luxury property" 
+                src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761585102/work-photo-2025-10-27-1761585093635_tsub0p.png" 
+                alt="Baja International Realty storefront" 
                 className="w-full h-full object-cover rounded-2xl shadow-elegant"
               />
             </div>
