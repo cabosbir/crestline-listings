@@ -99,90 +99,120 @@ const Team = () => {
       languages: ["English", "Spanish"]
     },
     
-    // PAGE 2 - Agents 7-12 (TODO: Fill in these 6 agents)
+    // PAGE 2 - Agents 7-12
     {
       id: 7,
-      name: "Marisol Tort", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761589425/489957143_122217993950221664_2036920343588971268_n_okhyf0.jpg", // TODO: Replace with Cloudinary
-      phone: "+52 624 264 3896", // TODO: Fill in
-      email: "mtortricardi@gmail.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
-      bio: "Marisol is an experienced real estate professional that brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
+      name: "Marisol Tort",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761589425/489957143_122217993950221664_2036920343588971268_n_okhyf0.jpg",
+      phone: "+52 624 264 3896",
+      email: "mtortricardi@gmail.com",
+      yearsExperience: 10,
+      propertiesSold: 150,
+      bio: "Marisol is an experienced real estate professional that brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
     },
     {
       id: 8,
-      name: "David Scott Piper", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg", // TODO: Replace with Cloudinary
-      phone: "+52 624 317 0297", // TODO: Fill in
-      email: "David@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 105, // TODO: Fill in
-      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
+      name: "David Scott Piper",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg",
+      phone: "+52 624 317 0297",
+      email: "David@bajainternationalrealty.com",
+      yearsExperience: 10,
+      propertiesSold: 105,
+      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
     },
     {
       id: 9,
-      name: "Zuzu Vieira", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg", // TODO: Replace with Cloudinary
-      phone: "+1 808 226 6120", // TODO: Fill in
-      email: "Zuzu@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
-      bio: "Agent bio to be added...", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
+      name: "Zuzu Vieira",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg",
+      phone: "+1 808 226 6120",
+      email: "Zuzu@bajainternationalrealty.com",
+      yearsExperience: 10,
+      propertiesSold: 150,
+      bio: "Agent bio to be added...",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
     },
     {
       id: 10,
-      name: "Edgar Pacheco", // TODO: Fill in
-      title: "Real Estate & IT Advisor", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761591979/a-cinematic-portrait-photograph-of-a-man_7-TWoWUzTw2XtfR9N7flMg_TuXG-6x-QFu5RRhXBvCQWg_xetche.jpg", // TODO: Replace with Cloudinary
-      phone: "+52 612 169 8328", // TODO: Fill in
-      email: "Edgar@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 2, // TODO: Fill in
-      propertiesSold: 15, // TODO: Fill in
-      bio: "Agent bio to be added...", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
+      name: "Edgar Pacheco",
+      title: "Real Estate & IT Advisor",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761591979/a-cinematic-portrait-photograph-of-a-man_7-TWoWUzTw2XtfR9N7flMg_TuXG-6x-QFu5RRhXBvCQWg_xetche.jpg",
+      phone: "+52 612 169 8328",
+      email: "Edgar@bajainternationalrealty.com",
+      yearsExperience: 2,
+      propertiesSold: 15,
+      bio: "Agent bio to be added...",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
     },
     {
       id: 11,
-      name: "Agent 11 Name", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&crop=faces", // TODO: Replace with Cloudinary
-      phone: "+52 612 169 8328", // TODO: Fill in
-      email: "agent11@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
-      bio: "Agent bio to be added...", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
+      name: "Agent 11 Name",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&crop=faces",
+      phone: "+52 612 169 8328",
+      email: "agent11@bajainternationalrealty.com",
+      yearsExperience: 10,
+      propertiesSold: 150,
+      bio: "Agent bio to be added...",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
     },
     {
       id: 12,
-      name: "Don Weis", // TODO: Fill in
-      title: "Real Estate Broker", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761595234/a-striking-professional-portrait-photogr_l5VA-wc2QNShw3oqxpo-sw_EVxaU0fVTGmOEm-axYtq1Q_lmi7ch.jpg", // TODO: Replace with Cloudinary
-      phone: "+52 624 129 6245", // TODO: Fill in
-      email: "DonWeis@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 30, // TODO: Fill in
-      propertiesSold: 300, // TODO: Fill in
-      bio: "Agent bio to be added...", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
+      name: "Don Weis",
+      title: "Real Estate Broker",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761595234/a-striking-professional-portrait-photogr_l5VA-wc2QNShw3oqxpo-sw_EVxaU0fVTGmOEm-axYtq1Q_lmi7ch.jpg",
+      phone: "+52 624 129 6245",
+      email: "DonWeis@bajainternationalrealty.com",
+      yearsExperience: 30,
+      propertiesSold: 300,
+      bio: "Agent bio to be added...",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
+    },
+    
+    // PAGE 3 - Agents 13-14
+    {
+      id: 13,
+      name: "Agent 13 Name",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop&crop=faces",
+      phone: "+52 624 XXX XXXX",
+      email: "agent13@bajainternationalrealty.com",
+      yearsExperience: 10,
+      propertiesSold: 150,
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
+    },
+    {
+      id: 14,
+      name: "Agent 14 Name",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1200&fit=crop&crop=faces",
+      phone: "+52 624 XXX XXXX",
+      email: "agent14@bajainternationalrealty.com",
+      yearsExperience: 10,
+      propertiesSold: 150,
+      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
     },
   ];
 
@@ -206,9 +236,18 @@ const Team = () => {
     }
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -285,49 +324,51 @@ const Team = () => {
               ))}
             </div>
 
-            {/* Pagination Controls */}
+            {/* Horizontal Navigation Controls */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-12">
+              <div className="flex justify-center items-center gap-6 mt-12">
                 {/* Previous Button */}
                 <Button
                   variant="outline"
                   size="lg"
-                  onClick={() => handlePageChange(currentPage - 1)}
+                  onClick={handlePrevious}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 min-w-[140px]"
                 >
                   <ChevronLeft className="h-5 w-5" />
                   Previous
                 </Button>
 
-                {/* Page Numbers */}
-                <div className="flex gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "luxury" : "outline"}
-                      size="lg"
-                      onClick={() => handlePageChange(page)}
-                      className="min-w-[50px]"
-                    >
-                      {page}
-                    </Button>
-                  ))}
+                {/* Page Indicator */}
+                <div className="flex items-center gap-2 px-6 py-3 bg-secondary rounded-lg border">
+                  <span className="text-sm text-muted-foreground">Page</span>
+                  <span className="text-2xl font-bold text-accent">{currentPage}</span>
+                  <span className="text-sm text-muted-foreground">of {totalPages}</span>
                 </div>
 
                 {/* Next Button */}
                 <Button
                   variant="outline"
                   size="lg"
-                  onClick={() => handlePageChange(currentPage + 1)}
+                  onClick={handleNext}
                   disabled={currentPage === totalPages}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 min-w-[140px]"
                 >
                   Next
                   <ChevronRight className="h-5 w-5" />
                 </Button>
               </div>
             )}
+
+            {/* Optional: Progress Bar */}
+            <div className="mt-8 max-w-md mx-auto">
+              <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-accent to-accent-dark transition-all duration-300 ease-out"
+                  style={{ width: `${(currentPage / totalPages) * 100}%` }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
