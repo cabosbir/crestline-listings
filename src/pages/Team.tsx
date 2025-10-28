@@ -80,7 +80,7 @@ const Team = () => {
       email: "Hector@bajainternationalrealty.com",
       yearsExperience: 2,
       propertiesSold: 12,
-      bio: "Hector is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios.",
+      bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding. With my background in numbers and market knowledge, I help clients see that buying a home is often better than keeping money in the bank, it’s an investment that grows in value and brings lasting satisfaction. From our first conversation to handing you the keys, I’ll be by your side with clear communication, data driven insight, and honest guidance to help you invest with confidence.",
       certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
