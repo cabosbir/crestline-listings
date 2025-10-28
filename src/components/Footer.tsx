@@ -1,36 +1,14 @@
-import { Link } from "react-router-dom";
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import { Facebook, Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const Footer = () => {
-  const footerLinks = {
-    properties: [
-      { name: "Featured Properties", href: "/properties" },
-      { name: "Beachfront Villas", href: "/properties?type=villa" },
-      { name: "Golf Communities", href: "/properties?type=golf" },
-      { name: "Luxury Condos", href: "/properties?type=condo" },
-    ],
-    company: [
-      { name: "About Us", href: "/about" },
-      { name: "Our Team", href: "/team" },
-      { name: "Careers", href: "/careers" },
-      { name: "Contact", href: "/contact" },
-    ],
-    resources: [
-      { name: "Blog", href: "/blog" },
-      { name: "Market Reports", href: "/reports" },
-      { name: "Buyer's Guide", href: "/buyers-guide" },
-      { name: "Seller's Guide", href: "/sellers-guide" },
-    ],
-  };
-
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
           {/* Brand */}
-          <div className="lg:col-span-2">
+          <div>
             <h2 className="text-3xl font-bold mb-4">
               BAJA INTERNATIONAL <span className="text-accent">REALTY</span>
             </h2>
@@ -42,9 +20,14 @@ const Footer = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-primary-foreground/80">
+                <a 
+                  href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-foreground/80 hover:text-accent transition-fast"
+                >
                   Blvd. Marina, Cabo San Lucas, BCS, Mexico
-                </span>
+                </a>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-accent flex-shrink-0" />
@@ -60,7 +43,7 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Social Media */}
+            {/* Social Media - Facebook only */}
             <div className="flex gap-4">
               <a 
                 href="https://www.facebook.com/BajaInternationalRealty" 
@@ -71,78 +54,11 @@ const Footer = () => {
               >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a 
-                href="#" 
-                className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth opacity-50 cursor-not-allowed"
-                aria-label="Instagram (coming soon)"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a 
-                href="#" 
-                className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth opacity-50 cursor-not-allowed"
-                aria-label="LinkedIn (coming soon)"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
             </div>
           </div>
 
-          {/* Properties */}
+          {/* Newsletter */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Properties</h3>
-            <ul className="space-y-2">
-              {footerLinks.properties.map((link) => (
-                <li key={link.name}>
-                  <Link 
-                    to={link.href}
-                    className="text-primary-foreground/80 hover:text-accent transition-fast text-sm"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Company</h3>
-            <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <Link 
-                    to={link.href}
-                    className="text-primary-foreground/80 hover:text-accent transition-fast text-sm"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Resources</h3>
-            <ul className="space-y-2">
-              {footerLinks.resources.map((link) => (
-                <li key={link.name}>
-                  <Link 
-                    to={link.href}
-                    className="text-primary-foreground/80 hover:text-accent transition-fast text-sm"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Newsletter */}
-        <div className="border-t border-primary-foreground/20 pt-8 mb-8">
-          <div className="max-w-md">
             <h3 className="font-semibold text-lg mb-2">Stay Updated</h3>
             <p className="text-primary-foreground/80 text-sm mb-4">
               Subscribe to our newsletter for exclusive listings and market insights.
@@ -161,16 +77,8 @@ const Footer = () => {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
+        <div className="border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/60">
           <p>© 2025 BAJA INTERNATIONAL REALTY. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link to="/privacy" className="hover:text-accent transition-fast">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="hover:text-accent transition-fast">
-              Terms of Service
-            </Link>
-          </div>
         </div>
       </div>
     </footer>
