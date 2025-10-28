@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { 
-  Bed, Bath, Maximize, MapPin, ArrowLeft, 
+  Bed, Bath, Maximize, MapPin, ArrowLeft, X,
   Home, Calendar, CheckCircle2 
 } from "lucide-react";
 
@@ -207,16 +207,27 @@ const PropertyDetail = () => {
       <Navbar />
       <FloatingContact />
 
-      {/* Back Button */}
+      {/* Back Button & Close Button */}
       <div className="container mx-auto px-4 pt-32 pb-4">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/properties')}
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Browse
-        </Button>
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate('/properties')}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Browse
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate('/')}
+            className="mb-4 hover:bg-accent/10"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Hero Image */}
