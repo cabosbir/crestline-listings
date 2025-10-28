@@ -1,30 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
-import TeamMemberCard from "@/components/TeamMemberCard";
 import { Button } from "@/components/ui/button";
 import { Award, Users, TrendingUp, Heart, ArrowRight } from "lucide-react";
 
 const About = () => {
-  // Updated team members with proper headshots matching Team.tsx
+  const navigate = useNavigate();
+
+  // Updated team members with IDs matching Team.tsx
   const teamMembers = [
     {
+      id: 1,
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
     },
     {
-      name: "Erika Johnson",
+      id: 2,
+      name: "Erika Aispuro",
       title: "Luxury Property Specialist",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
     },
     {
+      id: 3,
       name: "Alfonso Puente",
-      title: "Commercial Real Estate Expert",
+      title: "Sales Manager & Commercial Real Estate Expert",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
     },
     {
+      id: 4,
       name: "Cozbi Sanchez",
       title: "Residential Specialist",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761612891/WhatsApp_Image_2025-10-27_at_5.53.29_PM_dz7y0g.jpg",
@@ -151,8 +156,31 @@ const About = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {teamMembers.map((member, index) => (
-              <TeamMemberCard key={index} {...member} />
+            {teamMembers.map((member) => (
+              <div
+                key={member.id}
+                onClick={() => navigate(`/team/${member.id}`)}
+                className="group cursor-pointer"
+              >
+                <div className="bg-card rounded-xl overflow-hidden border border-border hover:shadow-hover transition-smooth">
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-6 text-center">
+                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-accent transition-colors">
+                      {member.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">{member.title}</p>
+                    <div className="mt-4 text-accent text-sm font-semibold group-hover:underline">
+                      View Profile →
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
