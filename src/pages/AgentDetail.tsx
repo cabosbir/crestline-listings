@@ -62,7 +62,7 @@ const AgentDetail = () => {
       yearsExperience: 8,
       propertiesSold: 60,
       bio: "Erika's passion for luxury coastal living in Cabo San Lucas and her commitment to client satisfaction have made her one of the most sought-after agents in the region. She specializes in oceanfront estates and investment properties throughout Baja California Sur, providing comprehensive market analysis and personalized service to every client.",
-      certifications: ["REALTOR®", "GRI", "ABR"],
+      certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -76,7 +76,7 @@ const AgentDetail = () => {
      yearsExperience: 18,
      propertiesSold: 205,
      bio: "Alfonso is a sales manager with a strong track record of leading large commercial teams and achieving high closing rates. He specializes in real estate developments in progress and market analysis to help clients achieve expected success. His leadership is based on clear communication, collaborative work, and a results-oriented vision that consistently delivers exceptional outcomes for investors in Baja California Sur.",
-     certifications: ["REALTOR®", "CCIM", "CPM"],
+     certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
      languages: ["English", "Spanish"]
     },
     {
@@ -90,7 +90,7 @@ const AgentDetail = () => {
       yearsExperience: 8,
       propertiesSold: 105,
       bio: "Cozbi brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums, she guides first-time buyers and growing families through the home buying process with care and expertise. Her warm approach and attention to detail ensure a smooth experience for all her clients.",
-      certifications: ["REALTOR®", "ABR", "SRS"],
+      certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -104,7 +104,7 @@ const AgentDetail = () => {
       yearsExperience: 2,
       propertiesSold: 12,
       bio: "Hector is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.",
-      certifications: ["REALTOR®", "CCIM", "CRS"],
+      certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -118,7 +118,7 @@ const AgentDetail = () => {
       yearsExperience: 5,
       propertiesSold: 40,
       bio: "Cristy's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas, combined with her exceptional marketing skills, consistently delivers outstanding results for her clients in the competitive urban luxury market. Her network and negotiation prowess ensure the best deals for buyers and sellers alike.",
-      certifications: ["REALTOR®", "CLHMS", "GRI"],
+      certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     
@@ -134,7 +134,7 @@ const AgentDetail = () => {
       yearsExperience: 6, // TODO: Fill in
       propertiesSold: 50, // TODO: Fill in
       bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico’s most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
+      certifications: ["REALTOR®", "MLS Member"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
     },
     {
@@ -148,7 +148,7 @@ const AgentDetail = () => {
      yearsExperience: 25,
      propertiesSold: +50,
      bio: "David has over 25 years of experience in the real estate industry, working in many aspects of the business throughout his distinguished career. Licensed in both California and Mexico, his analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As a Certified International Property Specialist (C.I.P.S.®), Accredited Buyer's Representative (A.B.R.®), and Resort and Second-Home Property Specialist (R.S.P.S.®), David brings unparalleled expertise to every transaction. As David states: 'As an Ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.'",
-     certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®", "M.L.S. Member"],
+     certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®", "MLS Member"],
      languages: ["English"]
    },
     {
@@ -162,7 +162,7 @@ const AgentDetail = () => {
       yearsExperience: 11, // TODO: Fill in
       propertiesSold: 101, // TODO: Fill in
       bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
+      certifications: ["REALTOR®", "MLS Member"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
     },
     {
@@ -176,7 +176,7 @@ const AgentDetail = () => {
       yearsExperience: 1, // TODO: Fill in
       propertiesSold: 4, // TODO: Fill in
       bio: "Looking to invest in Cabo San Lucas? Edgar is your insider advantage. With a unique blend of analytical precision and real estate expertise developed under industry veteran Bob Van Patten, he transforms complex market data into clear investment opportunities. Edgar has pioneered innovative digital platforms that give his clients unprecedented transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. His approach is simple: arm you with the knowledge, insights, and local connections you need to invest confidently in paradise.", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
+      certifications: ["REALTOR®", "MLS Member"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
     },
     {
@@ -204,7 +204,7 @@ const AgentDetail = () => {
       yearsExperience: 30, // TODO: Fill in
       propertiesSold: 300, // TODO: Fill in
       bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
+      certifications: ["REALTOR®", "MLS Member"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
     },
   ];

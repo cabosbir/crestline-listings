@@ -39,7 +39,7 @@ const Team = () => {
       yearsExperience: 8,
       propertiesSold: 60,
       bio: "Erika's passion for luxury coastal living in Cabo San Lucas and her commitment to client satisfaction have made her one of the most sought-after agents.",
-      certifications: ["REALTOR®", "GRI", "ABR"],
+      certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -53,7 +53,7 @@ const Team = () => {
       yearsExperience: 18,
       propertiesSold: 205,
       bio: "Alfonso is a sales manager with a strong track record of leading large commercial teams and achieving high closing rates. He specializes in real estate developments in progress and market analysis to help clients achieve expected success through strategic execution and results-oriented leadership.",
-      certifications: ["REALTOR®", "CCIM", "CPM"],
+      certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -67,7 +67,7 @@ const Team = () => {
       yearsExperience: 8,
       propertiesSold: 105,
       bio: "Cozbi brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums.",
-      certifications: ["REALTOR®", "ABR", "SRS"],
+      certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -81,7 +81,7 @@ const Team = () => {
       yearsExperience: 2,
       propertiesSold: 12,
       bio: "Hector is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios.",
-      certifications: ["REALTOR®", "CCIM", "CRS"],
+      certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -95,7 +95,7 @@ const Team = () => {
       yearsExperience: 5,
       propertiesSold: 40,
       bio: "Cristy's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas consistently delivers outstanding results.",
-      certifications: ["REALTOR®", "CLHMS", "GRI"],
+      certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -109,7 +109,7 @@ const Team = () => {
       yearsExperience: 6,
       propertiesSold: 50,
       bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico’s most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.",
-      certifications: ["REALTOR®"],
+      certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -123,7 +123,7 @@ const Team = () => {
       yearsExperience: 10,
       propertiesSold: +50,
       bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
-      certifications: ["REALTOR®"],
+      certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -137,7 +137,7 @@ const Team = () => {
       yearsExperience: 11,
       propertiesSold: 101,
       bio: "Agent bio to be added...",
-      certifications: ["REALTOR®"],
+      certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -151,7 +151,7 @@ const Team = () => {
       yearsExperience: 1,
       propertiesSold: 4,
       bio: "Looking to invest in Cabo San Lucas? Edgar is your insider advantage. With a unique blend of analytical precision and real estate expertise developed under industry veteran Bob Van Patten, he transforms complex market data into clear investment opportunities. Edgar has pioneered innovative digital platforms that give his clients unprecedented transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. His approach is simple: arm you with the knowledge, insights, and local connections you need to invest confidently in paradise.",
-      certifications: ["REALTOR®"],
+      certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -179,7 +179,7 @@ const Team = () => {
       yearsExperience: 30,
       propertiesSold: 300,
       bio: "Agent bio to be added...",
-      certifications: ["REALTOR®"],
+      certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
