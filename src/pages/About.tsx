@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import ValueModal from "@/components/ValueModal";
 import { Button } from "@/components/ui/button";
 import { Award, Users, TrendingUp, Heart, ArrowRight } from "lucide-react";
 
 const About = () => {
   const navigate = useNavigate();
+  const [selectedValue, setSelectedValue] = useState<"client-first" | "excellence" | "expertise" | "integrity" | null>(null);
 
   // Updated team members with IDs matching Team.tsx
   const teamMembers = [
@@ -41,21 +44,25 @@ const About = () => {
       icon: Users,
       title: "Client-First Approach",
       description: "Your success is our priority. We provide personalized service tailored to your unique needs and goals.",
+      valueKey: "client-first" as const,
     },
     {
       icon: Award,
       title: "Proven Excellence",
       description: "Award-winning team with decades of combined experience in Cabo San Lucas luxury real estate.",
+      valueKey: "excellence" as const,
     },
     {
       icon: TrendingUp,
       title: "Market Expertise",
       description: "Deep local knowledge of Baja California Sur and cutting-edge market insights to give you a competitive advantage.",
+      valueKey: "expertise" as const,
     },
     {
       icon: Heart,
       title: "Integrity & Trust",
       description: "Built on honesty, transparency, and genuine care for every client we serve.",
+      valueKey: "integrity" as const,
     },
   ];
 
@@ -63,6 +70,13 @@ const About = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <FloatingContact />
+      
+      {/* Value Modal */}
+      <ValueModal 
+        isOpen={selectedValue !== null}
+        onClose={() => setSelectedValue(null)}
+        valueType={selectedValue}
+      />
 
       {/* Hero */}
       <section className="pt-32 pb-16 bg-secondary">
@@ -120,7 +134,7 @@ const About = () => {
               Our Core Values
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              The principles that guide everything we do
+              Click on any value to learn more about our commitment to excellence
             </p>
           </div>
 
@@ -130,18 +144,22 @@ const About = () => {
               return (
                 <div 
                   key={index}
-                  className="bg-background p-8 rounded-xl border border-border hover:shadow-hover transition-smooth"
+                  onClick={() => setSelectedValue(value.valueKey)}
+                  className="bg-background p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
                 >
                   <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-accent/10">
+                    <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
                       <Icon className="h-8 w-8 text-accent" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3 text-center">
+                  <h3 className="text-xl font-bold text-foreground mb-3 text-center group-hover:text-accent transition-colors">
                     {value.title}
                   </h3>
-                  <p className="text-muted-foreground text-center text-sm leading-relaxed">
+                  <p className="text-muted-foreground text-center text-sm leading-relaxed mb-4">
                     {value.description}
+                  </p>
+                  <p className="text-accent text-sm font-semibold text-center group-hover:underline">
+                    Learn More →
                   </p>
                 </div>
               );
