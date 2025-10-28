@@ -59,8 +59,8 @@ const AgentDetail = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
       phone: "+52 624 109 7909",
       email: "Erika80@gmail.com",
-      yearsExperience: 12,
-      propertiesSold: 180,
+      yearsExperience: 8,
+      propertiesSold: 60,
       bio: "Erika's passion for luxury coastal living in Cabo San Lucas and her commitment to client satisfaction have made her one of the most sought-after agents in the region. She specializes in oceanfront estates and investment properties throughout Baja California Sur, providing comprehensive market analysis and personalized service to every client.",
       certifications: ["REALTOR®", "GRI", "ABR"],
       languages: ["English", "Spanish"]
@@ -101,8 +101,8 @@ const AgentDetail = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761582971/a-meticulously-crafted-portrait-photogra_mYQPdq9WQSWo-pvakiW_Yw_xsfP9GCST6CP-VnQtn3QSA_sybk55.jpg",
       phone: "+52 624 211 4879",
       email: "Hector@bajainternationalrealty.com",
-      yearsExperience: 20,
-      propertiesSold: 110,
+      yearsExperience: 2,
+      propertiesSold: 12,
       bio: "Hector is a seasoned investor and advisor with two decades of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.",
       certifications: ["REALTOR®", "CCIM", "CRS"],
       languages: ["English", "Spanish"]
@@ -115,8 +115,8 @@ const AgentDetail = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761588682/a-soft-natural-light-portrait-photograph_2oZCo8O8TSWRNzgLxLaLew_-RP-wvPgSnKeu7bWvJ_y8A_bknfmc.jpg",
       phone: "+52 624 178 0825",
       email: "Cristina.cavazos@grupoveq.com",
-      yearsExperience: 10,
-      propertiesSold: 240,
+      yearsExperience: 5,
+      propertiesSold: 40,
       bio: "Cristy's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas, combined with her exceptional marketing skills, consistently delivers outstanding results for her clients in the competitive urban luxury market. Her network and negotiation prowess ensure the best deals for buyers and sellers alike.",
       certifications: ["REALTOR®", "CLHMS", "GRI"],
       languages: ["English", "Spanish"]
@@ -131,8 +131,8 @@ const AgentDetail = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761668403/WhatsApp_Image_2025-10-27_at_9.24.29_PM_uajiar.jpg", // TODO: Replace with Cloudinary
       phone: "+52 624 264 3896", // TODO: Fill in
       email: "mtortricardi@gmail.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
+      yearsExperience: 6, // TODO: Fill in
+      propertiesSold: 50, // TODO: Fill in
       bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico’s most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
@@ -144,9 +144,9 @@ const AgentDetail = () => {
      specialization: "Resort & Second-Home Properties",
      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
      phone: "+52 624 317 0297",
-     email: "David@bajainternationalrealty.com",
+     email: "David@BIRCabo.com",
      yearsExperience: 25,
-     propertiesSold: 105,
+     propertiesSold: +50,
      bio: "David has over 25 years of experience in the real estate industry, working in many aspects of the business throughout his distinguished career. Licensed in both California and Mexico, his analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As a Certified International Property Specialist (C.I.P.S.®), Accredited Buyer's Representative (A.B.R.®), and Resort and Second-Home Property Specialist (R.S.P.S.®), David brings unparalleled expertise to every transaction. As David states: 'As an Ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.'",
      certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®"],
      languages: ["English"]
@@ -159,8 +159,8 @@ const AgentDetail = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg", // TODO: Replace with Cloudinary
       phone: "+1 808 226 6120", // TODO: Fill in
       email: "Zuzubajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 150, // TODO: Fill in
+      yearsExperience: 11, // TODO: Fill in
+      propertiesSold: 101, // TODO: Fill in
       bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
@@ -173,8 +173,8 @@ const AgentDetail = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761598127/a-professional-studio-portrait-photograp_dnE69CqgQwKMvDj_boYW5A_sWO9IE8FSuKtnjTWshya2g_lvnjuh.jpg", // TODO: Replace with Cloudinary
       phone: "+52 612 169 8328", // TODO: Fill in
       email: "Edgar@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 2, // TODO: Fill in
-      propertiesSold: 15, // TODO: Fill in
+      yearsExperience: 1, // TODO: Fill in
+      propertiesSold: 4, // TODO: Fill in
       bio: "Looking to invest in Cabo San Lucas? Edgar is your insider advantage. With a unique blend of analytical precision and real estate expertise developed under industry veteran Bob Van Patten, he transforms complex market data into clear investment opportunities. Edgar has pioneered innovative digital platforms that give his clients unprecedented transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. His approach is simple: arm you with the knowledge, insights, and local connections you need to invest confidently in paradise.", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
