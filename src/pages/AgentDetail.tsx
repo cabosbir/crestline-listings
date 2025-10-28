@@ -142,7 +142,7 @@ const AgentDetail = () => {
       name: "David Scott Piper", // TODO: Fill in
       title: "Real Estate Advisor", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg", // TODO: Replace with Cloudinary
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg", // TODO: Replace with Cloudinary
       phone: "+52 624 317 0297", // TODO: Fill in
       email: "David@bajainternationalrealty.com", // TODO: Fill in
       yearsExperience: 10, // TODO: Fill in
