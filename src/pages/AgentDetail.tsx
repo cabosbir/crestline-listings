@@ -89,7 +89,7 @@ const AgentDetail = () => {
       email: "Cozbi@bajainternationalrealty.com",
       yearsExperience: 8,
       propertiesSold: 105,
-      bio: "I bring a strong track record of leading high performing, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family homes and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
+      bio: "I bring a strong track record of leading high performance, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family homes and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
       certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
