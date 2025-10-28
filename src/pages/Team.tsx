@@ -92,9 +92,9 @@ const Team = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761588682/a-soft-natural-light-portrait-photograph_2oZCo8O8TSWRNzgLxLaLew_-RP-wvPgSnKeu7bWvJ_y8A_bknfmc.jpg",
       phone: "+52 624 178 0825",
       email: "Cristina.cavazos@grupoveq.com",
-      yearsExperience: 5,
-      propertiesSold: 40,
-      bio: "Cristy's expertise in luxury high-rise condominiums and penthouses in Cabo San Lucas consistently delivers outstanding results.",
+      yearsExperience: 11,
+      propertiesSold: 108,
+      bio: "I’m Cristy a Cabo San Lucas real estate expert specializing in luxury and coastal properties. I excel in selling land, high-rise condominiums, and oceanfront penthouses, combining deep market knowledge with exceptional marketing and negotiation skills. I’m passionate about connecting clients with the finest homes and investment opportunities in Cabo, delivering a seamless, personalized experience that reflects their lifestyle and goals.",
       certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
       languages: ["English", "Spanish"]
     },
