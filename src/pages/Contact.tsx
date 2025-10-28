@@ -45,12 +45,17 @@ const Contact = () => {
 
   // List of agents - matches Team.tsx
   const agents = [
-    { id: 1, name: "Michael Chen", email: "michael@bajainternationalrealty.com" },
-    { id: 2, name: "Sarah Johnson", email: "sarah@bajainternationalrealty.com" },
-    { id: 3, name: "David Martinez", email: "david@bajainternationalrealty.com" },
-    { id: 4, name: "Emily Thompson", email: "emily@bajainternationalrealty.com" },
-    { id: 5, name: "Robert Kim", email: "robert@bajainternationalrealty.com" },
-    { id: 6, name: "Jessica Rodriguez", email: "jessica@bajainternationalrealty.com" }
+    { id: 1, name: "Bob Van Patten", email: "robertvanpatten2@gmail.com" },
+    { id: 2, name: "Erika Aispuro", email: "Erika80@gmail.com" },
+    { id: 3, name: "Alfonso Puente", email: "alfonso@bircabo.com" },
+    { id: 4, name: "Cozbi Sanchez", email: "Cozbi@bajainternationalrealty.com" },
+    { id: 5, name: "Hector Mendoza", email: "Hector@bajainternationalrealty.com" },
+    { id: 6, name: "Cristy Cavazos", email: "Cristina.cavazos@grupoveq.com" },
+    { id: 7, name: "Marisol Tort", email: "mtortricardi@gmail.com" },
+    { id: 8, name: "David Scott Piper", email: "David@bajainternationalrealty.com" },
+    { id: 9, name: "Zuzu Vieira", email: "Zuzu@bajainternationalrealty.com" },
+    { id: 10, name: "Edgar Pacheco", email: "Edgar@bajainternationalrealty.com" },
+    { id: 12, name: "Don Weis", email: "DonWeis@bajainternationalrealty.com" }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
