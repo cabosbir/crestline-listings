@@ -38,18 +38,18 @@ const AgentDetail = () => {
   const agents = [
     // PAGE 1 - Agents 1-6
     {
-      id: 1,
-      name: "Bob Van Patten",
-      title: "Senior Real Estate Advisor",
-      specialization: "Luxury Waterfront Properties",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
-      phone: "+52 624 127 6012",
-      email: "robertvanpatten2@gmail.com",
-      yearsExperience: 15,
-      propertiesSold: 120,
-      bio: "Bob specializes in luxury waterfront estates in Cabo San Lucas with over 15 years of experience in high-end real estate. His deep knowledge of Baja California Sur coastal properties and exceptional negotiation skills have earned him recognition as a top producer. He has successfully closed deals worth over $150M and has been consistently ranked as a top performer in the luxury real estate market.",
-      certifications: ["REALTOR®", "CRS", "CLHMS"],
-      languages: ["English"]
+     id: 1,
+     name: "Bob Van Patten",
+     title: "Senior Real Estate Advisor",
+     specialization: "High Yield Investment Properties",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
+     phone: "+52 624 127 6012",
+     email: "robertvanpatten2@gmail.com",
+     yearsExperience: 9,
+     propertiesSold: 85,
+     bio: "Bob specializes in high yield investment properties with 9 years of experience in Mexico, having sold 85 properties with total sales of $35 million. His deep knowledge of investment opportunities and exceptional negotiation skills have earned him recognition as a top producer in the Cabo San Lucas market.",
+     certifications: ["MLS Member"],
+     languages: ["English"]
     },
     {
       id: 2,
@@ -66,18 +66,18 @@ const AgentDetail = () => {
       languages: ["English", "Spanish"]
     },
     {
-      id: 3,
-      name: "Alfonso Puente",
-      title: "Commercial Real Estate Expert",
-      specialization: "Commercial & Investment",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
-      phone: "+52 624 188 8681",
-      email: "alfonso@bircabo.com",
-      yearsExperience: 18,
-      propertiesSold: 205,
-      bio: "With nearly two decades of experience in Cabo San Lucas, Alfonso excels in commercial real estate and investment properties. His strategic approach and deep market insights help clients maximize their real estate investments in Baja California Sur and build successful portfolios.",
-      certifications: ["REALTOR®", "CCIM", "CPM"],
-      languages: ["English", "Spanish"]
+     id: 3,
+     name: "Alfonso Puente",
+     title: "Sales Manager & Commercial Real Estate Expert",
+     specialization: "Real Estate Developments & Market Analysis",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
+     phone: "+52 624 188 8681",
+     email: "alfonso@bircabo.com",
+     yearsExperience: 18,
+     propertiesSold: 205,
+     bio: "Alfonso is a sales manager with a strong track record of leading large commercial teams and achieving high closing rates. He specializes in real estate developments in progress and market analysis to help clients achieve expected success. His leadership is based on clear communication, collaborative work, and a results-oriented vision that consistently delivers exceptional outcomes for investors in Baja California Sur.",
+     certifications: ["REALTOR®", "CCIM", "CPM"],
+     languages: ["English", "Spanish"]
     },
     {
       id: 4,
