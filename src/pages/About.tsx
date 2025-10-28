@@ -95,11 +95,18 @@ const About = () => {
               </div>
             </div>
             <div className="relative h-96 lg:h-full min-h-[400px]">
-              <img 
-                src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761585102/work-photo-2025-10-27-1761585093635_tsub0p.png" 
-                alt="Baja International Realty storefront" 
-                className="w-full h-full object-cover rounded-2xl shadow-elegant"
-              />
+              <a 
+                href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block h-full group"
+              >
+                <img 
+                  src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761585102/work-photo-2025-10-27-1761585093635_tsub0p.png" 
+                  alt="Baja International Realty storefront - Click for directions" 
+                  className="w-full h-full object-cover rounded-2xl shadow-elegant group-hover:opacity-90 transition-opacity cursor-pointer"
+                />
+              </a>
             </div>
           </div>
         </div>
