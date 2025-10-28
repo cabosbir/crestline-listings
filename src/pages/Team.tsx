@@ -24,7 +24,7 @@ const Team = () => {
       email: "robertvanpatten2@gmail.com",
       yearsExperience: 9,
       propertiesSold: 85,
-      bio: "Bob specializes in high yield investment properties with 9 years of experience in Mexico, having sold 85 properties with total sales of $35 million.",
+      bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas’s investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I’m passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
       certifications: ["MLS Member"],
       languages: ["English"]
     },
@@ -52,7 +52,7 @@ const Team = () => {
       email: "alfonso@bircabo.com",
       yearsExperience: 18,
       propertiesSold: 205,
-      bio: "Alfonso is a sales manager with a strong track record of leading large commercial teams and achieving high closing rates. He specializes in real estate developments in progress and market analysis to help clients achieve expected success through strategic execution and results-oriented leadership.",
+      bio: "As a sales manager with a strong track record of leading high-performing commercial teams and achieving exceptional closing rates, I specialize in real estate developments in progress and detailed market analysis to help clients reach their investment goals. My leadership is grounded in clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
       certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
       languages: ["English", "Spanish"]
     },
