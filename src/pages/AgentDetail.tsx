@@ -128,12 +128,12 @@ const AgentDetail = () => {
       name: "Marisol Tort", // TODO: Fill in
       title: "Real Estate Advisor", // TODO: Fill in
       specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761589425/489957143_122217993950221664_2036920343588971268_n_okhyf0.jpg", // TODO: Replace with Cloudinary
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761668403/WhatsApp_Image_2025-10-27_at_9.24.29_PM_uajiar.jpg", // TODO: Replace with Cloudinary
       phone: "+52 624 264 3896", // TODO: Fill in
       email: "mtortricardi@gmail.com", // TODO: Fill in
       yearsExperience: 10, // TODO: Fill in
       propertiesSold: 150, // TODO: Fill in
-      bio: "Marisol is an experienced real estate professional that brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico’s most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
     },
