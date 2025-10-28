@@ -148,7 +148,7 @@ const AgentDetail = () => {
      yearsExperience: 25,
      propertiesSold: +50,
      bio: "David has over 25 years of experience in the real estate industry, working in many aspects of the business throughout his distinguished career. Licensed in both California and Mexico, his analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As a Certified International Property Specialist (C.I.P.S.®), Accredited Buyer's Representative (A.B.R.®), and Resort and Second-Home Property Specialist (R.S.P.S.®), David brings unparalleled expertise to every transaction. As David states: 'As an Ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.'",
-     certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®"],
+     certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®", "M.L.S. Member"],
      languages: ["English"]
    },
     {
@@ -328,7 +328,7 @@ const AgentDetail = () => {
                   <div className="bg-secondary border border-border rounded-xl p-6">
                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                       <Award className="w-5 h-5 text-accent" />
-                      Certifications
+                      Credentials
                     </h3>
                     <ul className="space-y-2">
                       {agent.certifications.map((cert, index) => (
