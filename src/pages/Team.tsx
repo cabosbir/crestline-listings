@@ -117,7 +117,7 @@ const Team = () => {
      name: "David Scott Piper",
      title: "International Real Estate Specialist",
      specialization: "Resort & Second-Home Properties",
-     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
      phone: "+52 624 317 0297",
      email: "David@bajainternationalrealty.com",
      yearsExperience: 25,
