@@ -138,19 +138,19 @@ const AgentDetail = () => {
       languages: ["English", "Spanish"] // TODO: Fill in
     },
     {
-      id: 8,
-      name: "David Scott Piper", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg", // TODO: Replace with Cloudinary
-      phone: "+52 624 317 0297", // TODO: Fill in
-      email: "David@bajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 10, // TODO: Fill in
-      propertiesSold: 105, // TODO: Fill in
-      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios in Baja California Sur. His analytical approach and comprehensive market knowledge deliver exceptional results for investors seeking to maximize returns in the Cabo San Lucas luxury real estate market.", // TODO: Fill in
-      certifications: ["REALTOR®"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
-    },
+     id: 8,
+     name: "David Scott Piper",
+     title: "International Real Estate Specialist",
+     specialization: "Resort & Second-Home Properties",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg",
+     phone: "+52 624 317 0297",
+     email: "David@bajainternationalrealty.com",
+     yearsExperience: 25,
+     propertiesSold: 105,
+     bio: "David has over 25 years of experience in the real estate industry, working in many aspects of the business throughout his distinguished career. Licensed in both California and Mexico, his analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As a Certified International Property Specialist (C.I.P.S.®), Accredited Buyer's Representative (A.B.R.®), and Resort and Second-Home Property Specialist (R.S.P.S.®), David brings unparalleled expertise to every transaction. As David states: 'As an Ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.'",
+     certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®"],
+     languages: ["English"]
+   },
     {
       id: 9,
       name: "Zuzu Vieira", // TODO: Fill in

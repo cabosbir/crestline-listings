@@ -113,19 +113,19 @@ const Team = () => {
       languages: ["English", "Spanish"]
     },
     {
-      id: 8,
-      name: "David Scott Piper",
-      title: "Real Estate Advisor",
-      specialization: "Luxury Properties",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
-      phone: "+52 624 317 0297",
-      email: "David@bajainternationalrealty.com",
-      yearsExperience: 10,
-      propertiesSold: 105,
-      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
-      certifications: ["REALTOR®"],
-      languages: ["English", "Spanish"]
-    },
+     id: 8,
+     name: "David Scott Piper",
+     title: "International Real Estate Specialist",
+     specialization: "Resort & Second-Home Properties",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg",
+     phone: "+52 624 317 0297",
+     email: "David@bajainternationalrealty.com",
+     yearsExperience: 25,
+     propertiesSold: 105,
+     bio: "David has over 25 years of experience in the real estate industry. His analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As an Ironman triathlete and marathon runner, you can be sure he will go the extra mile for you.",
+     certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®"],
+     languages: ["English"]
+   },
     {
       id: 9,
       name: "Zuzu Vieira",
