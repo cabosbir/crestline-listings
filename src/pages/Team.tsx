@@ -45,14 +45,14 @@ const Team = () => {
     {
       id: 3,
       name: "Alfonso Puente",
-      title: "Commercial Real Estate Expert",
-      specialization: "Commercial & Investment",
+      title: "Sales Manager & Commercial Real Estate Expert",
+      specialization: "Real Estate Developments & Market Analysis",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
       phone: "+52 624 188 8681",
       email: "alfonso@bircabo.com",
       yearsExperience: 18,
       propertiesSold: 205,
-      bio: "With nearly two decades of experience in Cabo San Lucas, Alfonso excels in commercial real estate and investment properties.",
+      bio: "Alfonso is a sales manager with a strong track record of leading large commercial teams and achieving high closing rates. He specializes in real estate developments in progress and market analysis to help clients achieve expected success through strategic execution and results-oriented leadership.",
       certifications: ["REALTOR®", "CCIM", "CPM"],
       languages: ["English", "Spanish"]
     },
@@ -61,7 +61,7 @@ const Team = () => {
       name: "Cozbi Sanchez",
       title: "Residential Specialist",
       specialization: "Family Homes & Condos",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761612891/WhatsApp_Image_2025-10-27_at_5.53.29_PM_dz7y0g.jpg",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761529186/a-cinematic-portrait-photograph-of-a-wom_SYAgJzHOSaipBDiMYgqKLQ_l77_oUgEScSHf-1PFYhhAw_ct10gu.jpg",
       phone: "+52 624 118 9512",
       email: "Cozbi@bajainternationalrealty.com",
       yearsExperience: 8,
@@ -113,19 +113,19 @@ const Team = () => {
       languages: ["English", "Spanish"]
     },
     {
-     id: 8,
-     name: "David Scott Piper",
-     title: "International Real Estate Specialist",
-     specialization: "Resort & Second-Home Properties",
-     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
-     phone: "+52 624 317 0297",
-     email: "David@bajainternationalrealty.com",
-     yearsExperience: 25,
-     propertiesSold: 105,
-     bio: "David has over 25 years of experience in the real estate industry. His analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As an Ironman triathlete and marathon runner, you can be sure he will go the extra mile for you.",
-     certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®"],
-     languages: ["English"]
-   },
+      id: 8,
+      name: "David Scott Piper",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761590660/a-striking-studio-portrait-photograph-sh_XdBa8GIeSvu_EtlSaFtR3A_YErgX-IPT12aFV0KdYhrCw_tbcm32.jpg",
+      phone: "+52 624 317 0297",
+      email: "David@bajainternationalrealty.com",
+      yearsExperience: 10,
+      propertiesSold: 105,
+      bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
+      certifications: ["REALTOR®"],
+      languages: ["English", "Spanish"]
+    },
     {
       id: 9,
       name: "Zuzu Vieira",
@@ -328,7 +328,7 @@ const Team = () => {
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 {agents.map((agent) => (
-                  <div key={agent.id} className="flex-shrink-0 w-[380px]">
+                  <div key={agent.id} className="flex-shrink-0 w-[320px]">
                     <AgentBioCard
                       name={agent.name}
                       title={agent.title}
