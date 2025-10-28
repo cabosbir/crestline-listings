@@ -37,7 +37,7 @@ const PropertyCard = ({
 }: PropertyCardProps) => {
   return (
     <Card className="group overflow-hidden border rounded-xl hover:shadow-2xl transition-all duration-300 cursor-pointer">
-      <Link to={id ? `/properties/${id}` : "#"}>
+      <Link to={id ? `/property/${id}` : "#"}>
         {/* Property Image */}
         <div className="relative h-64 overflow-hidden">
           <img 
@@ -116,6 +116,13 @@ const PropertyCard = ({
               )}
             </div>
           )}
+
+          {/* View Details Button */}
+          <div className="mt-4 pt-4 border-t">
+            <button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-medium py-2 px-4 rounded-md transition-colors">
+              View Property Details
+            </button>
+          </div>
         </div>
       </Link>
     </Card>
