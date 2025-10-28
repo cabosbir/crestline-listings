@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X, Award, Users, TrendingUp, Heart, CheckCircle, ArrowRight } from "lucide-react";
+import { X, Award, Users, TrendingUp, Heart, CheckCircle, ArrowRight, Shield } from "lucide-react";
 
 interface ValueModalProps {
   isOpen: boolean;
@@ -10,7 +11,13 @@ interface ValueModalProps {
 }
 
 const ValueModal = ({ isOpen, onClose, valueType }: ValueModalProps) => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
+
+  const handleContactClick = () => {
+    onClose();
+    navigate('/contact');
+  };
 
   // Content for each core value
   const valueContent = {
@@ -135,30 +142,30 @@ const ValueModal = ({ isOpen, onClose, valueType }: ValueModalProps) => {
           }
         },
         {
-          name: "Market Analysis",
+          name: "Investment Analysis",
           content: {
             heading: "Data-Driven Investment Decisions",
-            description: "Our proprietary market analysis helps you make informed decisions backed by comprehensive data.",
+            description: "Our proprietary market analysis helps you make informed decisions backed by comprehensive data and proven ROI.",
             benefits: [
-              "Detailed ROI projections for investment properties",
-              "Comparative market analysis for accurate pricing",
-              "Rental income potential and occupancy forecasts",
-              "Property appreciation trends and predictions",
-              "Neighborhood development and growth analysis"
+              "8-12% annual returns on Los Cabos properties",
+              "80-85% average occupancy rates for vacation rentals",
+              "Detailed comparative market analysis for accurate pricing",
+              "Property appreciation trends and future forecasts",
+              "Rental income projections with 2-3 day expense coverage"
             ]
           }
         },
         {
-          name: "Investment Strategy",
+          name: "Fideicomiso Trust",
           content: {
-            heading: "Maximize Your Returns",
-            description: "Whether you're buying for personal use or investment, we help you build a strategy that aligns with your financial goals.",
+            heading: "Safe Foreign Ownership in Mexico",
+            description: "Foreign buyers can securely own property in restricted zones (within 100km of borders or 50km of coastlines) through the Fideicomiso trust system—a safe, proven method backed by Mexican law.",
             benefits: [
-              "Portfolio diversification recommendations",
-              "Tax advantages and foreign ownership guidance",
-              "Rental management and income optimization",
-              "Exit strategy planning and resale potential",
-              "Connection to trusted property managers and rental agencies"
+              "Full ownership rights: use, occupy, lease, improve, sell, and bequeath",
+              "50-year trust term, renewable indefinitely",
+              "Bank acts as trustee (not owner) protecting your interests",
+              "Recognized by Mexican Constitution and Foreign Investment Law of 1973",
+              "Same legal protections as direct ownership with added security"
             ]
           }
         }
@@ -193,7 +200,7 @@ const ValueModal = ({ isOpen, onClose, valueType }: ValueModalProps) => {
               "Thorough due diligence on every property",
               "Connection to trusted attorneys and notaries",
               "Title verification and ownership documentation review",
-              "Guidance through Mexican real estate regulations",
+              "Guidance through Mexican real estate regulations and Fideicomiso",
               "Post-purchase support and dispute resolution assistance"
             ]
           }
@@ -284,22 +291,44 @@ const ValueModal = ({ isOpen, onClose, valueType }: ValueModalProps) => {
             ))}
           </div>
 
+          {/* Fideicomiso Info Box (only shows on Expertise > Fideicomiso Trust tab) */}
+          {valueType === "expertise" && activeTab === 2 && (
+            <div className="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg mt-6">
+              <div className="flex items-start gap-3">
+                <Shield className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-bold text-foreground mb-2">Foreign Ownership Made Simple</h4>
+                  <p className="text-sm text-muted-foreground">
+                    The Fideicomiso trust is not a land lease—you are the beneficial owner with full control. 
+                    This time-tested system has protected foreign property owners in Mexico since 1973, 
+                    providing peace of mind and legal certainty for your investment in Los Cabos.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
             <Button 
-              onClick={onClose}
+              onClick={handleContactClick}
               className="flex-1"
             >
-              Schedule a Consultation <ArrowRight className="ml-2 h-4 w-4" />
+              Contact Us Today <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button 
               variant="outline"
-              onClick={onClose}
+              onClick={handleContactClick}
               className="flex-1"
             >
-              Contact Our Team
+              Schedule Consultation
             </Button>
           </div>
+
+          {/* Optional: Agent selection hint */}
+          <p className="text-xs text-center text-muted-foreground">
+            Our contact form allows you to choose a specific agent or our team will match you with the perfect specialist
+          </p>
         </div>
       </DialogContent>
     </Dialog>
