@@ -236,7 +236,7 @@ const Team = () => {
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 400; // Adjust scroll distance
+      const scrollAmount = 400;
       const newScrollLeft = direction === 'left' 
         ? scrollContainerRef.current.scrollLeft - scrollAmount
         : scrollContainerRef.current.scrollLeft + scrollAmount;
@@ -246,7 +246,6 @@ const Team = () => {
         behavior: 'smooth'
       });
       
-      // Update button states after scroll
       setTimeout(checkScrollButtons, 300);
     }
   };
@@ -339,6 +338,7 @@ const Team = () => {
                       propertiesSold={agent.propertiesSold}
                       yearsExperience={agent.yearsExperience}
                       onViewBio={() => handleViewBio(agent.id)}
+                      showStats={false}
                     />
                   </div>
                 ))}

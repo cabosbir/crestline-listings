@@ -11,7 +11,7 @@ interface AgentBioCardProps {
   propertiesSold?: number;
   yearsExperience?: number;
   onViewBio?: () => void;
-  showStats?: boolean; // New prop to control stats visibility
+  showStats?: boolean;
 }
 
 const AgentBioCard = ({ 
@@ -24,7 +24,7 @@ const AgentBioCard = ({
   propertiesSold,
   yearsExperience,
   onViewBio,
-  showStats = true // Default to true to maintain existing behavior
+  showStats = true
 }: AgentBioCardProps) => {
   
   const handleViewBioClick = (e: any) => {
