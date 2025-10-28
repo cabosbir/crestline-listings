@@ -38,7 +38,7 @@ const Team = () => {
       email: "Erika80@gmail.com",
       yearsExperience: 8,
       propertiesSold: 60,
-      bio: "Erika's passion for luxury coastal living in Cabo San Lucas and her commitment to client satisfaction have made her one of the most sought-after agents.",
+      bio: "My passion for luxury coastal living in Cabo San Lucas and my commitment to client satisfaction have made me one of the most sought-after agents in the region. I specialize in oceanfront estates and investment properties throughout Baja California Sur, offering comprehensive market analysis and personalized service to ensure every client finds the perfect property to match their vision and lifestyle.",
       certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
       languages: ["English", "Spanish"]
     },
@@ -66,7 +66,7 @@ const Team = () => {
       email: "Cozbi@bajainternationalrealty.com",
       yearsExperience: 8,
       propertiesSold: 105,
-      bio: "Cozbi brings enthusiasm and dedication to every transaction in Cabo San Lucas. Specializing in family homes and condominiums.",
+      bio: "I bring a strong track record of leading high performing, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family homes and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
       certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
