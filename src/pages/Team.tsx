@@ -150,7 +150,7 @@ const Team = () => {
       email: "Edgar@bajainternationalrealty.com",
       yearsExperience: 2,
       propertiesSold: 15,
-      bio: "Agent bio to be added...",
+      bio: "Edgar combines a background in web development with a deep understanding of the real estate industry gained under the mentorship of Bob Van Patten. With a passion for innovation and design, he specializes in creating digital platforms that enhance how agents showcase properties and how clients experience them. Edgar believes that knowledge in real estate is like money in the bank, an investment that grows through experience, precision, and trust. His analytical mindset and attention to detail ensure that every project supports BIR’s commitment to clarity, efficiency, and excellence.",
       certifications: ["REALTOR®"],
       languages: ["English", "Spanish"]
     },

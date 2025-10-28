@@ -175,7 +175,7 @@ const AgentDetail = () => {
       email: "Edgar@bajainternationalrealty.com", // TODO: Fill in
       yearsExperience: 2, // TODO: Fill in
       propertiesSold: 15, // TODO: Fill in
-      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
+      bio: "Edgar combines a background in web development with a deep understanding of the real estate industry gained under the mentorship of Bob Van Patten. With a passion for innovation and design, he specializes in creating digital platforms that enhance how agents showcase properties and how clients experience them. Edgar believes that knowledge in real estate is like money in the bank, an investment that grows through experience, precision, and trust. His analytical mindset and attention to detail ensure that every project supports BIR’s commitment to clarity, efficiency, and excellence.", // TODO: Fill in
       certifications: ["REALTOR®"], // TODO: Fill in
       languages: ["English", "Spanish"] // TODO: Fill in
     },
