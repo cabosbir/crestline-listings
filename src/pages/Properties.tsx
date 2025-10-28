@@ -1,8 +1,11 @@
+// src/pages/Properties.tsx - Updated with Advanced Filters
+
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import PropertyCard from "@/components/PropertyCard";
+import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -86,28 +89,34 @@ const Properties = () => {
 
   const [properties, setProperties] = useState(mockProperties);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    propertyType: 'all',
-    location: 'all',
-    priceRange: 'all',
-    bedrooms: 'all'
-  });
   const [sortBy, setSortBy] = useState('newest');
+  const [currentFilters, setCurrentFilters] = useState<any>(null);
 
-  // Load properties - switch to FlexMLS when ready
-  useEffect(() => {
-    loadProperties();
-  }, [filters]);
-
-  const loadProperties = async () => {
+  // Load properties with filters
+  const loadProperties = async (filters?: any) => {
     setLoading(true);
     try {
       // TODO: Uncomment when FlexMLS is configured
       /*
       const mlsListings = await fetchListings({
-        city: filters.location !== 'all' ? filters.location : undefined,
-        propertyType: filters.propertyType !== 'all' ? filters.propertyType : undefined,
-        bedrooms: filters.bedrooms !== 'all' ? parseInt(filters.bedrooms) : undefined,
+        // Map advanced filters to FlexMLS API
+        city: filters?.city?.join(','),
+        propertyType: filters?.propertyType?.join(','),
+        minPrice: filters?.minPrice,
+        maxPrice: filters?.maxPrice,
+        bedrooms: filters?.minBeds,
+        bathrooms: filters?.minBaths,
+        minSqft: filters?.minSqft,
+        maxSqft: filters?.maxSqft,
+        waterfront: filters?.waterfront,
+        oceanView: filters?.oceanView,
+        pool: filters?.pool,
+        listedAfter: filters?.listedAfter,
+        listedBefore: filters?.listedBefore,
+        yearBuiltMin: filters?.yearBuiltMin,
+        yearBuiltMax: filters?.yearBuiltMax,
+        mlsNumber: filters?.mlsNumber,
+        keywords: filters?.keywords,
       });
       const convertedProperties = mlsListings.map(convertMLSToPropertyCard);
       setProperties(convertedProperties);
@@ -117,21 +126,45 @@ const Properties = () => {
       setProperties(mockProperties);
     } catch (error) {
       console.error('Error loading properties:', error);
-      setProperties(mockProperties); // Fallback to mock data
+      setProperties(mockProperties);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFilterChange = (filterType: string, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
+  // Initial load
+  useEffect(() => {
+    loadProperties();
+  }, []);
+
+  const handleApplyFilters = (filters: any) => {
+    setCurrentFilters(filters);
+    loadProperties(filters);
   };
 
-  const applyFilters = () => {
+  const handleResetFilters = () => {
+    setCurrentFilters(null);
     loadProperties();
+  };
+
+  const handleSort = (value: string) => {
+    setSortBy(value);
+    
+    const sorted = [...properties].sort((a, b) => {
+      switch (value) {
+        case 'price-low':
+          return parseFloat(a.price.replace(/[$,]/g, '')) - parseFloat(b.price.replace(/[$,]/g, ''));
+        case 'price-high':
+          return parseFloat(b.price.replace(/[$,]/g, '')) - parseFloat(a.price.replace(/[$,]/g, ''));
+        case 'beds':
+          return b.beds - a.beds;
+        case 'newest':
+        default:
+          return 0;
+      }
+    });
+    
+    setProperties(sorted);
   };
 
   return (
@@ -151,65 +184,13 @@ const Properties = () => {
         </div>
       </section>
 
-      {/* Filters */}
+      {/* Advanced Filters */}
       <section className="py-8 border-b border-border sticky top-20 bg-background/95 backdrop-blur-md z-30">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap gap-4 items-center">
-            <Select onValueChange={(value) => handleFilterChange('propertyType', value)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Property Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="villa">Villa</SelectItem>
-                <SelectItem value="condo">Condo</SelectItem>
-                <SelectItem value="penthouse">Penthouse</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={(value) => handleFilterChange('location', value)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                <SelectItem value="marina">Marina District</SelectItem>
-                <SelectItem value="golf">Golf Communities</SelectItem>
-                <SelectItem value="beach">Beachfront</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={(value) => handleFilterChange('priceRange', value)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Price Range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Prices</SelectItem>
-                <SelectItem value="1m">Under $1M</SelectItem>
-                <SelectItem value="2m">$1M - $2M</SelectItem>
-                <SelectItem value="3m">$2M - $3M</SelectItem>
-                <SelectItem value="5m">$3M - $5M</SelectItem>
-                <SelectItem value="5m+">$5M+</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select onValueChange={(value) => handleFilterChange('bedrooms', value)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Bedrooms" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Any</SelectItem>
-                <SelectItem value="2">2+</SelectItem>
-                <SelectItem value="3">3+</SelectItem>
-                <SelectItem value="4">4+</SelectItem>
-                <SelectItem value="5">5+</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Button variant="luxury" className="ml-auto" onClick={applyFilters}>
-              Apply Filters
-            </Button>
-          </div>
+          <AdvancedPropertyFilters
+            onApplyFilters={handleApplyFilters}
+            onReset={handleResetFilters}
+          />
         </div>
       </section>
 
@@ -220,7 +201,7 @@ const Properties = () => {
             <p className="text-muted-foreground">
               Showing <span className="font-semibold text-foreground">{properties.length}</span> properties
             </p>
-            <Select onValueChange={setSortBy}>
+            <Select onValueChange={handleSort} value={sortBy}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -243,15 +224,7 @@ const Properties = () => {
               <Button 
                 variant="outline" 
                 className="mt-4"
-                onClick={() => {
-                  setFilters({
-                    propertyType: 'all',
-                    location: 'all',
-                    priceRange: 'all',
-                    bedrooms: 'all'
-                  });
-                  loadProperties();
-                }}
+                onClick={handleResetFilters}
               >
                 Clear Filters
               </Button>
@@ -265,15 +238,17 @@ const Properties = () => {
           )}
 
           {/* Pagination */}
-          <div className="flex justify-center mt-12">
-            <div className="flex gap-2">
-              <Button variant="outline">Previous</Button>
-              <Button variant="luxury">1</Button>
-              <Button variant="outline">2</Button>
-              <Button variant="outline">3</Button>
-              <Button variant="outline">Next</Button>
+          {properties.length > 0 && (
+            <div className="flex justify-center mt-12">
+              <div className="flex gap-2">
+                <Button variant="outline">Previous</Button>
+                <Button variant="luxury">1</Button>
+                <Button variant="outline">2</Button>
+                <Button variant="outline">3</Button>
+                <Button variant="outline">Next</Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 

@@ -1,78 +1,122 @@
-import { useNavigate } from "react-router-dom";
-import { Bed, Bath, Maximize, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+// src/services/flexMlsService.ts - Updated to include MLS number
 
-interface PropertyCardProps {
-  id?: number;
-  image: string;
-  price: string;
-  title: string;
-  location: string;
-  beds: number;
-  baths: number;
-  sqft: string;
+const FLEXMLS_API_BASE = 'https://api.flexmls.com/v1';
+const API_KEY = import.meta.env.VITE_FLEXMLS_API_KEY;
+
+export interface MLSProperty {
+  id: string;
+  listingId: string; // MLS Number (e.g., "25-5476")
+  address: {
+    streetNumber: string;
+    streetName: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  squareFeet: number;
+  lotSize: number;
+  yearBuilt: number;
+  propertyType: string;
+  description: string;
+  photos: Array<{
+    url: string;
+    caption?: string;
+  }>;
+  features: string[];
+  status: string;
+  listingAgent: {
+    name: string;
+    email: string;
+    phone: string;
+  };
 }
 
-const PropertyCard = ({ id, image, price, title, location, beds, baths, sqft }: PropertyCardProps) => {
-  const navigate = useNavigate();
+// Fetch all listings
+export async function fetchListings(params?: {
+  city?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  propertyType?: string;
+}): Promise<MLSProperty[]> {
+  try {
+    const queryParams = new URLSearchParams();
+    
+    if (params?.city) queryParams.append('city', params.city);
+    if (params?.minPrice) queryParams.append('minPrice', params.minPrice.toString());
+    if (params?.maxPrice) queryParams.append('maxPrice', params.maxPrice.toString());
+    if (params?.bedrooms) queryParams.append('bedrooms', params.bedrooms.toString());
+    if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
+    if (params?.propertyType) queryParams.append('propertyType', params.propertyType);
 
-  const handleViewDetails = () => {
-    if (id) {
-      navigate(`/property/${id}`);
+    const response = await fetch(
+      `${FLEXMLS_API_BASE}/listings?${queryParams}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch listings');
     }
+
+    const data = await response.json();
+    return data.listings;
+  } catch (error) {
+    console.error('Error fetching listings:', error);
+    return [];
+  }
+}
+
+// Fetch single property by ID
+export async function fetchPropertyById(id: string): Promise<MLSProperty | null> {
+  try {
+    const response = await fetch(
+      `${FLEXMLS_API_BASE}/listings/${id}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Property not found');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching property:', error);
+    return null;
+  }
+}
+
+// Convert MLS property to your PropertyCard format
+export function convertMLSToPropertyCard(mlsProperty: MLSProperty) {
+  return {
+    id: mlsProperty.id,
+    mlsNumber: mlsProperty.listingId, // ← NEW: Include MLS number!
+    image: mlsProperty.photos[0]?.url || '',
+    price: `$${mlsProperty.price.toLocaleString()}`,
+    title: `${mlsProperty.address.streetNumber} ${mlsProperty.address.streetName}`,
+    location: `${mlsProperty.address.city}, ${mlsProperty.address.state}`,
+    beds: mlsProperty.bedrooms,
+    baths: mlsProperty.bathrooms,
+    sqft: `${mlsProperty.squareFeet.toLocaleString()} sq ft`,
+    // Can also include these for property detail pages:
+    description: mlsProperty.description,
+    features: mlsProperty.features,
+    status: mlsProperty.status,
+    yearBuilt: mlsProperty.yearBuilt,
+    lotSize: mlsProperty.lotSize,
   };
-
-  return (
-    <Card className="group overflow-hidden border-border hover:shadow-hover transition-smooth cursor-pointer">
-      {/* Image */}
-      <div className="relative h-64 overflow-hidden" onClick={handleViewDetails}>
-        <img 
-          src={image} 
-          alt={title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-smooth"
-        />
-        <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-4 py-2 rounded-lg font-bold shadow-gold">
-          {price}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6">
-        <div className="flex items-start gap-2 mb-2">
-          <MapPin className="h-4 w-4 text-muted-foreground mt-1 flex-shrink-0" />
-          <p className="text-sm text-muted-foreground">{location}</p>
-        </div>
-        <h3 className="text-xl font-semibold mb-4 text-foreground group-hover:text-primary transition-fast">
-          {title}
-        </h3>
-
-        {/* Stats */}
-        <div className="flex items-center gap-6 mb-4 text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Bed className="h-4 w-4" />
-            <span className="text-sm font-medium">{beds} Beds</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Bath className="h-4 w-4" />
-            <span className="text-sm font-medium">{baths} Baths</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Maximize className="h-4 w-4" />
-            <span className="text-sm font-medium">{sqft}</span>
-          </div>
-        </div>
-
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={handleViewDetails}
-        >
-          View Details
-        </Button>
-      </div>
-    </Card>
-  );
-};
-
-export default PropertyCard;
+}
