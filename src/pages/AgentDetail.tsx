@@ -152,18 +152,19 @@ const AgentDetail = () => {
      languages: ["English"]
    },
     {
-      id: 9,
-      name: "Zuzu Vieira", // TODO: Fill in
-      title: "Real Estate Advisor", // TODO: Fill in
-      specialization: "Luxury Properties", // TODO: Fill in
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg", // TODO: Replace with Cloudinary
-      phone: "+1 808 226 6120", // TODO: Fill in
-      email: "Zuzubajainternationalrealty.com", // TODO: Fill in
-      yearsExperience: 11, // TODO: Fill in
-      propertiesSold: 101, // TODO: Fill in
-      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.", // TODO: Fill in
-      certifications: ["REALTOR®", "MLS Member"], // TODO: Fill in
-      languages: ["English", "Spanish"] // TODO: Fill in
+     id: 9,
+     name: "Susu Vieira",
+     title: "Real Estate Advisor",
+     specialization: "Luxury Properties",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg",
+     phone: "+1 (808) 226-6120",
+     phoneSecondary: "+52 612 120 5289", // Add this new field for Mexico number
+     email: "Zuzu@bajainternationalrealty.com",
+     yearsExperience: 11,
+     propertiesSold: 101,
+     bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
+     certifications: ["REALTOR®", "MLS Member"],
+     languages: ["English", "Spanish"]
     },
     {
       id: 10,
