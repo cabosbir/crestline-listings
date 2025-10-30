@@ -7,8 +7,8 @@ const StatsSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
   const stats = [
-    { number: 85, label: "Combined Years of\nExperience", suffix: "" },
-    { number: 2200, label: "Homes & Properties\nSold", suffix: "+" },
+    { number: 75, label: "Combined Years of\nExperience", suffix: "" },
+    { number: 1800, label: "Homes & Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
     { number: 400, label: "Combined Sales\nSince 1987", suffix: "M+", prefix: "$" },
   ];
