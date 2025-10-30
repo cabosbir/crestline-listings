@@ -1,15 +1,77 @@
+import { useState, useEffect, useRef } from "react";
 import statsBackground from "@/assets/stats-bg.jpg";
 
 const StatsSection = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [counts, setCounts] = useState([0, 0, 0, 0]);
+  const sectionRef = useRef<HTMLElement>(null);
+
   const stats = [
-    { number: "85", label: "Combined Years of\nExperience" },
-    { number: "2,200+", label: "Homes & Properties\nSold" },
-    { number: "100%", label: "Committed to\nOur Clients" },
-    { number: "$800M+", label: "Combined Sales\nSince 2014" },
+    { number: 85, label: "Combined Years of\nExperience", suffix: "" },
+    { number: 2200, label: "Homes & Properties\nSold", suffix: "+" },
+    { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
+    { number: 800, label: "Combined Sales\nSince 2014", suffix: "M+", prefix: "$" },
   ];
+
+  // Intersection Observer to detect when section is visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isVisible) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.3 } // Trigger when 30% of section is visible
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, [isVisible]);
+
+  // Animated counting effect
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const duration = 2000; // 2 seconds
+    const steps = 60; // 60 frames
+    const increment = duration / steps;
+
+    let frame = 0;
+    const interval = setInterval(() => {
+      frame++;
+      const progress = frame / steps;
+      
+      // Easing function for smooth animation
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+
+      setCounts(stats.map(stat => Math.floor(stat.number * easeOutQuart)));
+
+      if (frame >= steps) {
+        clearInterval(interval);
+        // Set final values
+        setCounts(stats.map(stat => stat.number));
+      }
+    }, increment);
+
+    return () => clearInterval(interval);
+  }, [isVisible]);
+
+  const formatNumber = (num: number, index: number) => {
+    const stat = stats[index];
+    const formattedNum = num.toLocaleString();
+    return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
+  };
 
   return (
     <section 
+      ref={sectionRef}
       className="relative py-24 bg-cover bg-center bg-fixed"
       style={{ backgroundImage: `url(${statsBackground})` }}
     >
@@ -27,8 +89,8 @@ const StatsSection = () => {
               className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 min-w-[140px] md:min-w-[180px]"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-accent mb-4">
-                {stat.number}
+              <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-accent mb-4 tabular-nums">
+                {formatNumber(counts[index], index)}
               </div>
               <p className="text-primary-foreground uppercase text-sm md:text-base tracking-wide font-medium whitespace-pre-line leading-relaxed">
                 {stat.label}
