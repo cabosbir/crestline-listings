@@ -4,12 +4,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import ValueModal from "@/components/ValueModal";
+import MilestoneModal from "@/components/MilestoneModal";
 import { Button } from "@/components/ui/button";
 import { Award, Users, TrendingUp, Heart, ArrowRight, Tv, Building2, Scale } from "lucide-react";
 
 const About = () => {
   const navigate = useNavigate();
   const [selectedValue, setSelectedValue] = useState<"client-first" | "excellence" | "expertise" | "integrity" | null>(null);
+  const [selectedMilestone, setSelectedMilestone] = useState<"national-recognition" | "major-developments" | "industry-pioneer" | null>(null);
 
   // Updated team members with IDs matching Team.tsx
   const teamMembers = [
@@ -70,17 +72,20 @@ const About = () => {
     {
       icon: Tv,
       title: "National Recognition",
-      description: "Featured on CNN, 20/20, and national media for pioneering Mexican real estate education"
+      description: "Featured on CNN, 20/20, and national media for pioneering Mexican real estate education",
+      milestoneKey: "national-recognition" as const,
     },
     {
       icon: Building2,
       title: "Major Developments",
-      description: "Brokered acquisitions for RIU Hotels and Cabo San Cristobal Resorts - one of the world's largest planned resort projects"
+      description: "Brokered acquisitions for RIU Hotels and Cabo San Cristobal Resorts - one of the world's largest planned resort projects",
+      milestoneKey: "major-developments" as const,
     },
     {
       icon: Scale,
       title: "Industry Pioneer",
-      description: "Founding member of MLS-BCS, setting professional standards in Baja California Sur real estate"
+      description: "Founding member of MLS-BCS, setting professional standards in Baja California Sur real estate",
+      milestoneKey: "industry-pioneer" as const,
     }
   ];
 
@@ -89,11 +94,17 @@ const About = () => {
       <Navbar />
       <FloatingContact />
       
-      {/* Value Modal */}
+      {/* Modals */}
       <ValueModal 
         isOpen={selectedValue !== null}
         onClose={() => setSelectedValue(null)}
         valueType={selectedValue}
+      />
+      
+      <MilestoneModal 
+        isOpen={selectedMilestone !== null}
+        onClose={() => setSelectedMilestone(null)}
+        milestoneType={selectedMilestone}
       />
 
       {/* Hero */}
@@ -122,7 +133,7 @@ const About = () => {
                   From those educational roots with Pan America Ltd, Don established Baja International to represent developers in the Baja Norte region, which evolved into Land's End Realty and eventually today's Baja International Realty. Our firm has brokered some of the most significant real estate transactions in Cabo history, including multi-million dollar land acquisitions for <span className="font-semibold text-foreground">RIU Hotels</span> and <span className="font-semibold text-foreground">Cabo San Cristobal Resorts</span> - one of the largest planned resort projects in the world with 8 hotels, championship golf courses, polo fields, and a Formula One racetrack.
                 </p>
                 <p>
-                  As a <span className="font-semibold text-foreground">founding member of MLS-BCS</span> (Multiple Listing Service of Baja California Sur), we've successfully helped over <span className="font-semibold text-foreground">1,800 families</span> find their perfect property in paradise, managing over <span className="font-semibold text-foreground">$400 million</span> in sales. Today, under Don's continued leadership, our team of International Realtors® combines 35+ years of local expertise with international standards of service.
+                  As a <span className="font-semibold text-foreground">founding member of MLS-BCS</span> (Multiple Listing Service of Baja California Sur), we've successfully helped over <span className="font-semibold text-foreground">2,200 families</span> find their perfect property in paradise, managing over <span className="font-semibold text-foreground">$800 million</span> in sales. Today, under Don's continued leadership, our team of International Realtors® combines 35+ years of local expertise with international standards of service.
                 </p>
               </div>
             </div>
@@ -144,15 +155,15 @@ const About = () => {
         </div>
       </section>
 
-      {/* Key Milestones */}
-      <section className="py-16 bg-secondary">
+      {/* Key Milestones - NOW CLICKABLE! */}
+      <section className="py-24 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Key Milestones
             </h2>
             <p className="text-muted-foreground">
-              Over 35 years of pioneering real estate excellence
+              Click to explore 35+ years of pioneering real estate excellence
             </p>
           </div>
 
@@ -160,17 +171,24 @@ const About = () => {
             {milestones.map((milestone, index) => {
               const Icon = milestone.icon;
               return (
-                <div key={index} className="bg-background p-6 rounded-xl border border-border text-center">
-                  <div className="flex justify-center mb-4">
-                    <div className="p-3 rounded-full bg-accent/10">
-                      <Icon className="h-6 w-6 text-accent" />
+                <div 
+                  key={index}
+                  onClick={() => setSelectedMilestone(milestone.milestoneKey)}
+                  className="bg-background p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                >
+                  <div className="flex justify-center mb-6">
+                    <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
+                      <Icon className="h-8 w-8 text-accent" />
                     </div>
                   </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">
+                  <h3 className="text-xl font-bold text-foreground mb-3 text-center group-hover:text-accent transition-colors">
                     {milestone.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground text-center leading-relaxed mb-4">
                     {milestone.description}
+                  </p>
+                  <p className="text-accent text-sm font-semibold text-center group-hover:underline">
+                    Learn More →
                   </p>
                 </div>
               );
