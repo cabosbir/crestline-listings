@@ -7,10 +7,10 @@ const StatsSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
 
   const stats = [
-    { number: 75, label: "Combined Years of\nExperience", suffix: "" },
-    { number: 1800, label: "Homes & Properties\nSold", suffix: "+" },
+    { number: 85, label: "Combined Years of\nExperience", suffix: "" },
+    { number: 2200, label: "Homes & Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
-    { number: 400, label: "Combined Sales\nSince 1987", suffix: "M+", prefix: "$" },
+    { number: 800, label: "Combined Sales\nSince 2014", suffix: "M+", prefix: "$" },
   ];
 
   // Intersection Observer to detect when section is visible
@@ -21,7 +21,10 @@ const StatsSection = () => {
           setIsVisible(true);
         }
       },
-      { threshold: 0.3 } // Trigger when 30% of section is visible
+      { 
+        threshold: 0.1, // Trigger when just 10% of section is visible
+        rootMargin: '50px' // Start 50px before section enters viewport
+      }
     );
 
     if (sectionRef.current) {
