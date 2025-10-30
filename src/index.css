@@ -10,51 +10,51 @@ All colors MUST be HSL.
   :root {
     /* Luxury Real Estate Color Palette - BIR Logo Colors */
     --background: 0 0% 100%;
-    --foreground: 0 0% 20%;
+    --foreground: 212 12% 51%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 20%;
+    --card-foreground: 212 12% 51%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover-foreground: 212 12% 51%;
 
-    /* BIR Dark Gray #333333 - primary brand color */
-    --primary: 0 0% 20%;
+    /* BIR Gray-Blue #748092 - primary brand color */
+    --primary: 212 12% 51%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 0 0% 35%;
-    --primary-dark: 0 0% 15%;
+    --primary-light: 212 12% 65%;
+    --primary-dark: 212 15% 40%;
     
-    /* BIR Blue #1f6597 - accent color (replaces gold) */
-    --accent: 203 65% 36%;
+    /* BIR Blue #3b6299 - accent color */
+    --accent: 216 45% 42%;
     --accent-foreground: 0 0% 100%;
-    --accent-light: 203 60% 50%;
-    --accent-dark: 203 70% 28%;
+    --accent-light: 216 40% 55%;
+    --accent-dark: 216 50% 32%;
 
     /* Soft neutrals */
     --secondary: 210 20% 95%;
-    --secondary-foreground: 0 0% 20%;
+    --secondary-foreground: 212 12% 51%;
 
     --muted: 210 15% 92%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 212 10% 55%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 210 20% 88%;
     --input: 210 20% 88%;
-    --ring: 0 0% 20%;
+    --ring: 212 12% 51%;
 
     --radius: 0.75rem;
 
     /* Luxury gradients - Updated with BIR colors */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 20%), hsl(0 0% 15%));
-    --gradient-accent: linear-gradient(135deg, hsl(203 65% 36%), hsl(203 70% 28%));
+    --gradient-primary: linear-gradient(135deg, hsl(212 12% 51%), hsl(212 15% 40%));
+    --gradient-accent: linear-gradient(135deg, hsl(216 45% 42%), hsl(216 50% 32%));
     --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.3));
     
-    /* Elegant shadows - Updated with dark gray primary */
-    --shadow-elegant: 0 10px 40px -10px hsl(0 0% 20% / 0.2);
-    --shadow-hover: 0 20px 60px -15px hsl(0 0% 20% / 0.3);
-    --shadow-blue: 0 8px 30px -8px hsl(203 65% 36% / 0.4);
+    /* Elegant shadows - Updated with new colors */
+    --shadow-elegant: 0 10px 40px -10px hsl(212 12% 51% / 0.2);
+    --shadow-hover: 0 20px 60px -15px hsl(212 12% 51% / 0.3);
+    --shadow-blue: 0 8px 30px -8px hsl(216 45% 42% / 0.4);
     
     /* Smooth transitions */
     --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,15 +71,15 @@ All colors MUST be HSL.
     --popover: 0 0% 15%;
     --popover-foreground: 0 0% 95%;
 
-    /* Dark gray darker in dark mode */
-    --primary: 0 0% 35%;
+    /* Gray-blue lighter in dark mode */
+    --primary: 212 12% 65%;
     --primary-foreground: 0 0% 10%;
-    --primary-light: 0 0% 45%;
+    --primary-light: 212 10% 75%;
 
     /* BIR Blue brighter in dark mode */
-    --accent: 203 60% 50%;
+    --accent: 216 40% 55%;
     --accent-foreground: 0 0% 95%;
-    --accent-light: 203 55% 60%;
+    --accent-light: 216 35% 65%;
 
     --secondary: 0 0% 20%;
     --secondary-foreground: 0 0% 95%;
@@ -92,7 +92,7 @@ All colors MUST be HSL.
 
     --border: 0 0% 25%;
     --input: 0 0% 25%;
-    --ring: 0 0% 35%;
+    --ring: 212 12% 65%;
   }
 }
 
