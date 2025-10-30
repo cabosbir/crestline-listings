@@ -72,15 +72,23 @@ const Navbar = () => {
             ))}
 
             <div className="flex items-center space-x-4 ml-4">
-              <a href="tel:+526121698328" className="text-muted-foreground hover:text-accent transition-fast">
+              <a 
+                href="tel:+526241435555" 
+                className="text-muted-foreground hover:text-accent transition-fast"
+                aria-label="Call Baja International Realty"
+              >
                 <Phone className="h-5 w-5" />
               </a>
-              <a href="mailto:cabosbir@gmail.com" className="text-muted-foreground hover:text-accent transition-fast">
+              <a 
+                href="mailto:info@bircabo.com" 
+                className="text-muted-foreground hover:text-accent transition-fast"
+                aria-label="Email Baja International Realty"
+              >
                 <Mail className="h-5 w-5" />
               </a>
               <Link to="/contact">
                 <Button variant="luxury" size="sm">
-                  Schedule Showing
+                  Contact Us
                 </Button>
               </Link>
             </div>
@@ -90,6 +98,7 @@ const Navbar = () => {
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="lg:hidden p-2 text-foreground hover:text-accent transition-fast"
+            aria-label="Toggle menu"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -129,16 +138,24 @@ const Navbar = () => {
               ))}
 
               <div className="flex items-center space-x-4 px-2 pt-4">
-                <a href="tel:+526121698328" className="text-muted-foreground hover:text-accent transition-fast">
+                <a 
+                  href="tel:+526241435555" 
+                  className="text-muted-foreground hover:text-accent transition-fast"
+                  aria-label="Call us"
+                >
                   <Phone className="h-5 w-5" />
                 </a>
-                <a href="mailto:cabosbir@gmail.com" className="text-muted-foreground hover:text-accent transition-fast">
+                <a 
+                  href="mailto:info@bircabo.com" 
+                  className="text-muted-foreground hover:text-accent transition-fast"
+                  aria-label="Email us"
+                >
                   <Mail className="h-5 w-5" />
                 </a>
               </div>
               <Link to="/contact" onClick={() => setIsOpen(false)}>
                 <Button variant="luxury" size="sm" className="w-full">
-                  Schedule Showing
+                  Contact Us
                 </Button>
               </Link>
             </div>
