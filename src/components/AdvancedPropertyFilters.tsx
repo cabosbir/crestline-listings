@@ -4,13 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -19,20 +12,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
 import { Search, SlidersHorizontal, MapPin, Calendar, X, ExternalLink } from "lucide-react";
 
 interface FilterState {
-  // Basic Search
   searchQuery: string;
   mlsNumber: string;
-  
-  // Location
   city: string[];
   neighborhood: string[];
   zipCode: string;
-  
-  // Property Details
   propertyType: string[];
   minPrice: number;
   maxPrice: number;
@@ -42,24 +29,16 @@ interface FilterState {
   maxBaths: number;
   minSqft: number;
   maxSqft: number;
-  
-  // Lot Details
   minLotSize: number;
   maxLotSize: number;
-  
-  // Features
   waterfront: boolean;
   oceanView: boolean;
   pool: boolean;
   garage: boolean;
   golfCourse: boolean;
-  
-  // Status & Dates
   listingStatus: string[];
   listedAfter: string;
   listedBefore: string;
-  
-  // Advanced
   yearBuiltMin: number;
   yearBuiltMax: number;
   hoaMax: number;
@@ -144,15 +123,13 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     "Recently Sold"
   ];
 
-  // Handle MLS number search
   const handleMLSSearch = () => {
     if (filters.mlsNumber.trim()) {
-      // Open FlexMLS search with the MLS number
       window.open(`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(filters.mlsNumber)}`, '_blank');
     }
   };
 
-  const handleApply = () => {
+  const handleSearch = () => {
     // If MLS number is provided, search FlexMLS directly
     if (filters.mlsNumber.trim()) {
       handleMLSSearch();
@@ -165,7 +142,6 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     // Count active filters
     let count = 0;
     if (filters.searchQuery) count++;
-    if (filters.mlsNumber) count++;
     if (filters.city.length > 0) count++;
     if (filters.propertyType.length > 0) count++;
     if (filters.minPrice > 0) count++;
@@ -231,7 +207,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
             onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
-                handleApply();
+                handleSearch();
               }
             }}
             className="pl-10"
@@ -240,7 +216,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
 
         <Button 
           variant="luxury" 
-          onClick={handleApply}
+          onClick={handleSearch}
           className="px-6"
         >
           <Search className="h-4 w-4 mr-2" />
@@ -253,7 +229,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
               <SlidersHorizontal className="h-4 w-4 mr-2" />
               Advanced Filters
               {activeFiltersCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-accent text-primary text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-accent text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {activeFiltersCount}
                 </span>
               )}
@@ -292,7 +268,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                     onClick={handleMLSSearch}
                     disabled={!filters.mlsNumber.trim()}
                   >
-                    <ExternalLink className="h-4 w-4 mr-2" />
+                    <Search className="h-4 w-4 mr-2" />
                     Search
                   </Button>
                 </div>
@@ -346,15 +322,6 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                     ))}
                   </div>
                 </div>
-
-                <div>
-                  <Label>Zip Code</Label>
-                  <Input
-                    placeholder="23450"
-                    value={filters.zipCode}
-                    onChange={(e) => setFilters({ ...filters, zipCode: e.target.value })}
-                  />
-                </div>
               </div>
 
               {/* Property Type */}
@@ -387,9 +354,6 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                       value={filters.minPrice || ""}
                       onChange={(e) => setFilters({ ...filters, minPrice: Number(e.target.value) })}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      ${(filters.minPrice / 1000000).toFixed(1)}M
-                    </p>
                   </div>
                   <div>
                     <Input
@@ -398,66 +362,28 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                       value={filters.maxPrice || ""}
                       onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      ${(filters.maxPrice / 1000000).toFixed(1)}M
-                    </p>
                   </div>
                 </div>
               </div>
 
-              {/* Bedrooms */}
-              <div>
-                <Label>Bedrooms: {filters.minBeds} - {filters.maxBeds}</Label>
-                <div className="grid grid-cols-2 gap-4 mt-2">
+              {/* Bedrooms & Bathrooms */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Min Beds</Label>
                   <Input
                     type="number"
-                    placeholder="Min"
+                    placeholder="Any"
                     value={filters.minBeds || ""}
                     onChange={(e) => setFilters({ ...filters, minBeds: Number(e.target.value) })}
                   />
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    value={filters.maxBeds || ""}
-                    onChange={(e) => setFilters({ ...filters, maxBeds: Number(e.target.value) })}
-                  />
                 </div>
-              </div>
-
-              {/* Bathrooms */}
-              <div>
-                <Label>Bathrooms: {filters.minBaths} - {filters.maxBaths}</Label>
-                <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <Label>Min Baths</Label>
                   <Input
                     type="number"
-                    placeholder="Min"
+                    placeholder="Any"
                     value={filters.minBaths || ""}
                     onChange={(e) => setFilters({ ...filters, minBaths: Number(e.target.value) })}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    value={filters.maxBaths || ""}
-                    onChange={(e) => setFilters({ ...filters, maxBaths: Number(e.target.value) })}
-                  />
-                </div>
-              </div>
-
-              {/* Square Feet */}
-              <div>
-                <Label>Square Feet</Label>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  <Input
-                    type="number"
-                    placeholder="Min"
-                    value={filters.minSqft || ""}
-                    onChange={(e) => setFilters({ ...filters, minSqft: Number(e.target.value) })}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    value={filters.maxSqft || ""}
-                    onChange={(e) => setFilters({ ...filters, maxSqft: Number(e.target.value) })}
                   />
                 </div>
               </div>
@@ -498,16 +424,6 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id="garage"
-                      checked={filters.garage}
-                      onCheckedChange={(checked) => setFilters({ ...filters, garage: checked as boolean })}
-                    />
-                    <label htmlFor="garage" className="text-sm cursor-pointer">
-                      Garage
-                    </label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
                       id="golfCourse"
                       checked={filters.golfCourse}
                       onCheckedChange={(checked) => setFilters({ ...filters, golfCourse: checked as boolean })}
@@ -518,80 +434,6 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                   </div>
                 </div>
               </div>
-
-              {/* Listing Status */}
-              <div>
-                <Label>Listing Status</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {listingStatuses.map((status) => (
-                    <div key={status} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`status-${status}`}
-                        checked={filters.listingStatus.includes(status)}
-                        onCheckedChange={() => toggleArrayFilter('listingStatus', status)}
-                      />
-                      <label htmlFor={`status-${status}`} className="text-sm cursor-pointer">
-                        {status}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Date Range */}
-              <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Listing Date
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Listed After</Label>
-                    <Input
-                      type="date"
-                      value={filters.listedAfter}
-                      onChange={(e) => setFilters({ ...filters, listedAfter: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label>Listed Before</Label>
-                    <Input
-                      type="date"
-                      value={filters.listedBefore}
-                      onChange={(e) => setFilters({ ...filters, listedBefore: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Year Built */}
-              <div>
-                <Label>Year Built</Label>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  <Input
-                    type="number"
-                    placeholder="Min"
-                    value={filters.yearBuiltMin || ""}
-                    onChange={(e) => setFilters({ ...filters, yearBuiltMin: Number(e.target.value) })}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    value={filters.yearBuiltMax || ""}
-                    onChange={(e) => setFilters({ ...filters, yearBuiltMax: Number(e.target.value) })}
-                  />
-                </div>
-              </div>
-
-              {/* Keywords */}
-              <div>
-                <Label>Keywords</Label>
-                <Input
-                  placeholder="e.g., granite counters, stainless appliances"
-                  value={filters.keywords}
-                  onChange={(e) => setFilters({ ...filters, keywords: e.target.value })}
-                />
-              </div>
             </div>
 
             {/* Action Buttons */}
@@ -600,8 +442,9 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                 <X className="h-4 w-4 mr-2" />
                 Reset
               </Button>
-              <Button variant="luxury" onClick={handleApply} className="flex-1">
-                Apply Filters
+              <Button variant="luxury" onClick={handleSearch} className="flex-1">
+                <Search className="h-4 w-4 mr-2" />
+                Search
               </Button>
             </div>
           </SheetContent>
@@ -623,18 +466,6 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
               <X className="h-3 w-3 cursor-pointer" onClick={() => toggleArrayFilter('propertyType', type)} />
             </span>
           ))}
-          {filters.minPrice > 0 && (
-            <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              Min: ${(filters.minPrice / 1000000).toFixed(1)}M
-              <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters({ ...filters, minPrice: 0 })} />
-            </span>
-          )}
-          {filters.waterfront && (
-            <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              Waterfront
-              <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters({ ...filters, waterfront: false })} />
-            </span>
-          )}
         </div>
       )}
     </div>
