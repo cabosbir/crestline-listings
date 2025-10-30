@@ -229,9 +229,23 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
             placeholder="Search by address, city, or MLS #..."
             value={filters.searchQuery}
             onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleApply();
+              }
+            }}
             className="pl-10"
           />
         </div>
+
+        <Button 
+          variant="luxury" 
+          onClick={handleApply}
+          className="px-6"
+        >
+          <Search className="h-4 w-4 mr-2" />
+          Search
+        </Button>
         
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
