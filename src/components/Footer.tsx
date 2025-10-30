@@ -15,7 +15,7 @@ const Footer = () => {
               <span style={{ color: '#3b6299' }}>REALTY</span>
             </h2>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
-              Your trusted partner for luxury real estate in Cabo San Lucas and Baja California Sur.
+              Your trusted partner for luxury real estate in Cabo San Lucas and Baja California Sur since the 1980s.
             </p>
 
             {/* Contact Info */}
@@ -28,19 +28,28 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-primary-foreground/80 hover:text-accent transition-fast"
                 >
-                  Blvd. Marina, Cabo San Lucas, BCS, Mexico
+                  Boulevard Marina s/n y Vicente Guerrero s/n<br />
+                  Manzana 31-A, Colonia Centro<br />
+                  Cabo San Lucas, Baja California Sur<br />
+                  México, C.P. 23400
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-accent flex-shrink-0" />
-                <a href="tel:+526121698328" className="text-sm text-primary-foreground/80 hover:text-accent transition-fast">
-                  +52 612 169 8328
+                <a 
+                  href="tel:+526241435555" 
+                  className="text-sm text-primary-foreground/80 hover:text-accent transition-fast"
+                >
+                  +52 624 143 5555
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-accent flex-shrink-0" />
-                <a href="mailto:cabosbir@gmail.com" className="text-sm text-primary-foreground/80 hover:text-accent transition-fast">
-                  cabosbir@gmail.com
+                <a 
+                  href="mailto:info@bircabo.com" 
+                  className="text-sm text-primary-foreground/80 hover:text-accent transition-fast"
+                >
+                  info@bircabo.com
                 </a>
               </div>
             </div>
@@ -63,7 +72,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-2">Stay Updated</h3>
             <p className="text-primary-foreground/80 text-sm mb-4">
-              Subscribe to our newsletter for exclusive listings and market insights.
+              Subscribe to our newsletter for exclusive listings and market insights in Cabo San Lucas.
             </p>
             <div className="flex gap-2">
               <Input 
@@ -75,6 +84,9 @@ const Footer = () => {
                 Subscribe
               </Button>
             </div>
+            <p className="text-primary-foreground/60 text-xs mt-3">
+              Join 2,200+ clients who trust us with their Baja real estate journey.
+            </p>
           </div>
         </div>
 
@@ -86,6 +98,9 @@ const Footer = () => {
             INTERNATIONAL{' '}
             <span style={{ color: '#3b6299' }}>REALTY</span>
             . All rights reserved.
+          </p>
+          <p className="mt-2 text-xs">
+            Don Weis, Broker | MLS-BCS Founding Member | International Realtor®
           </p>
         </div>
       </div>

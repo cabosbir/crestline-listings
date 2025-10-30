@@ -143,10 +143,17 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Address</h3>
-                    <p className="text-muted-foreground text-sm">
-                      Blvd. Marina<br />
-                      Cabo San Lucas, BCS, Mexico
-                    </p>
+                    <a 
+                      href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground text-sm hover:text-accent transition-fast"
+                    >
+                      Boulevard Marina s/n y Vicente Guerrero s/n<br />
+                      Manzana 31-A, Colonia Centro<br />
+                      Cabo San Lucas, Baja California Sur<br />
+                      México, C.P. 23400
+                    </a>
                   </div>
                 </div>
 
@@ -159,8 +166,11 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Phone</h3>
                     <p className="text-muted-foreground text-sm">
-                      MX: +52 612 169 8328<br />
-                      US: Toll Free (Coming Soon)
+                      <a href="tel:+526241435555" className="hover:text-accent transition-fast">
+                        +52 624 143 5555
+                      </a>
+                      <br />
+                      Office Main Line
                     </p>
                   </div>
                 </div>
@@ -173,9 +183,12 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-muted-foreground text-sm">
-                      cabosbir@gmail.com
-                    </p>
+                    <a 
+                      href="mailto:info@bircabo.com" 
+                      className="text-muted-foreground text-sm hover:text-accent transition-fast"
+                    >
+                      info@bircabo.com
+                    </a>
                   </div>
                 </div>
 
@@ -188,8 +201,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Hours</h3>
                     <p className="text-muted-foreground text-sm">
-                      Monday - Friday: 9:00 AM - 6:00 PM<br />
-                      Saturday: 10:00 AM - 4:00 PM<br />
+                      Monday - Friday: 9:00 AM - 6:00 PM MST<br />
+                      Saturday: 10:00 AM - 4:00 PM MST<br />
                       Sunday: By Appointment
                     </p>
                   </div>
@@ -217,7 +230,7 @@ const Contact = () => {
                 {submitStatus === 'error' && (
                   <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                     <strong>✗ Failed to send message.</strong>
-                    <p className="text-sm mt-1">Please call us at +52 612 169 8328 or email cabosbir@gmail.com</p>
+                    <p className="text-sm mt-1">Please call us at +52 624 143 5555 or email info@bircabo.com</p>
                   </div>
                 )}
                 
@@ -259,7 +272,7 @@ const Contact = () => {
                     <Input 
                       id="phone" 
                       type="tel" 
-                      placeholder="+52 (612) 169-8328"
+                      placeholder="+1 (555) 123-4567"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
                       disabled={isSubmitting}
@@ -282,6 +295,7 @@ const Contact = () => {
                         <SelectItem value="buying">Buying</SelectItem>
                         <SelectItem value="selling">Selling</SelectItem>
                         <SelectItem value="renting">Renting</SelectItem>
+                        <SelectItem value="investment">Investment Opportunity</SelectItem>
                         <SelectItem value="general">General Inquiry</SelectItem>
                       </SelectContent>
                     </Select>
@@ -302,10 +316,12 @@ const Contact = () => {
                         <SelectValue placeholder="Select property type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="villa">Villa</SelectItem>
-                        <SelectItem value="condo">Condo</SelectItem>
+                        <SelectItem value="oceanfront-villa">Oceanfront Villa</SelectItem>
+                        <SelectItem value="beachfront-condo">Beachfront Condo</SelectItem>
                         <SelectItem value="penthouse">Penthouse</SelectItem>
-                        <SelectItem value="estate">Estate</SelectItem>
+                        <SelectItem value="luxury-estate">Luxury Estate</SelectItem>
+                        <SelectItem value="investment-property">Investment Property</SelectItem>
+                        <SelectItem value="land">Land/Lot</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -359,13 +375,18 @@ const Contact = () => {
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
-                  <Button type="button" variant="outline" size="lg">
-                    Schedule Call
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => window.open('tel:+526241435555')}
+                  >
+                    Call Now
                   </Button>
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-4">
-                  * Required fields. We'll respond within 24 hours.
+                  * Required fields. We'll respond within 24 hours during business days.
                 </p>
               </form>
             </div>
@@ -376,14 +397,29 @@ const Contact = () => {
       {/* Map Section */}
       <section className="py-16 bg-secondary">
         <div className="container mx-auto px-4">
-          <div className="bg-muted rounded-2xl overflow-hidden" style={{ height: "400px" }}>
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              <div className="text-center">
-                <MapPin className="h-16 w-16 mx-auto mb-4 text-accent" />
-                <p className="font-medium">Interactive Map</p>
-                <p className="text-sm">Blvd. Marina, Cabo San Lucas, BCS</p>
-              </div>
-            </div>
+          <h2 className="text-3xl font-bold text-center mb-8">Visit Our Office</h2>
+          <div className="bg-card rounded-2xl overflow-hidden border border-border shadow-elegant">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3671.234567890123!2d-109.9120108!3d22.8824834!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x86af4ae5c4283c71%3A0x71c3829237727a4b!2sBaja%20International%20Realty!5e0!3m2!1sen!2smx!4v1234567890123!5m2!1sen!2smx"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Baja International Realty Office Location"
+            />
+          </div>
+          <div className="text-center mt-6">
+            <a
+              href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-accent hover:text-accent/80 font-semibold transition-fast"
+            >
+              <MapPin className="h-5 w-5" />
+              Get Directions to Our Office
+            </a>
           </div>
         </div>
       </section>
