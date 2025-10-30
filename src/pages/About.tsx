@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import ValueModal from "@/components/ValueModal";
 import { Button } from "@/components/ui/button";
-import { Award, Users, TrendingUp, Heart, ArrowRight } from "lucide-react";
+import { Award, Users, TrendingUp, Heart, ArrowRight, Tv, Building2, Scale } from "lucide-react";
 
 const About = () => {
   const navigate = useNavigate();
@@ -66,6 +66,24 @@ const About = () => {
     },
   ];
 
+  const milestones = [
+    {
+      icon: Tv,
+      title: "National Recognition",
+      description: "Featured on CNN, 20/20, and national media for pioneering Mexican real estate education"
+    },
+    {
+      icon: Building2,
+      title: "Major Developments",
+      description: "Brokered acquisitions for RIU Hotels and Cabo San Cristobal Resorts - one of the world's largest planned resort projects"
+    },
+    {
+      icon: Scale,
+      title: "Industry Pioneer",
+      description: "Founding member of MLS-BCS, setting professional standards in Baja California Sur real estate"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -85,7 +103,7 @@ const About = () => {
             About Baja International Realty
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl">
-            Your trusted partner in luxury real estate in Cabo San Lucas & Baja California Sur
+            Pioneering luxury real estate in Cabo San Lucas since the late 1980s
           </p>
         </div>
       </section>
@@ -98,13 +116,13 @@ const About = () => {
               <h2 className="text-4xl font-bold text-foreground mb-6">Our Story</h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Founded in 1987, Baja International Realty was born from a passion for connecting people with their dream properties in Cabo San Lucas and throughout Baja California Sur. What started as a boutique agency has grown into one of the region's most respected luxury real estate firms.
+                  Founded in the late 1980s by visionary broker <span className="font-semibold text-foreground">Don Weis</span>, Baja International Realty has been a pioneering force in Cabo San Lucas real estate for over 35 years. Don's groundbreaking "Mexico Gold" real estate education seminars were featured on <span className="font-semibold text-foreground">CNN, 20/20, and national media</span>, helping establish foreign investor confidence in Baja real estate.
                 </p>
                 <p>
-                  Our founders, who relocated from the United States and Canada, brought with them decades of real estate expertise and a vision to create a client-focused agency that combines intimate local knowledge with international standards of service.
+                  From those educational roots with Pan America Ltd, Don established Baja International to represent developers in the Baja Norte region, which evolved into Land's End Realty and eventually today's Baja International Realty. Our firm has brokered some of the most significant real estate transactions in Cabo history, including multi-million dollar land acquisitions for <span className="font-semibold text-foreground">RIU Hotels</span> and <span className="font-semibold text-foreground">Cabo San Cristobal Resorts</span> - one of the largest planned resort projects in the world with 8 hotels, championship golf courses, polo fields, and a Formula One racetrack.
                 </p>
                 <p>
-                  Today, we've successfully helped over 2,200 families find their perfect property in paradise, managing over $800 million in sales. But beyond the numbers, we're most proud of the lasting relationships we've built and the trust our clients place in us throughout their Baja real estate journey.
+                  As a <span className="font-semibold text-foreground">founding member of MLS-BCS</span> (Multiple Listing Service of Baja California Sur), we've successfully helped over <span className="font-semibold text-foreground">1,800 families</span> find their perfect property in paradise, managing over <span className="font-semibold text-foreground">$400 million</span> in sales. Today, under Don's continued leadership, our team of International Realtors® combines 35+ years of local expertise with international standards of service.
                 </p>
               </div>
             </div>
@@ -126,8 +144,43 @@ const About = () => {
         </div>
       </section>
 
+      {/* Key Milestones */}
+      <section className="py-16 bg-secondary">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Key Milestones
+            </h2>
+            <p className="text-muted-foreground">
+              Over 35 years of pioneering real estate excellence
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {milestones.map((milestone, index) => {
+              const Icon = milestone.icon;
+              return (
+                <div key={index} className="bg-background p-6 rounded-xl border border-border text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 rounded-full bg-accent/10">
+                      <Icon className="h-6 w-6 text-accent" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-2">
+                    {milestone.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {milestone.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Our Values */}
-      <section className="py-24 bg-secondary">
+      <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -145,7 +198,7 @@ const About = () => {
                 <div 
                   key={index}
                   onClick={() => setSelectedValue(value.valueKey)}
-                  className="bg-background p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  className="bg-card p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
                 >
                   <div className="flex justify-center mb-6">
                     <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
@@ -169,7 +222,7 @@ const About = () => {
       </section>
 
       {/* Team */}
-      <section className="py-24">
+      <section className="py-24 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -187,7 +240,7 @@ const About = () => {
                 onClick={() => navigate(`/team/${member.id}`)}
                 className="group cursor-pointer"
               >
-                <div className="bg-card rounded-xl overflow-hidden border border-border hover:shadow-hover transition-smooth">
+                <div className="bg-background rounded-xl overflow-hidden border border-border hover:shadow-hover transition-smooth">
                   <div className="aspect-[3/4] overflow-hidden">
                     <img
                       src={member.image}
@@ -219,30 +272,79 @@ const About = () => {
         </div>
       </section>
 
-      {/* Awards & Recognition */}
+      {/* Stats & Recognition */}
       <section className="py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Awards & Recognition
+              Our Track Record
             </h2>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-              Recognized for excellence in Baja California Sur luxury real estate
+              35+ years of excellence in Baja California Sur luxury real estate
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-6xl mx-auto">
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">2024</div>
-              <p className="text-primary-foreground/90">Top Luxury Agency<br />Cabo San Lucas</p>
+              <div className="text-5xl font-bold text-accent mb-2">35+</div>
+              <p className="text-primary-foreground/90">Years of<br />Experience</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">A+</div>
-              <p className="text-primary-foreground/90">Client Service<br />Rating</p>
+              <div className="text-5xl font-bold text-accent mb-2">2,200+</div>
+              <p className="text-primary-foreground/90">Families<br />Served</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">5★</div>
-              <p className="text-primary-foreground/90">Client Satisfaction<br />Score</p>
+              <div className="text-5xl font-bold text-accent mb-2">$800M+</div>
+              <p className="text-primary-foreground/90">Total Sales<br />Volume</p>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl font-bold text-accent mb-2">MLS</div>
+              <p className="text-primary-foreground/90">Founding<br />Member</p>
+            </div>
+          </div>
+
+          {/* Media Recognition */}
+          <div className="mt-16 pt-16 border-t border-primary-foreground/20">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-4">As Featured On</h3>
+            </div>
+            <div className="flex flex-wrap justify-center items-center gap-12">
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-1">CNN</div>
+                <p className="text-sm text-primary-foreground/70">National Television</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-1">20/20</div>
+                <p className="text-sm text-primary-foreground/70">ABC News</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold mb-1">National Radio</div>
+                <p className="text-sm text-primary-foreground/70">Multiple Shows</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Founder Quote */}
+      <section className="py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-6">
+              <img 
+                src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg"
+                alt="Don Weis - Founder & Broker"
+                className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-accent shadow-lg"
+              />
+            </div>
+            <blockquote className="text-2xl md:text-3xl font-light text-foreground italic mb-6 leading-relaxed">
+              "Our mission has always been to educate, guide, and empower clients to make confident real estate decisions in Baja California Sur. Three decades later, that commitment remains stronger than ever."
+            </blockquote>
+            <div className="text-accent font-semibold text-lg">
+              Don Weis
+            </div>
+            <div className="text-muted-foreground">
+              Founder & Broker | Baja International Realty
             </div>
           </div>
         </div>
