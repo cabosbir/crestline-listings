@@ -197,17 +197,22 @@ const AgentDetail = () => {
     {
       id: 12,
       name: "Don Weis",
-      title: "Real Estate Broker",
-      specialization: "Luxury Properties",
+      title: "Founder & Broker",
+      specialization: "Luxury Properties & Development",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg",
-      phone: "+52 624 129 6245",
-      email: "Don@bajainternationalrealty.com",
-      yearsExperience: 30,
-      propertiesSold: 300,
-      bio: "Agent bio to be added. This experienced real estate professional brings dedication and expertise to every transaction in Cabo San Lucas. With a focus on client satisfaction and market knowledge, they help buyers and sellers achieve their real estate goals in Baja California Sur.",
-      certifications: ["REALTOR®", "MLS Member"],
-      languages: ["English", "Spanish"]
-    },
+      phone: "+52 624 143 5555",
+      email: "DonWeis@bajainternationalrealty.com",
+      yearsExperience: 35,
+      propertiesSold: 2200,
+      bio: "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s...",
+      certifications: [
+    "Real Estate Broker",
+    "International Realtor®",
+    "MLS-BCS Founding Member",
+    "AMPI® Member"
+  ],
+  languages: ["English", "Spanish"]
+}
   ];
 
   const agent = agents.find(a => a.id === parseInt(id || "0"));

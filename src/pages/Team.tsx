@@ -182,17 +182,22 @@ const Team = () => {
     {
       id: 12,
       name: "Don Weis",
-      title: "Real Estate Broker",
-      specialization: "Luxury Properties",
+      title: "Founder & Broker",
+      specialization: "Luxury Properties & Development",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg",
-      phone: "+52 624 129 6245",
+      phone: "+52 624 143 5555",
       email: "DonWeis@bajainternationalrealty.com",
-      yearsExperience: 30,
-      propertiesSold: 300,
-      bio: "Agent bio to be added...",
-      certifications: ["REALTOR®", "MLS Member"],
-      languages: ["English", "Spanish"]
-    },
+      yearsExperience: 35,
+      propertiesSold: 2200,
+      bio: "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s...",
+      certifications: [
+    "Real Estate Broker",
+    "International Realtor®",
+    "MLS-BCS Founding Member",
+    "AMPI® Member"
+  ],
+  languages: ["English", "Spanish"]
+  },
     {
       id: 13,
       name: "Agent 13 Name",
