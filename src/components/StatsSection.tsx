@@ -10,7 +10,7 @@ const StatsSection = () => {
     { number: 85, label: "Combined Years of\nExperience", suffix: "" },
     { number: 2200, label: "Homes & Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
-    { number: 800, label: "Combined Sales\nSince 2014", suffix: "M+", prefix: "$" },
+    { number: 400, label: "Combined Sales\nSince 1987", suffix: "M+", prefix: "$" },
   ];
 
   // Intersection Observer to detect when section is visible
