@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Search, SlidersHorizontal, MapPin, Calendar, X } from "lucide-react";
+import { Search, SlidersHorizontal, MapPin, Calendar, X, ExternalLink } from "lucide-react";
 
 interface FilterState {
   // Basic Search
@@ -144,7 +144,21 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     "Recently Sold"
   ];
 
+  // Handle MLS number search
+  const handleMLSSearch = () => {
+    if (filters.mlsNumber.trim()) {
+      // Open FlexMLS search with the MLS number
+      window.open(`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(filters.mlsNumber)}`, '_blank');
+    }
+  };
+
   const handleApply = () => {
+    // If MLS number is provided, search FlexMLS directly
+    if (filters.mlsNumber.trim()) {
+      handleMLSSearch();
+      return;
+    }
+    
     onApplyFilters(filters);
     setIsOpen(false);
     
@@ -242,13 +256,38 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
 
             <div className="space-y-6 mt-6">
               {/* MLS Number Search */}
-              <div>
-                <Label>MLS Number</Label>
-                <Input
-                  placeholder="e.g., 25-4733"
-                  value={filters.mlsNumber}
-                  onChange={(e) => setFilters({ ...filters, mlsNumber: e.target.value })}
-                />
+              <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
+                <Label className="text-lg font-semibold mb-2 block">MLS / IDX Number</Label>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Search directly by MLS listing number for instant results
+                </p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="e.g., 25-4733"
+                    value={filters.mlsNumber}
+                    onChange={(e) => setFilters({ ...filters, mlsNumber: e.target.value })}
+                    className="flex-1"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleMLSSearch();
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="luxury"
+                    onClick={handleMLSSearch}
+                    disabled={!filters.mlsNumber.trim()}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Search
+                  </Button>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <p className="text-sm text-center text-muted-foreground mb-4">
+                  Or use advanced filters below
+                </p>
               </div>
 
               {/* Location */}

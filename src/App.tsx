@@ -12,6 +12,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Team from "./pages/Team";
 import AgentDetail from "./pages/AgentDetail";
+import IDXSearch from "./pages/IDXSearch"; // ADD THIS LINE
 import NotFound from "./pages/NotFound";
 
 // Agent landing pages - UNCOMMENT WHEN CREATED
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/team" element={<Team />} />
           <Route path="/team/:id" element={<AgentDetail />} />
+          <Route path="/idx-search" element={<IDXSearch />} /> {/* ADD THIS LINE */}
           
           {/* Agent Landing Pages - UNCOMMENT WHEN AGENT PAGES ARE CREATED */}
           {/* 
