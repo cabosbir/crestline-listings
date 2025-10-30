@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,8 +10,18 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const Team = () => {
   const navigate = useNavigate();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [statsVisible, setStatsVisible] = useState(false);
+  const [statCounts, setStatCounts] = useState([0, 0, 0, 0]);
+
+  const statsData = [
+    { number: 75, label: "Years Combined\nExperience", suffix: "" },
+    { number: 1800, label: "Properties\nSold", suffix: "+" },
+    { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
+    { number: 400, label: "Combined Sales\nSince 2014", suffix: "M+", prefix: "$" },
+  ];
 
   const agents = [
     {
@@ -24,7 +34,7 @@ const Team = () => {
       email: "robertvanpatten2@gmail.com",
       yearsExperience: 9,
       propertiesSold: 85,
-      bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas’s investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I’m passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
+      bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
       certifications: ["MLS Member"],
       languages: ["English"]
     },
@@ -80,7 +90,7 @@ const Team = () => {
       email: "Hector@bajainternationalrealty.com",
       yearsExperience: 2,
       propertiesSold: 12,
-      bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding. With my background in numbers and market knowledge, I help clients see that buying a home is often better than keeping money in the bank, it’s an investment that grows in value and brings lasting satisfaction. From our first conversation to handing you the keys, I’ll be by your side with clear communication, data driven insight, and honest guidance to help you invest with confidence.",
+      bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding. With my background in numbers and market knowledge, I help clients see that buying a home is often better than keeping money in the bank, it's an investment that grows in value and brings lasting satisfaction. From our first conversation to handing you the keys, I'll be by your side with clear communication, data driven insight, and honest guidance to help you invest with confidence.",
       certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
       languages: ["English", "Spanish"]
     },
@@ -94,7 +104,7 @@ const Team = () => {
       email: "Cristina.cavazos@grupoveq.com",
       yearsExperience: 11,
       propertiesSold: 108,
-      bio: "I’m Cristy a Cabo San Lucas real estate expert specializing in luxury and coastal properties. I excel in selling land, high-rise condominiums, and oceanfront penthouses, combining deep market knowledge with exceptional marketing and negotiation skills. I’m passionate about connecting clients with the finest homes and investment opportunities in Cabo, delivering a seamless, personalized experience that reflects their lifestyle and goals.",
+      bio: "I'm Cristy a Cabo San Lucas real estate expert specializing in luxury and coastal properties. I excel in selling land, high-rise condominiums, and oceanfront penthouses, combining deep market knowledge with exceptional marketing and negotiation skills. I'm passionate about connecting clients with the finest homes and investment opportunities in Cabo, delivering a seamless, personalized experience that reflects their lifestyle and goals.",
       certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
       languages: ["English", "Spanish"]
     },
@@ -108,7 +118,7 @@ const Team = () => {
       email: "mtortricardi@gmail.com",
       yearsExperience: 6,
       propertiesSold: 50,
-      bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico’s most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.",
+      bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico's most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.",
       certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
@@ -121,7 +131,7 @@ const Team = () => {
       phone: "+52 624 317 0297",
       email: "David@BIRCabo.com",
       yearsExperience: 10,
-      propertiesSold: +50,
+      propertiesSold: 50,
       bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
       certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
@@ -133,7 +143,7 @@ const Team = () => {
      specialization: "Luxury Properties",
      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761593547/a-professional-studio-portrait-of-a-dist_3jguKwSiQZKYvX4c2UJkHg_UK7-M6V_Seq1iMZi4MEd-A_ubffdu.jpg",
      phone: "+1 (808) 226-6120",
-     phoneSecondary: "+52 612 120 5289", // Add this new field
+     phoneSecondary: "+52 612 120 5289",
      email: "Zuzu@bajainternationalrealty.com",
      yearsExperience: 11,
      propertiesSold: 101,
@@ -151,7 +161,7 @@ const Team = () => {
       email: "Edgar@bajainternationalrealty.com",
       yearsExperience: 1,
       propertiesSold: 4,
-      bio: "Looking to invest in Cabo San Lucas? I’m your insider advantage. With a unique blend of analytical precision and real estate expertise developed under the guidance of industry veteran Bob Van Patten, I transform complex market data into clear, actionable investment opportunities. I’ve pioneered innovative digital platforms that give my clients unmatched transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. My approach is simple: I empower you with the knowledge, insights, and local connections you need to invest confidently and smart in paradise.",
+      bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage. With a unique blend of analytical precision and real estate expertise developed under the guidance of industry veteran Bob Van Patten, I transform complex market data into clear, actionable investment opportunities. I've pioneered innovative digital platforms that give my clients unmatched transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. My approach is simple: I empower you with the knowledge, insights, and local connections you need to invest confidently and smart in paradise.",
       certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
@@ -213,6 +223,64 @@ const Team = () => {
     },
   ];
 
+  // Intersection Observer for stats animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !statsVisible) {
+          setStatsVisible(true);
+        }
+      },
+      { 
+        threshold: 0.1,
+        rootMargin: '50px'
+      }
+    );
+
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+
+    return () => {
+      if (statsRef.current) {
+        observer.unobserve(statsRef.current);
+      }
+    };
+  }, [statsVisible]);
+
+  // Animated counting effect for stats
+  useEffect(() => {
+    if (!statsVisible) return;
+
+    const duration = 2000; // 2 seconds
+    const steps = 60;
+    const increment = duration / steps;
+
+    let frame = 0;
+    const interval = setInterval(() => {
+      frame++;
+      const progress = frame / steps;
+      
+      // Easing function for smooth animation
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+
+      setStatCounts(statsData.map(stat => Math.floor(stat.number * easeOutQuart)));
+
+      if (frame >= steps) {
+        clearInterval(interval);
+        setStatCounts(statsData.map(stat => stat.number));
+      }
+    }, increment);
+
+    return () => clearInterval(interval);
+  }, [statsVisible]);
+
+  const formatStatNumber = (num: number, index: number) => {
+    const stat = statsData[index];
+    const formattedNum = num.toLocaleString();
+    return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
+  };
+
   const handleViewBio = (agentId: number) => {
     console.log('handleViewBio called with agentId:', agentId);
     const agent = agents.find(a => a.id === agentId);
@@ -269,26 +337,26 @@ const Team = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-secondary border-b">
+      {/* Stats Section with Animation */}
+      <section ref={statsRef} className="py-16 bg-secondary border-b">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-accent mb-2">85</div>
-              <div className="text-sm text-muted-foreground">Years Combined<br />Experience</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-accent mb-2">2,200+</div>
-              <div className="text-sm text-muted-foreground">Properties<br />Sold</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-accent mb-2">100%</div>
-              <div className="text-sm text-muted-foreground">Committed to<br />Our Clients</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-accent mb-2">$800M+</div>
-              <div className="text-sm text-muted-foreground">Combined Sales<br />Since 2014</div>
-            </div>
+            {statsData.map((stat, index) => (
+              <div 
+                key={index}
+                className="text-center"
+                style={{ 
+                  animation: statsVisible ? `fadeInUp 0.6s ease-out ${index * 0.1}s both` : 'none'
+                }}
+              >
+                <div className="text-4xl md:text-5xl font-bold text-accent mb-2 tabular-nums">
+                  {formatStatNumber(statCounts[index], index)}
+                </div>
+                <div className="text-sm text-muted-foreground whitespace-pre-line">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -393,6 +461,19 @@ const Team = () => {
       </section>
 
       <Footer />
+
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };
