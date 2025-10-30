@@ -10,7 +10,9 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <h2 className="text-3xl font-bold mb-4">
-              BAJA INTERNATIONAL <span className="text-accent">REALTY</span>
+              <span style={{ color: '#3b6299' }}>BAJA</span>{' '}
+              INTERNATIONAL{' '}
+              <span style={{ color: '#3b6299' }}>REALTY</span>
             </h2>
             <p className="text-primary-foreground/80 mb-6 max-w-md">
               Your trusted partner for luxury real estate in Cabo San Lucas and Baja California Sur.
@@ -78,7 +80,13 @@ const Footer = () => {
 
         {/* Bottom */}
         <div className="border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/60">
-          <p>© 2025 BAJA INTERNATIONAL REALTY. All rights reserved.</p>
+          <p>
+            © 2025{' '}
+            <span style={{ color: '#3b6299' }}>BAJA</span>{' '}
+            INTERNATIONAL{' '}
+            <span style={{ color: '#3b6299' }}>REALTY</span>
+            . All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
