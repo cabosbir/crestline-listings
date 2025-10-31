@@ -10,41 +10,40 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
-import property1 from "@/assets/property-1.jpg";
-import property2 from "@/assets/property-2.jpg";
-import property3 from "@/assets/property-3.jpg";
-
 const Index = () => {
   const featuredProperties = [
     {
       id: 1,
-      image: property1,
-      price: "$2,850,000",
-      title: "Beachfront Paradise Villa",
-      location: "Marina District",
-      beds: 5,
-      baths: 4,
-      sqft: "4,500 sq ft",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942726/20241014235115115464000000-o_hgb1vh.jpg",
+      price: "$6,950,000",
+      title: "Hacienda Beach Club",
+      location: "Cabo San Lucas",
+      beds: 1,
+      baths: 100,
+      sqft: "Private pool & OWNER FINANCING",
+      mlsNumber: "24-4467",
     },
     {
       id: 2,
-      image: property2,
-      price: "$3,200,000",
-      title: "Golf Course Estate",
-      location: "Sunset Hills",
-      beds: 4,
-      baths: 3,
-      sqft: "3,800 sq ft",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942802/20250321204529858183000-o_u9cpcn.jpg",
+      price: "$499,000",
+      title: "La Vista LARGE PRIVATE YARD B101",
+      location: "Cabo Corridor",
+      beds: 0,
+      baths: 0,
+      sqft: "",
+      mlsNumber: "25-1679",
     },
     {
       id: 3,
-      image: property3,
-      price: "$4,500,000",
-      title: "Oceanfront Penthouse",
-      location: "Downtown Luxury",
-      beds: 3,
-      baths: 3,
-      sqft: "3,200 sq ft",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
+      price: "$3,795,800",
+      title: "Casa Ducci Camino del Mar",
+      location: "Cabo San Lucas",
+      beds: 0,
+      baths: 0,
+      sqft: "",
+      mlsNumber: "24-1981",
     },
   ];
 

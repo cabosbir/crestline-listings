@@ -5,7 +5,6 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ExternalLink } from "lucide-react";
-import { Card } from "@/components/ui/card";
 
 const Properties = () => {
   const [mlsNumber, setMlsNumber] = useState("");
@@ -27,39 +26,6 @@ const Properties = () => {
       handleMLSSearch();
     }
   };
-
-  const handleViewProperty = () => {
-    window.open(FLEXMLS_IFRAME_URL, '_blank');
-  };
-
-  // Featured Properties
-  const featuredProperties = [
-    {
-      id: 1,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942726/20241014235115115464000000-o_hgb1vh.jpg",
-      price: "$6,950,000",
-      title: "Hacienda Beach Club",
-      subtitle: "private pool & OWNER FINANCING 1-100",
-      location: "Cabo San Lucas",
-      mlsNumber: "24-4467",
-    },
-    {
-      id: 2,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942802/20250321204529858183000-o_u9cpcn.jpg",
-      price: "$499,000",
-      title: "La Vista LARGE PRIVATE YARD B101",
-      location: "Cabo Corridor",
-      mlsNumber: "25-1679",
-    },
-    {
-      id: 3,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
-      price: "$3,795,800",
-      title: "Casa Ducci Camino del Mar",
-      location: "Cabo San Lucas",
-      mlsNumber: "24-1981",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,65 +81,9 @@ const Properties = () => {
         </div>
       </section>
 
-      {/* Featured Properties Section */}
-      <section className="py-12 bg-background">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">Featured Properties</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {featuredProperties.map((property) => (
-              <Card key={property.id} className="overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                {/* Property Image */}
-                <div className="relative h-64">
-                  <img 
-                    src={property.image} 
-                    alt={property.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-md shadow-lg">
-                    <span className="text-xl font-bold text-blue-900">{property.price}</span>
-                  </div>
-                </div>
-
-                {/* Property Details */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    {property.title}
-                  </h3>
-                  
-                  {property.subtitle && (
-                    <p className="text-sm text-gray-600 mb-2">
-                      {property.subtitle}
-                    </p>
-                  )}
-                  
-                  <p className="text-gray-600 mb-4">{property.location}</p>
-                  
-                  <div className="mb-4">
-                    <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded text-sm font-medium">
-                      Active / {property.mlsNumber}
-                    </span>
-                  </div>
-
-                  {/* View Property Button */}
-                  <Button 
-                    onClick={handleViewProperty}
-                    className="w-full bg-blue-900 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded-md transition-colors"
-                  >
-                    View Property Details
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Live FlexMLS Feed */}
       <section className="py-8">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">All Available Properties</h2>
-          
           <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-border">
             <iframe 
               src={FLEXMLS_IFRAME_URL}
