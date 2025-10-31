@@ -13,13 +13,13 @@ import Contact from "./pages/Contact";
 import Team from "./pages/Team";
 import AgentDetail from "./pages/AgentDetail";
 import IDXSearch from "./pages/IDXSearch";
-import AlfonsoLandingPage from "./pages/AlfonsoLandingPage"; // Alfonso's landing page
+import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
+import BobLandingPage from "./pages/BobLandingPage";
 import NotFound from "./pages/NotFound";
 
 // Agent landing pages - UNCOMMENT WHEN CREATED
-// import Agent1LandingPage from "./pages/agents/Agent1LandingPage"; // TODO: Bob Van Patten
 // import Agent2LandingPage from "./pages/agents/Agent2LandingPage"; // TODO: Edgar Pacheco
-// import Agent4LandingPage from "./pages/agents/Agent4LandingPage"; // TODO: Agent 4
+// import Agent4LandingPage from "./pages/agents/Agent4LandingPage"; // TODO: Cozbi
 // import Agent5LandingPage from "./pages/agents/Agent5LandingPage"; // TODO: Agent 5
 // import Agent6LandingPage from "./pages/agents/Agent6LandingPage"; // TODO: Agent 6
 // import Agent7LandingPage from "./pages/agents/Agent7LandingPage"; // TODO: Agent 7
@@ -59,8 +59,8 @@ const App = () => (
           
           {/* Agent Landing Pages */}
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
+          <Route path="/agents/bob" element={<BobLandingPage />} />
           {/* 
-          <Route path="/agents/bob" element={<Agent1LandingPage />} />
           <Route path="/agents/edgar" element={<Agent2LandingPage />} />
           <Route path="/agents/cozbi" element={<Agent4LandingPage />} />
           */}
