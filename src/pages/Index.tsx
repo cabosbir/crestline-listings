@@ -47,27 +47,27 @@ const Index = () => {
     },
   ];
 
-  // Team members - Updated with real photos
+  // Team members - Updated to match Team.tsx
   const teamMembers = [
+    {
+      name: "Don Weis",
+      title: "Founder & Broker",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg",
+    },
     {
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
     },
     {
-      name: "Erika Aispuro",
-      title: "Luxury Property Specialist",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
-    },
-    {
       name: "Alfonso Puente",
-      title: "Commercial Real Estate Expert",
+      title: "Sales Manager & Commercial Real Estate Expert",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
     },
     {
-      name: "Cozbi Sanchez",
-      title: "Residential Specialist",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761612891/WhatsApp_Image_2025-10-27_at_5.53.29_PM_dz7y0g.jpg",
+      name: "David Scott Piper",
+      title: "Real Estate Advisor",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
     },
   ];
 
