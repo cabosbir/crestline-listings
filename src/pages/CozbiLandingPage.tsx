@@ -9,79 +9,79 @@ import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Bob Van Patten - Baja International Realty Agent
+// Cozbi Sanchez - Baja International Realty Agent
 const agent = {
-  id: 1,
-  name: "Bob Van Patten",
-  title: "Senior Real Estate Advisor",
-  specialization: "High Yield Investment Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
-  phone: "+52 624 127 6012",
-  email: "robertvanpatten2@gmail.com",
-  yearsExperience: 9,
-  propertiesSold: 85,
-  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
-  certifications: ["MLS Member"],
-  languages: ["English"],
+  id: 4,
+  name: "Cozbi Sanchez",
+  title: "Residential Specialist",
+  specialization: "Family Homes & Condos",
+  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761612891/WhatsApp_Image_2025-10-27_at_5.53.29_PM_dz7y0g.jpg",
+  phone: "+52 624 118 9512",
+  email: "Cozbi@bajainternationalrealty.com",
+  yearsExperience: 8,
+  propertiesSold: 105,
+  bio: "I bring a strong track record of leading high performance, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family homes and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
+  certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
+  languages: ["English", "Spanish"],
 };
 
-// Bob's Featured Listings
+// Cozbi's Featured Listings
 const agentListings = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    price: "$5,750,000",
-    title: "Exclusive Estate Investment",
-    location: "Pedregal, Cabo San Lucas",
-    beds: 6,
-    baths: 7,
-    sqft: "7,200 sq ft",
-    mlsNumber: "25-5134",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
+    price: "$1,850,000",
+    title: "Modern Cabo Residence",
+    location: "San Jose del Cabo",
+    beds: 4,
+    baths: 3,
+    sqft: "3,200 sq ft",
+    mlsNumber: "25-4534",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-    price: "$4,200,000",
-    title: "Luxury Portfolio Property",
-    location: "Cabo Corridor",
-    beds: 5,
-    baths: 5,
-    sqft: "5,500 sq ft",
-    mlsNumber: "25-5045",
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+    price: "$2,250,000",
+    title: "Coastal Living Villa",
+    location: "Tourist Corridor",
+    beds: 3,
+    baths: 3,
+    sqft: "2,800 sq ft",
+    mlsNumber: "25-4621",
   },
   {
     id: 3,
     image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&h=600&fit=crop",
-    price: "$6,500,000",
-    title: "Premier Investment Villa",
-    location: "Palmilla, San Jose del Cabo",
-    beds: 7,
-    baths: 8,
-    sqft: "8,500 sq ft",
-    mlsNumber: "25-5178",
+    price: "$1,650,000",
+    title: "Family Paradise Home",
+    location: "Cabo San Lucas",
+    beds: 4,
+    baths: 4,
+    sqft: "3,500 sq ft",
+    mlsNumber: "25-4712",
   },
 ];
 
 // Client Testimonials
 const testimonials = [
   {
-    name: "Gregory & Patricia Hamilton",
-    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
+    name: "Sarah & Tom Williams",
+    text: "Cozbi made our first home purchase in Cabo incredibly easy! She was patient, knowledgeable, and always available to answer our questions. We love our new home and couldn't have done it without her expertise.",
     rating: 5
   },
   {
-    name: "Charles Bennett",
-    text: "Working with Bob was outstanding. His transparency, precision, and strong negotiation skills made our investment process seamless. A true top producer!",
+    name: "Jennifer Martinez",
+    text: "Working with Cozbi was a pleasure from start to finish. Her attention to detail and understanding of what we were looking for helped us find the perfect property. Highly recommend her services!",
     rating: 5
   },
   {
-    name: "Michelle & Daniel Rogers",
-    text: "Bob guided us through every stage with professionalism and trust. His understanding of Cabo's investment landscape is unmatched. Highly recommend!",
+    name: "Robert & Lisa Chen",
+    text: "Cozbi's professionalism and local market knowledge were invaluable during our home search. She guided us through every step and made sure we felt comfortable with our investment. Thank you, Cozbi!",
     rating: 5
   }
 ];
 
-const BobLandingPage = () => {
+const CozbiLandingPage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -97,7 +97,7 @@ const BobLandingPage = () => {
     // Lead data with agent attribution
     const leadData = {
       ...formData,
-      agent: "bob-van-patten",
+      agent: "cozbi-sanchez",
       agentId: agent.id,
       source: "agent-landing-page",
       timestamp: new Date().toISOString()
@@ -107,7 +107,7 @@ const BobLandingPage = () => {
 
     toast({
       title: "Message Sent!",
-      description: "Bob will contact you within 24 hours.",
+      description: "Cozbi will contact you within 24 hours.",
     });
 
     // Reset form
@@ -176,7 +176,7 @@ const BobLandingPage = () => {
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Bob Now
+                    Call Cozbi Now
                   </a>
                 </Button>
                 <Button 
@@ -199,7 +199,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Bob</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Cozbi</h2>
             <p className="text-lg text-muted-foreground text-center mb-12 leading-relaxed">
               {agent.bio}
             </p>
@@ -246,7 +246,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Bob</p>
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Cozbi</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">My Current Listings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore exclusive properties I'm currently representing in Cabo San Lucas
@@ -374,10 +374,10 @@ const BobLandingPage = () => {
                   />
                 </div>
                 <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Bob
+                  Send Message to Cozbi
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to be contacted by Bob Van Patten regarding your real estate inquiry.
+                  By submitting, you agree to be contacted by Cozbi Sanchez regarding your real estate inquiry.
                 </p>
               </div>
             </form>
@@ -390,4 +390,4 @@ const BobLandingPage = () => {
   );
 };
 
-export default BobLandingPage;
+export default CozbiLandingPage;

@@ -9,79 +9,79 @@ import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Bob Van Patten - Baja International Realty Agent
+// Cristy Cavazos - Baja International Realty Agent
 const agent = {
-  id: 1,
-  name: "Bob Van Patten",
-  title: "Senior Real Estate Advisor",
-  specialization: "High Yield Investment Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
-  phone: "+52 624 127 6012",
-  email: "robertvanpatten2@gmail.com",
-  yearsExperience: 9,
-  propertiesSold: 85,
-  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
-  certifications: ["MLS Member"],
-  languages: ["English"],
+  id: 6,
+  name: "Cristy Cavazos",
+  title: "Luxury Condo Specialist",
+  specialization: "High-Rise & Penthouses",
+  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761588682/a-soft-natural-light-portrait-photograph_2oZCo8O8TSWRNzgLxLaLew_-RP-wvPgSnKeu7bWvJ_y8A_bknfmc.jpg",
+  phone: "+52 624 178 0825",
+  email: "Cristina.cavazos@grupoveq.com",
+  yearsExperience: 11,
+  propertiesSold: 108,
+  bio: "I'm Cristy a Cabo San Lucas real estate expert specializing in luxury and coastal properties. I excel in selling land, high-rise condominiums, and oceanfront penthouses, combining deep market knowledge with exceptional marketing and negotiation skills. I'm passionate about connecting clients with the finest homes and investment opportunities in Cabo, delivering a seamless, personalized experience that reflects their lifestyle and goals.",
+  certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
+  languages: ["English", "Spanish"],
 };
 
-// Bob's Featured Listings
+// Cristy's Featured Listings
 const agentListings = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    price: "$5,750,000",
-    title: "Exclusive Estate Investment",
-    location: "Pedregal, Cabo San Lucas",
-    beds: 6,
-    baths: 7,
-    sqft: "7,200 sq ft",
-    mlsNumber: "25-5134",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+    price: "$3,850,000",
+    title: "Oceanfront Penthouse Suite",
+    location: "Marina District, Cabo San Lucas",
+    beds: 3,
+    baths: 4,
+    sqft: "3,800 sq ft",
+    mlsNumber: "25-4912",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-    price: "$4,200,000",
-    title: "Luxury Portfolio Property",
-    location: "Cabo Corridor",
-    beds: 5,
-    baths: 5,
-    sqft: "5,500 sq ft",
-    mlsNumber: "25-5045",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
+    price: "$2,950,000",
+    title: "Luxury High-Rise Residence",
+    location: "Golden Zone, San Jose",
+    beds: 2,
+    baths: 3,
+    sqft: "2,600 sq ft",
+    mlsNumber: "25-4823",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&h=600&fit=crop",
-    price: "$6,500,000",
-    title: "Premier Investment Villa",
-    location: "Palmilla, San Jose del Cabo",
-    beds: 7,
-    baths: 8,
-    sqft: "8,500 sq ft",
-    mlsNumber: "25-5178",
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+    price: "$4,200,000",
+    title: "Beachfront Tower Penthouse",
+    location: "Medano Beach, Cabo San Lucas",
+    beds: 4,
+    baths: 4,
+    sqft: "4,200 sq ft",
+    mlsNumber: "25-4734",
   },
 ];
 
 // Client Testimonials
 const testimonials = [
   {
-    name: "Gregory & Patricia Hamilton",
-    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
+    name: "John & Elizabeth Morgan",
+    text: "Cristy's expertise in luxury condos is unmatched! She helped us find the perfect penthouse with stunning ocean views. Her professionalism and market knowledge made the entire process seamless.",
     rating: 5
   },
   {
-    name: "Charles Bennett",
-    text: "Working with Bob was outstanding. His transparency, precision, and strong negotiation skills made our investment process seamless. A true top producer!",
+    name: "Michael Anderson",
+    text: "Working with Cristy was exceptional. Her understanding of high-rise properties and investment opportunities helped me make the right decision. I highly recommend her services!",
     rating: 5
   },
   {
-    name: "Michelle & Daniel Rogers",
-    text: "Bob guided us through every stage with professionalism and trust. His understanding of Cabo's investment landscape is unmatched. Highly recommend!",
+    name: "Sandra & Carlos Jimenez",
+    text: "Cristy went above and beyond to find us our dream oceanfront condo. Her attention to detail and dedication to client satisfaction is remarkable. We couldn't be happier!",
     rating: 5
   }
 ];
 
-const BobLandingPage = () => {
+const CristyLandingPage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -97,7 +97,7 @@ const BobLandingPage = () => {
     // Lead data with agent attribution
     const leadData = {
       ...formData,
-      agent: "bob-van-patten",
+      agent: "cristy-cavazos",
       agentId: agent.id,
       source: "agent-landing-page",
       timestamp: new Date().toISOString()
@@ -107,7 +107,7 @@ const BobLandingPage = () => {
 
     toast({
       title: "Message Sent!",
-      description: "Bob will contact you within 24 hours.",
+      description: "Cristy will contact you within 24 hours.",
     });
 
     // Reset form
@@ -176,7 +176,7 @@ const BobLandingPage = () => {
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Bob Now
+                    Call Cristy Now
                   </a>
                 </Button>
                 <Button 
@@ -199,7 +199,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Bob</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Cristy</h2>
             <p className="text-lg text-muted-foreground text-center mb-12 leading-relaxed">
               {agent.bio}
             </p>
@@ -246,7 +246,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Bob</p>
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Cristy</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">My Current Listings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore exclusive properties I'm currently representing in Cabo San Lucas
@@ -374,10 +374,10 @@ const BobLandingPage = () => {
                   />
                 </div>
                 <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Bob
+                  Send Message to Cristy
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to be contacted by Bob Van Patten regarding your real estate inquiry.
+                  By submitting, you agree to be contacted by Cristy Cavazos regarding your real estate inquiry.
                 </p>
               </div>
             </form>
@@ -390,4 +390,4 @@ const BobLandingPage = () => {
   );
 };
 
-export default BobLandingPage;
+export default CristyLandingPage;

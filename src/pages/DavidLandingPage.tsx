@@ -9,23 +9,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Bob Van Patten - Baja International Realty Agent
+// David Scott Piper - Baja International Realty Agent
 const agent = {
-  id: 1,
-  name: "Bob Van Patten",
-  title: "Senior Real Estate Advisor",
-  specialization: "High Yield Investment Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
-  phone: "+52 624 127 6012",
-  email: "robertvanpatten2@gmail.com",
-  yearsExperience: 9,
-  propertiesSold: 85,
-  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
-  certifications: ["MLS Member"],
-  languages: ["English"],
+  id: 8,
+  name: "David Scott Piper",
+  title: "Real Estate Advisor",
+  specialization: "Luxury Properties",
+  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
+  phone: "+52 624 317 0297",
+  email: "David@BIRCabo.com",
+  yearsExperience: 10,
+  propertiesSold: 50,
+  bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
+  certifications: ["REALTOR®", "MLS Member"],
+  languages: ["English", "Spanish"],
 };
 
-// Bob's Featured Listings
+// David's Featured Listings
 const agentListings = [
   {
     id: 1,
@@ -65,23 +65,23 @@ const agentListings = [
 // Client Testimonials
 const testimonials = [
   {
-    name: "Gregory & Patricia Hamilton",
-    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
+    name: "William & Catherine Roberts",
+    text: "David's investment expertise helped us build an incredible real estate portfolio in Cabo. His market knowledge and strategic guidance have been invaluable to our success.",
     rating: 5
   },
   {
-    name: "Charles Bennett",
-    text: "Working with Bob was outstanding. His transparency, precision, and strong negotiation skills made our investment process seamless. A true top producer!",
+    name: "Thomas Henderson",
+    text: "Working with David was a game-changer for our investment strategy. His decade of experience and professional approach made the entire process seamless and profitable.",
     rating: 5
   },
   {
-    name: "Michelle & Daniel Rogers",
-    text: "Bob guided us through every stage with professionalism and trust. His understanding of Cabo's investment landscape is unmatched. Highly recommend!",
+    name: "Patricia & James Wilson",
+    text: "David's dedication to helping us find the right luxury property was exceptional. His expertise in the Cabo market and commitment to our goals made all the difference.",
     rating: 5
   }
 ];
 
-const BobLandingPage = () => {
+const DavidLandingPage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -97,7 +97,7 @@ const BobLandingPage = () => {
     // Lead data with agent attribution
     const leadData = {
       ...formData,
-      agent: "bob-van-patten",
+      agent: "david-scott-piper",
       agentId: agent.id,
       source: "agent-landing-page",
       timestamp: new Date().toISOString()
@@ -107,7 +107,7 @@ const BobLandingPage = () => {
 
     toast({
       title: "Message Sent!",
-      description: "Bob will contact you within 24 hours.",
+      description: "David will contact you within 24 hours.",
     });
 
     // Reset form
@@ -176,7 +176,7 @@ const BobLandingPage = () => {
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Bob Now
+                    Call David Now
                   </a>
                 </Button>
                 <Button 
@@ -199,7 +199,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Bob</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About David</h2>
             <p className="text-lg text-muted-foreground text-center mb-12 leading-relaxed">
               {agent.bio}
             </p>
@@ -246,7 +246,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Bob</p>
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by David</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">My Current Listings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore exclusive properties I'm currently representing in Cabo San Lucas
@@ -374,10 +374,10 @@ const BobLandingPage = () => {
                   />
                 </div>
                 <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Bob
+                  Send Message to David
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to be contacted by Bob Van Patten regarding your real estate inquiry.
+                  By submitting, you agree to be contacted by David Scott Piper regarding your real estate inquiry.
                 </p>
               </div>
             </form>
@@ -390,4 +390,4 @@ const BobLandingPage = () => {
   );
 };
 
-export default BobLandingPage;
+export default DavidLandingPage;

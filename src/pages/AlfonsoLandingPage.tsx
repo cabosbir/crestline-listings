@@ -1,4 +1,3 @@
-// Alfonso Puente - Baja International Realty Agent
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -12,17 +11,17 @@ import { useToast } from "@/hooks/use-toast";
 
 // Alfonso Puente - Baja International Realty Agent
 const agent = {
-  id: 2,
+  id: 3,
   name: "Alfonso Puente",
-  title: "Senior Real Estate Advisor",
-  specialization: "Luxury Beachfront Properties & Investment Opportunities",
+  title: "Sales Manager & Commercial Real Estate Expert",
+  specialization: "Real Estate Developments & Market Analysis",
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
-  phone: "+52 624 143 5555",
+  phone: "+52 624 188 8681",
   email: "alfonso@bircabo.com",
   yearsExperience: 18,
-  propertiesSold: 250,
-  bio: "With nearly two decades of experience in Cabo San Lucas luxury real estate, Alfonso Puente has established himself as one of the most trusted advisors in the region. His deep market knowledge, bilingual expertise, and commitment to client satisfaction have made him the go-to agent for discerning buyers and investors seeking exceptional beachfront properties. Alfonso's personalized approach ensures every client finds not just a property, but their perfect Cabo lifestyle.",
-  certifications: ["REALTOR®", "CRS", "Luxury Property Specialist", "International Property Specialist"],
+  propertiesSold: 205,
+  bio: "As a sales manager with a strong track record of leading high-performing commercial teams and achieving exceptional closing rates, I specialize in real estate developments in progress and detailed market analysis to help clients reach their investment goals. My leadership is grounded in clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
+  certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
   languages: ["English", "Spanish"],
 };
 
@@ -31,53 +30,53 @@ const agentListings = [
   {
     id: 1,
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    price: "$3,850,000",
-    title: "Oceanfront Villa Esperanza",
+    price: "$5,750,000",
+    title: "Exclusive Estate Investment",
     location: "Pedregal, Cabo San Lucas",
-    beds: 5,
-    baths: 5,
-    sqft: "5,200 sq ft",
-    mlsNumber: "25-4733",
+    beds: 6,
+    baths: 7,
+    sqft: "7,200 sq ft",
+    mlsNumber: "25-5134",
   },
   {
     id: 2,
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-    price: "$2,950,000",
-    title: "Quivira Golf Estate",
-    location: "Quivira, Cabo San Lucas",
-    beds: 4,
-    baths: 4,
-    sqft: "4,800 sq ft",
-    mlsNumber: "25-4891",
+    price: "$4,200,000",
+    title: "Luxury Portfolio Property",
+    location: "Cabo Corridor",
+    beds: 5,
+    baths: 5,
+    sqft: "5,500 sq ft",
+    mlsNumber: "25-5045",
   },
   {
     id: 3,
     image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&h=600&fit=crop",
-    price: "$2,650,000",
-    title: "Palmilla Beachfront Villa",
+    price: "$6,500,000",
+    title: "Premier Investment Villa",
     location: "Palmilla, San Jose del Cabo",
-    beds: 4,
-    baths: 3,
-    sqft: "3,600 sq ft",
-    mlsNumber: "25-4123",
+    beds: 7,
+    baths: 8,
+    sqft: "8,500 sq ft",
+    mlsNumber: "25-5178",
   },
 ];
 
 // Client Testimonials
 const testimonials = [
   {
-    name: "Michael & Jennifer Rodriguez",
-    text: "Alfonso made our dream of owning a beachfront property in Cabo a reality. His knowledge of the market and attention to detail throughout the entire process was exceptional. We couldn't be happier!",
+    name: "Jonathan & Rebecca Miller",
+    text: "Alfonso's expertise in commercial real estate and market analysis was invaluable. His leadership and results-driven approach made our investment in Cabo a tremendous success.",
     rating: 5
   },
   {
-    name: "David Thompson",
-    text: "As an investor, I needed someone who understood both the luxury market and investment potential. Alfonso delivered beyond expectations. His insights helped me find the perfect property with excellent ROI.",
+    name: "Marcus Davidson",
+    text: "Working with Alfonso was exceptional. His 18 years of experience and track record of 200+ closings speak for themselves. A true professional who delivers results!",
     rating: 5
   },
   {
-    name: "Patricia Hernandez",
-    text: "Working with Alfonso was a pleasure from start to finish. He was patient, professional, and always available to answer our questions. We found our perfect retirement home thanks to him!",
+    name: "Susan & Richard Torres",
+    text: "Alfonso's detailed market analysis and clear communication gave us complete confidence in our development investment. His expertise is unmatched in Baja California Sur.",
     rating: 5
   }
 ];

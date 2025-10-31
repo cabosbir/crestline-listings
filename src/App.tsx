@@ -15,17 +15,16 @@ import AgentDetail from "./pages/AgentDetail";
 import IDXSearch from "./pages/IDXSearch";
 import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
 import BobLandingPage from "./pages/BobLandingPage";
+import CozbiLandingPage from "./pages/CozbiLandingPage";
+import CristyLandingPage from "./pages/CristyLandingPage";
+import DavidLandingPage from "./pages/DavidLandingPage";
+import DonLandingPage from "./pages/DonLandingPage";
+import EdgarLandingPage from "./pages/EdgarLandingPage";
+import ErikaLandingPage from "./pages/ErikaLandingPage";
+import HectorLandingPage from "./pages/HectorLandingPage";
+import MarisolLandingPage from "./pages/MarisolLandingPage";
+import SusuLandingPage from "./pages/SusuLandingPage";
 import NotFound from "./pages/NotFound";
-
-// Agent landing pages - UNCOMMENT WHEN CREATED
-// import Agent2LandingPage from "./pages/agents/Agent2LandingPage"; // TODO: Edgar Pacheco
-// import Agent4LandingPage from "./pages/agents/Agent4LandingPage"; // TODO: Cozbi
-// import Agent5LandingPage from "./pages/agents/Agent5LandingPage"; // TODO: Agent 5
-// import Agent6LandingPage from "./pages/agents/Agent6LandingPage"; // TODO: Agent 6
-// import Agent7LandingPage from "./pages/agents/Agent7LandingPage"; // TODO: Agent 7
-// import Agent8LandingPage from "./pages/agents/Agent8LandingPage"; // TODO: Agent 8
-// import Agent9LandingPage from "./pages/agents/Agent9LandingPage"; // TODO: Agent 9
-// import Agent10LandingPage from "./pages/agents/Agent10LandingPage"; // TODO: Agent 10
 
 const queryClient = new QueryClient();
 
@@ -60,10 +59,15 @@ const App = () => (
           {/* Agent Landing Pages */}
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/agents/bob" element={<BobLandingPage />} />
-          {/* 
-          <Route path="/agents/edgar" element={<Agent2LandingPage />} />
-          <Route path="/agents/cozbi" element={<Agent4LandingPage />} />
-          */}
+          <Route path="/agents/cozbi" element={<CozbiLandingPage />} />
+          <Route path="/agents/cristy" element={<CristyLandingPage />} />
+          <Route path="/agents/david" element={<DavidLandingPage />} />
+          <Route path="/agents/don" element={<DonLandingPage />} />
+          <Route path="/agents/edgar" element={<EdgarLandingPage />} />
+          <Route path="/agents/erika" element={<ErikaLandingPage />} />
+          <Route path="/agents/hector" element={<HectorLandingPage />} />
+          <Route path="/agents/marisol" element={<MarisolLandingPage />} />
+          <Route path="/agents/susu" element={<SusuLandingPage />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -9,23 +9,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Bob Van Patten - Baja International Realty Agent
+// Erika Aispuro - Baja International Realty Agent
 const agent = {
-  id: 1,
-  name: "Bob Van Patten",
-  title: "Senior Real Estate Advisor",
-  specialization: "High Yield Investment Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
-  phone: "+52 624 127 6012",
-  email: "robertvanpatten2@gmail.com",
-  yearsExperience: 9,
-  propertiesSold: 85,
-  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
-  certifications: ["MLS Member"],
-  languages: ["English"],
+  id: 2,
+  name: "Erika Aispuro",
+  title: "Luxury Property Specialist",
+  specialization: "Oceanfront Estates",
+  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
+  phone: "+52 624 109 7909",
+  email: "Erika80@gmail.com",
+  yearsExperience: 8,
+  propertiesSold: 60,
+  bio: "My passion for luxury coastal living in Cabo San Lucas and my commitment to client satisfaction have made me one of the most sought-after agents in the region. I specialize in oceanfront estates and investment properties throughout Baja California Sur, offering comprehensive market analysis and personalized service to ensure every client finds the perfect property to match their vision and lifestyle.",
+  certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
+  languages: ["English", "Spanish"],
 };
 
-// Bob's Featured Listings
+// Erika's Featured Listings
 const agentListings = [
   {
     id: 1,
@@ -65,23 +65,23 @@ const agentListings = [
 // Client Testimonials
 const testimonials = [
   {
-    name: "Gregory & Patricia Hamilton",
-    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
+    name: "Victoria & Michael Stevens",
+    text: "Erika's expertise in oceanfront estates is unmatched. Her passion for coastal living and dedication to finding us the perfect property made our dream home a reality.",
     rating: 5
   },
   {
-    name: "Charles Bennett",
-    text: "Working with Bob was outstanding. His transparency, precision, and strong negotiation skills made our investment process seamless. A true top producer!",
+    name: "Christopher Anderson",
+    text: "Working with Erika was exceptional. Her comprehensive market analysis and personalized approach gave us confidence throughout the entire process. Highly recommend!",
     rating: 5
   },
   {
-    name: "Michelle & Daniel Rogers",
-    text: "Bob guided us through every stage with professionalism and trust. His understanding of Cabo's investment landscape is unmatched. Highly recommend!",
+    name: "Jennifer & Robert Martinez",
+    text: "Erika is one of the best agents in Cabo. Her commitment to client satisfaction and deep knowledge of luxury properties made our investment seamless and rewarding.",
     rating: 5
   }
 ];
 
-const BobLandingPage = () => {
+const ErikaLandingPage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -97,7 +97,7 @@ const BobLandingPage = () => {
     // Lead data with agent attribution
     const leadData = {
       ...formData,
-      agent: "bob-van-patten",
+      agent: "erika-aispuro",
       agentId: agent.id,
       source: "agent-landing-page",
       timestamp: new Date().toISOString()
@@ -107,7 +107,7 @@ const BobLandingPage = () => {
 
     toast({
       title: "Message Sent!",
-      description: "Bob will contact you within 24 hours.",
+      description: "Erika will contact you within 24 hours.",
     });
 
     // Reset form
@@ -176,7 +176,7 @@ const BobLandingPage = () => {
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Bob Now
+                    Call Erika Now
                   </a>
                 </Button>
                 <Button 
@@ -199,7 +199,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Bob</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Erika</h2>
             <p className="text-lg text-muted-foreground text-center mb-12 leading-relaxed">
               {agent.bio}
             </p>
@@ -246,7 +246,7 @@ const BobLandingPage = () => {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Bob</p>
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Erika</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">My Current Listings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore exclusive properties I'm currently representing in Cabo San Lucas
@@ -374,10 +374,10 @@ const BobLandingPage = () => {
                   />
                 </div>
                 <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Bob
+                  Send Message to Erika
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to be contacted by Bob Van Patten regarding your real estate inquiry.
+                  By submitting, you agree to be contacted by Erika Aispuro regarding your real estate inquiry.
                 </p>
               </div>
             </form>
@@ -390,4 +390,4 @@ const BobLandingPage = () => {
   );
 };
 
-export default BobLandingPage;
+export default ErikaLandingPage;

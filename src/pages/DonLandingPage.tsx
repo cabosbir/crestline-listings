@@ -9,79 +9,83 @@ import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Bob Van Patten - Baja International Realty Agent
+// Don Weis - Founder & Broker of Baja International Realty
 const agent = {
-  id: 1,
-  name: "Bob Van Patten",
-  title: "Senior Real Estate Advisor",
-  specialization: "High Yield Investment Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
-  phone: "+52 624 127 6012",
-  email: "robertvanpatten2@gmail.com",
-  yearsExperience: 9,
-  propertiesSold: 85,
-  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
-  certifications: ["MLS Member"],
-  languages: ["English"],
+  id: 12,
+  name: "Don Weis",
+  title: "Founder & Broker",
+  specialization: "Luxury Properties & Development",
+  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg",
+  phone: "+52 624 143 5555",
+  email: "Don@BIRCabo.com",
+  yearsExperience: 35,
+  propertiesSold: 2200,
+  bio: "Born and raised in San Mateo, California, Don Weis was first introduced to Mexico in the late 1980s, where he developed a strong interest in foreign real estate ownership. He founded Pan America Ltd., producing real estate investment seminars under the name Mexico Gold to educate international buyers about opportunities in Mexico. The program's success drew national attention, with features on CNN, ABC's 20/20, and numerous radio and television shows. Don later established Baja International, representing major developers in the Baja Norte region.",
+  bio2: "Following several family tragedies, Don returned to San Mateo, where he founded and served as CEO of a successful manufacturing company for 14 years. His enduring passion for Mexico eventually brought him back to Cabo San Lucas, where he took a two-year sabbatical before reentering the real estate industry.",
+  bio3: "Don founded his own companies — Land's End Realty of Los Cabos, Baja International Realty, and Baja International Real Estate & Development, a private investment firm. Under his leadership, these firms have brokered numerous landmark transactions, including several multi-million-dollar land acquisitions for major resort developments.",
+  bio4: "Notably, Don represented Cabo San Cristobal Resorts, one of the largest planned resort communities in the world, featuring four hotels, multiple golf courses, polo fields, a Formula One racetrack, and Cabo's first world-class yacht club. His firm also managed a complex 75-acre acquisition on Medano Beach for Riu Hotels.",
+  bio5: "With more than $250 million USD in personal real estate sales in the Los Cabos market, Don Weis has built a trusted reputation for professionalism, market insight, and results that continue to shape the region's development landscape. Don also founded the very popular Cabo Cantina restaurant/bar in 2007 which is located next-door to BIR office.",
+  certifications: ["Real Estate Broker", "International Realtor®", "MLS-BCS Founding Member", "AMPI® Member"],
+  languages: ["English", "Spanish"],
 };
 
-// Bob's Featured Listings
+// Don's Featured Listings
 const agentListings = [
   {
     id: 1,
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    price: "$5,750,000",
-    title: "Exclusive Estate Investment",
+    price: "$12,500,000",
+    title: "Landmark Development Opportunity",
     location: "Pedregal, Cabo San Lucas",
-    beds: 6,
-    baths: 7,
-    sqft: "7,200 sq ft",
-    mlsNumber: "25-5134",
+    beds: 8,
+    baths: 10,
+    sqft: "12,500 sq ft",
+    mlsNumber: "25-6234",
   },
   {
     id: 2,
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-    price: "$4,200,000",
-    title: "Luxury Portfolio Property",
-    location: "Cabo Corridor",
-    beds: 5,
-    baths: 5,
-    sqft: "5,500 sq ft",
-    mlsNumber: "25-5045",
+    price: "$18,750,000",
+    title: "Premier Beachfront Estate",
+    location: "Medano Beach",
+    beds: 10,
+    baths: 12,
+    sqft: "15,000 sq ft",
+    mlsNumber: "25-6178",
   },
   {
     id: 3,
     image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&h=600&fit=crop",
-    price: "$6,500,000",
-    title: "Premier Investment Villa",
-    location: "Palmilla, San Jose del Cabo",
-    beds: 7,
-    baths: 8,
-    sqft: "8,500 sq ft",
-    mlsNumber: "25-5178",
+    price: "$25,000,000",
+    title: "Exclusive Resort Property",
+    location: "Tourist Corridor",
+    beds: 12,
+    baths: 14,
+    sqft: "20,000 sq ft",
+    mlsNumber: "25-6312",
   },
 ];
 
 // Client Testimonials
 const testimonials = [
   {
-    name: "Gregory & Patricia Hamilton",
-    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
+    name: "Resort Development Group",
+    text: "Don's expertise in large-scale development transactions is unparalleled. His guidance on our resort project was instrumental to its success. A true visionary in Cabo real estate.",
     rating: 5
   },
   {
-    name: "Charles Bennett",
-    text: "Working with Bob was outstanding. His transparency, precision, and strong negotiation skills made our investment process seamless. A true top producer!",
+    name: "International Investment Partners",
+    text: "Working with Don Weis was a masterclass in luxury real estate. His decades of experience and market knowledge made our multi-million dollar acquisition seamless and profitable.",
     rating: 5
   },
   {
-    name: "Michelle & Daniel Rogers",
-    text: "Bob guided us through every stage with professionalism and trust. His understanding of Cabo's investment landscape is unmatched. Highly recommend!",
+    name: "Private Estate Buyer",
+    text: "Don's professionalism and reputation in Cabo San Lucas is legendary. He helped us navigate complex transactions with ease. We couldn't have found a better advisor.",
     rating: 5
   }
 ];
 
-const BobLandingPage = () => {
+const DonLandingPage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -97,7 +101,7 @@ const BobLandingPage = () => {
     // Lead data with agent attribution
     const leadData = {
       ...formData,
-      agent: "bob-van-patten",
+      agent: "don-weis",
       agentId: agent.id,
       source: "agent-landing-page",
       timestamp: new Date().toISOString()
@@ -107,7 +111,7 @@ const BobLandingPage = () => {
 
     toast({
       title: "Message Sent!",
-      description: "Bob will contact you within 24 hours.",
+      description: "Don will contact you within 24 hours.",
     });
 
     // Reset form
@@ -142,7 +146,7 @@ const BobLandingPage = () => {
 
             {/* Agent Info */}
             <div className="order-1 lg:order-2 text-center lg:text-left">
-              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
+              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Founder & Visionary Leader</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
                 {agent.name}
               </h1>
@@ -176,7 +180,7 @@ const BobLandingPage = () => {
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Bob Now
+                    Call Don Now
                   </a>
                 </Button>
                 <Button 
@@ -199,13 +203,17 @@ const BobLandingPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Bob</h2>
-            <p className="text-lg text-muted-foreground text-center mb-12 leading-relaxed">
-              {agent.bio}
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Don</h2>
+            <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+              <p>{agent.bio}</p>
+              <p>{agent.bio2}</p>
+              <p>{agent.bio3}</p>
+              <p>{agent.bio4}</p>
+              <p>{agent.bio5}</p>
+            </div>
 
             {/* Credentials */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               {/* Certifications */}
               <div className="text-center">
                 <Award className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
@@ -246,10 +254,10 @@ const BobLandingPage = () => {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Bob</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Current Listings</h2>
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Don</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Landmark Properties</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore exclusive properties I'm currently representing in Cabo San Lucas
+              Explore exclusive development opportunities and premier estates in Cabo San Lucas
             </p>
           </div>
 
@@ -297,7 +305,7 @@ const BobLandingPage = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
               <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                Ready to find your dream property? Let's start the conversation.
+                Ready to discuss your next investment? Let's start the conversation.
               </p>
             </div>
 
@@ -358,7 +366,7 @@ const BobLandingPage = () => {
                 </div>
                 <div>
                   <Input
-                    placeholder="Property Interest (e.g., 3-bed beachfront villa)"
+                    placeholder="Property Interest (e.g., development opportunity, luxury estate)"
                     value={formData.propertyInterest}
                     onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
                     className="h-12"
@@ -374,10 +382,10 @@ const BobLandingPage = () => {
                   />
                 </div>
                 <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Bob
+                  Send Message to Don
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to be contacted by Bob Van Patten regarding your real estate inquiry.
+                  By submitting, you agree to be contacted by Don Weis regarding your real estate inquiry.
                 </p>
               </div>
             </form>
@@ -390,4 +398,4 @@ const BobLandingPage = () => {
   );
 };
 
-export default BobLandingPage;
+export default DonLandingPage;
