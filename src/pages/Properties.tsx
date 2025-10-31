@@ -9,9 +9,6 @@ import { Search, ExternalLink } from "lucide-react";
 const Properties = () => {
   const [mlsNumber, setMlsNumber] = useState("");
   
-  // ✅ Your actual MLS BCS FlexMLS SmartFrame Link
-  // Shows 4,370+ properties across all of Baja California Sur
-  // Includes: Cabo San Lucas, San Jose del Cabo, East Cape, La Paz, Todos Santos, etc.
   const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
   
   const handleMLSSearch = () => {
@@ -114,27 +111,6 @@ const Properties = () => {
             <p className="text-xs text-gray-400">
               Showing properties in: Cabo San Lucas • San Jose del Cabo • Cabo Corridor • East Cape • 
               Los Barriles • Todos Santos • Pescadero • La Paz • Loreto
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Troubleshooting Note */}
-      <section className="py-8 bg-yellow-50 border-t border-yellow-200">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <h3 className="text-lg font-semibold text-yellow-900 mb-2">
-              🔧 If the search doesn't load above:
-            </h3>
-            <ol className="text-sm text-yellow-800 space-y-1 list-decimal list-inside">
-              <li>Log into FlexMLS at: <strong>my.flexmls.com/donweis</strong></li>
-              <li>Go to: <strong>Menu → Preferences → IDX Manager → Link Editor tab</strong></li>
-              <li>Scroll to <strong>Step 4: Portal Registration</strong></li>
-              <li>Check the box: <strong>"Allow visitors to skip the above registration options"</strong></li>
-              <li>Click <strong>Save</strong> and refresh this page</li>
-            </ol>
-            <p className="text-xs text-yellow-700 mt-3">
-              💡 This removes the registration wall and allows the iframe to display publicly
             </p>
           </div>
         </div>
