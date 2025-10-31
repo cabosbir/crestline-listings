@@ -31,7 +31,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex flex-col">
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: '#102f74' }}>
-              <span style={{ color: '#d4af37' }}>B</span>I<span style={{ color: '#d4af37' }}>R</span>
+              BIR
             </h1>
             <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wider -mt-1">
               Baja International Realty
