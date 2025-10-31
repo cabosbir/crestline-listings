@@ -1,5 +1,3 @@
-// src/pages/Properties.tsx - Updated with Live FlexMLS Feed
-
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,16 +8,26 @@ import { Search, ExternalLink } from "lucide-react";
 
 const Properties = () => {
   const [mlsNumber, setMlsNumber] = useState("");
-  const FLEXMLS_BASE_URL = "https://link.flexmls.com/1lpm0zo1944e,12";
-
+  
+  // ✅ Your actual MLS BCS FlexMLS SmartFrame Link
+  // Shows 4,370+ properties across all of Baja California Sur
+  // Includes: Cabo San Lucas, San Jose del Cabo, East Cape, La Paz, Todos Santos, etc.
+  const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
+  
   const handleMLSSearch = () => {
     if (mlsNumber.trim()) {
-      window.open(`${FLEXMLS_BASE_URL}?search=${encodeURIComponent(mlsNumber)}`, '_blank');
+      window.open(`${FLEXMLS_IFRAME_URL}?search=${encodeURIComponent(mlsNumber)}`, '_blank');
     }
   };
 
   const handleOpenFullSearch = () => {
-    window.open(FLEXMLS_BASE_URL, '_blank');
+    window.open(FLEXMLS_IFRAME_URL, '_blank');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && mlsNumber.trim()) {
+      handleMLSSearch();
+    }
   };
 
   return (
@@ -27,14 +35,15 @@ const Properties = () => {
       <Navbar />
       <FloatingContact />
 
-      {/* Header */}
+      {/* Header Section */}
       <section className="pt-32 pb-8 bg-secondary">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
-            Luxury Properties
+            Cabo San Lucas Properties
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mb-6">
-            Discover exceptional oceanfront villas, elegant condos, and exclusive estates in the most desirable locations
+            Search 4,370+ luxury properties across Baja California Sur including Cabo San Lucas, 
+            San Jose del Cabo, Todos Santos, East Cape, and La Paz
           </p>
 
           {/* MLS Quick Search */}
@@ -46,16 +55,12 @@ const Properties = () => {
                   placeholder="Search by MLS # or IDX number..."
                   value={mlsNumber}
                   onChange={(e) => setMlsNumber(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleMLSSearch();
-                    }
-                  }}
+                  onKeyPress={handleKeyPress}
                   className="pl-10"
                 />
               </div>
               <Button 
-                variant="luxury" 
+                variant="default"
                 onClick={handleMLSSearch}
                 disabled={!mlsNumber.trim()}
                 className="px-6"
@@ -69,7 +74,7 @@ const Properties = () => {
                 className="px-4"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                Open Full Search
+                Full Search
               </Button>
             </div>
             <p className="text-sm text-muted-foreground mt-2">
@@ -84,17 +89,18 @@ const Properties = () => {
         <div className="container mx-auto px-4">
           <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-border">
             <iframe 
-              src={FLEXMLS_BASE_URL}
+              src={FLEXMLS_IFRAME_URL}
               frameBorder="0"
               width="100%"
-              height="1200"
+              height="1400"
               className="w-full"
-              title="FlexMLS Property Listings"
-              style={{ minHeight: '1200px' }}
+              title="MLS BCS Property Listings - Cabo San Lucas"
+              style={{ minHeight: '1400px' }}
+              allow="geolocation"
             />
           </div>
           
-          <div className="text-center mt-6">
+          <div className="text-center mt-6 space-y-2">
             <Button 
               variant="outline"
               onClick={handleOpenFullSearch}
@@ -102,6 +108,34 @@ const Properties = () => {
               <ExternalLink className="h-4 w-4 mr-2" />
               Open in New Window
             </Button>
+            <p className="text-sm text-muted-foreground">
+              All listings courtesy of MLS BCS (Multiple Listing Service of Baja California Sur)
+            </p>
+            <p className="text-xs text-gray-400">
+              Showing properties in: Cabo San Lucas • San Jose del Cabo • Cabo Corridor • East Cape • 
+              Los Barriles • Todos Santos • Pescadero • La Paz • Loreto
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Troubleshooting Note */}
+      <section className="py-8 bg-yellow-50 border-t border-yellow-200">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <h3 className="text-lg font-semibold text-yellow-900 mb-2">
+              🔧 If the search doesn't load above:
+            </h3>
+            <ol className="text-sm text-yellow-800 space-y-1 list-decimal list-inside">
+              <li>Log into FlexMLS at: <strong>my.flexmls.com/donweis</strong></li>
+              <li>Go to: <strong>Menu → Preferences → IDX Manager → Link Editor tab</strong></li>
+              <li>Scroll to <strong>Step 4: Portal Registration</strong></li>
+              <li>Check the box: <strong>"Allow visitors to skip the above registration options"</strong></li>
+              <li>Click <strong>Save</strong> and refresh this page</li>
+            </ol>
+            <p className="text-xs text-yellow-700 mt-3">
+              💡 This removes the registration wall and allows the iframe to display publicly
+            </p>
           </div>
         </div>
       </section>
