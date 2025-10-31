@@ -125,8 +125,8 @@ const AlfonsoLandingPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 bg-primary text-primary-foreground overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/80" />
+      <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: '#102f74', color: 'white' }}>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#102f74] via-[#1a3d8f] to-[#102f74]/80" />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -142,26 +142,26 @@ const AlfonsoLandingPage = () => {
 
             {/* Agent Info */}
             <div className="order-1 lg:order-2 text-center lg:text-left">
-              <p className="text-accent text-lg mb-2 font-medium">Your Luxury Real Estate Expert</p>
+              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
                 {agent.name}
               </h1>
-              <p className="text-xl md:text-2xl text-primary-foreground/90 mb-6">
+              <p className="text-xl md:text-2xl mb-6" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
                 {agent.title}
               </p>
-              <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl mx-auto lg:mx-0">
+              <p className="text-lg mb-8 max-w-xl mx-auto lg:mx-0" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                 Specializing in {agent.specialization}
               </p>
 
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
                 <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                  <div className="text-3xl font-bold text-accent">{agent.yearsExperience}</div>
-                  <div className="text-sm text-primary-foreground/80">Years Experience</div>
+                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
+                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Years Experience</div>
                 </div>
                 <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                  <div className="text-3xl font-bold text-accent">{agent.propertiesSold}+</div>
-                  <div className="text-sm text-primary-foreground/80">Properties Sold</div>
+                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
+                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Properties Sold</div>
                 </div>
               </div>
 
@@ -180,7 +180,7 @@ const AlfonsoLandingPage = () => {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                  className="bg-transparent border-white text-white hover:bg-white hover:text-[#102f74]"
                   onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <Mail className="mr-2 h-5 w-5" />
@@ -205,12 +205,12 @@ const AlfonsoLandingPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Certifications */}
               <div className="text-center">
-                <Award className="h-12 w-12 text-accent mx-auto mb-4" />
+                <Award className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Certifications</h3>
                 <div className="space-y-1">
                   {agent.certifications.map((cert, index) => (
                     <div key={index} className="flex items-center justify-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-accent" />
+                      <CheckCircle className="h-4 w-4" style={{ color: '#102f74' }} />
                       <span className="text-sm text-muted-foreground">{cert}</span>
                     </div>
                   ))}
@@ -219,7 +219,7 @@ const AlfonsoLandingPage = () => {
 
               {/* Languages */}
               <div className="text-center">
-                <Users className="h-12 w-12 text-accent mx-auto mb-4" />
+                <Users className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Languages</h3>
                 <div className="space-y-1">
                   {agent.languages.map((lang, index) => (
@@ -230,7 +230,7 @@ const AlfonsoLandingPage = () => {
 
               {/* Expertise */}
               <div className="text-center">
-                <Home className="h-12 w-12 text-accent mx-auto mb-4" />
+                <Home className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Specialization</h3>
                 <p className="text-sm text-muted-foreground">{agent.specialization}</p>
               </div>
@@ -243,7 +243,7 @@ const AlfonsoLandingPage = () => {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="text-accent uppercase tracking-wider mb-2 font-medium">Featured by Alfonso</p>
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Alfonso</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">My Current Listings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore exclusive properties I'm currently representing in Cabo San Lucas
@@ -276,7 +276,7 @@ const AlfonsoLandingPage = () => {
               <div key={index} className="bg-secondary/30 p-6 rounded-xl">
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <span key={i} className="text-accent text-xl">★</span>
+                    <span key={i} className="text-xl" style={{ color: '#d4af37' }}>★</span>
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-4 italic">"{testimonial.text}"</p>
@@ -288,12 +288,12 @@ const AlfonsoLandingPage = () => {
       </section>
 
       {/* Contact Form */}
-      <section id="contact-form" className="py-16 bg-primary text-primary-foreground">
+      <section id="contact-form" className="py-16" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
-              <p className="text-primary-foreground/80 text-lg">
+              <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                 Ready to find your dream property? Let's start the conversation.
               </p>
             </div>
@@ -304,20 +304,20 @@ const AlfonsoLandingPage = () => {
                 href={`tel:${agent.phone}`}
                 className="flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm p-4 rounded-lg hover:bg-primary-foreground/20 transition-colors"
               >
-                <Phone className="h-6 w-6 text-accent" />
+                <Phone className="h-6 w-6" style={{ color: '#d4af37' }} />
                 <div>
-                  <div className="text-sm text-primary-foreground/70">Phone</div>
-                  <div className="font-semibold">{agent.phone}</div>
+                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone</div>
+                  <div className="font-semibold text-white">{agent.phone}</div>
                 </div>
               </a>
               <a 
                 href={`mailto:${agent.email}`}
                 className="flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm p-4 rounded-lg hover:bg-primary-foreground/20 transition-colors"
               >
-                <Mail className="h-6 w-6 text-accent" />
+                <Mail className="h-6 w-6" style={{ color: '#d4af37' }} />
                 <div>
-                  <div className="text-sm text-primary-foreground/70">Email</div>
-                  <div className="font-semibold break-all">{agent.email}</div>
+                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Email</div>
+                  <div className="font-semibold break-all text-white">{agent.email}</div>
                 </div>
               </a>
             </div>
