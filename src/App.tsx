@@ -12,13 +12,13 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Team from "./pages/Team";
 import AgentDetail from "./pages/AgentDetail";
-import IDXSearch from "./pages/IDXSearch"; // ADD THIS LINE
+import IDXSearch from "./pages/IDXSearch";
+import AlfonsoLandingPage from "./pages/AlfonsoLandingPage"; // Alfonso's landing page
 import NotFound from "./pages/NotFound";
 
 // Agent landing pages - UNCOMMENT WHEN CREATED
 // import Agent1LandingPage from "./pages/agents/Agent1LandingPage"; // TODO: Bob Van Patten
-// import Agent2LandingPage from "./pages/agents/Agent2LandingPage"; // TODO: Sarah Johnson
-// import Agent3LandingPage from "./pages/agents/Agent3LandingPage"; // TODO: Alfonso Puente
+// import Agent2LandingPage from "./pages/agents/Agent2LandingPage"; // TODO: Edgar Pacheco
 // import Agent4LandingPage from "./pages/agents/Agent4LandingPage"; // TODO: Agent 4
 // import Agent5LandingPage from "./pages/agents/Agent5LandingPage"; // TODO: Agent 5
 // import Agent6LandingPage from "./pages/agents/Agent6LandingPage"; // TODO: Agent 6
@@ -55,20 +55,14 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/team" element={<Team />} />
           <Route path="/team/:id" element={<AgentDetail />} />
-          <Route path="/idx-search" element={<IDXSearch />} /> {/* ADD THIS LINE */}
+          <Route path="/idx-search" element={<IDXSearch />} />
           
-          {/* Agent Landing Pages - UNCOMMENT WHEN AGENT PAGES ARE CREATED */}
+          {/* Agent Landing Pages */}
+          <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
           {/* 
-          <Route path="/bob" element={<Agent1LandingPage />} />
-          <Route path="/sarah" element={<Agent2LandingPage />} />
-          <Route path="/alfonso" element={<Agent3LandingPage />} />
-          <Route path="/agent4" element={<Agent4LandingPage />} />
-          <Route path="/agent5" element={<Agent5LandingPage />} />
-          <Route path="/agent6" element={<Agent6LandingPage />} />
-          <Route path="/agent7" element={<Agent7LandingPage />} />
-          <Route path="/agent8" element={<Agent8LandingPage />} />
-          <Route path="/agent9" element={<Agent9LandingPage />} />
-          <Route path="/agent10" element={<Agent10LandingPage />} />
+          <Route path="/agents/bob" element={<Agent1LandingPage />} />
+          <Route path="/agents/edgar" element={<Agent2LandingPage />} />
+          <Route path="/agents/cozbi" element={<Agent4LandingPage />} />
           */}
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
