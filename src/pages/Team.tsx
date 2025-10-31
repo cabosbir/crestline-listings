@@ -25,6 +25,25 @@ const Team = () => {
 
   const agents = [
     {
+      id: 12,
+      name: "Don Weis",
+      title: "Founder & Broker",
+      specialization: "Luxury Properties & Development",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg",
+      phone: "+52 624 143 5555",
+      email: "Don@BIRCabo.com",
+      yearsExperience: 35,
+      propertiesSold: 2200,
+      bio: "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s...",
+      certifications: [
+        "Real Estate Broker",
+        "International Realtor®",
+        "MLS-BCS Founding Member",
+        "AMPI® Member"
+      ],
+      languages: ["English", "Spanish"]
+    },
+    {
       id: 1,
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
@@ -34,23 +53,9 @@ const Team = () => {
       email: "robertvanpatten2@gmail.com",
       yearsExperience: 9,
       propertiesSold: 85,
-      bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
+      bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales.",
       certifications: ["MLS Member"],
       languages: ["English"]
-    },
-    {
-      id: 2,
-      name: "Erika Aispuro",
-      title: "Luxury Property Specialist",
-      specialization: "Oceanfront Estates",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
-      phone: "+52 624 109 7909",
-      email: "Erika80@gmail.com",
-      yearsExperience: 8,
-      propertiesSold: 60,
-      bio: "My passion for luxury coastal living in Cabo San Lucas and my commitment to client satisfaction have made me one of the most sought-after agents in the region. I specialize in oceanfront estates and investment properties throughout Baja California Sur, offering comprehensive market analysis and personalized service to ensure every client finds the perfect property to match their vision and lifestyle.",
-      certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
-      languages: ["English", "Spanish"]
     },
     {
       id: 3,
@@ -62,64 +67,8 @@ const Team = () => {
       email: "alfonso@bircabo.com",
       yearsExperience: 18,
       propertiesSold: 205,
-      bio: "As a sales manager with a strong track record of leading high-performing commercial teams and achieving exceptional closing rates, I specialize in real estate developments in progress and detailed market analysis to help clients reach their investment goals. My leadership is grounded in clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
+      bio: "As a sales manager with a strong track record of leading high-performing commercial teams, I specialize in real estate developments and market analysis.",
       certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
-      languages: ["English", "Spanish"]
-    },
-    {
-      id: 4,
-      name: "Cozbi Sanchez",
-      title: "Residential Specialist",
-      specialization: "Family Homes & Condos",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761612891/WhatsApp_Image_2025-10-27_at_5.53.29_PM_dz7y0g.jpg",
-      phone: "+52 624 118 9512",
-      email: "Cozbi@bajainternationalrealty.com",
-      yearsExperience: 8,
-      propertiesSold: 105,
-      bio: "I bring a strong track record of leading high performance, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family homes and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
-      certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
-      languages: ["English", "Spanish"]
-    },
-    {
-      id: 5,
-      name: "Hector Mendoza",
-      title: "Investment Property Advisor",
-      specialization: "Investment & Portfolio",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761582971/a-meticulously-crafted-portrait-photogra_mYQPdq9WQSWo-pvakiW_Yw_xsfP9GCST6CP-VnQtn3QSA_sybk55.jpg",
-      phone: "+52 624 211 4879",
-      email: "Hector@BIRCabo.com",
-      yearsExperience: 2,
-      propertiesSold: 12,
-      bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding. With my background in numbers and market knowledge, I help clients see that buying a home is often better than keeping money in the bank, it's an investment that grows in value and brings lasting satisfaction. From our first conversation to handing you the keys, I'll be by your side with clear communication, data driven insight, and honest guidance to help you invest with confidence.",
-      certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
-      languages: ["English", "Spanish"]
-    },
-    {
-      id: 6,
-      name: "Cristy Cavazos",
-      title: "Luxury Condo Specialist",
-      specialization: "High-Rise & Penthouses",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761588682/a-soft-natural-light-portrait-photograph_2oZCo8O8TSWRNzgLxLaLew_-RP-wvPgSnKeu7bWvJ_y8A_bknfmc.jpg",
-      phone: "+52 624 178 0825",
-      email: "Cristina.cavazos@grupoveq.com",
-      yearsExperience: 11,
-      propertiesSold: 108,
-      bio: "I'm Cristy a Cabo San Lucas real estate expert specializing in luxury and coastal properties. I excel in selling land, high-rise condominiums, and oceanfront penthouses, combining deep market knowledge with exceptional marketing and negotiation skills. I'm passionate about connecting clients with the finest homes and investment opportunities in Cabo, delivering a seamless, personalized experience that reflects their lifestyle and goals.",
-      certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
-      languages: ["English", "Spanish"]
-    },
-    {
-      id: 7,
-      name: "Marisol Tort",
-      title: "Real Estate Advisor",
-      specialization: "Luxury Properties",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761668403/WhatsApp_Image_2025-10-27_at_9.24.29_PM_uajiar.jpg",
-      phone: "+52 624 264 3896",
-      email: "mtortricardi@gmail.com",
-      yearsExperience: 6,
-      propertiesSold: 50,
-      bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico's most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.",
-      certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
     {
@@ -137,19 +86,89 @@ const Team = () => {
       languages: ["English", "Spanish"]
     },
     {
-     id: 9,
-     name: "Susu Vieira",
-     title: "Real Estate Advisor",
-     specialization: "Luxury Properties",
-     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761788188/a-professional-studio-portrait-photograp_RGKPNo0jRji9CJIPZrgVGA_liMa2FOqRO-PViqgwfupEw_cleanup_ga5cgy.png",
-     phone: "+1 (808) 226-6120",
-     phoneSecondary: "+52 612 120 5289",
-     email: "Zuzu@BIRCabo.com",
-     yearsExperience: 11,
-     propertiesSold: 101,
-     bio: "Agent bio to be added...",
-     certifications: ["REALTOR®", "MLS Member"],
-     languages: ["English", "Spanish"]
+      id: 6,
+      name: "Cristy Cavazos",
+      title: "Luxury Condo Specialist",
+      specialization: "High-Rise & Penthouses",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761588682/a-soft-natural-light-portrait-photograph_2oZCo8O8TSWRNzgLxLaLew_-RP-wvPgSnKeu7bWvJ_y8A_bknfmc.jpg",
+      phone: "+52 624 178 0825",
+      email: "Cristina.cavazos@grupoveq.com",
+      yearsExperience: 11,
+      propertiesSold: 108,
+      bio: "I'm Cristy, a Cabo San Lucas real estate expert specializing in luxury and coastal properties.",
+      certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
+      languages: ["English", "Spanish"]
+    },
+    {
+      id: 2,
+      name: "Erika Aispuro",
+      title: "Luxury Property Specialist",
+      specialization: "Oceanfront Estates",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
+      phone: "+52 624 109 7909",
+      email: "Erika80@gmail.com",
+      yearsExperience: 8,
+      propertiesSold: 60,
+      bio: "My passion for luxury coastal living in Cabo San Lucas has made me one of the most sought-after agents in the region.",
+      certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
+      languages: ["English", "Spanish"]
+    },
+    {
+      id: 5,
+      name: "Hector Mendoza",
+      title: "Investment Property Advisor",
+      specialization: "Investment & Portfolio",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761582971/a-meticulously-crafted-portrait-photogra_mYQPdq9WQSWo-pvakiW_Yw_xsfP9GCST6CP-VnQtn3QSA_sybk55.jpg",
+      phone: "+52 624 211 4879",
+      email: "Hector@BIRCabo.com",
+      yearsExperience: 2,
+      propertiesSold: 12,
+      bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding.",
+      certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
+      languages: ["English", "Spanish"]
+    },
+    {
+      id: 9,
+      name: "Susu Vieira",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761788188/a-professional-studio-portrait-photograp_RGKPNo0jRji9CJIPZrgVGA_liMa2FOqRO-PViqgwfupEw_cleanup_ga5cgy.png",
+      phone: "+1 (808) 226-6120",
+      phoneSecondary: "+52 612 120 5289",
+      email: "Susu@BIRCabo.com",
+      yearsExperience: 11,
+      propertiesSold: 101,
+      bio: "With over a decade of experience in luxury real estate, Susu brings unmatched expertise and dedication to every client relationship.",
+      certifications: ["REALTOR®", "MLS Member"],
+      languages: ["English", "Spanish"]
+    },
+    {
+      id: 7,
+      name: "Marisol Tort",
+      title: "Real Estate Advisor",
+      specialization: "Luxury Properties",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761668403/WhatsApp_Image_2025-10-27_at_9.24.29_PM_uajiar.jpg",
+      phone: "+52 624 264 3896",
+      email: "mtortricardi@gmail.com",
+      yearsExperience: 6,
+      propertiesSold: 50,
+      bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment opportunities.",
+      certifications: ["REALTOR®", "MLS Member"],
+      languages: ["English", "Spanish"]
+    },
+    {
+      id: 4,
+      name: "Cozbi Sanchez",
+      title: "Residential Specialist",
+      specialization: "Family Homes & Condos",
+      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761612891/WhatsApp_Image_2025-10-27_at_5.53.29_PM_dz7y0g.jpg",
+      phone: "+52 624 118 9512",
+      email: "Cozbi@bajainternationalrealty.com",
+      yearsExperience: 8,
+      propertiesSold: 105,
+      bio: "I bring dedication and genuine care to every real estate transaction in Cabo San Lucas.",
+      certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
+      languages: ["English", "Spanish"]
     },
     {
       id: 10,
@@ -161,69 +180,8 @@ const Team = () => {
       email: "Edgar@BIRCabo.com",
       yearsExperience: 1,
       propertiesSold: 4,
-      bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage. With a unique blend of analytical precision and real estate expertise developed under the guidance of industry veteran Bob Van Patten, I transform complex market data into clear, actionable investment opportunities. I've pioneered innovative digital platforms that give my clients unmatched transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. My approach is simple: I empower you with the knowledge, insights, and local connections you need to invest confidently and smart in paradise.",
+      bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage with analytical precision and real estate expertise.",
       certifications: ["REALTOR®", "MLS Member"],
-      languages: ["English", "Spanish"]
-    },
-    {
-      id: 11,
-      name: "Agent 11 Name",
-      title: "Real Estate Advisor",
-      specialization: "Luxury Properties",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+52 612 169 8328",
-      email: "agent11@bajainternationalrealty.com",
-      yearsExperience: 10,
-      propertiesSold: 150,
-      bio: "Agent bio to be added...",
-      certifications: ["REALTOR®"],
-      languages: ["English", "Spanish"]
-    },
-    {
-      id: 12,
-      name: "Don Weis",
-      title: "Founder & Broker",
-      specialization: "Luxury Properties & Development",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg",
-      phone: "+52 624 143 5555",
-      email: "Don@BIRCabo.com",
-      yearsExperience: 35,
-      propertiesSold: 2200,
-      bio: "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s...",
-      certifications: [
-    "Real Estate Broker",
-    "International Realtor®",
-    "MLS-BCS Founding Member",
-    "AMPI® Member"
-  ],
-  languages: ["English", "Spanish"]
-  },
-    {
-      id: 13,
-      name: "Agent 13 Name",
-      title: "Real Estate Advisor",
-      specialization: "Luxury Properties",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+52 624 XXX XXXX",
-      email: "agent13@bajainternationalrealty.com",
-      yearsExperience: 10,
-      propertiesSold: 150,
-      bio: "Agent bio to be added...",
-      certifications: ["REALTOR®"],
-      languages: ["English", "Spanish"]
-    },
-    {
-      id: 14,
-      name: "Agent 14 Name",
-      title: "Real Estate Advisor",
-      specialization: "Luxury Properties",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1200&fit=crop&crop=faces",
-      phone: "+52 624 XXX XXXX",
-      email: "agent14@bajainternationalrealty.com",
-      yearsExperience: 10,
-      propertiesSold: 150,
-      bio: "Agent bio to be added...",
-      certifications: ["REALTOR®"],
       languages: ["English", "Spanish"]
     },
   ];
@@ -257,7 +215,7 @@ const Team = () => {
   useEffect(() => {
     if (!statsVisible) return;
 
-    const duration = 2000; // 2 seconds
+    const duration = 2000;
     const steps = 60;
     const increment = duration / steps;
 
@@ -266,7 +224,6 @@ const Team = () => {
       frame++;
       const progress = frame / steps;
       
-      // Easing function for smooth animation
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
 
       setStatCounts(statsData.map(stat => Math.floor(stat.number * easeOutQuart)));
@@ -287,17 +244,7 @@ const Team = () => {
   };
 
   const handleViewBio = (agentId: number) => {
-    console.log('handleViewBio called with agentId:', agentId);
-    const agent = agents.find(a => a.id === agentId);
-    console.log('Found agent:', agent?.name);
-    
-    try {
-      navigate(`/team/${agentId}`);
-      console.log('Navigation triggered to:', `/team/${agentId}`);
-    } catch (error) {
-      console.error('Navigation error:', error);
-      window.location.href = `/team/${agentId}`;
-    }
+    navigate(`/team/${agentId}`);
   };
 
   const checkScrollButtons = () => {
