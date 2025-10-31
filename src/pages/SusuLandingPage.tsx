@@ -18,7 +18,7 @@ const agent = {
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761788188/a-professional-studio-portrait-photograp_RGKPNo0jRji9CJIPZrgVGA_liMa2FOqRO-PViqgwfupEw_cleanup_ga5cgy.png",
   phone: "+1 (808) 226-6120",
   phoneSecondary: "+52 612 120 5289",
-  email: "Zuzu@BIRCabo.com",
+  email: "Susu@BIRCabo.com",
   yearsExperience: 11,
   propertiesSold: 101,
   bio: "With over a decade of experience in luxury real estate, Susu brings unmatched expertise and dedication to every client relationship. Her proven track record of 100+ successful transactions demonstrates her commitment to excellence and her deep understanding of the Cabo San Lucas market. Susu's personalized approach and market knowledge ensure that her clients receive exceptional service and results.",
