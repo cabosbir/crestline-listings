@@ -41,7 +41,7 @@ const Hero = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center z-0"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=1080&fit=crop')",
+          backgroundImage: "url('https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761945779/20250726164723675263000000-o_di7pbx.jpg')",
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
@@ -64,7 +64,7 @@ const Hero = () => {
               <select
                 value={searchParams.location}
                 onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
-                className="w-full h-12 px-4 pr-10 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
               >
                 <option value="">Location</option>
                 <option value="Cabo San Lucas">Cabo San Lucas</option>
@@ -93,7 +93,7 @@ const Hero = () => {
               <select
                 value={searchParams.propertyType}
                 onChange={(e) => setSearchParams({...searchParams, propertyType: e.target.value})}
-                className="w-full h-12 px-4 pr-10 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
               >
                 <option value="">Property Type</option>
                 <option value="House">House</option>
@@ -119,7 +119,7 @@ const Hero = () => {
               <select
                 value={searchParams.bedrooms}
                 onChange={(e) => setSearchParams({...searchParams, bedrooms: e.target.value})}
-                className="w-full h-12 px-4 pr-10 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
               >
                 <option value="">Bedrooms</option>
                 <option value="1">1+</option>
@@ -145,7 +145,7 @@ const Hero = () => {
               <select
                 value={searchParams.priceRange}
                 onChange={(e) => setSearchParams({...searchParams, priceRange: e.target.value})}
-                className="w-full h-12 px-4 pr-10 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
               >
                 <option value="">Price Range</option>
                 <option value="0-500000">Under $500K</option>
