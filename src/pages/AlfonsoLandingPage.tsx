@@ -125,8 +125,8 @@ const AlfonsoLandingPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: '#102f74', color: 'white' }}>
-        <div className="absolute inset-0 bg-gradient-to-br from-[#102f74] via-[#1a3d8f] to-[#102f74]/80" />
+      <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -143,34 +143,36 @@ const AlfonsoLandingPage = () => {
             {/* Agent Info */}
             <div className="order-1 lg:order-2 text-center lg:text-left">
               <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
                 {agent.name}
               </h1>
-              <p className="text-xl md:text-2xl mb-6" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+              <p className="text-xl md:text-2xl mb-6" style={{ color: '#666' }}>
                 {agent.title}
               </p>
-              <p className="text-lg mb-8 max-w-xl mx-auto lg:mx-0" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+              <p className="text-lg mb-8 max-w-xl mx-auto lg:mx-0" style={{ color: '#666' }}>
                 Specializing in {agent.specialization}
               </p>
 
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
-                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Years Experience</div>
+                  <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
                 </div>
-                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 text-center">
+                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Properties Sold</div>
+                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button 
-                  variant="hero" 
+                  variant="default"
                   size="lg"
                   asChild
+                  style={{ backgroundColor: '#102f74', color: 'white' }}
+                  className="hover:opacity-90"
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
@@ -180,7 +182,8 @@ const AlfonsoLandingPage = () => {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="bg-transparent border-white text-white hover:bg-white hover:text-[#102f74]"
+                  style={{ borderColor: '#102f74', color: '#102f74' }}
+                  className="bg-transparent hover:bg-[#102f74] hover:text-white"
                   onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <Mail className="mr-2 h-5 w-5" />
@@ -302,7 +305,8 @@ const AlfonsoLandingPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <a 
                 href={`tel:${agent.phone}`}
-                className="flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm p-4 rounded-lg hover:bg-primary-foreground/20 transition-colors"
+                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
                 <Phone className="h-6 w-6" style={{ color: '#d4af37' }} />
                 <div>
@@ -312,7 +316,8 @@ const AlfonsoLandingPage = () => {
               </a>
               <a 
                 href={`mailto:${agent.email}`}
-                className="flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm p-4 rounded-lg hover:bg-primary-foreground/20 transition-colors"
+                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
                 <Mail className="h-6 w-6" style={{ color: '#d4af37' }} />
                 <div>
