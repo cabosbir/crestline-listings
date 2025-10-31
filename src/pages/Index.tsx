@@ -28,7 +28,7 @@ const Index = () => {
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
       price: "$499,000",
       title: "La Vista LARGE PRIVATE YARD B101",
-      location: "Cabo Corridor",
+      location: "Cabo San Lucas",
       beds: 3,
       baths: 3,
       totalM2: "372.06",
