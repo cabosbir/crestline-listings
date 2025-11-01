@@ -35,7 +35,7 @@ export default async function handler(req, res) {
       console.error('OFFICE_APP_PASSWORD not configured');
       return res.status(500).json({ 
         success: false, 
-        error: 'Email service not configured. Please contact us directly at cabosbir@gmail.com' 
+        error: 'Email service not configured. Please contact us directly at info@bircabo.com' 
       });
     }
 
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+        user: process.env.OFFICE_EMAIL || 'info@bircabo.com',
         pass: process.env.OFFICE_APP_PASSWORD
       }
     });
@@ -131,7 +131,7 @@ export default async function handler(req, res) {
 
     // Send email to business (and agent if selected)
     const mailOptions = {
-      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      from: process.env.OFFICE_EMAIL || 'info@bircabo.com',
       to: emailRecipients.join(', '),
       subject: `🏡 New ${inquiryName} Inquiry${preferredAgent ? ` for ${preferredAgent}` : ''} - ${name}`,
       html: businessEmailHtml,
@@ -212,7 +212,7 @@ export default async function handler(req, res) {
     `;
 
     const clientMailOptions = {
-      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      from: process.env.OFFICE_EMAIL || 'info@bircabo.com',
       to: email,
       subject: `We Received Your Inquiry${preferredAgent ? ` - ${preferredAgent}` : ''} - Baja International Realty`,
       html: clientEmailHtml

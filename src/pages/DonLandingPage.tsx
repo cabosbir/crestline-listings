@@ -15,7 +15,7 @@ const agent = {
   name: "Don Weis",
   title: "Founder & Broker",
   specialization: "Luxury Properties & Development",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg",
+  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg",
   phone: "+52 624 143 5555",
   email: "Don@BIRCabo.com",
   yearsExperience: 35,

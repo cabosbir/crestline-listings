@@ -49,13 +49,13 @@ const Contact = () => {
     { id: 2, name: "Erika Aispuro", email: "Erika80@gmail.com" },
     { id: 3, name: "Alfonso Puente", email: "alfonso@bircabo.com" },
     { id: 4, name: "Cozbi Sanchez", email: "Cozbi@bajainternationalrealty.com" },
-    { id: 5, name: "Hector Mendoza", email: "Hector@bajainternationalrealty.com" },
+    { id: 5, name: "Hector Mendoza", email: "Hector@bircabo.com" },
     { id: 6, name: "Cristy Cavazos", email: "Cristina.cavazos@grupoveq.com" },
     { id: 7, name: "Marisol Tort", email: "mtortricardi@gmail.com" },
-    { id: 8, name: "David Scott Piper", email: "David@bajainternationalrealty.com" },
-    { id: 9, name: "Zuzu Vieira", email: "Zuzu@bajainternationalrealty.com" },
-    { id: 10, name: "Edgar Pacheco", email: "Edgar@bajainternationalrealty.com" },
-    { id: 12, name: "Don Weis", email: "DonWeis@bajainternationalrealty.com" }
+    { id: 8, name: "David Scott Piper", email: "David@bircabo.com" },
+    { id: 9, name: "Susu Vieira", email: "Susu@bircabo.com" },
+    { id: 10, name: "Edgar Pacheco", email: "Edgar@bircabo.com" },
+    { id: 12, name: "Don Weis", email: "Don@bircabo.com" }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -203,7 +203,7 @@ const Contact = () => {
                     <p className="text-muted-foreground text-sm">
                       Monday - Friday: 9:00 AM - 6:00 PM MST<br />
                       Saturday: 10:00 AM - 4:00 PM MST<br />
-                      Sunday: By Appointment
+                      Sunday: 10:00 AM - 4:00 PM MST
                     </p>
                   </div>
                 </div>
@@ -386,7 +386,7 @@ const Contact = () => {
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-4">
-                  * Required fields. We'll respond within 24 hours during business days.
+                  * Required fields. We'll respond within 24 hours during business hours.
                 </p>
               </form>
             </div>
