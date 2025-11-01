@@ -23,11 +23,11 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
-        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24">
           BAJA INTERNATIONAL REALTY
         </h1>
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2 whitespace-nowrap">
-          Discover Your Dream Property in Cabo San Lucas & Baja California Sur
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2">
+          Discover Your Dream Property in Cabo San Lucas<br className="hidden sm:block" /> & Baja California Sur
         </p>
 
         {/* Call to Action Button */}
@@ -43,18 +43,14 @@ const Hero = () => {
         </div>
 
         {/* Key Features */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="text-3xl font-bold text-white mb-2">75+</div>
-            <div className="text-white/90 text-sm">Years Experience</div>
+        <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto px-4">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 md:p-6 border border-white/20">
+            <div className="text-3xl md:text-4xl font-bold text-white mb-2">1800+</div>
+            <div className="text-white/90 text-sm md:text-base">Properties Sold</div>
           </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="text-3xl font-bold text-white mb-2">1800+</div>
-            <div className="text-white/90 text-sm">Properties Sold</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="text-3xl font-bold text-white mb-2">$400M+</div>
-            <div className="text-white/90 text-sm">In Sales</div>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 md:p-6 border border-white/20">
+            <div className="text-3xl md:text-4xl font-bold text-white mb-2">$400M+</div>
+            <div className="text-white/90 text-sm md:text-base">In Sales</div>
           </div>
         </div>
 
