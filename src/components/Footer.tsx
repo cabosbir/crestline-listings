@@ -99,7 +99,7 @@ const Footer = () => {
             Don Weis, Broker | MLS-BCS Founding Member | International Realtor®
           </p>
           <p className="mt-1 text-[10px] opacity-50">
-            Hire us for web design:{' '}
+            To hire the architect of this website call:{' '}
             <a 
               href="tel:+526121698328" 
               className="hover:opacity-100 transition-opacity"
