@@ -19,7 +19,7 @@ const agent = {
   phone: "+52 624 188 8681",
   email: "alfonso@bircabo.com",
   yearsExperience: 18,
-  propertiesSold: 205,
+  propertiesSold: 890,
   bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
   certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
   languages: ["English", "Spanish"],
