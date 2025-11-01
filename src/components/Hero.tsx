@@ -11,13 +11,17 @@ const Hero = () => {
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{
-          backgroundImage: "url('https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761945779/20250726164723675263000000-o_di7pbx.jpg')",
-        }}
-      >
+      {/* Background Video */}
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="https://res.cloudinary.com/dhwnr1pa5/video/upload/v1762020545/22BIR_ljy48a.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
       </div>
 
