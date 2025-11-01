@@ -10,7 +10,7 @@ const StatsSection = () => {
     { number: 75, label: "Combined Years of\nExperience", suffix: "" },
     { number: 1800, label: "Homes & Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
-    { number: 400, label: "Combined Sales\nSince 2014", suffix: "M+", prefix: "$" },
+    { number: 1.2, label: "Combined Sales\nSince 1987", suffix: "B+", prefix: "$", isDecimal: true },
   ];
 
   // Intersection Observer to detect when section is visible
@@ -54,7 +54,7 @@ const StatsSection = () => {
       // Easing function for smooth animation
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
 
-      setCounts(stats.map(stat => Math.floor(stat.number * easeOutQuart)));
+      setCounts(stats.map(stat => stat.number * easeOutQuart));
 
       if (frame >= steps) {
         clearInterval(interval);
@@ -68,7 +68,15 @@ const StatsSection = () => {
 
   const formatNumber = (num: number, index: number) => {
     const stat = stats[index];
-    const formattedNum = num.toLocaleString();
+    
+    // For decimal numbers (like 1.2B), format with one decimal place
+    if (stat.isDecimal) {
+      const formattedNum = num.toFixed(1);
+      return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
+    }
+    
+    // For whole numbers, use standard formatting
+    const formattedNum = Math.floor(num).toLocaleString();
     return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
   };
 
