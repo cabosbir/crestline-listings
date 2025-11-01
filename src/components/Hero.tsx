@@ -27,7 +27,7 @@ const Hero = () => {
           BAJA INTERNATIONAL REALTY
         </h1>
         <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2">
-          Discover Your Dream Property in Cabo San Lucas<br className="hidden sm:block" /> & Baja California Sur
+          Discover Your Dream Property in<br className="sm:hidden" /> Cabo San Lucas & Baja California Sur
         </p>
 
         {/* Call to Action Button */}
