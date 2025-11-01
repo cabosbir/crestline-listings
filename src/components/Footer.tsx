@@ -94,10 +94,9 @@ const Footer = () => {
         <div className="border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/60">
           <p>
             © 2025{' '}
-            <span style={{ color: '#3b6299' }}>BAJA</span>{' '}
-            INTERNATIONAL{' '}
-            <span style={{ color: '#3b6299' }}>REALTY</span>
-            . All rights reserved.
+            <span style={{ color: '#3b6299' }}></span>{' '}
+            BAJA INTERNATIONAL REALTY{' '}
+            <span style={{ color: '#3b6299' }}>All rights reserved.</span>
           </p>
           <p className="mt-2 text-xs">
             Don Weis, Broker | MLS-BCS Founding Member | International Realtor®
