@@ -18,9 +18,9 @@ const Team = () => {
 
   const statsData = [
     { number: 75, label: "Years Combined\nExperience", suffix: "" },
-    { number: 1800, label: "Properties\nSold", suffix: "+" },
+    { number: 1850, label: "Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
-    { number: 1.2, label: "Combined Sales\nSince 2014", suffix: "B+", prefix: "$" },
+    { number: 1.2, label: "Combined Sales\nSince 1987", suffix: "B+", prefix: "$" },
   ];
 
   const agents = [

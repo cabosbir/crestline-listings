@@ -49,7 +49,7 @@ const Hero = () => {
         {/* Key Features */}
         <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto px-4">
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 md:p-6 border border-white/20">
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2">1800+</div>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-2">1850+</div>
             <div className="text-white/90 text-sm md:text-base">Properties Sold</div>
           </div>
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 md:p-6 border border-white/20">

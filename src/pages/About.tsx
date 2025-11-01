@@ -304,11 +304,11 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-6xl mx-auto">
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">35+</div>
-              <p className="text-primary-foreground/90">Years of<br />Experience</p>
+              <div className="text-5xl font-bold text-accent mb-2">75+</div>
+              <p className="text-primary-foreground/90">Combined Years of<br />Experience</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">1,800+</div>
+              <div className="text-5xl font-bold text-accent mb-2">1,850+</div>
               <p className="text-primary-foreground/90">Families<br />Served</p>
             </div>
             <div className="text-center">
