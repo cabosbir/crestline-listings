@@ -101,6 +101,16 @@ const Footer = () => {
           <p className="mt-2 text-xs">
             Don Weis, Broker | MLS-BCS Founding Member | International Realtor®
           </p>
+          <p className="mt-1 text-[10px] opacity-50">
+            Website design:{' '}
+            <a 
+              href="tel:+526121698328" 
+              className="hover:text-[#3b6299] transition-colors"
+              style={{ color: '#3b6299' }}
+            >
+              +52 612 169 8328
+            </a>
+          </p>
         </div>
       </div>
     </footer>
