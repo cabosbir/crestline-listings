@@ -67,7 +67,7 @@ const Team = () => {
       email: "alfonso@bircabo.com",
       yearsExperience: 18,
       propertiesSold: 205,
-      bio: "As a sales manager with a strong track record of leading high-performing commercial teams, I specialize in real estate developments and market analysis.",
+      bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
       certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
       languages: ["English", "Spanish"]
     },
