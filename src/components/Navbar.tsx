@@ -18,11 +18,8 @@ const Navbar = () => {
   ];
 
   const propertyLinks = [
-    { name: "Featured Properties", href: "/properties" },
-    { name: "Beachfront Villas", href: "/properties?type=villa" },
-    { name: "Golf Communities", href: "/properties?type=golf" },
-    { name: "Luxury Condos", href: "/properties?type=condo" },
-  ];
+  { name: "View All Properties", href: "/properties" },
+];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-elegant">
