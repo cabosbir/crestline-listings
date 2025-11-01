@@ -1,38 +1,12 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
 const Hero = () => {
-  const [searchParams, setSearchParams] = useState({
-    location: "",
-    propertyType: "",
-    bedrooms: "",
-    priceRange: ""
-  });
+  const navigate = useNavigate();
 
-  const FLEXMLS_URL = "https://link.flexmls.com/u67gqp77eml,12";
-
-  const handleSearch = () => {
-    // Build search query parameters
-    let searchQuery = "";
-    
-    if (searchParams.location) {
-      searchQuery += `&City=${encodeURIComponent(searchParams.location)}`;
-    }
-    if (searchParams.propertyType) {
-      searchQuery += `&PropertyType=${encodeURIComponent(searchParams.propertyType)}`;
-    }
-    if (searchParams.bedrooms) {
-      searchQuery += `&BedsTotal=${searchParams.bedrooms}`;
-    }
-    if (searchParams.priceRange) {
-      const [min, max] = searchParams.priceRange.split('-');
-      if (min) searchQuery += `&ListPriceMin=${min}`;
-      if (max) searchQuery += `&ListPriceMax=${max}`;
-    }
-
-    // Open FlexMLS with search parameters
-    window.open(`${FLEXMLS_URL}${searchQuery}`, '_blank');
+  const handleSearchClick = () => {
+    navigate('/properties');
   };
 
   return (
@@ -49,131 +23,47 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
-        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-3 md:mb-6 tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight">
           BAJA INTERNATIONAL REALTY
         </h1>
-        <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 md:mb-12 max-w-3xl mx-auto px-2">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-3xl mx-auto px-2">
           Discover Your Dream Property in Cabo San Lucas & Baja California Sur
         </p>
 
-        {/* Search Bar */}
-        <div className="max-w-6xl mx-auto bg-white rounded-xl md:rounded-2xl shadow-2xl p-3 md:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-4">
-            {/* Location */}
-            <div className="relative">
-              <select
-                value={searchParams.location}
-                onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
-              >
-                <option value="">Location</option>
-                <option value="Cabo San Lucas">Cabo San Lucas</option>
-                <option value="San Jose del Cabo">San Jose del Cabo</option>
-                <option value="Cabo Corridor">Cabo Corridor</option>
-                <option value="Todos Santos">Todos Santos</option>
-                <option value="East Cape">East Cape</option>
-                <option value="La Paz">La Paz</option>
-                <option value="Loreto">Loreto</option>
-              </select>
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
+        {/* Call to Action Button */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button
+            onClick={handleSearchClick}
+            size="lg"
+            className="h-14 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-12 rounded-lg transition-all duration-300 shadow-2xl hover:shadow-blue-900/50 text-lg"
+          >
+            <Search className="w-6 h-6 mr-3" />
+            Search Properties
+          </Button>
+          
+          <Button
+            onClick={() => navigate('/contact')}
+            size="lg"
+            variant="outline"
+            className="h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white text-white font-semibold px-12 rounded-lg transition-all duration-300 text-lg"
+          >
+            Contact Us
+          </Button>
+        </div>
 
-            {/* Property Type */}
-            <div className="relative">
-              <select
-                value={searchParams.propertyType}
-                onChange={(e) => setSearchParams({...searchParams, propertyType: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
-              >
-                <option value="">Property Type</option>
-                <option value="House">House</option>
-                <option value="Condo">Condo</option>
-                <option value="Villa">Villa</option>
-                <option value="Land">Land</option>
-                <option value="Commercial">Commercial</option>
-              </select>
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </div>
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Bedrooms */}
-            <div className="relative">
-              <select
-                value={searchParams.bedrooms}
-                onChange={(e) => setSearchParams({...searchParams, bedrooms: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
-              >
-                <option value="">Bedrooms</option>
-                <option value="1">1+</option>
-                <option value="2">2+</option>
-                <option value="3">3+</option>
-                <option value="4">4+</option>
-                <option value="5">5+</option>
-              </select>
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-              </div>
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Price Range */}
-            <div className="relative">
-              <select
-                value={searchParams.priceRange}
-                onChange={(e) => setSearchParams({...searchParams, priceRange: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
-              >
-                <option value="">Price Range</option>
-                <option value="0-500000">Under $500K</option>
-                <option value="500000-1000000">$500K - $1M</option>
-                <option value="1000000-2000000">$1M - $2M</option>
-                <option value="2000000-5000000">$2M - $5M</option>
-                <option value="5000000-">$5M+</option>
-              </select>
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Search Button */}
-            <Button
-              onClick={handleSearch}
-              className="h-12 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-8 rounded-lg transition-colors shadow-lg sm:col-span-2 lg:col-span-1 w-full"
-            >
-              <Search className="w-5 h-5 mr-2" />
-              Search
-            </Button>
+        {/* Key Features */}
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
+            <div className="text-3xl font-bold text-white mb-2">35+</div>
+            <div className="text-white/90 text-sm">Years Experience</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
+            <div className="text-3xl font-bold text-white mb-2">1800+</div>
+            <div className="text-white/90 text-sm">Properties Sold</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
+            <div className="text-3xl font-bold text-white mb-2">$400M+</div>
+            <div className="text-white/90 text-sm">In Sales</div>
           </div>
         </div>
 

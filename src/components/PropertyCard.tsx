@@ -7,15 +7,17 @@ interface PropertyCardProps {
   price: string;
   title: string;
   location: string;
-  beds: number;
-  baths: number;
-  sqft: string;
+  beds?: number;
+  baths?: number;
+  sqft?: string;
+  totalM2?: string;
   mlsNumber?: string;
   description?: string;
   features?: string[];
   status?: string;
   yearBuilt?: number;
   lotSize?: number;
+  link?: string; // Add link prop
 }
 
 const PropertyCard = ({ 
@@ -27,15 +29,17 @@ const PropertyCard = ({
   beds, 
   baths, 
   sqft,
+  totalM2,
   mlsNumber,
   description,
   features,
   status,
   yearBuilt,
-  lotSize
+  lotSize,
+  link
 }: PropertyCardProps) => {
-  // FlexMLS link that works in incognito
-  const FLEXMLS_SEARCH_URL = "https://link.flexmls.com/u67gqp77eml,12";
+  // Default to FlexMLS search if no specific link provided
+  const propertyLink = link || "https://link.flexmls.com/u67gqp77eml,12";
   
   return (
     <Card className="group overflow-hidden border rounded-xl hover:shadow-2xl transition-all duration-300 cursor-pointer">
@@ -70,18 +74,24 @@ const PropertyCard = ({
         
         {/* Property Stats */}
         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-          <div className="flex items-center gap-1">
-            <Bed className="w-4 h-4" />
-            <span>{beds} Beds</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Bath className="w-4 h-4" />
-            <span>{baths} Baths</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Maximize className="w-4 h-4" />
-            <span>{sqft}</span>
-          </div>
+          {beds !== undefined && (
+            <div className="flex items-center gap-1">
+              <Bed className="w-4 h-4" />
+              <span>{beds} Beds</span>
+            </div>
+          )}
+          {baths !== undefined && (
+            <div className="flex items-center gap-1">
+              <Bath className="w-4 h-4" />
+              <span>{baths} Baths</span>
+            </div>
+          )}
+          {(sqft || totalM2) && (
+            <div className="flex items-center gap-1">
+              <Maximize className="w-4 h-4" />
+              <span>{sqft || `${totalM2} m²`}</span>
+            </div>
+          )}
         </div>
 
         {/* Additional Info */}
@@ -118,10 +128,10 @@ const PropertyCard = ({
           </div>
         )}
 
-        {/* View Details Button - Links to FlexMLS (can be right-clicked for incognito) */}
+        {/* View Details Button - Links to specific property on FlexMLS */}
         <div className="mt-4 pt-4 border-t">
           <a 
-            href={FLEXMLS_SEARCH_URL}
+            href={propertyLink}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full bg-accent hover:bg-accent/90 text-accent-foreground font-medium py-2 px-4 rounded-md transition-colors text-center"
