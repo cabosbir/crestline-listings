@@ -93,10 +93,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/60">
           <p>
-            © 2025{' '}
-            <span style={{ color: '#3b6299' }}></span>{' '}
-            BAJA INTERNATIONAL REALTY{' '}
-            <span style={{ color: '#3b6299' }}>All rights reserved.</span>
+            © 2025 BAJA INTERNATIONAL REALTY All rights reserved.
           </p>
           <p className="mt-2 text-xs">
             Don Weis, Broker | MLS-BCS Founding Member | International Realtor®
@@ -105,8 +102,7 @@ const Footer = () => {
             Website design:{' '}
             <a 
               href="tel:+526121698328" 
-              className="hover:text-[#3b6299] transition-colors"
-              style={{ color: '#3b6299' }}
+              className="hover:opacity-100 transition-opacity"
             >
               +52 612 169 8328
             </a>
