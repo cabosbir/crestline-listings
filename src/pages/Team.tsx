@@ -20,7 +20,7 @@ const Team = () => {
     { number: 75, label: "Years Combined\nExperience", suffix: "" },
     { number: 1800, label: "Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
-    { number: 400, label: "Combined Sales\nSince 2014", suffix: "M+", prefix: "$" },
+    { number: 1.2, label: "Combined Sales\nSince 2014", suffix: "B+", prefix: "$" },
   ];
 
   const agents = [
