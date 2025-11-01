@@ -13,16 +13,16 @@ import { useToast } from "@/hooks/use-toast";
 const agent = {
   id: 8,
   name: "David Scott Piper",
-  title: "Real Estate Advisor",
-  specialization: "Luxury Properties",
+  title: "International Real Estate Specialist",
+  specialization: "Resort & Second-Home Properties",
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
   phone: "+52 624 317 0297",
-  email: "David@BIRCabo.com",
+  email: "David@bircabo.com",
   yearsExperience: 25,
   propertiesSold: 50,
-  bio: "David has over 25 years of experience in the real estate industry. He has worked in many aspects of the real estate industry. His analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As David states: \"As an ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.\"",
-  certifications: ["REALTOR®", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®", "MLS Member"],
-  languages: ["English"],
+  bio: "David has over 25 years of experience in the real estate industry, working in many aspects of the business throughout his distinguished career. Licensed in both California and Mexico, his analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As a Certified International Property Specialist (C.I.P.S.®), Accredited Buyer's Representative (A.B.R.®), and Resort and Second-Home Property Specialist (R.S.P.S.®), David brings unparalleled expertise to every transaction. As David states: 'As an Ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.'",
+  certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®", "MLS Member"],
+  languages: ["English"]
 };
 
 // David's Featured Listings
