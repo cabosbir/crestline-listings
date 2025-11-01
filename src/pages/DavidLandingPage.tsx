@@ -18,11 +18,11 @@ const agent = {
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
   phone: "+52 624 317 0297",
   email: "David@BIRCabo.com",
-  yearsExperience: 10,
+  yearsExperience: 25,
   propertiesSold: 50,
-  bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
-  certifications: ["REALTOR®", "MLS Member"],
-  languages: ["English", "Spanish"],
+  bio: "David has over 25 years of experience in the real estate industry. He has worked in many aspects of the real estate industry. His analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As David states: \"As an ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.\"",
+  certifications: ["REALTOR®", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®", "MLS Member"],
+  languages: ["English"],
 };
 
 // David's Featured Listings
@@ -71,7 +71,7 @@ const testimonials = [
   },
   {
     name: "Thomas Henderson",
-    text: "Working with David was a game-changer for our investment strategy. His decade of experience and professional approach made the entire process seamless and profitable.",
+    text: "Working with David was a game-changer for our investment strategy. His decades of experience and professional approach made the entire process seamless and profitable.",
     rating: 5
   },
   {
@@ -209,11 +209,11 @@ const DavidLandingPage = () => {
               {/* Certifications */}
               <div className="text-center">
                 <Award className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
-                <h3 className="font-bold mb-2">Certifications</h3>
-                <div className="space-y-1">
+                <h3 className="font-bold mb-3">Certifications</h3>
+                <div className="space-y-2">
                   {agent.certifications.map((cert, index) => (
                     <div key={index} className="flex items-center justify-center gap-2">
-                      <CheckCircle className="h-4 w-4" style={{ color: '#102f74' }} />
+                      <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: '#102f74' }} />
                       <span className="text-sm text-muted-foreground">{cert}</span>
                     </div>
                   ))}
@@ -223,7 +223,7 @@ const DavidLandingPage = () => {
               {/* Languages */}
               <div className="text-center">
                 <Users className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
-                <h3 className="font-bold mb-2">Languages</h3>
+                <h3 className="font-bold mb-3">Languages</h3>
                 <div className="space-y-1">
                   {agent.languages.map((lang, index) => (
                     <div key={index} className="text-sm text-muted-foreground">{lang}</div>
@@ -234,7 +234,7 @@ const DavidLandingPage = () => {
               {/* Expertise */}
               <div className="text-center">
                 <Home className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
-                <h3 className="font-bold mb-2">Specialization</h3>
+                <h3 className="font-bold mb-3">Specialization</h3>
                 <p className="text-sm text-muted-foreground">{agent.specialization}</p>
               </div>
             </div>
