@@ -48,23 +48,23 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center">
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight">
           BAJA INTERNATIONAL REALTY
         </h1>
-        <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-3xl mx-auto px-4">
           Discover Your Dream Property in Cabo San Lucas & Baja California Sur
         </p>
 
         {/* Search Bar */}
-        <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl p-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl p-4 md:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
             {/* Location */}
             <div className="relative">
               <select
                 value={searchParams.location}
                 onChange={(e) => setSearchParams({...searchParams, location: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
               >
                 <option value="">Location</option>
                 <option value="Cabo San Lucas">Cabo San Lucas</option>
@@ -93,7 +93,7 @@ const Hero = () => {
               <select
                 value={searchParams.propertyType}
                 onChange={(e) => setSearchParams({...searchParams, propertyType: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
               >
                 <option value="">Property Type</option>
                 <option value="House">House</option>
@@ -119,7 +119,7 @@ const Hero = () => {
               <select
                 value={searchParams.bedrooms}
                 onChange={(e) => setSearchParams({...searchParams, bedrooms: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
               >
                 <option value="">Bedrooms</option>
                 <option value="1">1+</option>
@@ -145,7 +145,7 @@ const Hero = () => {
               <select
                 value={searchParams.priceRange}
                 onChange={(e) => setSearchParams({...searchParams, priceRange: e.target.value})}
-                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700"
+                className="w-full h-12 px-12 bg-white border-2 border-gray-200 rounded-lg appearance-none cursor-pointer hover:border-blue-900 focus:border-blue-900 focus:outline-none transition-colors text-gray-700 text-sm sm:text-base"
               >
                 <option value="">Price Range</option>
                 <option value="0-500000">Under $500K</option>
@@ -169,7 +169,7 @@ const Hero = () => {
             {/* Search Button */}
             <Button
               onClick={handleSearch}
-              className="h-12 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-8 rounded-lg transition-colors shadow-lg"
+              className="h-12 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-8 rounded-lg transition-colors shadow-lg sm:col-span-2 lg:col-span-1 w-full"
             >
               <Search className="w-5 h-5 mr-2" />
               Search
