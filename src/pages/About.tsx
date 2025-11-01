@@ -350,7 +350,7 @@ const About = () => {
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-6">
               <img 
-                src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761604421/a-professional-portrait-photograph-of-a-_c8sIFPSGQYO0TQlApBAfFQ__16y8I8XSnO06Y6Tixti-Q_o4nhst.jpg"
+                src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg"
                 alt="Don Weis - Founder & Broker"
                 className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-accent shadow-lg"
               />
