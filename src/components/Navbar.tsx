@@ -29,13 +29,27 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex flex-col">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ color: '#102f74' }}>
-              BIR
-            </h1>
-            <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wider -mt-1">
-              Baja International Realty
-            </p>
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex flex-col">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-none" style={{ color: '#102f74' }}>
+                BIR
+              </h1>
+              <p className="text-[7px] md:text-[8px] text-muted-foreground uppercase tracking-[0.15em] -mt-0.5" style={{ color: '#666' }}>
+                SINCE 1987
+              </p>
+            </div>
+            <div className="h-12 w-px bg-border mx-1" style={{ backgroundColor: '#102f74' }} />
+            <div className="flex flex-col leading-tight">
+              <p className="text-xs md:text-sm font-medium uppercase tracking-wide" style={{ color: '#102f74' }}>
+                BAJA
+              </p>
+              <p className="text-xs md:text-sm font-medium uppercase tracking-wide" style={{ color: '#666' }}>
+                INTERNATIONAL
+              </p>
+              <p className="text-lg md:text-xl font-bold uppercase tracking-wider" style={{ color: '#102f74' }}>
+                REALTY
+              </p>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
