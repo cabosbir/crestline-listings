@@ -53,7 +53,7 @@ const Hero = () => {
             <div className="text-white/90 text-sm md:text-base">Properties Sold</div>
           </div>
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 md:p-6 border border-white/20">
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2">$400M+</div>
+            <div className="text-3xl md:text-4xl font-bold text-white mb-2">$1.2B+</div>
             <div className="text-white/90 text-sm md:text-base">In Sales</div>
           </div>
         </div>
