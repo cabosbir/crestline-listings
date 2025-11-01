@@ -49,16 +49,16 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-3 md:mb-6 tracking-tight leading-tight">
           BAJA INTERNATIONAL REALTY
         </h1>
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-3xl mx-auto px-4">
+        <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 md:mb-12 max-w-3xl mx-auto px-2">
           Discover Your Dream Property in Cabo San Lucas & Baja California Sur
         </p>
 
         {/* Search Bar */}
-        <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl p-4 md:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+        <div className="max-w-6xl mx-auto bg-white rounded-xl md:rounded-2xl shadow-2xl p-3 md:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 md:gap-4">
             {/* Location */}
             <div className="relative">
               <select
