@@ -26,12 +26,12 @@ const Hero = () => {
         <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight">
           BAJA INTERNATIONAL REALTY
         </h1>
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-3xl mx-auto px-2">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2 whitespace-nowrap">
           Discover Your Dream Property in Cabo San Lucas & Baja California Sur
         </p>
 
         {/* Call to Action Button */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex justify-center items-center">
           <Button
             onClick={handleSearchClick}
             size="lg"
@@ -39,15 +39,6 @@ const Hero = () => {
           >
             <Search className="w-6 h-6 mr-3" />
             Search Properties
-          </Button>
-          
-          <Button
-            onClick={() => navigate('/contact')}
-            size="lg"
-            variant="outline"
-            className="h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm border-2 border-white text-white font-semibold px-12 rounded-lg transition-all duration-300 text-lg"
-          >
-            Contact Us
           </Button>
         </div>
 
