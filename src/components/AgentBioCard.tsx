@@ -28,8 +28,7 @@ const AgentBioCard = ({
 }: AgentBioCardProps) => {
   
   const handleViewBioClick = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
+    // Don't prevent default or stop propagation - let the Link work
     console.log('View Bio clicked for:', name);
     if (onViewBio) {
       onViewBio();
@@ -80,7 +79,7 @@ const AgentBioCard = ({
         )}
       </div>
       
-      {/* Hover Content - Contact & Buttons - FIXED z-50 */}
+      {/* Hover Content - Contact & Buttons */}
       <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-300 z-50">
         <div className="bg-white rounded-xl p-5 shadow-2xl space-y-3 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 relative z-50">
           
