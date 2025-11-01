@@ -45,7 +45,7 @@ const Hero = () => {
         {/* Key Features */}
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="text-3xl font-bold text-white mb-2">35+</div>
+            <div className="text-3xl font-bold text-white mb-2">75+</div>
             <div className="text-white/90 text-sm">Years Experience</div>
           </div>
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
