@@ -22,6 +22,7 @@ const Index = () => {
       baths: 4,
       sqft: "Private pool & OWNER FINANCING",
       mlsNumber: "24-4467",
+      link: "https://www.flexmls.com/share/D0rH7/Hacienda-Beach-Club-private-pool-OWNER-FINANCING-1-100-Cabo-San-Lucas-",
     },
     {
       id: 2,
@@ -33,6 +34,7 @@ const Index = () => {
       baths: 3,
       totalM2: "372.06",
       mlsNumber: "25-1679",
+      link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
     },
     {
       id: 3,
@@ -44,6 +46,7 @@ const Index = () => {
       baths: 4.5,
       totalM2: "350.23",
       mlsNumber: "24-1981",
+      link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
     },
   ];
 
