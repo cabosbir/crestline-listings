@@ -133,7 +133,7 @@ const About = () => {
                   From those educational roots with Pan America Ltd, Don established Baja International to represent developers in the Baja Norte region, which evolved into Land's End Realty and eventually today's Baja International Realty. Our firm has brokered some of the most significant real estate transactions in Cabo history, including multi-million dollar land acquisitions for <span className="font-semibold text-foreground">RIU Hotels</span> and <span className="font-semibold text-foreground">Cabo San Cristobal Resorts</span> - one of the largest planned resort projects in the world with 8 hotels, championship golf courses, polo fields, and a Formula One racetrack.
                 </p>
                 <p>
-                  As a <span className="font-semibold text-foreground">founding member of MLS-BCS</span> (Multiple Listing Service of Baja California Sur), we've successfully helped over <span className="font-semibold text-foreground">2,200 families</span> find their perfect property in paradise, managing over <span className="font-semibold text-foreground">$800 million</span> in sales. Today, under Don's continued leadership, our team of International Realtors® combines 35+ years of local expertise with international standards of service.
+                  As a <span className="font-semibold text-foreground">founding member of MLS-BCS</span> (Multiple Listing Service of Baja California Sur), we've successfully helped over <span className="font-semibold text-foreground">2,200 families</span> find their perfect property in paradise, managing over <span className="font-semibold text-foreground">$1.2 billion</span> in sales. Today, under Don's continued leadership, our team of International Realtors® combines 35+ years of local expertise with international standards of service.
                 </p>
               </div>
             </div>
@@ -312,7 +312,7 @@ const About = () => {
               <p className="text-primary-foreground/90">Families<br />Served</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">$400M+</div>
+              <div className="text-5xl font-bold text-accent mb-2">$1.2B+</div>
               <p className="text-primary-foreground/90">Total Sales<br />Volume</p>
             </div>
             <div className="text-center">
