@@ -10,29 +10,27 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-primary text-white">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <h2 className="text-3xl font-bold mb-4">
-              <span style={{ color: '#3b6299' }}>BAJA</span>{' '}
-              INTERNATIONAL{' '}
-              <span style={{ color: '#3b6299' }}>REALTY</span>
+            <h2 className="text-3xl font-bold mb-4 text-white">
+              BAJA INTERNATIONAL REALTY
             </h2>
-            <p className="text-primary-foreground/80 mb-6 max-w-md">
+            <p className="text-white/80 mb-6 max-w-md">
               Your trusted partner for luxury real estate in Cabo San Lucas and Baja California Sur since the 1980s.
             </p>
 
             {/* Contact Info */}
             <div className="space-y-3 mb-6">
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                <MapPin className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
                 <a 
                   href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm text-primary-foreground/80 hover:text-accent transition-fast"
+                  className="text-sm text-white/80 hover:text-white transition-fast"
                 >
                   Boulevard Marina s/n y Vicente Guerrero s/n<br />
                   Manzana 31-A, Colonia Centro<br />
@@ -41,19 +39,19 @@ const Footer = () => {
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-accent flex-shrink-0" />
+                <Phone className="h-5 w-5 text-white flex-shrink-0" />
                 <a 
                   href="tel:+526241435555" 
-                  className="text-sm text-primary-foreground/80 hover:text-accent transition-fast"
+                  className="text-sm text-white/80 hover:text-white transition-fast"
                 >
                   +52 624 143 5555
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-accent flex-shrink-0" />
+                <Mail className="h-5 w-5 text-white flex-shrink-0" />
                 <a 
                   href="mailto:info@bircabo.com" 
-                  className="text-sm text-primary-foreground/80 hover:text-accent transition-fast"
+                  className="text-sm text-white/80 hover:text-white transition-fast"
                 >
                   info@bircabo.com
                 </a>
@@ -66,18 +64,18 @@ const Footer = () => {
                 href="https://www.facebook.com/BajaInternationalRealty" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-2 bg-primary-foreground/10 rounded-full hover:bg-accent transition-smooth"
+                className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-smooth"
                 aria-label="Visit our Facebook page"
               >
-                <Facebook className="h-5 w-5" />
+                <Facebook className="h-5 w-5 text-white" />
               </a>
             </div>
           </div>
 
           {/* Newsletter Section - Updated */}
-          <div className="bg-primary-foreground/5 rounded-lg p-8 backdrop-blur-sm">
-            <h3 className="font-semibold text-xl mb-2 text-primary-foreground">Stay Updated</h3>
-            <p className="text-primary-foreground/80 text-sm mb-5 leading-relaxed">
+          <div className="bg-white/5 rounded-lg p-8 backdrop-blur-sm">
+            <h3 className="font-semibold text-xl mb-2 text-white">Stay Updated</h3>
+            <p className="text-white/80 text-sm mb-5 leading-relaxed">
               Subscribe to our newsletter for exclusive listings and market insights in Cabo San Lucas
             </p>
             
@@ -90,14 +88,14 @@ const Footer = () => {
               Subscribe
             </Button>
             
-            <p className="text-primary-foreground/70 text-xs mt-3">
+            <p className="text-white/70 text-xs mt-3">
               Join 2,200+ clients who trust us with their Baja real estate journey.
             </p>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/60">
+        <div className="border-t border-white/20 pt-8 text-center text-sm text-white/60">
           <p>
             © 2025 BAJA INTERNATIONAL REALTY All rights reserved.
           </p>
