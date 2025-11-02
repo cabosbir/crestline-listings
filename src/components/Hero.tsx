@@ -20,7 +20,7 @@ const Hero = () => {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="https://res.cloudinary.com/dhwnr1pa5/video/upload/v1762094526/BIR_vmb1dc.mp4" type="video/mp4" />
+          <source src="https://res.cloudinary.com/dhwnr1pa5/video/upload/v1762094891/BIR_deivhq.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
       </div>
