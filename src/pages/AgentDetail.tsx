@@ -70,18 +70,19 @@ const AgentDetail = () => {
       languages: ["English"]
     },
     {
-      id: 3,
-      name: "Alfonso Puente",
-      title: "Sales Manager & Commercial Real Estate Expert",
-      specialization: "Real Estate Developments & Market Analysis",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
-      phone: "+52 624 188 8681",
-      email: "alfonso@bircabo.com",
-      yearsExperience: 18,
-      propertiesSold: 890,
-      bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
-      certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
-      languages: ["English", "Spanish"]
+     id: 3,
+     name: "Alfonso Puente",
+     title: "Sales Manager & Commercial Real Estate Expert",
+     specialization: "Real Estate Developments & Market Analysis",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
+     phone: "+52 624 188 8681",
+     phone2: "+52 624 143 5555",
+     email: "alfonso@bircabo.com",
+     yearsExperience: 18,
+     propertiesSold: 890,
+     bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
+     certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
+     languages: ["English", "Spanish"]
     },
     {
       id: 8,
