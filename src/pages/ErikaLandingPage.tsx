@@ -17,7 +17,7 @@ const agent = {
   specialization: "Oceanfront Estates",
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
   phone: "+52 624 109 7909",
-  email: "Erika80@gmail.com",
+  email: "Eaispuro80@gmail.com",
   yearsExperience: 8,
   propertiesSold: 60,
   bio: "My passion for luxury coastal living in Cabo San Lucas and my commitment to client satisfaction have made me one of the most sought-after agents in the region. I specialize in oceanfront estates and investment properties throughout Baja California Sur, offering comprehensive market analysis and personalized service to ensure every client finds the perfect property to match their vision and lifestyle.",
