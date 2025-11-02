@@ -25,7 +25,7 @@ const Footer = () => {
             {/* Contact Info */}
             <div className="space-y-3 mb-6">
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-white flex-shrink-0 mt-0.5" />
+                <MapPin className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: '#0f3074' }} />
                 <a 
                   href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
                   target="_blank" 
@@ -39,7 +39,7 @@ const Footer = () => {
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-white flex-shrink-0" />
+                <Phone className="h-5 w-5 flex-shrink-0" style={{ color: '#0f3074' }} />
                 <a 
                   href="tel:+526241435555" 
                   className="text-sm text-white/80 hover:text-white transition-fast"
@@ -48,7 +48,7 @@ const Footer = () => {
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-white flex-shrink-0" />
+                <Mail className="h-5 w-5 flex-shrink-0" style={{ color: '#0f3074' }} />
                 <a 
                   href="mailto:info@bircabo.com" 
                   className="text-sm text-white/80 hover:text-white transition-fast"
@@ -67,7 +67,7 @@ const Footer = () => {
                 className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-smooth"
                 aria-label="Visit our Facebook page"
               >
-                <Facebook className="h-5 w-5 text-white" />
+                <Facebook className="h-5 w-5" style={{ color: '#0f3074' }} />
               </a>
             </div>
           </div>
