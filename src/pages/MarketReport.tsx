@@ -415,10 +415,7 @@ const MarketReport = () => {
               <ul className="space-y-3">
                 <li><a href="tel:+526241435555" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">+52 624 143 5555</a></li>
                 <li><a href="mailto:info@bircabo.com" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">info@bircabo.com</a></li>
-                <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">LinkedIn</a></li>
                 <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Facebook</a></li>
-                <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Instagram</a></li>
-                <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">YouTube</a></li>
               </ul>
             </div>
 
