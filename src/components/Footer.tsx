@@ -1,8 +1,14 @@
 import { Facebook, Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleMarketReportClick = () => {
+    navigate('/market-report');
+  };
+
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
@@ -68,23 +74,23 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Newsletter */}
-          <div>
-            <h3 className="font-semibold text-lg mb-2">Stay Updated</h3>
-            <p className="text-primary-foreground/80 text-sm mb-4">
-              Subscribe to our newsletter for exclusive listings and market insights in Cabo San Lucas.
+          {/* Newsletter Section - Updated */}
+          <div className="bg-primary-foreground/5 rounded-lg p-8 backdrop-blur-sm">
+            <h3 className="font-bold text-2xl mb-3 text-primary-foreground">Stay Updated</h3>
+            <p className="text-primary-foreground/80 text-base mb-6 leading-relaxed">
+              Subscribe to our newsletter for exclusive listings and market insights in Cabo San Lucas
             </p>
-            <div className="flex gap-2">
-              <Input 
-                type="email" 
-                placeholder="Your email" 
-                className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
-              />
-              <Button variant="luxury" size="default">
-                Subscribe
-              </Button>
-            </div>
-            <p className="text-primary-foreground/60 text-xs mt-3">
+            
+            <Button 
+              onClick={handleMarketReportClick}
+              variant="luxury" 
+              size="lg"
+              className="w-full sm:w-auto px-8 py-6 text-base font-semibold"
+            >
+              Subscribe
+            </Button>
+            
+            <p className="text-primary-foreground/70 text-sm mt-4">
               Join 2,200+ clients who trust us with their Baja real estate journey.
             </p>
           </div>

@@ -24,6 +24,7 @@ import ErikaLandingPage from "./pages/ErikaLandingPage";
 import HectorLandingPage from "./pages/HectorLandingPage";
 import MarisolLandingPage from "./pages/MarisolLandingPage";
 import SusuLandingPage from "./pages/SusuLandingPage";
+import MarketReport from "./pages/MarketReport";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,9 @@ const App = () => (
           <Route path="/team" element={<Team />} />
           <Route path="/team/:id" element={<AgentDetail />} />
           <Route path="/idx-search" element={<IDXSearch />} />
+          
+          {/* Market Report Page */}
+          <Route path="/market-report" element={<MarketReport />} />
           
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />
