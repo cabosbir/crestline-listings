@@ -270,7 +270,7 @@ const MarketReport = () => {
       <section className="max-w-[1400px] mx-auto px-10 mb-16">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xl font-semibold text-gray-900">New Listings - Last 30 Days</h2>
-          <a href="#" className="text-blue-900 font-semibold text-sm hover:underline">View all new listings</a>
+          <a href="/properties" className="text-blue-900 font-semibold text-sm hover:underline">View all new listings</a>
         </div>
 
         <div className="relative overflow-hidden">
@@ -278,9 +278,19 @@ const MarketReport = () => {
             className="flex gap-5 transition-transform duration-300 ease-in-out"
             style={{ transform: `translateX(-${currentSlide * 33.333}%)` }}
           >
-            {/* Listing 1 */}
-            <div className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
-              <div className="relative h-60 bg-gradient-to-br from-indigo-500 to-purple-600">
+            {/* Listing 1 - Hacienda Beach Club */}
+            <a 
+              href="https://www.flexmls.com/share/D0rH7/Hacienda-Beach-Club-private-pool-OWNER-FINANCING-1-100-Cabo-San-Lucas-"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer"
+            >
+              <div className="relative h-60 overflow-hidden">
+                <img 
+                  src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942726/20241014235115115464000000-o_hgb1vh.jpg"
+                  alt="Hacienda Beach Club"
+                  className="w-full h-full object-cover"
+                />
                 <span className="absolute top-4 left-4 bg-green-500 text-white px-3.5 py-1.5 rounded text-xs font-bold tracking-wide">
                   ACTIVE
                 </span>
@@ -289,60 +299,83 @@ const MarketReport = () => {
                 </div>
               </div>
               <div className="p-6">
-                <div className="text-2xl font-bold text-gray-900 mb-3">$6,700,000</div>
+                <div className="text-2xl font-bold text-gray-900 mb-3">$6,950,000</div>
+                <div className="font-semibold text-gray-900 mb-2">Hacienda Beach Club</div>
                 <div className="flex gap-4 text-sm text-gray-600 mb-2.5">
                   <span>🛏 4 Beds</span>
+                  <span>🛁 4 Baths</span>
+                </div>
+                <div className="text-sm text-gray-600 mb-2">Private pool & OWNER FINANCING</div>
+                <div className="text-sm text-gray-600 mb-2">Cabo San Lucas</div>
+                <div className="text-xs text-gray-600">#24-4467 • House</div>
+              </div>
+            </a>
+
+            {/* Listing 2 - Casa Ducci */}
+            <a 
+              href="https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer"
+            >
+              <div className="relative h-60 overflow-hidden">
+                <img 
+                  src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg"
+                  alt="Casa Ducci Camino del Mar"
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-4 left-4 bg-green-500 text-white px-3.5 py-1.5 rounded text-xs font-bold tracking-wide">
+                  ACTIVE
+                </span>
+                <div className="absolute top-4 right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+                  ♡
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="text-2xl font-bold text-gray-900 mb-3">$3,795,800</div>
+                <div className="font-semibold text-gray-900 mb-2">Casa Ducci Camino del Mar</div>
+                <div className="flex gap-4 text-sm text-gray-600 mb-2.5">
+                  <span>🛏 4 Beds</span>
+                  <span>🛁 4.5 Baths</span>
+                  <span>📏 350.23 m²</span>
+                </div>
+                <div className="text-sm text-gray-600 mb-2">Cabo San Lucas</div>
+                <div className="text-xs text-gray-600">#24-1981 • House</div>
+              </div>
+            </a>
+
+            {/* Listing 3 - La Vista */}
+            <a 
+              href="https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer"
+            >
+              <div className="relative h-60 overflow-hidden">
+                <img 
+                  src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg"
+                  alt="La Vista LARGE PRIVATE YARD"
+                  className="w-full h-full object-cover"
+                />
+                <span className="absolute top-4 left-4 bg-green-500 text-white px-3.5 py-1.5 rounded text-xs font-bold tracking-wide">
+                  ACTIVE
+                </span>
+                <div className="absolute top-4 right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+                  ♡
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="text-2xl font-bold text-gray-900 mb-3">$499,000</div>
+                <div className="font-semibold text-gray-900 mb-2">La Vista LARGE PRIVATE YARD</div>
+                <div className="flex gap-4 text-sm text-gray-600 mb-2.5">
+                  <span>🛏 3 Beds</span>
                   <span>🛁 3 Baths</span>
-                  <span>📏 7,261 SqFt.</span>
+                  <span>📏 372.06 m²</span>
                 </div>
-                <div className="text-sm text-gray-600 mb-2">125 Camino Del Mar 1/23 m/4</div>
-                <div className="text-sm text-gray-600 mb-2">Cabo San Lucas, BS</div>
-                <div className="text-xs text-gray-600">#25-4876 • House</div>
+                <div className="text-sm text-gray-600 mb-2">Cabo Corridor</div>
+                <div className="text-xs text-gray-600">#25-1679 • House</div>
               </div>
-            </div>
-
-            {/* Listing 2 */}
-            <div className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
-              <div className="relative h-60 bg-gradient-to-br from-blue-500 to-cyan-600">
-                <span className="absolute top-4 left-4 bg-green-500 text-white px-3.5 py-1.5 rounded text-xs font-bold tracking-wide">
-                  ACTIVE
-                </span>
-                <div className="absolute top-4 right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-                  ♡
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="text-2xl font-bold text-gray-900 mb-3">$4,495,000</div>
-                <div className="flex gap-4 text-sm text-gray-600 mb-2.5">
-                  <span>🛏 4 Beds</span>
-                  <span>🛁 5 Baths</span>
-                  <span>📏 7,862 SqFt.</span>
-                </div>
-                <div className="text-sm text-gray-600 mb-2">425 Camino Bonito Oriente Pedregal</div>
-                <div className="text-sm text-gray-600 mb-2">Cabo San Lucas, BS</div>
-                <div className="text-xs text-gray-600">#25-1616 • House</div>
-              </div>
-            </div>
-
-            {/* Listing 3 */}
-            <div className="flex-shrink-0 w-[calc(33.333%-14px)] bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
-              <div className="relative h-60 bg-gradient-to-br from-purple-500 to-pink-600">
-                <span className="absolute top-4 left-4 bg-green-500 text-white px-3.5 py-1.5 rounded text-xs font-bold tracking-wide">
-                  ACTIVE
-                </span>
-                <div className="absolute top-4 right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-                  ♡
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="text-2xl font-bold text-gray-900 mb-3">$3,950,000</div>
-                <div className="text-sm text-gray-600 mb-2.5">
-                  <span>Unrivaled Location Lot 19 De La Marina</span>
-                </div>
-                <div className="text-sm text-gray-600 mb-2">Cabo San Lucas, BS</div>
-                <div className="text-xs text-gray-600">#25-4641 • Lots / Land</div>
-              </div>
-            </div>
+            </a>
           </div>
 
           <div className="flex justify-center gap-2.5 mt-8">
@@ -382,7 +415,10 @@ const MarketReport = () => {
               <ul className="space-y-3">
                 <li><a href="tel:+526241435555" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">+52 624 143 5555</a></li>
                 <li><a href="mailto:info@bircabo.com" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">info@bircabo.com</a></li>
+                <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">LinkedIn</a></li>
                 <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Facebook</a></li>
+                <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Instagram</a></li>
+                <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">YouTube</a></li>
               </ul>
             </div>
 

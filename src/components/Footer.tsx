@@ -76,21 +76,21 @@ const Footer = () => {
 
           {/* Newsletter Section - Updated */}
           <div className="bg-primary-foreground/5 rounded-lg p-8 backdrop-blur-sm">
-            <h3 className="font-bold text-2xl mb-3 text-primary-foreground">Stay Updated</h3>
-            <p className="text-primary-foreground/80 text-base mb-6 leading-relaxed">
+            <h3 className="font-semibold text-xl mb-2 text-primary-foreground">Stay Updated</h3>
+            <p className="text-primary-foreground/80 text-sm mb-5 leading-relaxed">
               Subscribe to our newsletter for exclusive listings and market insights in Cabo San Lucas
             </p>
             
             <Button 
               onClick={handleMarketReportClick}
               variant="luxury" 
-              size="lg"
-              className="w-full sm:w-auto px-8 py-6 text-base font-semibold"
+              size="default"
+              className="px-6 py-2 text-sm font-semibold"
             >
               Subscribe
             </Button>
             
-            <p className="text-primary-foreground/70 text-sm mt-4">
+            <p className="text-primary-foreground/70 text-xs mt-3">
               Join 2,200+ clients who trust us with their Baja real estate journey.
             </p>
           </div>
