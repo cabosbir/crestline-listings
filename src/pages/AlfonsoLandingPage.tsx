@@ -313,6 +313,12 @@ const AlfonsoLandingPage = () => {
                 <div>
                   <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone</div>
                   <div className="font-semibold text-white">{agent.phone}</div>
+                  {agent.phoneSecondary && (
+                    <>
+                      <div className="text-xs mt-1" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Secondary</div>
+                      <div className="font-semibold text-white text-sm">{agent.phoneSecondary}</div>
+                    </>
+                  )}
                 </div>
               </a>
               <a 
