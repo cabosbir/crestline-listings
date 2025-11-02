@@ -6,6 +6,7 @@ interface AgentBioCardProps {
   title: string;
   image: string;
   phone?: string;
+  phone2?: string;
   email?: string;
   specialization?: string;
   propertiesSold?: number;
@@ -19,6 +20,7 @@ const AgentBioCard = ({
   title, 
   image,
   phone,
+  phone2,
   email,
   specialization,
   propertiesSold,
@@ -84,7 +86,7 @@ const AgentBioCard = ({
         <div className="bg-white rounded-xl p-5 shadow-2xl space-y-3 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 relative z-50">
           
           {/* Contact Info */}
-          {(phone || email) && (
+          {(phone || phone2 || email) && (
             <div className="space-y-2 text-sm text-gray-700">
               {phone && (
                 <a 
@@ -94,6 +96,16 @@ const AgentBioCard = ({
                 >
                   <Phone className="w-4 h-4" />
                   <span>{phone}</span>
+                </a>
+              )}
+              {phone2 && (
+                <a 
+                  href={`tel:${phone2}`} 
+                  className="flex items-center gap-2 hover:text-yellow-600 transition-colors pointer-events-auto"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>{phone2}</span>
                 </a>
               )}
               {email && (
