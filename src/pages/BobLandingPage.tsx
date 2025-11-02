@@ -35,7 +35,7 @@ const agentListings = [
     beds: 0,
     baths: 1,
     sqft: "422 sq ft",
-    mlsNumber: "MLS# 103A",
+    mlsNumber: "MLS# 25-4668",
     link: "https://www.flexmls.com/share/D1Cgo/Marina-Cabo-Plaza-Paseo-de-la-Marina-103A-Cabo-San-Lucas-",
   },
   {
@@ -59,7 +59,7 @@ const agentListings = [
     beds: 2,
     baths: 2,
     sqft: "2,551 sq ft",
-    mlsNumber: "MLS# 24-2165",
+    mlsNumber: "MLS# 24-804",
     link: "https://www.flexmls.com/share/D1Clv/Solaria-E-102-Cabo-Corridor-",
   },
   {
