@@ -18,7 +18,7 @@ const agent = {
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761668403/WhatsApp_Image_2025-10-27_at_9.24.29_PM_uajiar.jpg",
   phone: "+52 624 264 3896",
   email: "mtortricardi@gmail.com",
-  yearsExperience: 6,
+  yearsExperience: 12,
   propertiesSold: 50,
   bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico's most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.",
   certifications: ["REALTOR®", "MLS Member"],
