@@ -165,9 +165,6 @@ const MarketReport = () => {
         <div className="max-w-[1400px] mx-auto px-10">
           <ul className="flex gap-8 text-sm font-medium">
             <li><a href="#" className="text-gray-900 hover:text-blue-900 transition-colors">PROPERTY SEARCH</a></li>
-            <li><a href="#" className="text-gray-900 hover:text-blue-900 transition-colors">LUXURY LISTINGS</a></li>
-            <li><a href="#" className="text-gray-900 hover:text-blue-900 transition-colors">EXCLUSIVE LISTINGS</a></li>
-            <li><a href="#" className="text-gray-900 hover:text-blue-900 transition-colors">POPULAR AREAS</a></li>
           </ul>
         </div>
       </div>
