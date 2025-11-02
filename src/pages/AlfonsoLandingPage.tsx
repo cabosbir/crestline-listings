@@ -311,11 +311,11 @@ const AlfonsoLandingPage = () => {
               >
                 <Phone className="h-6 w-6" style={{ color: '#d4af37' }} />
                 <div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone</div>
+                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone (MX)</div>
                   <div className="font-semibold text-white">{agent.phone}</div>
                   {agent.phoneSecondary && (
                     <>
-                      <div className="text-xs mt-1" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Secondary</div>
+                      <div className="text-xs mt-1" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>MX</div>
                       <div className="font-semibold text-white text-sm">{agent.phoneSecondary}</div>
                     </>
                   )}
