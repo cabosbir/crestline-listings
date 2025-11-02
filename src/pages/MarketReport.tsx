@@ -60,7 +60,7 @@ const MarketReport = () => {
       }
     };
 
-    // Price Chart
+    // Price Chart - VIBRANT COLORS
     if (priceChartRef.current) {
       const priceCtx = priceChartRef.current.getContext('2d');
       if (priceCtx) {
@@ -72,13 +72,13 @@ const MarketReport = () => {
               {
                 label: 'Active Median Price',
                 data: [315000, 325000, 330000, 325000, 320000, 315000],
-                backgroundColor: '#64748b',
+                backgroundColor: '#3b82f6', // Vibrant blue
                 barThickness: 40
               },
               {
                 label: 'Sold Median Price',
                 data: [310000, 320000, 325000, 320000, 315000, 310000],
-                backgroundColor: '#94a3b8',
+                backgroundColor: '#10b981', // Vibrant green
                 barThickness: 40
               }
             ]
@@ -88,7 +88,7 @@ const MarketReport = () => {
       }
     }
 
-    // Days Chart
+    // Days Chart - VIBRANT COLORS
     if (daysChartRef.current) {
       const daysCtx = daysChartRef.current.getContext('2d');
       if (daysCtx) {
@@ -99,7 +99,7 @@ const MarketReport = () => {
             datasets: [{
               label: 'Days',
               data: [150, 155, 170, 180, 190, 185],
-              backgroundColor: '#64748b',
+              backgroundColor: '#f59e0b', // Vibrant orange
               barThickness: 30
             }]
           },
@@ -108,7 +108,7 @@ const MarketReport = () => {
       }
     }
 
-    // Inventory Chart
+    // Inventory Chart - VIBRANT COLORS
     if (inventoryChartRef.current) {
       const inventoryCtx = inventoryChartRef.current.getContext('2d');
       if (inventoryCtx) {
@@ -120,13 +120,13 @@ const MarketReport = () => {
               {
                 label: 'Active Listings',
                 data: [80, 95, 65, 70, 50, 90],
-                backgroundColor: '#64748b',
+                backgroundColor: '#8b5cf6', // Vibrant purple
                 barThickness: 30
               },
               {
                 label: 'Sold Listings',
                 data: [75, 88, 60, 65, 48, 85],
-                backgroundColor: '#94a3b8',
+                backgroundColor: '#ec4899', // Vibrant pink
                 barThickness: 30
               }
             ]
@@ -164,7 +164,10 @@ const MarketReport = () => {
       <div className="bg-white border-b border-gray-200 py-3">
         <div className="max-w-[1400px] mx-auto px-10">
           <ul className="flex gap-8 text-sm font-medium">
-            <li><a href="#" className="text-gray-900 hover:text-blue-900 transition-colors">PROPERTY SEARCH</a></li>
+            <li><a href="/" className="text-gray-900 hover:text-blue-900 transition-colors">HOME</a></li>
+            <li><a href="/properties" className="text-gray-900 hover:text-blue-900 transition-colors">PROPERTIES</a></li>
+            <li><a href="/team" className="text-gray-900 hover:text-blue-900 transition-colors">TEAM</a></li>
+            <li><a href="/about" className="text-gray-900 hover:text-blue-900 transition-colors">ABOUT</a></li>
           </ul>
         </div>
       </div>
@@ -183,8 +186,8 @@ const MarketReport = () => {
               BAJA<br />REAL ESTATE
             </div>
           </div>
-          <a href="#" className="bg-gray-900 text-white px-6 py-2.5 rounded font-semibold text-sm tracking-wider hover:bg-gray-800 transition-colors">
-            LOG IN
+          <a href="/" className="bg-gray-900 text-white px-6 py-2.5 rounded font-semibold text-sm tracking-wider hover:bg-gray-800 transition-colors">
+            HOME
           </a>
         </div>
       </header>
@@ -397,13 +400,12 @@ const MarketReport = () => {
         <div className="max-w-[1400px] mx-auto px-10">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div>
-              <h3 className="text-base font-semibold mb-5 text-gray-900">Our Offices</h3>
+              <h3 className="text-base font-semibold mb-5 text-gray-900">Our Office</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Los Cabos<br />
-                Calle Miguel Hidalgo 6 Ignacio<br />
-                Zaragoza Plaza Mijares Local 4,<br />
-                Centro, 23400 San José del Cabo,<br />
-                B.C.S
+                Boulevard Marina s/n<br />
+                Cabo San Lucas<br />
+                Baja California Sur<br />
+                México, C.P. 23400
               </p>
             </div>
 
@@ -412,7 +414,7 @@ const MarketReport = () => {
               <ul className="space-y-3">
                 <li><a href="tel:+526241435555" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">+52 624 143 5555</a></li>
                 <li><a href="mailto:info@bircabo.com" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">info@bircabo.com</a></li>
-                <li><a href="#" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Facebook</a></li>
+                <li><a href="https://www.facebook.com/BajaInternationalRealty" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Facebook</a></li>
               </ul>
             </div>
 
@@ -447,13 +449,13 @@ const MarketReport = () => {
             <div>
               <h3 className="text-base font-semibold mb-5 text-gray-900">About Us</h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-               Founded in Fall 1987, Baja International Realty has brought over 35 years of pioneering experience to Los Cabos real estate.
+                Founded in Fall 1987, Baja International Realty has brought over 35 years of pioneering experience to Los Cabos real estate.
               </p>
             </div>
           </div>
 
           <div className="border-t border-gray-300 pt-8 text-center text-sm text-gray-600">
-            <p>©2025 BIR Affiliates, LLC. An independently owned and operated by BIR Affiliates.</p>
+            <p>©2025 BAJA INTERNATIONAL REALTY. All rights reserved.</p>
           </div>
         </div>
       </section>
