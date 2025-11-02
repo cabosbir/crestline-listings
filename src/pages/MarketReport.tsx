@@ -456,7 +456,7 @@ const MarketReport = () => {
           </div>
 
           <div className="border-t border-gray-300 pt-8 text-center text-sm text-gray-600">
-            <p>©2024 BIR Affiliates, LLC. An independently owned and operated franchisee of BIR Affiliates.</p>
+            <p>©2025 BIR Affiliates, LLC. An independently owned and operated by BIR Affiliates.</p>
           </div>
         </div>
       </section>
