@@ -56,7 +56,20 @@ const App = () => (
           <Route path="/team/:id" element={<AgentDetail />} />
           <Route path="/idx-search" element={<IDXSearch />} />
           
-          {/* Agent Landing Pages */}
+          {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
+          <Route path="/alfonso" element={<AlfonsoLandingPage />} />
+          <Route path="/bob" element={<BobLandingPage />} />
+          <Route path="/cozbi" element={<CozbiLandingPage />} />
+          <Route path="/cristy" element={<CristyLandingPage />} />
+          <Route path="/david" element={<DavidLandingPage />} />
+          <Route path="/don" element={<DonLandingPage />} />
+          <Route path="/edgar" element={<EdgarLandingPage />} />
+          <Route path="/erika" element={<ErikaLandingPage />} />
+          <Route path="/hector" element={<HectorLandingPage />} />
+          <Route path="/marisol" element={<MarisolLandingPage />} />
+          <Route path="/susu" element={<SusuLandingPage />} />
+          
+          {/* Agent Landing Pages - Full URLs (e.g., /agents/bob) */}
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/agents/bob" element={<BobLandingPage />} />
           <Route path="/agents/cozbi" element={<CozbiLandingPage />} />
