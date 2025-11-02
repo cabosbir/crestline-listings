@@ -263,7 +263,7 @@ const AgentDetail = () => {
                         <Phone className="w-5 h-5" />
                         <div>
                           <span className="block">{agent.phone}</span>
-                          {agent.phoneSecondary && <span className="text-xs opacity-75">US Number</span>}
+                          {agent.phoneSecondary && <span className="text-xs opacity-75">Cell</span>}
                         </div>
                       </a>
                       
