@@ -259,51 +259,52 @@ const AlfonsoLandingPage = () => {
               </div>
 
               {/* 🔄 CHANGE 4: CTA Buttons - Added WhatsApp button */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                {/* Phone Call Button */}
-                <Button 
-                  variant="default"
-                  size="lg"
-                  asChild
-                  style={{ backgroundColor: '#102f74', color: 'white' }}
-                  className="hover:opacity-90"
-                >
-                  <a href={`tel:${agent.phone}`}>
-                    <Phone className="mr-2 h-5 w-5" />
-                    Call Now
-                  </a>
-                </Button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+          {/* Phone Call Button */}
+          <Button 
+          variant="default"
+          size="lg"
+          asChild
+          style={{ backgroundColor: '#102f74', color: 'white' }}
+          className="hover:opacity-90 w-full sm:w-auto"
+          >
+          <a href={`tel:${agent.phone}`}>
+          <Phone className="mr-2 h-5 w-5" />
+           Call Now
+           </a>
+           </Button>
 
-                {/* WhatsApp Button - NEW */}
-                <Button 
-                  variant="default"
-                  size="lg"
-                  asChild
-                  style={{ backgroundColor: '#25D366', color: 'white' }}
-                  className="hover:opacity-90"
-                >
-                  <a 
-                    href={getWhatsAppLink(agent.phone, agent.name)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    WhatsApp
-                  </a>
-                </Button>
+           {/* Compact WhatsApp Icon Button - NEW */}
+            <Button 
+            variant="default"
+            size="icon"
+            asChild
+            style={{ backgroundColor: '#25D366', color: 'white' }}
+            className="hover:opacity-90 h-11 w-11 flex-shrink-0"
+            title="WhatsApp Alfonso"
+            >
+            <a 
+            href={getWhatsAppLink(agent.phone, agent.name)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Contact via WhatsApp"
+             >
+            <MessageCircle className="h-5 w-5" />
+            </a>
+            </Button>
 
-                {/* Email/Form Button */}
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  style={{ borderColor: '#102f74', color: '#102f74' }}
-                  className="bg-transparent hover:bg-[#102f74] hover:text-white"
-                  onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  <Mail className="mr-2 h-5 w-5" />
-                  Send Message
-                </Button>
-              </div>
+            {/* Email/Form Button */}
+             <Button 
+             variant="outline" 
+             size="lg"
+             style={{ borderColor: '#102f74', color: '#102f74' }}
+             className="bg-transparent hover:bg-[#102f74] hover:text-white w-full sm:w-auto"
+             onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
+             >
+             <Mail className="mr-2 h-5 w-5" />
+              Send Message
+              </Button>
+             </div>
             </div>
           </div>
         </div>
