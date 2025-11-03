@@ -187,13 +187,6 @@ const Team = () => {
     },
   ];
 
-  // Check scroll position on mount and window resize
-  useEffect(() => {
-    checkScrollButtons();
-    window.addEventListener('resize', checkScrollButtons);
-    return () => window.removeEventListener('resize', checkScrollButtons);
-  }, []);
-
   // Intersection Observer for stats animation
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -258,30 +251,51 @@ const Team = () => {
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 10);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+      const atStart = scrollLeft <= 10;
+      const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+      
+      console.log('Scroll check:', { scrollLeft, scrollWidth, clientWidth, atStart, atEnd });
+      
+      setCanScrollLeft(!atStart);
+      setCanScrollRight(!atEnd);
     }
   };
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const cardWidth = 320; // Width of one card
-      const gap = 24; // Gap between cards (gap-6 = 24px)
-      const scrollAmount = cardWidth + gap;
-      
-      const currentScroll = scrollContainerRef.current.scrollLeft;
-      const newScrollLeft = direction === 'left' 
-        ? currentScroll - scrollAmount
-        : currentScroll + scrollAmount;
-      
-      scrollContainerRef.current.scrollTo({
-        left: newScrollLeft,
-        behavior: 'smooth'
-      });
-      
-      // Update button states after scroll animation
-      setTimeout(checkScrollButtons, 400);
+  // Check initial scroll state after component mounts
+  useEffect(() => {
+    // Small delay to ensure DOM is fully rendered
+    const timer = setTimeout(() => {
+      checkScrollButtons();
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    console.log('Scroll button clicked:', direction);
+    
+    if (!scrollContainerRef.current) {
+      console.error('Scroll container ref is null!');
+      return;
     }
+
+    const container = scrollContainerRef.current;
+    const scrollAmount = 350; // One card width plus gap
+    
+    console.log('Current scroll position:', container.scrollLeft);
+    
+    if (direction === 'left') {
+      container.scrollLeft -= scrollAmount;
+    } else {
+      container.scrollLeft += scrollAmount;
+    }
+    
+    console.log('New scroll position:', container.scrollLeft);
+    
+    // Update button states
+    setTimeout(() => {
+      checkScrollButtons();
+    }, 100);
   };
 
   return (
@@ -340,30 +354,26 @@ const Team = () => {
               </p>
             </div>
 
-            {/* Horizontal Scroll Container with Fixed Navigation */}
-            <div className="relative">
-              {/* Left Arrow - Fixed positioning */}
-              {canScrollLeft && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => scroll('left')}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full shadow-2xl bg-white hover:bg-gray-50 border-2 border-gray-200"
-                  aria-label="Scroll left"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </Button>
-              )}
+            {/* Horizontal Scroll Container */}
+            <div className="relative px-14">
+              {/* Left Arrow */}
+              <button
+                onClick={() => handleScroll('left')}
+                disabled={!canScrollLeft}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full shadow-xl bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="h-6 w-6 text-gray-700" />
+              </button>
 
               {/* Scrollable Agent Cards */}
               <div 
                 ref={scrollContainerRef}
                 onScroll={checkScrollButtons}
-                className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-2"
+                className="flex gap-6 overflow-x-scroll scroll-smooth"
                 style={{ 
-                  scrollbarWidth: 'none', 
+                  scrollbarWidth: 'none',
                   msOverflowStyle: 'none',
-                  WebkitOverflowScrolling: 'touch'
                 }}
               >
                 {agents.map((agent) => (
@@ -384,18 +394,15 @@ const Team = () => {
                 ))}
               </div>
 
-              {/* Right Arrow - Fixed positioning */}
-              {canScrollRight && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => scroll('right')}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full shadow-2xl bg-white hover:bg-gray-50 border-2 border-gray-200"
-                  aria-label="Scroll right"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </Button>
-              )}
+              {/* Right Arrow */}
+              <button
+                onClick={() => handleScroll('right')}
+                disabled={!canScrollRight}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full shadow-xl bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="h-6 w-6 text-gray-700" />
+              </button>
             </div>
 
             {/* Scroll Hint */}
@@ -436,7 +443,7 @@ const Team = () => {
       <Footer />
 
       <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
+        .overflow-x-scroll::-webkit-scrollbar {
           display: none;
         }
         
