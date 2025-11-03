@@ -6,8 +6,22 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Award, Home, Users, CheckCircle, Loader2 } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, Loader2, MessageCircle } from "lucide-react"; // 🔄 CHANGE 1: Added MessageCircle import
 import { useToast } from "@/hooks/use-toast";
+
+// 🔄 CHANGE 2: Added helper function for WhatsApp formatting
+// Helper function to format phone number for WhatsApp (removes all non-digits)
+const getWhatsAppNumber = (phone) => {
+  return phone.replace(/[^0-9]/g, '');
+};
+
+// 🔄 CHANGE 3: Added getWhatsAppLink helper function
+// Helper function to create WhatsApp link with pre-filled message
+const getWhatsAppLink = (phone, agentName) => {
+  const number = getWhatsAppNumber(phone);
+  const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
+  return `https://wa.me/${number}?text=${message}`;
+};
 
 // Alfonso Puente - Baja International Realty Agent
 const agent = {
@@ -244,8 +258,9 @@ const AlfonsoLandingPage = () => {
                 </div>
               </div>
 
-              {/* CTA Buttons */}
+              {/* 🔄 CHANGE 4: CTA Buttons - Added WhatsApp button */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                {/* Phone Call Button */}
                 <Button 
                   variant="default"
                   size="lg"
@@ -255,9 +270,29 @@ const AlfonsoLandingPage = () => {
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Alfonso Now
+                    Call Now
                   </a>
                 </Button>
+
+                {/* WhatsApp Button - NEW */}
+                <Button 
+                  variant="default"
+                  size="lg"
+                  asChild
+                  style={{ backgroundColor: '#25D366', color: 'white' }}
+                  className="hover:opacity-90"
+                >
+                  <a 
+                    href={getWhatsAppLink(agent.phone, agent.name)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    WhatsApp
+                  </a>
+                </Button>
+
+                {/* Email/Form Button */}
                 <Button 
                   variant="outline" 
                   size="lg"
@@ -380,8 +415,9 @@ const AlfonsoLandingPage = () => {
               </p>
             </div>
 
-            {/* Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* 🔄 CHANGE 5: Contact Info Cards - Added WhatsApp card */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {/* Phone Card */}
               <a 
                 href={`tel:${agent.phone}`}
                 className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
@@ -389,10 +425,27 @@ const AlfonsoLandingPage = () => {
               >
                 <Phone className="h-6 w-6" style={{ color: '#d4af37' }} />
                 <div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone (MX)</div>
+                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone</div>
                   <div className="font-semibold text-white">{agent.phone}</div>
                 </div>
               </a>
+
+              {/* WhatsApp Card - NEW */}
+              <a 
+                href={getWhatsAppLink(agent.phone, agent.name)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+              >
+                <MessageCircle className="h-6 w-6" style={{ color: '#25D366' }} />
+                <div>
+                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>WhatsApp</div>
+                  <div className="font-semibold text-white">{agent.phone}</div>
+                </div>
+              </a>
+
+              {/* Email Card */}
               <a 
                 href={`mailto:${agent.email}`}
                 className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
