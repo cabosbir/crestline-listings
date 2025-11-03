@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 const agent = {
   id: 10,
   name: "Edgar Pacheco",
-  title: "Real Estate & IT Advisor",
+  title: "Real Estate Advisor",
   specialization: "Luxury Properties",
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761598127/a-professional-studio-portrait-photograp_dnE69CqgQwKMvDj_boYW5A_sWO9IE8FSuKtnjTWshya2g_lvnjuh.jpg",
   phone: "+52 612 169 8328",
