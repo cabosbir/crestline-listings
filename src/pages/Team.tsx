@@ -187,6 +187,13 @@ const Team = () => {
     },
   ];
 
+  // Check scroll position on mount and window resize
+  useEffect(() => {
+    checkScrollButtons();
+    window.addEventListener('resize', checkScrollButtons);
+    return () => window.removeEventListener('resize', checkScrollButtons);
+  }, []);
+
   // Intersection Observer for stats animation
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -251,24 +258,29 @@ const Team = () => {
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollLeft(scrollLeft > 10);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
   };
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 400;
+      const cardWidth = 320; // Width of one card
+      const gap = 24; // Gap between cards (gap-6 = 24px)
+      const scrollAmount = cardWidth + gap;
+      
+      const currentScroll = scrollContainerRef.current.scrollLeft;
       const newScrollLeft = direction === 'left' 
-        ? scrollContainerRef.current.scrollLeft - scrollAmount
-        : scrollContainerRef.current.scrollLeft + scrollAmount;
+        ? currentScroll - scrollAmount
+        : currentScroll + scrollAmount;
       
       scrollContainerRef.current.scrollTo({
         left: newScrollLeft,
         behavior: 'smooth'
       });
       
-      setTimeout(checkScrollButtons, 300);
+      // Update button states after scroll animation
+      setTimeout(checkScrollButtons, 400);
     }
   };
 
@@ -328,25 +340,31 @@ const Team = () => {
               </p>
             </div>
 
-            {/* Horizontal Scroll Container */}
+            {/* Horizontal Scroll Container with Fixed Navigation */}
             <div className="relative">
-              {/* Left Arrow */}
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => scroll('left')}
-                disabled={!canScrollLeft}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-16 w-16 rounded-full shadow-xl bg-white hover:bg-gray-50 disabled:opacity-30"
-              >
-                <ChevronLeft className="h-8 w-8" />
-              </Button>
+              {/* Left Arrow - Fixed positioning */}
+              {canScrollLeft && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => scroll('left')}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full shadow-2xl bg-white hover:bg-gray-50 border-2 border-gray-200"
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </Button>
+              )}
 
               {/* Scrollable Agent Cards */}
               <div 
                 ref={scrollContainerRef}
                 onScroll={checkScrollButtons}
-                className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-16"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-2"
+                style={{ 
+                  scrollbarWidth: 'none', 
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
               >
                 {agents.map((agent) => (
                   <div key={agent.id} className="flex-shrink-0 w-[320px]">
@@ -366,16 +384,18 @@ const Team = () => {
                 ))}
               </div>
 
-              {/* Right Arrow */}
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => scroll('right')}
-                disabled={!canScrollRight}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-16 w-16 rounded-full shadow-xl bg-white hover:bg-gray-50 disabled:opacity-30"
-              >
-                <ChevronRight className="h-8 w-8" />
-              </Button>
+              {/* Right Arrow - Fixed positioning */}
+              {canScrollRight && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => scroll('right')}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full shadow-2xl bg-white hover:bg-gray-50 border-2 border-gray-200"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </Button>
+              )}
             </div>
 
             {/* Scroll Hint */}
@@ -416,6 +436,10 @@ const Team = () => {
       <Footer />
 
       <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
         @keyframes fadeInUp {
           from {
             opacity: 0;
