@@ -6,7 +6,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Alfonso Puente - Baja International Realty Agent
@@ -89,56 +89,109 @@ const AlfonsoLandingPage = () => {
     email: "",
     phone: "",
     message: "",
-    propertyInterest: ""
+    propertyInterest: "",
+    inquiryType: "general",
+    propertyType: ""
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
-      // Lead data with agent attribution
-      const leadData = {
+      // Prepare data for both API endpoints
+      const timestamp = new Date().toISOString();
+      
+      // Try primary agent inquiry endpoint first
+      const agentInquiryData = {
         ...formData,
         agent: "alfonso-puente",
+        agentId: agent.id,
         agentName: agent.name,
         agentEmail: agent.email,
-        agentId: agent.id,
         source: "agent-landing-page",
-        timestamp: new Date().toISOString()
+        timestamp: timestamp
       };
 
-      // Send to your backend API endpoint
-      const response = await fetch('/api/contact/agent-inquiry', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(leadData)
-      });
+      let primarySuccess = false;
+      
+      try {
+        const primaryResponse = await fetch('/api/contact/agent-inquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(agentInquiryData)
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
+        if (primaryResponse.ok) {
+          primarySuccess = true;
+          console.log('✅ Primary API (agent-inquiry) successful');
+        }
+      } catch (primaryError) {
+        console.log('Primary API failed, will try backup:', primaryError.message);
       }
 
-      toast({
-        title: "Message Sent Successfully!",
-        description: `Alfonso will contact you within 24 hours at ${formData.email}`,
-      });
+      // Try backup general contact endpoint
+      const generalContactData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        inquiryType: formData.inquiryType || "general",
+        propertyType: formData.propertyType || "",
+        preferredAgent: agent.name,
+        agentEmail: agent.email
+      };
 
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
-        propertyInterest: ""
-      });
+      let backupSuccess = false;
+
+      try {
+        const backupResponse = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(generalContactData)
+        });
+
+        if (backupResponse.ok) {
+          backupSuccess = true;
+          console.log('✅ Backup API (general contact) successful');
+        }
+      } catch (backupError) {
+        console.log('Backup API also failed:', backupError.message);
+      }
+
+      // Check if at least one API succeeded
+      if (primarySuccess || backupSuccess) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: `Alfonso will contact you within 24 hours at ${formData.email}`,
+        });
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          propertyInterest: "",
+          inquiryType: "general",
+          propertyType: ""
+        });
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        throw new Error('Both API endpoints failed');
+      }
+
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Form submission error:', error);
       toast({
         title: "Error Sending Message",
-        description: "Please try calling Alfonso directly or email alfonso@bircabo.com",
+        description: `Please call Alfonso directly at ${agent.phone} or email ${agent.email}`,
         variant: "destructive"
       });
     } finally {
@@ -354,7 +407,7 @@ const AlfonsoLandingPage = () => {
             </div>
 
             {/* Contact Form */}
-            <form onSubmit={handleSubmit} className="bg-background text-foreground p-6 md:p-8 rounded-2xl shadow-2xl">
+            <div className="bg-background text-foreground p-6 md:p-8 rounded-2xl shadow-2xl">
               <div className="space-y-4">
                 <div>
                   <Input
@@ -405,19 +458,26 @@ const AlfonsoLandingPage = () => {
                   />
                 </div>
                 <Button 
-                  type="submit" 
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !formData.name || !formData.email || !formData.message}
                   variant="luxury" 
                   size="lg" 
                   className="w-full"
-                  disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending..." : "Send Message to Alfonso"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Message to Alfonso'
+                  )}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
                   By submitting, you agree to be contacted by Alfonso Puente regarding your real estate inquiry.
                 </p>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </section>

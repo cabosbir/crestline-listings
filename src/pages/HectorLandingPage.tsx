@@ -83,6 +83,7 @@ const testimonials = [
 
 const HectorLandingPage = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -93,31 +94,83 @@ const HectorLandingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Lead data with agent attribution
-    const leadData = {
-      ...formData,
-      agent: "hector-mendoza",
-      agentId: agent.id,
-      source: "agent-landing-page",
-      timestamp: new Date().toISOString()
-    };
+    setIsSubmitting(true);
 
-    console.log(`Lead submitted for ${agent.name}:`, leadData);
+    try {
+      // Prepare lead data for agent-specific endpoint
+      const leadData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        propertyInterest: formData.propertyInterest,
+        agentName: agent.name,
+        agentEmail: agent.email,
+        agentId: agent.id,
+        agent: "hector-mendoza",
+        source: "agent-landing-page",
+        timestamp: new Date().toISOString()
+      };
 
-    toast({
-      title: "Message Sent!",
-      description: "Hector will contact you within 24 hours.",
-    });
+      // Send to agent-specific API endpoint
+      const response = await fetch('/api/contact/agent-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadData),
+      });
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      propertyInterest: ""
-    });
+      if (!response.ok) {
+        throw new Error('Failed to send inquiry');
+      }
+
+      const result = await response.json();
+
+      // Also send to general contact form API with agent preference
+      const generalContactData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        inquiryType: 'buying',
+        propertyType: formData.propertyInterest,
+        preferredAgent: agent.name,
+        agentEmail: agent.email,
+      };
+
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(generalContactData),
+      });
+
+      toast({
+        title: "Message Sent Successfully! ✓",
+        description: "Hector will contact you within 24 hours.",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        propertyInterest: ""
+      });
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Error Sending Message",
+        description: "Please try again or call Hector directly at " + agent.phone,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -336,6 +389,7 @@ const HectorLandingPage = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -346,6 +400,7 @@ const HectorLandingPage = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                   <Input
@@ -353,6 +408,7 @@ const HectorLandingPage = () => {
                     placeholder="Phone"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -361,6 +417,7 @@ const HectorLandingPage = () => {
                     placeholder="Property Interest (e.g., 3-bed beachfront villa)"
                     value={formData.propertyInterest}
                     onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -370,11 +427,18 @@ const HectorLandingPage = () => {
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     rows={5}
                   />
                 </div>
-                <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Hector
+                <Button 
+                  type="submit" 
+                  variant="luxury" 
+                  size="lg" 
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message to Hector'}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
                   By submitting, you agree to be contacted by Hector Mendoza regarding your real estate inquiry.

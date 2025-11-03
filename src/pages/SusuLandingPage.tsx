@@ -6,7 +6,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Susu Vieira - Baja International Realty Agent
@@ -89,36 +89,116 @@ const SusuLandingPage = () => {
     email: "",
     phone: "",
     message: "",
-    propertyInterest: ""
+    propertyInterest: "",
+    inquiryType: "general",
+    propertyType: ""
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Lead data with agent attribution
-    const leadData = {
-      ...formData,
-      agent: "susu-vieira",
-      agentId: agent.id,
-      source: "agent-landing-page",
-      timestamp: new Date().toISOString()
-    };
+    setIsSubmitting(true);
 
-    console.log(`Lead submitted for ${agent.name}:`, leadData);
+    try {
+      // Prepare data for both API endpoints
+      const timestamp = new Date().toISOString();
+      
+      // Try primary agent inquiry endpoint first
+      const agentInquiryData = {
+        ...formData,
+        agent: "susu-vieira",
+        agentId: agent.id,
+        agentName: agent.name,
+        agentEmail: agent.email,
+        source: "agent-landing-page",
+        timestamp: timestamp
+      };
 
-    toast({
-      title: "Message Sent!",
-      description: "Susu will contact you within 24 hours.",
-    });
+      let primarySuccess = false;
+      
+      try {
+        const primaryResponse = await fetch('/api/contact/agent-inquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(agentInquiryData)
+        });
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      propertyInterest: ""
-    });
+        if (primaryResponse.ok) {
+          primarySuccess = true;
+          console.log('✅ Primary API (agent-inquiry) successful');
+        }
+      } catch (primaryError) {
+        console.log('Primary API failed, will try backup:', primaryError.message);
+      }
+
+      // Try backup general contact endpoint
+      const generalContactData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        inquiryType: formData.inquiryType || "general",
+        propertyType: formData.propertyType || "",
+        preferredAgent: agent.name,
+        agentEmail: agent.email
+      };
+
+      let backupSuccess = false;
+
+      try {
+        const backupResponse = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(generalContactData)
+        });
+
+        if (backupResponse.ok) {
+          backupSuccess = true;
+          console.log('✅ Backup API (general contact) successful');
+        }
+      } catch (backupError) {
+        console.log('Backup API also failed:', backupError.message);
+      }
+
+      // Check if at least one API succeeded
+      if (primarySuccess || backupSuccess) {
+        toast({
+          title: "Message Sent!",
+          description: "Susu will contact you within 24 hours.",
+        });
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          propertyInterest: "",
+          inquiryType: "general",
+          propertyType: ""
+        });
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        throw new Error('Both API endpoints failed');
+      }
+
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toast({
+        title: "Unable to Send Message",
+        description: `Please call Susu directly at ${agent.phone} or email ${agent.email}`,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -335,7 +415,7 @@ const SusuLandingPage = () => {
             </div>
 
             {/* Contact Form */}
-            <form onSubmit={handleSubmit} className="bg-background text-foreground p-6 md:p-8 rounded-2xl shadow-2xl">
+            <div className="bg-background text-foreground p-6 md:p-8 rounded-2xl shadow-2xl">
               <div className="space-y-4">
                 <div>
                   <Input
@@ -343,6 +423,7 @@ const SusuLandingPage = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -353,6 +434,7 @@ const SusuLandingPage = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                   <Input
@@ -360,6 +442,7 @@ const SusuLandingPage = () => {
                     placeholder="Phone"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -368,6 +451,7 @@ const SusuLandingPage = () => {
                     placeholder="Property Interest (e.g., 3-bed beachfront villa)"
                     value={formData.propertyInterest}
                     onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -377,17 +461,31 @@ const SusuLandingPage = () => {
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     rows={5}
                   />
                 </div>
-                <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Susu
+                <Button 
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !formData.name || !formData.email || !formData.message}
+                  variant="luxury" 
+                  size="lg" 
+                  className="w-full"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Message to Susu'
+                  )}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
                   By submitting, you agree to be contacted by Susu Vieira regarding your real estate inquiry.
                 </p>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </section>
