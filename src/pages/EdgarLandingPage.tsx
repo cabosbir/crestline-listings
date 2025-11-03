@@ -90,34 +90,107 @@ const EdgarLandingPage = () => {
     message: "",
     propertyInterest: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Lead data with agent attribution
-    const leadData = {
-      ...formData,
-      agent: "edgar-pacheco",
+    // Prepare data with timestamp
+    const timestamp = new Date().toISOString();
+    
+    // Data for agent-inquiry endpoint (Edgar's specific system)
+    const agentInquiryData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      message: formData.message,
+      propertyInterest: formData.propertyInterest,
+      agentName: agent.name,
+      agentEmail: agent.email,
       agentId: agent.id,
-      source: "agent-landing-page",
-      timestamp: new Date().toISOString()
+      agent: "edgar-pacheco",
+      source: "edgar-pacheco-landing-page",
+      timestamp: timestamp
     };
 
-    console.log(`Lead submitted for ${agent.name}:`, leadData);
+    // Data for general contact endpoint (Office system)
+    const contactData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      message: formData.message,
+      inquiryType: "general",
+      propertyType: formData.propertyInterest || "luxury-property",
+      preferredAgent: agent.name,
+      agentEmail: agent.email
+    };
 
-    toast({
-      title: "Message Sent!",
-      description: "Edgar will contact you within 24 hours.",
-    });
+    try {
+      // Send to both endpoints simultaneously for redundancy
+      const [agentResponse, contactResponse] = await Promise.allSettled([
+        fetch('/api/contact/agent-inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(agentInquiryData)
+        }),
+        fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(contactData)
+        })
+      ]);
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      propertyInterest: ""
-    });
+      // Check if at least one succeeded
+      const agentSuccess = agentResponse.status === 'fulfilled' && agentResponse.value.ok;
+      const contactSuccess = contactResponse.status === 'fulfilled' && contactResponse.value.ok;
+
+      if (agentSuccess || contactSuccess) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: "Edgar will contact you within 24 hours. Check your email for confirmation.",
+        });
+
+        // Reset form on success
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          propertyInterest: ""
+        });
+
+        // Log success for debugging
+        console.log('✅ Lead submitted successfully for Edgar Pacheco');
+        if (agentSuccess && contactSuccess) {
+          console.log('   Both systems confirmed delivery');
+        } else if (agentSuccess) {
+          console.log('   Agent system confirmed (Contact system failed)');
+        } else {
+          console.log('   Contact system confirmed (Agent system failed)');
+        }
+      } else {
+        throw new Error('Both email systems failed to deliver');
+      }
+
+      // Log any partial failures
+      if (!agentSuccess && agentResponse.status === 'fulfilled') {
+        console.warn('⚠️ Agent inquiry endpoint failed:', agentResponse.value.statusText);
+      }
+      if (!contactSuccess && contactResponse.status === 'fulfilled') {
+        console.warn('⚠️ Contact endpoint failed:', contactResponse.value.statusText);
+      }
+
+    } catch (error) {
+      console.error('❌ Form submission error:', error);
+      toast({
+        title: "Unable to Send Message",
+        description: `Please call Edgar directly at ${agent.phone} or email ${agent.email}`,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -336,6 +409,7 @@ const EdgarLandingPage = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -346,6 +420,7 @@ const EdgarLandingPage = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                   <Input
@@ -353,6 +428,7 @@ const EdgarLandingPage = () => {
                     placeholder="Phone"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -361,6 +437,7 @@ const EdgarLandingPage = () => {
                     placeholder="Property Interest (e.g., 3-bed beachfront villa)"
                     value={formData.propertyInterest}
                     onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -370,11 +447,18 @@ const EdgarLandingPage = () => {
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     rows={5}
                   />
                 </div>
-                <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Edgar
+                <Button 
+                  type="submit" 
+                  variant="luxury" 
+                  size="lg" 
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message to Edgar'}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
                   By submitting, you agree to be contacted by Edgar Pacheco regarding your real estate inquiry.
