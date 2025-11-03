@@ -110,6 +110,7 @@ const testimonials = [
 const BobLandingPage = () => {
   const { toast } = useToast();
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -135,30 +136,64 @@ const BobLandingPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Lead data with agent attribution
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    // Format data for your existing API
     const leadData = {
-      ...formData,
-      agent: "bob-van-patten",
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || "",
+      message: formData.message,
+      propertyType: formData.propertyInterest || "Not specified",
+      preferredAgent: agent.name,
+      agentEmail: agent.email,
+      agentName: agent.name,
       agentId: agent.id,
+      agent: "bob-van-patten",
       source: "agent-landing-page",
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      inquiryType: "general"
     };
 
-    console.log(`Lead submitted for ${agent.name}:`, leadData);
+    try {
+      const response = await fetch('/api/contact/agent-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadData)
+      });
 
-    toast({
-      title: "Message Sent!",
-      description: "Bob will contact you within 24 hours.",
-    });
+      const data = await response.json();
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      propertyInterest: ""
-    });
+      if (response.ok && data.success) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: "Bob will contact you within 24 hours.",
+        });
+
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          propertyInterest: ""
+        });
+      } else {
+        throw new Error(data.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      
+      toast({
+        title: "Error Sending Message",
+        description: `Please try calling Bob directly at ${agent.phone} or email ${agent.email}`,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -448,6 +483,7 @@ const BobLandingPage = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -458,6 +494,7 @@ const BobLandingPage = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                   <Input
@@ -465,6 +502,7 @@ const BobLandingPage = () => {
                     placeholder="Phone"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -473,6 +511,7 @@ const BobLandingPage = () => {
                     placeholder="Property Interest (e.g., 3-bed beachfront villa)"
                     value={formData.propertyInterest}
                     onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -482,11 +521,18 @@ const BobLandingPage = () => {
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     rows={5}
                   />
                 </div>
-                <Button type="submit" size="lg" className="w-full" style={{ backgroundColor: '#d4af37', color: '#102f74' }}>
-                  Send Message to Bob
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="w-full" 
+                  style={{ backgroundColor: '#d4af37', color: '#102f74' }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message to Bob'}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
                   By submitting, you agree to be contacted by Bob Van Patten regarding your real estate inquiry.
