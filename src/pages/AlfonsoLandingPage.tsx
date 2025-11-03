@@ -83,6 +83,7 @@ const testimonials = [
 
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -93,31 +94,56 @@ const AlfonsoLandingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Lead data with agent attribution
-    const leadData = {
-      ...formData,
-      agent: "alfonso-puente",
-      agentId: agent.id,
-      source: "agent-landing-page",
-      timestamp: new Date().toISOString()
-    };
+    try {
+      // Lead data with agent attribution
+      const leadData = {
+        ...formData,
+        agent: "alfonso-puente",
+        agentName: agent.name,
+        agentEmail: agent.email,
+        agentId: agent.id,
+        source: "agent-landing-page",
+        timestamp: new Date().toISOString()
+      };
 
-    console.log(`Lead submitted for ${agent.name}:`, leadData);
+      // Send to your backend API endpoint
+      const response = await fetch('/api/contact/agent-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadData)
+      });
 
-    toast({
-      title: "Message Sent!",
-      description: "Alfonso will contact you within 24 hours.",
-    });
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      propertyInterest: ""
-    });
+      toast({
+        title: "Message Sent Successfully!",
+        description: `Alfonso will contact you within 24 hours at ${formData.email}`,
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+        propertyInterest: ""
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Error Sending Message",
+        description: "Please try calling Alfonso directly or email alfonso@bircabo.com",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -312,12 +338,6 @@ const AlfonsoLandingPage = () => {
                 <div>
                   <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone (MX)</div>
                   <div className="font-semibold text-white">{agent.phone}</div>
-                  {agent.phoneSecondary && (
-                    <>
-                      <div className="text-xs mt-1" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>MX</div>
-                      <div className="font-semibold text-white text-sm">{agent.phoneSecondary}</div>
-                    </>
-                  )}
                 </div>
               </a>
               <a 
@@ -343,6 +363,7 @@ const AlfonsoLandingPage = () => {
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
                     className="h-12"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -353,6 +374,7 @@ const AlfonsoLandingPage = () => {
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
                     className="h-12"
+                    disabled={isSubmitting}
                   />
                   <Input
                     type="tel"
@@ -360,6 +382,7 @@ const AlfonsoLandingPage = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
                     className="h-12"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -368,6 +391,7 @@ const AlfonsoLandingPage = () => {
                     value={formData.propertyInterest}
                     onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
                     className="h-12"
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -377,10 +401,17 @@ const AlfonsoLandingPage = () => {
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     required
                     rows={5}
+                    disabled={isSubmitting}
                   />
                 </div>
-                <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to Alfonso
+                <Button 
+                  type="submit" 
+                  variant="luxury" 
+                  size="lg" 
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Sending..." : "Send Message to Alfonso"}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
                   By submitting, you agree to be contacted by Alfonso Puente regarding your real estate inquiry.
