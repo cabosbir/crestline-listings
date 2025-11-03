@@ -83,6 +83,7 @@ const testimonials = [
 
 const DavidLandingPage = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -93,31 +94,94 @@ const DavidLandingPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Lead data with agent attribution
-    const leadData = {
-      ...formData,
-      agent: "david-scott-piper",
-      agentId: agent.id,
-      source: "agent-landing-page",
-      timestamp: new Date().toISOString()
-    };
+    setIsSubmitting(true);
 
-    console.log(`Lead submitted for ${agent.name}:`, leadData);
+    try {
+      // Prepare payload for BOTH API endpoints
+      const timestamp = new Date().toISOString();
 
-    toast({
-      title: "Message Sent!",
-      description: "David will contact you within 24 hours.",
-    });
+      // Payload for main contact form (/api/contact)
+      const mainContactPayload = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        inquiryType: 'general',
+        propertyType: formData.propertyInterest || 'Not specified',
+        preferredAgent: agent.name,
+        agentEmail: agent.email,
+      };
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-      propertyInterest: ""
-    });
+      // Payload for agent-specific inquiry (/api/contact/agent-inquiry)
+      const agentInquiryPayload = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        propertyInterest: formData.propertyInterest,
+        agentName: agent.name,
+        agentEmail: agent.email,
+        agentId: agent.id,
+        agent: "david-scott-piper",
+        source: "agent-landing-page",
+        timestamp: timestamp,
+      };
+
+      // Call BOTH API endpoints in parallel
+      const [mainResponse, agentResponse] = await Promise.all([
+        fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(mainContactPayload),
+        }),
+        fetch('/api/contact/agent-inquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(agentInquiryPayload),
+        }),
+      ]);
+
+      // Check if both requests succeeded
+      const mainData = await mainResponse.json();
+      const agentData = await agentResponse.json();
+
+      if (mainResponse.ok && agentResponse.ok) {
+        toast({
+          title: "Message Sent Successfully!",
+          description: "David will contact you within 24 hours.",
+          variant: "default",
+        });
+
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+          propertyInterest: ""
+        });
+      } else {
+        // Handle partial success or failure
+        const errorMsg = !mainResponse.ok 
+          ? mainData.error || 'Main contact form failed'
+          : agentData.error || 'Agent inquiry failed';
+        
+        throw new Error(errorMsg);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Submission Failed",
+        description: error instanceof Error ? error.message : "Please try again or call us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -336,6 +400,7 @@ const DavidLandingPage = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -346,6 +411,7 @@ const DavidLandingPage = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                   <Input
@@ -353,6 +419,7 @@ const DavidLandingPage = () => {
                     placeholder="Phone"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -361,6 +428,7 @@ const DavidLandingPage = () => {
                     placeholder="Property Interest (e.g., 3-bed beachfront villa)"
                     value={formData.propertyInterest}
                     onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
+                    disabled={isSubmitting}
                     className="h-12"
                   />
                 </div>
@@ -370,11 +438,18 @@ const DavidLandingPage = () => {
                     value={formData.message}
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     required
+                    disabled={isSubmitting}
                     rows={5}
                   />
                 </div>
-                <Button type="submit" variant="luxury" size="lg" className="w-full">
-                  Send Message to David
+                <Button 
+                  type="submit" 
+                  variant="luxury" 
+                  size="lg" 
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Message to David'}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
                   By submitting, you agree to be contacted by David Scott Piper regarding your real estate inquiry.
