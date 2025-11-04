@@ -6,16 +6,14 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Award, Home, Users, CheckCircle, Loader2, MessageCircle } from "lucide-react"; // 🔄 CHANGE 1: Added MessageCircle import
+import { Phone, Mail, Award, Home, Users, CheckCircle, Loader2, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// 🔄 CHANGE 2: Added helper function for WhatsApp formatting
 // Helper function to format phone number for WhatsApp (removes all non-digits)
 const getWhatsAppNumber = (phone) => {
   return phone.replace(/[^0-9]/g, '');
 };
 
-// 🔄 CHANGE 3: Added getWhatsAppLink helper function
 // Helper function to create WhatsApp link with pre-filled message
 const getWhatsAppLink = (phone, agentName) => {
   const number = getWhatsAppNumber(phone);
@@ -217,6 +215,26 @@ const AlfonsoLandingPage = () => {
     <div className="min-h-screen">
       <Navbar />
 
+      {/* 🆕 FLOATING WHATSAPP BUTTON */}
+      <a
+        href={getWhatsAppLink(agent.phone, agent.name)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-16 h-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-3xl group"
+        style={{ backgroundColor: '#25D366' }}
+        aria-label="Contact Alfonso via WhatsApp"
+      >
+        <MessageCircle className="h-8 w-8 text-white" />
+        
+        {/* Tooltip */}
+        <span className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          Chat on WhatsApp
+        </span>
+        
+        {/* Pulse animation */}
+        <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
+      </a>
+
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
@@ -258,53 +276,34 @@ const AlfonsoLandingPage = () => {
                 </div>
               </div>
 
-              {/* 🔄 CHANGE 4: CTA Buttons - Added WhatsApp button */}
+              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
-          {/* Phone Call Button */}
-          <Button 
-          variant="default"
-          size="lg"
-          asChild
-          style={{ backgroundColor: '#102f74', color: 'white' }}
-          className="hover:opacity-90 w-full sm:w-auto"
-          >
-          <a href={`tel:${agent.phone}`}>
-          <Phone className="mr-2 h-5 w-5" />
-           Call Now
-           </a>
-           </Button>
+                {/* Phone Call Button */}
+                <Button 
+                  variant="default"
+                  size="lg"
+                  asChild
+                  style={{ backgroundColor: '#102f74', color: 'white' }}
+                  className="hover:opacity-90 w-full sm:w-auto"
+                >
+                  <a href={`tel:${agent.phone}`}>
+                    <Phone className="mr-2 h-5 w-5" />
+                    Call Now
+                  </a>
+                </Button>
 
-           {/* Compact WhatsApp Icon Button - NEW */}
-            <Button 
-            variant="default"
-            size="icon"
-            asChild
-            style={{ backgroundColor: '#25D366', color: 'white' }}
-            className="hover:opacity-90 h-11 w-11 flex-shrink-0"
-            title="WhatsApp Alfonso"
-            >
-            <a 
-            href={getWhatsAppLink(agent.phone, agent.name)}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Contact via WhatsApp"
-             >
-            <MessageCircle className="h-5 w-5" />
-            </a>
-            </Button>
-
-            {/* Email/Form Button */}
-             <Button 
-             variant="outline" 
-             size="lg"
-             style={{ borderColor: '#102f74', color: '#102f74' }}
-             className="bg-transparent hover:bg-[#102f74] hover:text-white w-full sm:w-auto"
-             onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
-             >
-             <Mail className="mr-2 h-5 w-5" />
-              Send Message
-              </Button>
-             </div>
+                {/* Email/Form Button */}
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  style={{ borderColor: '#102f74', color: '#102f74' }}
+                  className="bg-transparent hover:bg-[#102f74] hover:text-white w-full sm:w-auto"
+                  onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <Mail className="mr-2 h-5 w-5" />
+                  Send Message
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -416,8 +415,8 @@ const AlfonsoLandingPage = () => {
               </p>
             </div>
 
-            {/* 🔄 CHANGE 5: Contact Info Cards - Added WhatsApp card */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {/* Contact Info Cards - Removed WhatsApp card since it's now floating */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Phone Card */}
               <a 
                 href={`tel:${agent.phone}`}
@@ -427,21 +426,6 @@ const AlfonsoLandingPage = () => {
                 <Phone className="h-6 w-6" style={{ color: '#d4af37' }} />
                 <div>
                   <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone</div>
-                  <div className="font-semibold text-white">{agent.phone}</div>
-                </div>
-              </a>
-
-              {/* WhatsApp Card - NEW */}
-              <a 
-                href={getWhatsAppLink(agent.phone, agent.name)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-              >
-                <MessageCircle className="h-6 w-6" style={{ color: '#25D366' }} />
-                <div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>WhatsApp</div>
                   <div className="font-semibold text-white">{agent.phone}</div>
                 </div>
               </a>
