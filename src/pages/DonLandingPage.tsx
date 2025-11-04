@@ -6,8 +6,20 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Award, Home, Users, CheckCircle } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+// Helper function to format phone number for WhatsApp (removes all non-digits)
+const getWhatsAppNumber = (phone: string) => {
+  return phone.replace(/[^0-9]/g, '');
+};
+
+// Helper function to create WhatsApp link with pre-filled message
+const getWhatsAppLink = (phone: string, agentName: string) => {
+  const number = getWhatsAppNumber(phone);
+  const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
+  return `https://wa.me/${number}?text=${message}`;
+};
 
 // Don Weis - Founder & Broker of Baja International Realty
 const agent = {
@@ -200,6 +212,26 @@ const DonLandingPage = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
+
+      {/* 🆕 FLOATING WHATSAPP BUTTON */}
+      <a
+        href={getWhatsAppLink(agent.phone, agent.name)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-16 h-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-3xl group"
+        style={{ backgroundColor: '#25D366' }}
+        aria-label="Contact Don via WhatsApp"
+      >
+        <MessageCircle className="h-8 w-8 text-white" />
+        
+        {/* Tooltip */}
+        <span className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          Chat on WhatsApp
+        </span>
+        
+        {/* Pulse animation */}
+        <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
+      </a>
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
