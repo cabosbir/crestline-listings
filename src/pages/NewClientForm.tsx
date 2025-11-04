@@ -108,70 +108,118 @@ ${formData.followUp || 'No additional notes provided'}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       `.trim();
 
-      // Prepare data for the existing /api/contact endpoint
+      // Prepare data for submission
       const submissionData = {
         name: `${formData.firstName} ${formData.lastName}`.trim(),
         email: formData.personalEmail,
         phone: formData.cellPhone,
         message: comprehensiveMessage,
-        inquiryType: 'buying', // Set as 'buying' since this is for new clients
+        inquiryType: 'buying',
         propertyType: formData.propertyType.join(', ') || 'Not specified',
-        preferredAgent: '', // No specific agent preference from this form
-        agentEmail: '' // Send to office only
+        preferredAgent: '',
+        agentEmail: ''
       };
 
-      console.log('📤 Submitting New Client Form to /api/contact...');
+      console.log('📤 Attempting to submit New Client Form...');
 
-      // Submit to the EXISTING working API endpoint
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submissionData),
-      });
+      // Try multiple endpoints with fallback
+      let success = false;
+      let lastError = null;
 
-      const result = await response.json();
+      // Attempt 1: Try /api/contact/agent-inquiry
+      try {
+        console.log('🔄 Trying /api/contact/agent-inquiry...');
+        const response1 = await fetch('/api/contact/agent-inquiry', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...submissionData,
+            agent: 'new-client-form',
+            agentId: 0,
+            agentName: 'New Client Inquiry',
+            source: 'new-client-form',
+            timestamp: new Date().toISOString()
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to submit form');
+        if (response1.ok) {
+          success = true;
+          console.log('✅ Submitted via /api/contact/agent-inquiry');
+        } else {
+          console.log('⚠️ /api/contact/agent-inquiry failed:', response1.status);
+        }
+      } catch (error) {
+        console.log('⚠️ /api/contact/agent-inquiry error:', error);
+        lastError = error;
       }
 
-      console.log('✅ New Client Form submitted successfully!');
+      // Attempt 2: Try /api/contact if first attempt failed
+      if (!success) {
+        try {
+          console.log('🔄 Trying /api/contact...');
+          const response2 = await fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(submissionData),
+          });
 
-      toast({
-        title: "Form Submitted Successfully! ✓",
-        description: "Thank you! One of our agents will contact you within 24 hours.",
-      });
+          if (response2.ok) {
+            success = true;
+            console.log('✅ Submitted via /api/contact');
+          } else {
+            console.log('⚠️ /api/contact failed:', response2.status);
+          }
+        } catch (error) {
+          console.log('⚠️ /api/contact error:', error);
+          lastError = error;
+        }
+      }
 
-      // Reset form
-      setFormData({
-        date: new Date().toISOString().split('T')[0],
-        lastName: "",
-        firstName: "",
-        city: "",
-        state: "",
-        cellPhone: "",
-        workInCabo: "",
-        personalEmail: "",
-        yearsComingToCabo: "",
-        stayingAt: "",
-        propertyType: [],
-        priceRange: "",
-        numberOfBedrooms: "",
-        numberOfBathrooms: "",
-        otherSpecifications: "",
-        investmentLocations: [],
-        followUp: ""
-      });
+      if (success) {
+        console.log('✅ New Client Form submitted successfully!');
 
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+        toast({
+          title: "Form Submitted Successfully! ✓",
+          description: "Thank you! One of our agents will contact you within 24 hours.",
+        });
+
+        // Reset form
+        setFormData({
+          date: new Date().toISOString().split('T')[0],
+          lastName: "",
+          firstName: "",
+          city: "",
+          state: "",
+          cellPhone: "",
+          workInCabo: "",
+          personalEmail: "",
+          yearsComingToCabo: "",
+          stayingAt: "",
+          propertyType: [],
+          priceRange: "",
+          numberOfBedrooms: "",
+          numberOfBathrooms: "",
+          otherSpecifications: "",
+          investmentLocations: [],
+          followUp: ""
+        });
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        throw lastError || new Error('All API endpoints failed');
+      }
 
     } catch (error) {
       console.error('❌ Error submitting New Client Form:', error);
+      
+      // Show user-friendly error with contact options
       toast({
-        title: "Error Submitting Form",
-        description: error instanceof Error ? error.message : "Please try again or call us at +52 624 143 5555",
+        title: "Unable to Submit Form Online",
+        description: "Please call us directly at +52 624 143 5555 or email cabosbir@gmail.com",
         variant: "destructive",
       });
     } finally {
