@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Chart, ChartConfiguration, registerables } from "chart.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MapPin, ArrowLeftRight } from "lucide-react";
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -13,6 +14,55 @@ const MarketReport = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  
+  // Currency converter state
+  const [usdAmount, setUsdAmount] = useState("100000");
+  const [mxnAmount, setMxnAmount] = useState("");
+  const [exchangeRate, setExchangeRate] = useState(20.5);
+  const [lastUpdated, setLastUpdated] = useState("");
+
+  // Fetch live exchange rate
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await response.json();
+        if (data.rates && data.rates.MXN) {
+          setExchangeRate(data.rates.MXN);
+          setMxnAmount((parseFloat(usdAmount) * data.rates.MXN).toFixed(2));
+          setLastUpdated(new Date().toLocaleString());
+        }
+      } catch (error) {
+        console.error('Failed to fetch exchange rate:', error);
+        // Fallback to default rate
+        setMxnAmount((parseFloat(usdAmount) * exchangeRate).toFixed(2));
+        setLastUpdated(new Date().toLocaleString());
+      }
+    };
+
+    fetchExchangeRate();
+  }, []);
+
+  // Handle USD input change
+  const handleUsdChange = (value: string) => {
+    setUsdAmount(value);
+    const numValue = parseFloat(value) || 0;
+    setMxnAmount((numValue * exchangeRate).toFixed(2));
+  };
+
+  // Handle MXN input change
+  const handleMxnChange = (value: string) => {
+    setMxnAmount(value);
+    const numValue = parseFloat(value) || 0;
+    setUsdAmount((numValue / exchangeRate).toFixed(2));
+  };
+
+  // Swap currencies
+  const swapCurrencies = () => {
+    const tempUsd = usdAmount;
+    setUsdAmount(mxnAmount);
+    setMxnAmount(tempUsd);
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -197,37 +247,208 @@ const MarketReport = () => {
         </a>
       </div>
 
-      {/* Overview Section - Mobile Friendly */}
+      {/* MODERNIZED Overview Section */}
       <section className="max-w-[1400px] mx-auto px-4 md:px-10 mb-12 md:mb-16">
         <div className="mb-6 md:mb-8">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">Overview - Last 30 Days</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Overview - Last 30 Days</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
-          <div className="bg-white border border-gray-200 rounded-lg p-6 md:p-8 hover:shadow-lg hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-5">
-              <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-gray-50 rounded-lg text-xl md:text-2xl">💰</div>
-              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Median Price</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {/* Median Price Card */}
+          <div className="bg-white border border-gray-200 rounded-xl p-8 hover:shadow-xl transition-all">
+            <h3 className="text-lg font-semibold text-gray-700 mb-6">Median Price</h3>
+            <div className="flex items-start mb-6">
+              <span className="text-6xl text-gray-400 mr-4">$</span>
+              <div>
+                <div className="text-2xl font-bold text-gray-900 mb-2">New $486,000</div>
+                <div className="text-lg text-gray-700">Active $351,071.43</div>
+              </div>
             </div>
-            <div className="text-2xl md:text-[32px] font-bold text-gray-900 mb-2">$484,000</div>
-            <div className="text-xs md:text-sm text-gray-600">Active: $353,071.43</div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6 md:p-8 hover:shadow-lg hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-5">
-              <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-gray-50 rounded-lg text-xl md:text-2xl">📅</div>
-              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Days on Site</div>
+          {/* Median Days on Site Card */}
+          <div className="bg-white border border-gray-200 rounded-xl p-8 hover:shadow-xl transition-all">
+            <h3 className="text-lg font-semibold text-gray-700 mb-6">Median Days on Site</h3>
+            <div className="flex items-start mb-6">
+              <span className="text-6xl text-gray-400 mr-4">📅</span>
+              <div className="flex items-center">
+                <div className="text-3xl font-bold text-gray-900">Active 189</div>
+              </div>
             </div>
-            <div className="text-2xl md:text-[32px] font-bold text-gray-900 mb-2">Active 169</div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6 md:p-8 hover:shadow-lg hover:-translate-y-0.5 transition-all">
-            <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-5">
-              <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-gray-50 rounded-lg text-xl md:text-2xl">🏠</div>
-              <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Inventory</div>
+          {/* Inventory Card */}
+          <div className="bg-white border border-gray-200 rounded-xl p-8 hover:shadow-xl transition-all">
+            <h3 className="text-lg font-semibold text-gray-700 mb-6">Inventory</h3>
+            <div className="flex items-start mb-6">
+              <span className="text-6xl text-gray-400 mr-4">🏠</span>
+              <div>
+                <div className="text-2xl font-bold text-gray-900 mb-2">New 83</div>
+                <div className="text-lg text-gray-700">Active 650</div>
+              </div>
             </div>
-            <div className="text-2xl md:text-[32px] font-bold text-gray-900 mb-2">New: 83</div>
-            <div className="text-xs md:text-sm text-gray-600">Active: 650</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Currency Converter & Map Section */}
+      <section className="max-w-[1400px] mx-auto px-4 md:px-10 mb-12 md:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          
+          {/* Currency Converter */}
+          <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-100 rounded-xl p-8 shadow-lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-blue-900 rounded-lg flex items-center justify-center text-white text-xl">
+                💱
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Currency Converter</h3>
+                <p className="text-sm text-gray-600">USD ↔ MXN (Peso)</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* USD Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">US Dollar (USD)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                  <Input
+                    type="number"
+                    value={usdAmount}
+                    onChange={(e) => handleUsdChange(e.target.value)}
+                    className="pl-8 h-14 text-xl font-semibold border-2 border-gray-200 focus:border-blue-500"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {/* Swap Button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={swapCurrencies}
+                  className="w-12 h-12 bg-blue-900 hover:bg-blue-800 text-white rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-md"
+                  aria-label="Swap currencies"
+                >
+                  <ArrowLeftRight className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* MXN Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Mexican Peso (MXN)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                  <Input
+                    type="number"
+                    value={mxnAmount}
+                    onChange={(e) => handleMxnChange(e.target.value)}
+                    className="pl-8 h-14 text-xl font-semibold border-2 border-gray-200 focus:border-blue-500"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {/* Exchange Rate Info */}
+              <div className="pt-4 border-t border-blue-200">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Exchange Rate:</span>
+                  <span className="font-bold text-gray-900">1 USD = {exchangeRate.toFixed(2)} MXN</span>
+                </div>
+                {lastUpdated && (
+                  <div className="text-xs text-gray-500 mt-2 text-center">
+                    Last updated: {lastUpdated}
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Amount Buttons */}
+              <div className="pt-4">
+                <p className="text-xs text-gray-600 mb-2">Quick amounts:</p>
+                <div className="flex gap-2 flex-wrap">
+                  {['100000', '500000', '1000000', '5000000'].map((amount) => (
+                    <button
+                      key={amount}
+                      onClick={() => handleUsdChange(amount)}
+                      className="px-3 py-1.5 bg-white border border-blue-200 rounded-lg text-xs font-semibold text-blue-900 hover:bg-blue-50 transition-colors"
+                    >
+                      ${parseInt(amount).toLocaleString()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Office Location Map */}
+          <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
+                <MapPin className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Our Office Location</h3>
+                <p className="text-sm text-gray-600">Visit us in Cabo San Lucas</p>
+              </div>
+            </div>
+
+            {/* Map Placeholder / Embed */}
+            <a
+              href="https://maps.google.com/?q=22.8905,-109.9167"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block mb-6 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-all group"
+            >
+              <div className="relative h-64 bg-gradient-to-br from-gray-100 to-gray-200">
+                {/* Embedded Google Map */}
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3672.8!2d-109.9167!3d22.8905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDUzJzI1LjgiTiAxMDnCsDU1JzAwLjEiVw!5e0!3m2!1sen!2smx!4v1234567890"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Baja International Realty Office Location"
+                  className="grayscale group-hover:grayscale-0 transition-all"
+                ></iframe>
+              </div>
+            </a>
+
+            {/* Address Details */}
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-700 mb-1">Address:</p>
+                <address className="not-italic text-gray-600 leading-relaxed">
+                  Boulevard Marina s/n y Vicente Guerrero s/n<br />
+                  Manzana 31-A, Colonia Centro<br />
+                  Cabo San Lucas, Baja California Sur<br />
+                  23400, Mexico
+                </address>
+              </div>
+
+              <div className="pt-3 border-t border-gray-200">
+                <p className="text-sm font-semibold text-gray-700 mb-2">Contact:</p>
+                <div className="space-y-1">
+                  <a href="tel:+526241435555" className="text-blue-900 hover:underline block">
+                    📞 +52 624 143 5555
+                  </a>
+                  <a href="mailto:info@bircabo.com" className="text-blue-900 hover:underline block">
+                    ✉️ info@bircabo.com
+                  </a>
+                </div>
+              </div>
+
+              <a
+                href="https://maps.google.com/?q=22.8905,-109.9167"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition-colors font-semibold text-sm mt-4"
+              >
+                <MapPin className="h-4 w-4" />
+                Get Directions
+              </a>
+            </div>
           </div>
         </div>
       </section>
