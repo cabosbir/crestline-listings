@@ -1,34 +1,175 @@
-# Robots.txt for Baja International Realty
-# https://www.bajainternationalrealty.com
+# robots.txt for Baja International Realty (BIR Cabo)
+# Updated: November 2025
 
+# Sitemap Location
+Sitemap: https://www.bircabo.com/sitemap.xml
+
+# ====================
+# Global Rules for All Bots
+# ====================
 User-agent: *
 Allow: /
 
-# Sitemaps
-Sitemap: https://www.bajainternationalrealty.com/sitemap.xml
+# Disallow admin, API, and system directories
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+Disallow: /.well-known/
 
-# Crawl-delay for bots (optional, helps prevent server overload)
-Crawl-delay: 1
+# Disallow search result pages with parameters (prevent duplicate content)
+Disallow: /*?*
+Disallow: /*?search=*
+Disallow: /*?filter=*
+Disallow: /*?sort=*
+Disallow: /*?page=*
 
-# Disallow admin or system directories (if any)
-# Disallow: /admin/
-# Disallow: /_next/
+# Allow important parameter pages
+Allow: /properties?*
+Allow: /idx-search?*
 
-# Allow all major search engines
+# Disallow form submission endpoints
+Disallow: /submit-form
+Disallow: /contact-submit
+Disallow: /new-client-form-submit
+
+# Disallow thank you/confirmation pages (low value for search)
+Disallow: /thank-you
+Disallow: /confirmation
+Disallow: /success
+
+# Block PDF downloads from being indexed separately
+Disallow: /*.pdf$
+
+# ====================
+# Specific Bot Rules
+# ====================
+
+# Google
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
+# Google Images (allow all images)
+User-agent: Googlebot-Image
+Allow: /
+
+# Google Mobile
+User-agent: Googlebot-Mobile
+Allow: /
+
+# Bing
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
+# Yahoo/Verizon
 User-agent: Slurp
 Allow: /
+Crawl-delay: 2
 
+# DuckDuckGo
 User-agent: DuckDuckBot
 Allow: /
+Crawl-delay: 1
 
+# Baidu (China)
 User-agent: Baiduspider
 Allow: /
+Crawl-delay: 2
 
+# Yandex (Russia)
 User-agent: YandexBot
 Allow: /
+Crawl-delay: 2
+
+# ====================
+# Block Problematic Bots
+# ====================
+
+# Block AI scrapers that don't respect content
+User-agent: CCBot
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# Block aggressive scrapers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Block email harvesters
+User-agent: EmailCollector
+Disallow: /
+
+User-agent: EmailSiphon
+Disallow: /
+
+User-agent: EmailWolf
+Disallow: /
+
+# ====================
+# Allow Important Resources
+# ====================
+
+# Explicitly allow critical directories
+Allow: /properties
+Allow: /property/
+Allow: /team
+Allow: /team/
+Allow: /agents/
+Allow: /idx-search
+Allow: /market-report
+Allow: /about
+Allow: /contact
+
+# Allow all agent landing pages
+Allow: /alfonso
+Allow: /bob
+Allow: /cozbi
+Allow: /cristy
+Allow: /david
+Allow: /don
+Allow: /edgar
+Allow: /erika
+Allow: /hector
+Allow: /marisol
+Allow: /susu
+
+# Allow CSS, JS, and images for Google
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.webp$
+
+# ====================
+# Additional Notes
+# ====================
+# Last updated: 2025-11-04
+# Contact: info@bircabo.com
+# For questions about crawling, please contact our webmaster
