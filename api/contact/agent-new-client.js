@@ -90,6 +90,12 @@ export default async function handler(req, res) {
       emailRecipients.push(officeEmail);
     }
 
+    // Debug logging
+    console.log('📧 DEBUG - Agent Email:', agentEmail);
+    console.log('👤 DEBUG - Agent Name:', agentName);
+    console.log('🎯 DEBUG - Recipients:', emailRecipients);
+    console.log('🏢 DEBUG - Office Email:', officeEmail);
+
     // Prepare email HTML for agent/office
     const agentEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
