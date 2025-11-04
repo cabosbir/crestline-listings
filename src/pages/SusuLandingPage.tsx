@@ -4,9 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, Award, Home, Users, CheckCircle, Loader2, MessageCircle } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Helper function to format phone number for WhatsApp (removes all non-digits)
@@ -96,122 +94,6 @@ const testimonials = [
 
 const SusuLandingPage = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-    propertyInterest: "",
-    inquiryType: "general",
-    propertyType: ""
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      // Prepare data for both API endpoints
-      const timestamp = new Date().toISOString();
-      
-      // Try primary agent inquiry endpoint first
-      const agentInquiryData = {
-        ...formData,
-        agent: "susu-vieira",
-        agentId: agent.id,
-        agentName: agent.name,
-        agentEmail: agent.email,
-        source: "agent-landing-page",
-        timestamp: timestamp
-      };
-
-      let primarySuccess = false;
-      
-      try {
-        const primaryResponse = await fetch('/api/contact/agent-inquiry', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(agentInquiryData)
-        });
-
-        if (primaryResponse.ok) {
-          primarySuccess = true;
-          console.log('✅ Primary API (agent-inquiry) successful');
-        }
-      } catch (primaryError) {
-        console.log('Primary API failed, will try backup:', primaryError.message);
-      }
-
-      // Try backup general contact endpoint
-      const generalContactData = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        message: formData.message,
-        inquiryType: formData.inquiryType || "general",
-        propertyType: formData.propertyType || "",
-        preferredAgent: agent.name,
-        agentEmail: agent.email
-      };
-
-      let backupSuccess = false;
-
-      try {
-        const backupResponse = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(generalContactData)
-        });
-
-        if (backupResponse.ok) {
-          backupSuccess = true;
-          console.log('✅ Backup API (general contact) successful');
-        }
-      } catch (backupError) {
-        console.log('Backup API also failed:', backupError.message);
-      }
-
-      // Check if at least one API succeeded
-      if (primarySuccess || backupSuccess) {
-        toast({
-          title: "Message Sent!",
-          description: "Susu will contact you within 24 hours.",
-        });
-
-        // Reset form
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          message: "",
-          propertyInterest: "",
-          inquiryType: "general",
-          propertyType: ""
-        });
-
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        throw new Error('Both API endpoints failed');
-      }
-
-    } catch (error) {
-      console.error('Form submission error:', error);
-      toast({
-        title: "Unable to Send Message",
-        description: `Please call Susu directly at ${agent.phone} or email ${agent.email}`,
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen">
@@ -403,120 +285,80 @@ const SusuLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section id="contact-form" className="py-16" style={{ backgroundColor: '#102f74', color: 'white' }}>
+      {/* Contact Section - New Client Form */}
+      <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
-              <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                Ready to find your dream property? Let's start the conversation.
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
+              <p className="text-xl mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                Fill out our New Client Form and Susu will personally reach out to discuss your property goals.
               </p>
             </div>
 
-            {/* Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Contact Info Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+              {/* Phone Card */}
               <a 
                 href={`tel:${agent.phone}`}
-                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
+                className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
-                <Phone className="h-6 w-6" style={{ color: '#d4af37' }} />
+                <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
+                  <Phone className="h-7 w-7 text-white" />
+                </div>
                 <div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone (US)</div>
-                  <div className="font-semibold text-white">{agent.phone}</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Call Susu</div>
+                  <div className="text-xl font-bold text-white">{agent.phone}</div>
                   {agent.phoneSecondary && (
-                    <>
-                      <div className="text-xs mt-1" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>MX</div>
-                      <div className="font-semibold text-white text-sm">{agent.phoneSecondary}</div>
-                    </>
+                    <div className="text-sm text-white mt-1">{agent.phoneSecondary}</div>
                   )}
                 </div>
               </a>
+
+              {/* Email Card */}
               <a 
                 href={`mailto:${agent.email}`}
-                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
+                className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
-                <Mail className="h-6 w-6" style={{ color: '#d4af37' }} />
+                <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
+                  <Mail className="h-7 w-7 text-white" />
+                </div>
                 <div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Email</div>
-                  <div className="font-semibold break-all text-white">{agent.email}</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Email Susu</div>
+                  <div className="text-lg font-bold text-white break-all">{agent.email}</div>
                 </div>
               </a>
             </div>
 
-            {/* Contact Form */}
-            <div className="bg-background text-foreground p-6 md:p-8 rounded-2xl shadow-2xl">
-              <div className="space-y-4">
-                <div>
-                  <Input
-                    placeholder="Your Name *"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    required
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
+            {/* New Client Form CTA */}
+            <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-900 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    type="email"
-                    placeholder="Email *"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    required
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
-                  <Input
-                    type="tel"
-                    placeholder="Phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
-                </div>
-                <div>
-                  <Input
-                    placeholder="Property Interest (e.g., 3-bed beachfront villa)"
-                    value={formData.propertyInterest}
-                    onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
-                </div>
-                <div>
-                  <Textarea
-                    placeholder="Your Message *"
-                    value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    required
-                    disabled={isSubmitting}
-                    rows={5}
-                  />
-                </div>
-                <Button 
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !formData.name || !formData.email || !formData.message}
-                  variant="luxury" 
-                  size="lg" 
-                  className="w-full"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    'Send Message to Susu'
-                  )}
-                </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to be contacted by Susu Vieira regarding your real estate inquiry.
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Complete Our New Client Form</h3>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                  Share your property preferences, investment goals, and timeline with Susu. This helps us provide you with the most relevant listings and personalized service.
                 </p>
               </div>
+
+              <Link to="/new-client-form">
+                <Button 
+                  size="lg"
+                  className="h-16 px-12 text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+                  style={{ backgroundColor: '#102f74', color: 'white' }}
+                >
+                  📋 Fill Out New Client Form
+                </Button>
+              </Link>
+
+              <p className="text-sm text-gray-500 mt-6">
+                Takes only 2-3 minutes to complete • 100% confidential
+              </p>
             </div>
           </div>
         </div>
