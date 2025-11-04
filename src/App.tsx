@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import Team from "./pages/Team";
 import AgentDetail from "./pages/AgentDetail";
 import IDXSearch from "./pages/IDXSearch";
+import AgentNewClientForm from "./pages/AgentNewClientForm";
 import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
 import BobLandingPage from "./pages/BobLandingPage";
 import CozbiLandingPage from "./pages/CozbiLandingPage";
@@ -61,8 +62,12 @@ const App = () => (
           {/* Market Report Page */}
           <Route path="/market-report" element={<MarketReport />} />
           
-          {/* New Client Form */}
+          {/* New Client Form - General Office Form */}
           <Route path="/new-client-form" element={<NewClientForm />} />
+          
+          {/* Agent-Specific New Client Forms */}
+          <Route path="/new-client/:agentId" element={<AgentNewClientForm />} />
+          <Route path="/agents/:agentId/new-client" element={<AgentNewClientForm />} />
           
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />
