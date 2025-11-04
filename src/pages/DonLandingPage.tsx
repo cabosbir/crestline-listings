@@ -4,8 +4,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -41,40 +39,43 @@ const agent = {
   languages: ["English", "Spanish"],
 };
 
-// Don's Featured Listings
+// Don's Featured Listings - UPDATED
 const agentListings = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    price: "$12,500,000",
-    title: "Landmark Development Opportunity",
-    location: "Pedregal, Cabo San Lucas",
-    beds: 8,
-    baths: 10,
-    sqft: "12,500 sq ft",
-    mlsNumber: "25-6234",
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942726/20241014235115115464000000-o_hgb1vh.jpg",
+    price: "$6,950,000",
+    title: "Hacienda Beach Club",
+    location: "Cabo San Lucas",
+    beds: 4,
+    baths: 4,
+    sqft: "Private pool & OWNER FINANCING",
+    mlsNumber: "24-4467",
+    link: "https://www.flexmls.com/share/D0rH7/Hacienda-Beach-Club-private-pool-OWNER-FINANCING-1-100-Cabo-San-Lucas-",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-    price: "$18,750,000",
-    title: "Premier Beachfront Estate",
-    location: "Medano Beach",
-    beds: 10,
-    baths: 12,
-    sqft: "15,000 sq ft",
-    mlsNumber: "25-6178",
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
+    price: "$499,000",
+    title: "La Vista LARGE PRIVATE YARD B101",
+    location: "Cabo San Lucas",
+    beds: 3,
+    baths: 3,
+    sqft: "372.06 m²",
+    mlsNumber: "25-1679",
+    link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&h=600&fit=crop",
-    price: "$25,000,000",
-    title: "Exclusive Resort Property",
-    location: "Tourist Corridor",
-    beds: 12,
-    baths: 14,
-    sqft: "20,000 sq ft",
-    mlsNumber: "25-6312",
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
+    price: "$3,795,800",
+    title: "Casa Ducci Camino del Mar",
+    location: "Cabo San Lucas",
+    beds: 4,
+    baths: 4.5,
+    sqft: "350.23 m²",
+    mlsNumber: "24-1981",
+    link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
   },
 ];
 
@@ -99,115 +100,6 @@ const testimonials = [
 
 const DonLandingPage = () => {
   const { toast } = useToast();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-    propertyInterest: ""
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Prepare data with timestamp
-    const timestamp = new Date().toISOString();
-    
-    // Data for agent-inquiry endpoint (Don's specific system)
-    const agentInquiryData = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      message: formData.message,
-      propertyInterest: formData.propertyInterest,
-      agentName: agent.name,
-      agentEmail: agent.email,
-      agentId: agent.id,
-      agent: "don-weis",
-      source: "don-weis-landing-page",
-      timestamp: timestamp
-    };
-
-    // Data for general contact endpoint (Office system)
-    const contactData = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      message: formData.message,
-      inquiryType: "general",
-      propertyType: formData.propertyInterest || "luxury-property",
-      preferredAgent: agent.name,
-      agentEmail: agent.email
-    };
-
-    try {
-      // Send to both endpoints simultaneously for redundancy
-      const [agentResponse, contactResponse] = await Promise.allSettled([
-        fetch('/api/contact/agent-inquiry', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(agentInquiryData)
-        }),
-        fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(contactData)
-        })
-      ]);
-
-      // Check if at least one succeeded
-      const agentSuccess = agentResponse.status === 'fulfilled' && agentResponse.value.ok;
-      const contactSuccess = contactResponse.status === 'fulfilled' && contactResponse.value.ok;
-
-      if (agentSuccess || contactSuccess) {
-        toast({
-          title: "Message Sent Successfully!",
-          description: "Don will contact you within 24 hours. Check your email for confirmation.",
-        });
-
-        // Reset form on success
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          message: "",
-          propertyInterest: ""
-        });
-
-        // Log success for debugging
-        console.log('✅ Lead submitted successfully for Don Weis');
-        if (agentSuccess && contactSuccess) {
-          console.log('   Both systems confirmed delivery');
-        } else if (agentSuccess) {
-          console.log('   Agent system confirmed (Contact system failed)');
-        } else {
-          console.log('   Contact system confirmed (Agent system failed)');
-        }
-      } else {
-        throw new Error('Both email systems failed to deliver');
-      }
-
-      // Log any partial failures
-      if (!agentSuccess && agentResponse.status === 'fulfilled') {
-        console.warn('⚠️ Agent inquiry endpoint failed:', agentResponse.value.statusText);
-      }
-      if (!contactSuccess && contactResponse.status === 'fulfilled') {
-        console.warn('⚠️ Contact endpoint failed:', contactResponse.value.statusText);
-      }
-
-    } catch (error) {
-      console.error('❌ Form submission error:', error);
-      toast({
-        title: "Unable to Send Message",
-        description: `Please call Don directly at ${agent.phone} or email ${agent.email}`,
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen">
@@ -403,108 +295,78 @@ const DonLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section id="contact-form" className="py-16" style={{ backgroundColor: '#102f74', color: 'white' }}>
+      {/* Contact Section - New Client Form */}
+      <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
-              <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                Ready to discuss your next investment? Let's start the conversation.
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
+              <p className="text-xl mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                Fill out our New Client Form and Don will personally reach out to discuss your property goals.
               </p>
             </div>
 
-            {/* Contact Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Contact Info Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+              {/* Phone Card */}
               <a 
                 href={`tel:${agent.phone}`}
-                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
+                className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
-                <Phone className="h-6 w-6" style={{ color: '#d4af37' }} />
+                <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
+                  <Phone className="h-7 w-7 text-white" />
+                </div>
                 <div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Phone</div>
-                  <div className="font-semibold text-white">{agent.phone}</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Call Don</div>
+                  <div className="text-xl font-bold text-white">{agent.phone}</div>
                 </div>
               </a>
+
+              {/* Email Card */}
               <a 
                 href={`mailto:${agent.email}`}
-                className="flex items-center gap-3 backdrop-blur-sm p-4 rounded-lg transition-colors border-2 border-white/30 hover:border-white/50"
+                className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
                 style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
               >
-                <Mail className="h-6 w-6" style={{ color: '#d4af37' }} />
+                <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
+                  <Mail className="h-7 w-7 text-white" />
+                </div>
                 <div>
-                  <div className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Email</div>
-                  <div className="font-semibold break-all text-white">{agent.email}</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Email Don</div>
+                  <div className="text-lg font-bold text-white break-all">{agent.email}</div>
                 </div>
               </a>
             </div>
 
-            {/* Contact Form */}
-            <form onSubmit={handleSubmit} className="bg-background text-foreground p-6 md:p-8 rounded-2xl shadow-2xl">
-              <div className="space-y-4">
-                <div>
-                  <Input
-                    placeholder="Your Name *"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    required
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
+            {/* New Client Form CTA */}
+            <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-900 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    type="email"
-                    placeholder="Email *"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    required
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
-                  <Input
-                    type="tel"
-                    placeholder="Phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
-                </div>
-                <div>
-                  <Input
-                    placeholder="Property Interest (e.g., development opportunity, luxury estate)"
-                    value={formData.propertyInterest}
-                    onChange={(e) => setFormData({...formData, propertyInterest: e.target.value})}
-                    disabled={isSubmitting}
-                    className="h-12"
-                  />
-                </div>
-                <div>
-                  <Textarea
-                    placeholder="Your Message *"
-                    value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    required
-                    disabled={isSubmitting}
-                    rows={5}
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  variant="luxury" 
-                  size="lg" 
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Message to Don'}
-                </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  By submitting, you agree to be contacted by Don Weis regarding your real estate inquiry.
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Complete Our New Client Form</h3>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                  Share your property preferences, investment goals, and timeline with Don. This helps us provide you with the most relevant listings and personalized service.
                 </p>
               </div>
-            </form>
+
+              <Link to="/new-client-form">
+                <Button 
+                  size="lg"
+                  className="h-16 px-12 text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+                  style={{ backgroundColor: '#102f74', color: 'white' }}
+                >
+                  📋 Fill Out New Client Form
+                </Button>
+              </Link>
+
+              <p className="text-sm text-gray-500 mt-6">
+                Takes only 2-3 minutes to complete • 100% confidential
+              </p>
+            </div>
           </div>
         </div>
       </section>
