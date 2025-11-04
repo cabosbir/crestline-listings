@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Helper function to format phone number for WhatsApp (removes all non-digits)
 const getWhatsAppNumber = (phone: string) => {
@@ -25,10 +27,10 @@ const agent = {
   specialization: "Luxury Properties",
   image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761598127/a-professional-studio-portrait-photograp_dnE69CqgQwKMvDj_boYW5A_sWO9IE8FSuKtnjTWshya2g_lvnjuh.jpg",
   phone: "+52 612 169 8328",
-  email: "Edgar@BIRCabo.com",
+  email: "Edgar@bircabo.com",
   yearsExperience: 1,
   propertiesSold: 4,
-  bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage. With a unique blend of analytical precision and real estate expertise developed under the guidance of industry veteran Bob Van Patten, I transform complex market data into clear, actionable investment opportunities. I've pioneered innovative digital platforms that give my clients unmatched transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. My approach is simple: I empower you with the knowledge, insights, and local connections you need to invest confidently and smart in paradise.",
+  bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage with analytical precision and real estate expertise. As a dedicated advisor at Baja International Realty, I combine data-driven market analysis with personalized service to help clients make informed investment decisions. My commitment to excellence and attention to detail ensures that every transaction is smooth, transparent, and aligned with your goals.",
   certifications: ["REALTOR®", "MLS Member"],
   languages: ["English", "Spanish"],
 };
@@ -73,23 +75,25 @@ const agentListings = [
 // Client Testimonials
 const testimonials = [
   {
-    name: "Andrew & Michelle Carter",
-    text: "Edgar's analytical approach and innovative digital tools gave us complete confidence in our investment. His market insights are exceptional and his guidance was invaluable.",
+    name: "James & Patricia Wilson",
+    text: "Edgar's analytical approach and market expertise helped us make confident investment decisions. His attention to detail and commitment to our goals made the entire process seamless.",
     rating: 5
   },
   {
-    name: "James Morrison",
-    text: "Working with Edgar was refreshing. His tech-savvy approach combined with deep local knowledge made finding the perfect property seamless. Highly recommend!",
+    name: "Michael Rodriguez",
+    text: "Working with Edgar was exceptional. His data-driven insights and personalized service gave us the insider advantage we needed in the Cabo real estate market.",
     rating: 5
   },
   {
-    name: "Laura & David Richardson",
-    text: "Edgar's transparency and data-driven insights set him apart. He empowered us with the knowledge we needed to make smart investment decisions in Cabo.",
+    name: "Lisa & Thomas Chen",
+    text: "Edgar's dedication to excellence and transparent communication made our property purchase stress-free. We highly recommend his professional services!",
     rating: 5
   }
 ];
 
 const EdgarLandingPage = () => {
+  const { toast } = useToast();
+
   return (
     <div className="min-h-screen">
       <Navbar />

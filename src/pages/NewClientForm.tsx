@@ -65,17 +65,65 @@ const NewClientForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare form data for submission
+      // Format the comprehensive message with all form data
+      const comprehensiveMessage = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🆕 NEW CLIENT FORM SUBMISSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📅 SUBMISSION DATE: ${formData.date}
+
+👤 CLIENT INFORMATION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Name: ${formData.firstName} ${formData.lastName}
+City: ${formData.city || 'Not specified'}
+State: ${formData.state || 'Not specified'}
+Cell Phone: ${formData.cellPhone}
+Email: ${formData.personalEmail}
+Work in Cabo: ${formData.workInCabo || 'Not specified'}
+
+🏖️ CABO EXPERIENCE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Years Coming to Cabo: ${formData.yearsComingToCabo || 'Not specified'}
+Currently Staying At: ${formData.stayingAt || 'Not specified'}
+
+🏠 PROPERTY REQUIREMENTS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Property Type(s): ${formData.propertyType.length > 0 ? formData.propertyType.join(', ') : 'Not specified'}
+Price Range: ${formData.priceRange || 'Not specified'}
+Bedrooms: ${formData.numberOfBedrooms || 'Not specified'}
+Bathrooms: ${formData.numberOfBathrooms || 'Not specified'}
+Other Specifications: ${formData.otherSpecifications || 'None'}
+
+📍 INVESTMENT LOCATIONS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Preferred Areas: ${formData.investmentLocations.length > 0 ? formData.investmentLocations.join(', ') : 'Not specified'}
+
+📝 ADDITIONAL NOTES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${formData.followUp || 'No additional notes provided'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ PRIORITY: New Client - Requires Follow-up
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      `.trim();
+
+      // Prepare data for the existing /api/contact endpoint
       const submissionData = {
-        ...formData,
-        propertyType: formData.propertyType.join(', '),
-        investmentLocations: formData.investmentLocations.join(', '),
-        formType: 'new-client-form',
-        timestamp: new Date().toISOString()
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.personalEmail,
+        phone: formData.cellPhone,
+        message: comprehensiveMessage,
+        inquiryType: 'buying', // Set as 'buying' since this is for new clients
+        propertyType: formData.propertyType.join(', ') || 'Not specified',
+        preferredAgent: '', // No specific agent preference from this form
+        agentEmail: '' // Send to office only
       };
 
-      // Submit to API endpoint
-      const response = await fetch('/api/contact/new-client', {
+      console.log('📤 Submitting New Client Form to /api/contact...');
+
+      // Submit to the EXISTING working API endpoint
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,13 +131,17 @@ const NewClientForm = () => {
         body: JSON.stringify(submissionData),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to submit form');
+        throw new Error(result.error || 'Failed to submit form');
       }
+
+      console.log('✅ New Client Form submitted successfully!');
 
       toast({
         title: "Form Submitted Successfully! ✓",
-        description: "Thank you! One of our agents will contact you soon.",
+        description: "Thank you! One of our agents will contact you within 24 hours.",
       });
 
       // Reset form
@@ -116,10 +168,10 @@ const NewClientForm = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('❌ Error submitting New Client Form:', error);
       toast({
         title: "Error Submitting Form",
-        description: "Please try again or call us at +52 624 143 5555",
+        description: error instanceof Error ? error.message : "Please try again or call us at +52 624 143 5555",
         variant: "destructive",
       });
     } finally {
