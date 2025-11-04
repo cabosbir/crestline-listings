@@ -25,6 +25,7 @@ import HectorLandingPage from "./pages/HectorLandingPage";
 import MarisolLandingPage from "./pages/MarisolLandingPage";
 import SusuLandingPage from "./pages/SusuLandingPage";
 import MarketReport from "./pages/MarketReport";
+import NewClientForm from "./pages/NewClientForm";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,9 @@ const App = () => (
           
           {/* Market Report Page */}
           <Route path="/market-report" element={<MarketReport />} />
+          
+          {/* New Client Form */}
+          <Route path="/new-client-form" element={<NewClientForm />} />
           
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />
