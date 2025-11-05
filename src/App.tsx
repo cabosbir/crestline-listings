@@ -13,7 +13,6 @@ import Contact from "./pages/Contact";
 import Team from "./pages/Team";
 import AgentDetail from "./pages/AgentDetail";
 import IDXSearch from "./pages/IDXSearch";
-import AgentNewClientForm from "./pages/AgentNewClientForm";
 import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
 import BobLandingPage from "./pages/BobLandingPage";
 import CozbiLandingPage from "./pages/CozbiLandingPage";
@@ -65,9 +64,8 @@ const App = () => (
           {/* New Client Form - General Office Form */}
           <Route path="/new-client-form" element={<NewClientForm />} />
           
-          {/* Agent-Specific New Client Forms */}
-          <Route path="/new-client/:agentId" element={<AgentNewClientForm />} />
-          <Route path="/agents/:agentId/new-client" element={<AgentNewClientForm />} />
+          {/* Agent-Specific New Client Forms - Updated to use NewClientForm with agentSlug */}
+          <Route path="/agents/:agentSlug/new-client" element={<NewClientForm />} />
           
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />

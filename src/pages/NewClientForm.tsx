@@ -1,17 +1,94 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+// Agent data - you can move this to a separate file later
+const agentsData = {
+  susu: {
+    id: 9,
+    name: "Susu Vieira",
+    email: "Susu@BIRCabo.com",
+    phone: "+1 (808) 226-6120"
+  },
+  bob: {
+    id: 1,
+    name: "Bob Van Patten",
+    email: "robertvanpatten2@gmail.com",
+    phone: "+52 624 127 6012"
+  },
+  alfonso: {
+    id: 3,
+    name: "Alfonso Puente",
+    email: "alfonso@bircabo.com",
+    phone: "+52 664 188 8681"
+  },
+  david: {
+    id: 8,
+    name: "David Scott Piper",
+    email: "David@bircabo.com",
+    phone: "+52 624 317 0297"
+  },
+  cristy: {
+    id: 6,
+    name: "Cristy Cavazos",
+    email: "Cristina.cavazos@grupoveq.com",
+    phone: "+52 624 178 0825"
+  },
+  erika: {
+    id: 2,
+    name: "Erika Aispuro",
+    email: "eaispuro80@gmail.com",
+    phone: "+52 624 109 7909"
+  },
+  hector: {
+    id: 5,
+    name: "Hector Mendoza",
+    email: "Hector@bircabo.com",
+    phone: "+52 624 211 4879"
+  },
+  marisol: {
+    id: 7,
+    name: "Marisol Tort",
+    email: "mtortricardi@gmail.com",
+    phone: "+52 624 264 3896"
+  },
+  cozbi: {
+    id: 4,
+    name: "Cozbi Sanchez",
+    email: "Cozbi@bajainternationalrealty.com",
+    phone: "+52 624 118 9512"
+  },
+  edgar: {
+    id: 10,
+    name: "Edgar Pacheco",
+    email: "Edgar@bircabo.com",
+    phone: "+52 612 169 8328"
+  },
+  don: {
+    id: 12,
+    name: "Don Weis",
+    email: "Don@bircabo.com",
+    phone: "+52 624 143 5555"
+  }
+};
+
 const NewClientForm = () => {
   const { toast } = useToast();
+  const { agentSlug } = useParams<{ agentSlug?: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get agent data from URL param or default to office
+  const agent = agentSlug && agentsData[agentSlug as keyof typeof agentsData]
+    ? agentsData[agentSlug as keyof typeof agentsData]
+    : { id: 0, name: "BIR Office", email: "cabosbir@gmail.com", phone: "+52 624 143 5555" };
+
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     lastName: "",
@@ -23,58 +100,51 @@ const NewClientForm = () => {
     personalEmail: "",
     yearsComingToCabo: "",
     stayingAt: "",
-    propertyType: [] as string[],
+    propertyType: "",
     priceRange: "",
     numberOfBedrooms: "",
     numberOfBathrooms: "",
     otherSpecifications: "",
-    investmentLocations: [] as string[],
+    investmentLocation: "",
     followUp: ""
   });
-
-  const handlePropertyTypeChange = (type: string, checked: boolean) => {
-    if (checked) {
-      setFormData({
-        ...formData,
-        propertyType: [...formData.propertyType, type]
-      });
-    } else {
-      setFormData({
-        ...formData,
-        propertyType: formData.propertyType.filter(t => t !== type)
-      });
-    }
-  };
-
-  const handleInvestmentLocationChange = (location: string, checked: boolean) => {
-    if (checked) {
-      setFormData({
-        ...formData,
-        investmentLocations: [...formData.investmentLocations, location]
-      });
-    } else {
-      setFormData({
-        ...formData,
-        investmentLocations: formData.investmentLocations.filter(l => l !== location)
-      });
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Prepare form data for submission
+      // Map form fields to API expected field names
       const submissionData = {
-        ...formData,
-        propertyType: formData.propertyType.join(', '),
-        investmentLocations: formData.investmentLocations.join(', '),
+        // Client info
+        clientName: `${formData.firstName} ${formData.lastName}`,
+        clientEmail: formData.personalEmail,
+        clientPhone: formData.cellPhone,
+        clientAddress: formData.city && formData.state ? `${formData.city}, ${formData.state}` : "",
+        
+        // Property preferences
+        propertyType: formData.propertyType,
+        priceRange: formData.priceRange,
+        bedrooms: formData.numberOfBedrooms,
+        bathrooms: formData.numberOfBathrooms,
+        preferredAreas: formData.investmentLocation,
+        moveInTimeline: formData.yearsComingToCabo,
+        
+        // Additional info
+        additionalNotes: `Work in Cabo: ${formData.workInCabo}\nStaying At: ${formData.stayingAt}\nOther Specifications: ${formData.otherSpecifications}\n\nFollow Up Notes:\n${formData.followUp}`,
+        howDidYouHear: "New Client Form",
+        
+        // Agent info
+        agentName: agent.name,
+        agentEmail: agent.email,
+        agentId: agent.id,
+        
+        // Metadata
+        source: `New Client Form - ${agent.name}`,
         formType: 'new-client-form',
         timestamp: new Date().toISOString()
       };
 
-      // Submit to API endpoint
       const response = await fetch('/api/contact/new-client', {
         method: 'POST',
         headers: {
@@ -89,7 +159,7 @@ const NewClientForm = () => {
 
       toast({
         title: "Form Submitted Successfully! ✓",
-        description: "Thank you! One of our agents will contact you soon.",
+        description: `Thank you! ${agent.name} will contact you soon.`,
       });
 
       // Reset form
@@ -104,12 +174,12 @@ const NewClientForm = () => {
         personalEmail: "",
         yearsComingToCabo: "",
         stayingAt: "",
-        propertyType: [],
+        propertyType: "",
         priceRange: "",
         numberOfBedrooms: "",
         numberOfBathrooms: "",
         otherSpecifications: "",
-        investmentLocations: [],
+        investmentLocation: "",
         followUp: ""
       });
 
@@ -119,7 +189,7 @@ const NewClientForm = () => {
       console.error('Error submitting form:', error);
       toast({
         title: "Error Submitting Form",
-        description: "Please try again or call us at +52 624 143 5555",
+        description: `Please try again or call ${agent.name} at ${agent.phone}`,
         variant: "destructive",
       });
     } finally {
@@ -131,31 +201,32 @@ const NewClientForm = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 sm:py-16 max-w-4xl">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <div className="flex justify-between items-start mb-8">
+        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
             <img 
               src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762021536/Screenshot_2025-10-31_at_5.21.25_PM-removebg-preview_2_gndt9y.png"
               alt="BIR Logo"
-              className="h-20 w-auto"
+              className="h-16 sm:h-20 w-auto"
             />
-            <div className="text-right">
+            <div className="text-center sm:text-right">
               <label className="text-sm font-semibold text-gray-700">DATE:</label>
               <Input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({...formData, date: e.target.value})}
-                className="mt-1 w-48"
+                className="mt-1 w-full sm:w-48"
               />
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">NEW CLIENT FORM</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-2">NEW CLIENT FORM</h1>
+          <p className="text-center text-gray-600 mb-8">For {agent.name}</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Last Name:</Label>
                 <Input
@@ -176,8 +247,8 @@ const NewClientForm = () => {
               </div>
             </div>
 
-            {/* City, State, Phone */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* City & State */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">City:</Label>
                 <Input
@@ -196,7 +267,8 @@ const NewClientForm = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Cell Phone & Work in Cabo */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Cell Phone:</Label>
                 <Input
@@ -216,11 +288,11 @@ const NewClientForm = () => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="YES" id="work-yes" />
-                    <Label htmlFor="work-yes">YES</Label>
+                    <Label htmlFor="work-yes" className="cursor-pointer">YES</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="NO" id="work-no" />
-                    <Label htmlFor="work-no">NO</Label>
+                    <Label htmlFor="work-no" className="cursor-pointer">NO</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -239,7 +311,7 @@ const NewClientForm = () => {
             </div>
 
             {/* Years Coming to Cabo & Staying At */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Years Coming to Cabo:</Label>
                 <Input
@@ -260,47 +332,35 @@ const NewClientForm = () => {
               </div>
             </div>
 
-            {/* Property Type */}
+            {/* Property Type - RADIO BUTTONS */}
             <div>
               <Label className="text-sm font-semibold text-gray-700 mb-3 block uppercase">Type of Property:</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <RadioGroup
+                value={formData.propertyType}
+                onValueChange={(value) => setFormData({...formData, propertyType: value})}
+                className="grid grid-cols-2 md:grid-cols-4 gap-3"
+              >
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="condo"
-                    checked={formData.propertyType.includes('CONDO')}
-                    onCheckedChange={(checked) => handlePropertyTypeChange('CONDO', checked as boolean)}
-                  />
+                  <RadioGroupItem value="CONDO" id="condo" />
                   <Label htmlFor="condo" className="font-normal cursor-pointer">CONDO</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="house"
-                    checked={formData.propertyType.includes('HOUSE')}
-                    onCheckedChange={(checked) => handlePropertyTypeChange('HOUSE', checked as boolean)}
-                  />
+                  <RadioGroupItem value="HOUSE" id="house" />
                   <Label htmlFor="house" className="font-normal cursor-pointer">HOUSE</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="land"
-                    checked={formData.propertyType.includes('LAND')}
-                    onCheckedChange={(checked) => handlePropertyTypeChange('LAND', checked as boolean)}
-                  />
+                  <RadioGroupItem value="LAND" id="land" />
                   <Label htmlFor="land" className="font-normal cursor-pointer">LAND</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="commercial"
-                    checked={formData.propertyType.includes('COMMERCIAL')}
-                    onCheckedChange={(checked) => handlePropertyTypeChange('COMMERCIAL', checked as boolean)}
-                  />
+                  <RadioGroupItem value="COMMERCIAL" id="commercial" />
                   <Label htmlFor="commercial" className="font-normal cursor-pointer">COMMERCIAL</Label>
                 </div>
-              </div>
+              </RadioGroup>
             </div>
 
             {/* Price Range & Bedrooms/Bathrooms */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               <div>
                 <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Price Range:</Label>
                 <Input
@@ -341,43 +401,31 @@ const NewClientForm = () => {
               />
             </div>
 
-            {/* Where Would You Invest */}
+            {/* Where Would You Invest - RADIO BUTTONS */}
             <div>
               <Label className="text-sm font-semibold text-gray-700 mb-3 block uppercase">Where Would You Invest?</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <RadioGroup
+                value={formData.investmentLocation}
+                onValueChange={(value) => setFormData({...formData, investmentLocation: value})}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
+              >
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="cabo-san-lucas"
-                    checked={formData.investmentLocations.includes('CABO SAN LUCAS')}
-                    onCheckedChange={(checked) => handleInvestmentLocationChange('CABO SAN LUCAS', checked as boolean)}
-                  />
+                  <RadioGroupItem value="CABO SAN LUCAS" id="cabo-san-lucas" />
                   <Label htmlFor="cabo-san-lucas" className="font-normal cursor-pointer">CABO SAN LUCAS</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="corridor"
-                    checked={formData.investmentLocations.includes('CORRIDOR')}
-                    onCheckedChange={(checked) => handleInvestmentLocationChange('CORRIDOR', checked as boolean)}
-                  />
+                  <RadioGroupItem value="CORRIDOR" id="corridor" />
                   <Label htmlFor="corridor" className="font-normal cursor-pointer">CORRIDOR</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="san-jose"
-                    checked={formData.investmentLocations.includes('SAN JOSE')}
-                    onCheckedChange={(checked) => handleInvestmentLocationChange('SAN JOSE', checked as boolean)}
-                  />
+                  <RadioGroupItem value="SAN JOSE" id="san-jose" />
                   <Label htmlFor="san-jose" className="font-normal cursor-pointer">SAN JOSE</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="pacific-side"
-                    checked={formData.investmentLocations.includes('PACIFIC SIDE')}
-                    onCheckedChange={(checked) => handleInvestmentLocationChange('PACIFIC SIDE', checked as boolean)}
-                  />
+                  <RadioGroupItem value="PACIFIC SIDE" id="pacific-side" />
                   <Label htmlFor="pacific-side" className="font-normal cursor-pointer">PACIFIC SIDE</Label>
                 </div>
-              </div>
+              </RadioGroup>
             </div>
 
             {/* Follow Up */}
@@ -396,7 +444,7 @@ const NewClientForm = () => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-14 text-lg font-semibold"
+                className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold"
                 style={{ backgroundColor: '#102f74', color: 'white' }}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit New Client Form'}
