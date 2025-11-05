@@ -65,68 +65,17 @@ const NewClientForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare comprehensive additional notes
-      const additionalNotes = `
-CLIENT BACKGROUND:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-City/State: ${formData.city || 'Not specified'}, ${formData.state || 'Not specified'}
-Years Coming to Cabo: ${formData.yearsComingToCabo || 'Not specified'}
-Currently Staying At: ${formData.stayingAt || 'Not specified'}
-Work in Cabo: ${formData.workInCabo || 'Not specified'}
-
-PROPERTY REQUIREMENTS:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Property Type(s): ${formData.propertyType.length > 0 ? formData.propertyType.join(', ') : 'Not specified'}
-Price Range: ${formData.priceRange || 'Not specified'}
-Bedrooms: ${formData.numberOfBedrooms || 'Not specified'}
-Bathrooms: ${formData.numberOfBathrooms || 'Not specified'}
-Other Specifications: ${formData.otherSpecifications || 'None'}
-
-PREFERRED LOCATIONS:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${formData.investmentLocations.length > 0 ? formData.investmentLocations.join(', ') : 'Not specified'}
-
-FOLLOW-UP NOTES:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${formData.followUp || 'No additional notes provided'}
-
-SUBMISSION DATE: ${formData.date}
-      `.trim();
-
-      // Format data to match agent-new-client.js API expectations
+      // Prepare form data for submission
       const submissionData = {
-        // Client info
-        clientName: `${formData.firstName} ${formData.lastName}`.trim(),
-        clientEmail: formData.personalEmail,
-        clientPhone: formData.cellPhone,
-        clientAddress: `${formData.city}, ${formData.state}`.trim(),
-        
-        // Property preferences
-        propertyType: formData.propertyType.join(', ') || 'Not specified',
-        priceRange: formData.priceRange || 'Not specified',
-        bedrooms: formData.numberOfBedrooms || 'Not specified',
-        bathrooms: formData.numberOfBathrooms || 'Not specified',
-        preferredAreas: formData.investmentLocations.join(', ') || 'Not specified',
-        moveInTimeline: formData.yearsComingToCabo || 'Not specified',
-        
-        // Additional info
-        additionalNotes: additionalNotes,
-        howDidYouHear: 'New Client Form - Website',
-        
-        // Agent info - Send to Edgar by default
-        agentName: 'Office Team',
-        agentEmail: 'cabosbir@gmail.com',
-        agentId: 'office',
-        
-        // Metadata
-        source: 'new-client-form',
+        ...formData,
+        propertyType: formData.propertyType.join(', '),
+        investmentLocations: formData.investmentLocations.join(', '),
+        formType: 'new-client-form',
         timestamp: new Date().toISOString()
       };
 
-      console.log('📤 Submitting to /api/contact/agent-new-client...');
-      console.log('📋 Data:', submissionData);
-
-      const response = await fetch('/api/contact/agent-new-client', {
+      // Submit to API endpoint
+      const response = await fetch('/api/contact/new-client', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,49 +83,43 @@ SUBMISSION DATE: ${formData.date}
         body: JSON.stringify(submissionData),
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log('✅ New Client Form submitted successfully!');
-        console.log('📧 Response:', result);
-
-        toast({
-          title: "Form Submitted Successfully! ✓",
-          description: result.message || "Thank you! we will contact you within 24 hours.",
-        });
-
-        // Reset form
-        setFormData({
-          date: new Date().toISOString().split('T')[0],
-          lastName: "",
-          firstName: "",
-          city: "",
-          state: "",
-          cellPhone: "",
-          workInCabo: "",
-          personalEmail: "",
-          yearsComingToCabo: "",
-          stayingAt: "",
-          propertyType: [],
-          priceRange: "",
-          numberOfBedrooms: "",
-          numberOfBathrooms: "",
-          otherSpecifications: "",
-          investmentLocations: [],
-          followUp: ""
-        });
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        throw new Error(result.error || 'Submission failed');
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
       }
 
-    } catch (error) {
-      console.error('❌ Error submitting New Client Form:', error);
-      
       toast({
-        title: "Unable to Submit Form Online",
-        description: "Please call us directly at +52 624 143 5555 or email cabosbir@gmail.com",
+        title: "Form Submitted Successfully! ✓",
+        description: "Thank you! One of our agents will contact you soon.",
+      });
+
+      // Reset form
+      setFormData({
+        date: new Date().toISOString().split('T')[0],
+        lastName: "",
+        firstName: "",
+        city: "",
+        state: "",
+        cellPhone: "",
+        workInCabo: "",
+        personalEmail: "",
+        yearsComingToCabo: "",
+        stayingAt: "",
+        propertyType: [],
+        priceRange: "",
+        numberOfBedrooms: "",
+        numberOfBathrooms: "",
+        otherSpecifications: "",
+        investmentLocations: [],
+        followUp: ""
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Error Submitting Form",
+        description: "Please try again or call us at +52 624 143 5555",
         variant: "destructive",
       });
     } finally {
