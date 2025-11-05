@@ -85,16 +85,23 @@ export default async function handler(req, res) {
     const officeEmail = process.env.OFFICE_EMAIL || 'cabosbir@gmail.com';
     let emailRecipients = [agentEmail];
     
-    // Always CC the office
+    // Always CC the office (only if different from agent email)
     if (agentEmail !== officeEmail) {
       emailRecipients.push(officeEmail);
     }
 
     // Debug logging
-    console.log('📧 DEBUG - Agent Email:', agentEmail);
-    console.log('👤 DEBUG - Agent Name:', agentName);
-    console.log('🎯 DEBUG - Recipients:', emailRecipients);
-    console.log('🏢 DEBUG - Office Email:', officeEmail);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📧 NEW CLIENT REGISTRATION');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('👤 Client:', clientName);
+    console.log('📧 Client Email:', clientEmail);
+    console.log('👨‍💼 Agent:', agentName);
+    console.log('📬 Agent Email:', agentEmail);
+    console.log('🏢 Office Email:', officeEmail);
+    console.log('🎯 All Recipients:', emailRecipients.join(', '));
+    console.log('📍 Source:', source || 'Not specified');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     // Prepare email HTML for agent/office
     const agentEmailHtml = `
@@ -167,6 +174,7 @@ export default async function handler(req, res) {
     };
 
     await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent to agent(s):', emailRecipients.join(', '));
 
     // Send confirmation email to client
     const clientEmailHtml = `
@@ -230,8 +238,8 @@ export default async function handler(req, res) {
     };
 
     await transporter.sendMail(clientMailOptions);
-
-    console.log('✅ New client registration emails sent successfully');
+    console.log('✅ Confirmation email sent to client:', clientEmail);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     return res.status(200).json({
       success: true,
@@ -239,7 +247,11 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('❌ Email sending failed:', error);
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.error('❌ EMAIL SENDING FAILED');
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.error('Error:', error);
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     return res.status(500).json({
       success: false,

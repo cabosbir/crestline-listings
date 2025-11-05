@@ -65,29 +65,16 @@ const NewClientForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Format the comprehensive message with all form data
-      const comprehensiveMessage = `
+      // Prepare comprehensive additional notes
+      const additionalNotes = `
+CLIENT BACKGROUND:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🆕 NEW CLIENT FORM SUBMISSION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📅 SUBMISSION DATE: ${formData.date}
-
-👤 CLIENT INFORMATION:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Name: ${formData.firstName} ${formData.lastName}
-City: ${formData.city || 'Not specified'}
-State: ${formData.state || 'Not specified'}
-Cell Phone: ${formData.cellPhone}
-Email: ${formData.personalEmail}
-Work in Cabo: ${formData.workInCabo || 'Not specified'}
-
-🏖️ CABO EXPERIENCE:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+City/State: ${formData.city || 'Not specified'}, ${formData.state || 'Not specified'}
 Years Coming to Cabo: ${formData.yearsComingToCabo || 'Not specified'}
 Currently Staying At: ${formData.stayingAt || 'Not specified'}
+Work in Cabo: ${formData.workInCabo || 'Not specified'}
 
-🏠 PROPERTY REQUIREMENTS:
+PROPERTY REQUIREMENTS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Property Type(s): ${formData.propertyType.length > 0 ? formData.propertyType.join(', ') : 'Not specified'}
 Price Range: ${formData.priceRange || 'Not specified'}
@@ -95,96 +82,67 @@ Bedrooms: ${formData.numberOfBedrooms || 'Not specified'}
 Bathrooms: ${formData.numberOfBathrooms || 'Not specified'}
 Other Specifications: ${formData.otherSpecifications || 'None'}
 
-📍 INVESTMENT LOCATIONS:
+PREFERRED LOCATIONS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Preferred Areas: ${formData.investmentLocations.length > 0 ? formData.investmentLocations.join(', ') : 'Not specified'}
+${formData.investmentLocations.length > 0 ? formData.investmentLocations.join(', ') : 'Not specified'}
 
-📝 ADDITIONAL NOTES:
+FOLLOW-UP NOTES:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${formData.followUp || 'No additional notes provided'}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ PRIORITY: New Client - Requires Follow-up
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUBMISSION DATE: ${formData.date}
       `.trim();
 
-      // Prepare data for submission
+      // Format data to match agent-new-client.js API expectations
       const submissionData = {
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
-        email: formData.personalEmail,
-        phone: formData.cellPhone,
-        message: comprehensiveMessage,
-        inquiryType: 'buying',
+        // Client info
+        clientName: `${formData.firstName} ${formData.lastName}`.trim(),
+        clientEmail: formData.personalEmail,
+        clientPhone: formData.cellPhone,
+        clientAddress: `${formData.city}, ${formData.state}`.trim(),
+        
+        // Property preferences
         propertyType: formData.propertyType.join(', ') || 'Not specified',
-        preferredAgent: '',
-        agentEmail: ''
+        priceRange: formData.priceRange || 'Not specified',
+        bedrooms: formData.numberOfBedrooms || 'Not specified',
+        bathrooms: formData.numberOfBathrooms || 'Not specified',
+        preferredAreas: formData.investmentLocations.join(', ') || 'Not specified',
+        moveInTimeline: formData.yearsComingToCabo || 'Not specified',
+        
+        // Additional info
+        additionalNotes: additionalNotes,
+        howDidYouHear: 'New Client Form - Website',
+        
+        // Agent info - Send to Edgar by default
+        agentName: 'Edgar Tamarindo',
+        agentEmail: 'edgar@bircabo.com',
+        agentId: 'edgar',
+        
+        // Metadata
+        source: 'new-client-form',
+        timestamp: new Date().toISOString()
       };
 
-      console.log('📤 Attempting to submit New Client Form...');
+      console.log('📤 Submitting to /api/contact/agent-new-client...');
+      console.log('📋 Data:', submissionData);
 
-      // Try multiple endpoints with fallback
-      let success = false;
-      let lastError = null;
+      const response = await fetch('/api/contact/agent-new-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      });
 
-      // Attempt 1: Try /api/contact/agent-inquiry
-      try {
-        console.log('🔄 Trying /api/contact/agent-inquiry...');
-        const response1 = await fetch('/api/contact/agent-inquiry', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...submissionData,
-            agent: 'new-client-form',
-            agentId: 0,
-            agentName: 'New Client Inquiry',
-            source: 'new-client-form',
-            timestamp: new Date().toISOString()
-          }),
-        });
+      const result = await response.json();
 
-        if (response1.ok) {
-          success = true;
-          console.log('✅ Submitted via /api/contact/agent-inquiry');
-        } else {
-          console.log('⚠️ /api/contact/agent-inquiry failed:', response1.status);
-        }
-      } catch (error) {
-        console.log('⚠️ /api/contact/agent-inquiry error:', error);
-        lastError = error;
-      }
-
-      // Attempt 2: Try /api/contact if first attempt failed
-      if (!success) {
-        try {
-          console.log('🔄 Trying /api/contact...');
-          const response2 = await fetch('/api/contact', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(submissionData),
-          });
-
-          if (response2.ok) {
-            success = true;
-            console.log('✅ Submitted via /api/contact');
-          } else {
-            console.log('⚠️ /api/contact failed:', response2.status);
-          }
-        } catch (error) {
-          console.log('⚠️ /api/contact error:', error);
-          lastError = error;
-        }
-      }
-
-      if (success) {
+      if (response.ok) {
         console.log('✅ New Client Form submitted successfully!');
+        console.log('📧 Response:', result);
 
         toast({
           title: "Form Submitted Successfully! ✓",
-          description: "Thank you! One of our agents will contact you within 24 hours.",
+          description: result.message || "Thank you! Edgar will contact you within 24 hours.",
         });
 
         // Reset form
@@ -210,13 +168,12 @@ ${formData.followUp || 'No additional notes provided'}
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        throw lastError || new Error('All API endpoints failed');
+        throw new Error(result.error || 'Submission failed');
       }
 
     } catch (error) {
       console.error('❌ Error submitting New Client Form:', error);
       
-      // Show user-friendly error with contact options
       toast({
         title: "Unable to Submit Form Online",
         description: "Please call us directly at +52 624 143 5555 or email cabosbir@gmail.com",
