@@ -9,7 +9,7 @@ import { Search, ExternalLink } from "lucide-react";
 const Properties = () => {
   const [mlsNumber, setMlsNumber] = useState("");
   
-  const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/1wohcqsshlfd,12";
+  const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/1wohcr5olz3g,12";
   
   const handleMLSSearch = () => {
     if (mlsNumber.trim()) {
