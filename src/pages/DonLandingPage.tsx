@@ -353,7 +353,7 @@ const DonLandingPage = () => {
                 </p>
               </div>
 
-              <Link to="/new-client-form">
+              <Link to="/agents/don/new-client">
                 <Button 
                   size="lg"
                   className="h-16 px-12 text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105"
