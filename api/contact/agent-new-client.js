@@ -109,7 +109,7 @@ export default async function handler(req, res) {
         <div style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
           <h2 style="color: white; margin: 0; font-size: 28px;">🎉 New Client Registration</h2>
           <p style="color: #d1fae5; margin: 10px 0 0 0;">BAJA INTERNATIONAL REALTY</p>
-          <p style="color: #fbbf24; margin: 10px 0 0 0; font-weight: bold; font-size: 18px;">⭐ For: ${agentName}</p>
+          <p style="color: #fbbf24; margin: 10px 0 0 0; font-weight: bold; font-size: 18px;">⭐ For: ${agentName.split(' ')[0]}</p>
         </div>
         
         <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb;">

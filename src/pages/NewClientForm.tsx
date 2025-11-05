@@ -114,9 +114,9 @@ SUBMISSION DATE: ${formData.date}
         howDidYouHear: 'New Client Form - Website',
         
         // Agent info - Send to Edgar by default
-        agentName: 'Edgar Tamarindo',
-        agentEmail: 'edgar@bircabo.com',
-        agentId: 'edgar',
+        agentName: 'Office Team',
+        agentEmail: 'cabosbir@gmail.com',
+        agentId: 'office',
         
         // Metadata
         source: 'new-client-form',
@@ -142,7 +142,7 @@ SUBMISSION DATE: ${formData.date}
 
         toast({
           title: "Form Submitted Successfully! ✓",
-          description: result.message || "Thank you! Edgar will contact you within 24 hours.",
+          description: result.message || "Thank you! we will contact you within 24 hours.",
         });
 
         // Reset form
