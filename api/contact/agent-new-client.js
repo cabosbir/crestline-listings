@@ -243,7 +243,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Thank you ${clientName}! ${agentName} will contact you shortly.`
+      message: `Thank you ${clientName}! ${agentName.split(' ')[0]} will contact you shortly.`
     });
 
   } catch (error) {
