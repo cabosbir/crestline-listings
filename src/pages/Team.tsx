@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import AgentBioCard from "@/components/AgentBioCard";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Team = () => {
   const navigate = useNavigate();
@@ -254,8 +254,6 @@ const Team = () => {
       const atStart = scrollLeft <= 10;
       const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
       
-      console.log('Scroll check:', { scrollLeft, scrollWidth, clientWidth, atStart, atEnd });
-      
       setCanScrollLeft(!atStart);
       setCanScrollRight(!atEnd);
     }
@@ -263,7 +261,6 @@ const Team = () => {
 
   // Check initial scroll state after component mounts
   useEffect(() => {
-    // Small delay to ensure DOM is fully rendered
     const timer = setTimeout(() => {
       checkScrollButtons();
     }, 100);
@@ -272,17 +269,10 @@ const Team = () => {
   }, []);
 
   const handleScroll = (direction: 'left' | 'right') => {
-    console.log('Scroll button clicked:', direction);
-    
-    if (!scrollContainerRef.current) {
-      console.error('Scroll container ref is null!');
-      return;
-    }
+    if (!scrollContainerRef.current) return;
 
     const container = scrollContainerRef.current;
-    const scrollAmount = 350; // One card width plus gap
-    
-    console.log('Current scroll position:', container.scrollLeft);
+    const scrollAmount = 350;
     
     if (direction === 'left') {
       container.scrollLeft -= scrollAmount;
@@ -290,9 +280,6 @@ const Team = () => {
       container.scrollLeft += scrollAmount;
     }
     
-    console.log('New scroll position:', container.scrollLeft);
-    
-    // Update button states
     setTimeout(() => {
       checkScrollButtons();
     }, 100);
@@ -354,23 +341,33 @@ const Team = () => {
               </p>
             </div>
 
-            {/* Horizontal Scroll Container */}
-            <div className="relative px-14">
-              {/* Left Arrow */}
+            {/* Navigation Arrows - Positioned Above Carousel */}
+            <div className="flex justify-center items-center gap-6 mb-8">
               <button
                 onClick={() => handleScroll('left')}
                 disabled={!canScrollLeft}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full shadow-xl bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all"
+                className="h-14 w-14 rounded-full shadow-lg bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all hover:scale-105"
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="h-6 w-6 text-gray-700" />
+                <ChevronLeft className="h-7 w-7 text-gray-700" />
               </button>
 
-              {/* Scrollable Agent Cards */}
+              <button
+                onClick={() => handleScroll('right')}
+                disabled={!canScrollRight}
+                className="h-14 w-14 rounded-full shadow-lg bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all hover:scale-105"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="h-7 w-7 text-gray-700" />
+              </button>
+            </div>
+
+            {/* Scrollable Agent Cards */}
+            <div className="relative">
               <div 
                 ref={scrollContainerRef}
                 onScroll={checkScrollButtons}
-                className="flex gap-6 overflow-x-scroll scroll-smooth"
+                className="flex gap-6 overflow-x-scroll scroll-smooth px-4"
                 style={{ 
                   scrollbarWidth: 'none',
                   msOverflowStyle: 'none',
@@ -393,21 +390,11 @@ const Team = () => {
                   </div>
                 ))}
               </div>
-
-              {/* Right Arrow */}
-              <button
-                onClick={() => handleScroll('right')}
-                disabled={!canScrollRight}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full shadow-xl bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="h-6 w-6 text-gray-700" />
-              </button>
             </div>
 
             {/* Scroll Hint */}
             <div className="text-center mt-8 text-sm text-muted-foreground">
-              <p>← Scroll to explore all our team members →</p>
+              <p>Use arrows to explore all our team members</p>
             </div>
           </div>
         </div>
