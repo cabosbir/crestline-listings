@@ -105,8 +105,9 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans;
   }
 
+  /* Use elegant Marcellus font for all headings - similar to Optima */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
+    @apply font-heading;
   }
 }
 
