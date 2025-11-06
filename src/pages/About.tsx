@@ -312,7 +312,7 @@ const About = () => {
               <p className="text-primary-foreground/90">Families<br />Served</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">$1.2B+</div>
+              <div className="text-5xl font-bold text-accent mb-2">$800M+</div>
               <p className="text-primary-foreground/90">Total Sales<br />Volume</p>
             </div>
             <div className="text-center">
