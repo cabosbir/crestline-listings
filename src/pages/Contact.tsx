@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, UserPlus } from "lucide-react";
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
@@ -212,8 +212,51 @@ const Contact = () => {
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
+              {/* New Client Registration Banner */}
+              <div className="mb-6 bg-gradient-to-r from-accent/10 to-accent/5 p-6 rounded-2xl border-2 border-accent/20">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="p-3 rounded-full bg-accent/20">
+                      <UserPlus className="h-6 w-6 text-accent" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-foreground mb-2">
+                      New Client? Register Here
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      If you're a new client looking to work with a specific agent, complete our New Client Registration form for personalized service.
+                    </p>
+                    <Select
+                      onValueChange={(agentSlug) => {
+                        if (agentSlug) {
+                          window.location.href = `/agents/${agentSlug}/new-client`;
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="max-w-md bg-white">
+                        <SelectValue placeholder="Select your agent to register" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alfonso">Alfonso Puente</SelectItem>
+                        <SelectItem value="bob">Bob Van Patten</SelectItem>
+                        <SelectItem value="cozbi">Cozbi Sanchez</SelectItem>
+                        <SelectItem value="cristy">Cristy Cavazos</SelectItem>
+                        <SelectItem value="david">David Scott Piper</SelectItem>
+                        <SelectItem value="don">Don Weis</SelectItem>
+                        <SelectItem value="edgar">Edgar Pacheco</SelectItem>
+                        <SelectItem value="erika">Erika Aispuro</SelectItem>
+                        <SelectItem value="hector">Hector Mendoza</SelectItem>
+                        <SelectItem value="marisol">Marisol Tort</SelectItem>
+                        <SelectItem value="susu">Susu Vieira</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
               <form onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border border-border shadow-elegant">
-                <h2 className="text-2xl font-bold text-foreground mb-6">Send Us a Message</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-6">Send Us a General Message</h2>
                 
                 {submitStatus === 'success' && (
                   <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
