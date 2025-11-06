@@ -403,7 +403,7 @@ const BobLandingPage = () => {
             <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
               <p className="text-xl mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
-                Fill out our New Client Form and Bob will personally reach out to discuss your property goals.
+                Fill out our New Client Form and I will personally reach out to discuss your property goals.
               </p>
             </div>
 
