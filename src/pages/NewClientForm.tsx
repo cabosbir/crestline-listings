@@ -435,7 +435,7 @@ const NewClientForm = () => {
                 value={formData.followUp}
                 onChange={(e) => setFormData({...formData, followUp: e.target.value})}
                 className="w-full min-h-[150px]"
-                placeholder="Additional notes, preferences, or questions..."
+                placeholder="Additional notes, mls number, preferences, or questions..."
               />
             </div>
 
