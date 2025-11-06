@@ -38,7 +38,7 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center space-x-8">
             {/* Properties Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-medium outline-none">
+              <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-heading text-lg outline-none">
                 Properties
                 <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
@@ -47,7 +47,7 @@ const Navbar = () => {
                   <DropdownMenuItem key={link.name} asChild>
                     <Link
                       to={link.href}
-                      className="cursor-pointer w-full"
+                      className="cursor-pointer w-full font-heading"
                     >
                       {link.name}
                     </Link>
@@ -61,7 +61,7 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.href}
-                className="text-foreground hover:text-accent transition-fast font-medium"
+                className="text-foreground hover:text-accent transition-fast font-heading text-lg"
               >
                 {link.name}
               </Link>
@@ -106,13 +106,13 @@ const Navbar = () => {
             <div className="flex flex-col space-y-4">
               {/* Properties Section in Mobile */}
               <div className="px-2">
-                <div className="text-foreground font-medium mb-2">Properties</div>
+                <div className="text-foreground font-heading text-lg mb-2">Properties</div>
                 <div className="flex flex-col space-y-2 pl-4">
                   {propertyLinks.map((link) => (
                     <Link
                       key={link.name}
                       to={link.href}
-                      className="text-muted-foreground hover:text-accent transition-fast text-sm"
+                      className="text-muted-foreground hover:text-accent transition-fast font-heading"
                       onClick={() => setIsOpen(false)}
                     >
                       {link.name}
@@ -126,7 +126,7 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   to={link.href}
-                  className="text-foreground hover:text-accent transition-fast font-medium px-2"
+                  className="text-foreground hover:text-accent transition-fast font-heading text-lg px-2"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.name}
