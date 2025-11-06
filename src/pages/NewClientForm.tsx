@@ -90,7 +90,7 @@ const NewClientForm = () => {
     : { id: 0, name: "BIR Office", email: "cabosbir@gmail.com", phone: "+52 624 143 5555" };
 
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toLocaleDateString('en-CA'),
     lastName: "",
     firstName: "",
     city: "",
