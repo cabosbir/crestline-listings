@@ -59,7 +59,7 @@ const agentListings = [
     beds: 4,
     baths: 2,
     totalM2: "160",
-    mlsNumber: "25-5249",
+    mlsNumber: "25-4981",
     link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
   },
   {
