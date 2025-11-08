@@ -201,9 +201,9 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Hours</h3>
                     <p className="text-muted-foreground text-sm">
-                      Monday - Friday: 9:00 AM - 6:00 PM PT<br />
-                      Saturday: 10:00 AM - 4:00 PM PT<br />
-                      Sunday: 10:00 AM - 4:00 PM PT
+                      Monday - Friday: 9:00 AM - 6:00 PM MST<br />
+                      Saturday: 10:00 AM - 4:00 PM MST<br />
+                      Sunday: 10:00 AM - 4:00 PM MST
                     </p>
                   </div>
                 </div>
@@ -212,7 +212,7 @@ const Contact = () => {
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              {/* Seller Evaluation Form Banner */}
+              {/* New Client Registration Banner */}
               <div className="mb-6 bg-gradient-to-r from-accent/10 to-accent/5 p-6 rounded-2xl border-2 border-accent/20">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0">
@@ -222,18 +222,35 @@ const Contact = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-foreground mb-2">
-                      Ready to Sell Your Property?
+                      New Client? Register Here
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      Get a free property evaluation from our expert agents. Upload photos and provide details about your property for a comprehensive market analysis.
+                      If you're a new client looking to work with a specific agent, complete our New Client Registration form for personalized service.
                     </p>
-                    <Button 
-                      variant="luxury" 
-                      size="lg"
-                      onClick={() => window.location.href = '/seller-evaluation'}
+                    <Select
+                      onValueChange={(agentSlug) => {
+                        if (agentSlug) {
+                          window.location.href = `/agents/${agentSlug}/new-client`;
+                        }
+                      }}
                     >
-                      📋 Request Free Property Evaluation
-                    </Button>
+                      <SelectTrigger className="max-w-md bg-white">
+                        <SelectValue placeholder="Select your agent to register" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alfonso">Alfonso Puente</SelectItem>
+                        <SelectItem value="bob">Bob Van Patten</SelectItem>
+                        <SelectItem value="cozbi">Cozbi Sanchez</SelectItem>
+                        <SelectItem value="cristy">Cristy Cavazos</SelectItem>
+                        <SelectItem value="david">David Scott Piper</SelectItem>
+                        <SelectItem value="don">Don Weis</SelectItem>
+                        <SelectItem value="edgar">Edgar Pacheco</SelectItem>
+                        <SelectItem value="erika">Erika Aispuro</SelectItem>
+                        <SelectItem value="hector">Hector Mendoza</SelectItem>
+                        <SelectItem value="marisol">Marisol Tort</SelectItem>
+                        <SelectItem value="susu">Susu Vieira</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
