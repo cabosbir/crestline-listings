@@ -1,15 +1,16 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Award, Globe, ArrowLeft, Home, ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 const AgentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isCTADropdownOpen, setIsCTADropdownOpen] = useState(false);
 
   // Aggressive scroll to top when page loads
   useEffect(() => {
@@ -302,12 +303,43 @@ const AgentDetail = () => {
                         <span className="text-sm">{agent.email}</span>
                       </a>
                     </div>
-                    <Button 
-                      className="w-full mt-4 bg-white text-primary hover:bg-gray-100"
-                      onClick={() => navigate(`/new-client/${agent.slug}`)}
-                    >
-                      Schedule Consultation
-                    </Button>
+                    
+                    {/* Dropdown Button */}
+                    <div className="relative mt-4">
+                      <Button 
+                        className="w-full bg-white text-primary hover:bg-gray-100 flex items-center justify-between"
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      >
+                        <span>Get Started</span>
+                        <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                      </Button>
+                      
+                      {/* Dropdown Menu */}
+                      {isDropdownOpen && (
+                        <div className="absolute w-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-10">
+                          <button
+                            onClick={() => {
+                              navigate(`/agents/${agent.slug}/new-client`);
+                              setIsDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100"
+                          >
+                            <div className="font-semibold text-gray-900">New Client Form</div>
+                            <div className="text-xs text-gray-600 mt-1">Looking to buy property</div>
+                          </button>
+                          <button
+                            onClick={() => {
+                              navigate(`/agents/${agent.slug}/seller-evaluation`);
+                              setIsDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="font-semibold text-gray-900">Property Evaluation</div>
+                            <div className="text-xs text-gray-600 mt-1">Get a free property valuation</div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -386,14 +418,47 @@ const AgentDetail = () => {
                     Work with {agent.name.split(' ')[0]} to find your dream property or sell your home for the best price.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Button 
-                      size="lg"
-                      className="flex-1 bg-white text-accent hover:bg-gray-100"
-                      onClick={() => navigate(`/new-client/${agent.slug}`)}
-                    >
-                      <Mail className="w-4 h-4 mr-2" />
-                      Get in Touch
-                    </Button>
+                    {/* Dropdown Button for Forms */}
+                    <div className="relative flex-1">
+                      <Button 
+                        size="lg"
+                        className="w-full bg-white text-accent hover:bg-gray-100 flex items-center justify-between"
+                        onClick={() => setIsCTADropdownOpen(!isCTADropdownOpen)}
+                      >
+                        <div className="flex items-center">
+                          <Mail className="w-4 h-4 mr-2" />
+                          <span>Get in Touch</span>
+                        </div>
+                        <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${isCTADropdownOpen ? 'rotate-180' : ''}`} />
+                      </Button>
+                      
+                      {/* Dropdown Menu */}
+                      {isCTADropdownOpen && (
+                        <div className="absolute w-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-10">
+                          <button
+                            onClick={() => {
+                              navigate(`/agents/${agent.slug}/new-client`);
+                              setIsCTADropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100"
+                          >
+                            <div className="font-semibold text-gray-900">New Client Form</div>
+                            <div className="text-xs text-gray-600 mt-1">Looking to buy property</div>
+                          </button>
+                          <button
+                            onClick={() => {
+                              navigate(`/agents/${agent.slug}/seller-evaluation`);
+                              setIsCTADropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="font-semibold text-gray-900">Property Evaluation</div>
+                            <div className="text-xs text-gray-600 mt-1">Get a free property valuation</div>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    
                     <Button 
                       size="lg"
                       variant="outline"
