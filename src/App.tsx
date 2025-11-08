@@ -62,12 +62,14 @@ const App = () => (
           {/* Market Report Page */}
           <Route path="/market-report" element={<MarketReport />} />
           
-          {/* New Client Forms */}
+          {/* New Client Forms - Both URL patterns supported */}
           <Route path="/new-client" element={<NewClientForm />} />
+          <Route path="/new-client/:agentSlug" element={<NewClientForm />} />
           <Route path="/agents/:agentSlug/new-client" element={<NewClientForm />} />
           
-          {/* Agent-Specific Seller Evaluation Forms */}
+          {/* Seller Evaluation Forms - Both URL patterns supported */}
           <Route path="/seller-evaluation" element={<SellerEvaluationForm />} />
+          <Route path="/seller-evaluation/:agentSlug" element={<SellerEvaluationForm />} />
           <Route path="/agents/:agentSlug/seller-evaluation" element={<SellerEvaluationForm />} />
           
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}

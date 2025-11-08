@@ -4,7 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Globe, ArrowLeft, Home } from "lucide-react";
+import { Phone, Mail, Award, Globe, ArrowLeft, Home, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 const AgentDetail = () => {
   const { id } = useParams();
