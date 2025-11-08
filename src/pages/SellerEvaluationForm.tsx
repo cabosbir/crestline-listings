@@ -96,7 +96,7 @@ const SellerEvaluationForm = () => {
   // Get agent data from URL param or default to office
   const agent = agentSlug && agentsData[agentSlug as keyof typeof agentsData]
     ? agentsData[agentSlug as keyof typeof agentsData]
-    : { id: 0, name: "BIR Office", email: "cabosbir@gmail.com", phone: "+52 624 143 5555" };
+    : { id: 0, name: "BIR Office", email: "info@bircabo.com", phone: "+52 624 143 5555" };
 
   const [formData, setFormData] = useState({
     date: new Date().toLocaleDateString('en-CA'),
@@ -245,7 +245,7 @@ const SellerEvaluationForm = () => {
         ? agent 
         : (formData.preferredAgentSlug && agentsData[formData.preferredAgentSlug as keyof typeof agentsData])
           ? agentsData[formData.preferredAgentSlug as keyof typeof agentsData]
-          : { id: 0, name: "BIR Office", email: "cabosbir@gmail.com", phone: "+52 624 143 5555" };
+          : { id: 0, name: "BIR Office", email: "info@bircabo.com", phone: "+52 624 143 5555" };
 
       const submissionData = {
         // Seller info

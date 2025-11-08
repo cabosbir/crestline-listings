@@ -43,7 +43,7 @@ const FloatingContact = () => {
           className="rounded-full shadow-hover"
           asChild
         >
-          <a href="mailto:cabosbir@gmail.com" title="Email Us">
+          <a href="mailto:info@bircabo.com" title="Email Us">
             <Mail className="h-5 w-5" />
           </a>
         </Button>
