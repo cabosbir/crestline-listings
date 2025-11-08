@@ -155,7 +155,7 @@ const AgentDetail = () => {
      name: "Susu Vieira",
      title: "Real Estate Advisor",
      specialization: "Luxury Properties",
-     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761788188/a-professional-studio-portrait-photograp_RGKPNo0jRji9CJIPZrgVGA_liMa2FOqRO-PViqgwfupEw_cleanup_ga5cgy.png",
+     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762637795/WhatsApp_Image_2025-11-08_at_2.18.56_PM_1_t5xufd.jpg",
      phone: "+1 (808) 226-6120",
      phoneSecondary: "+52 (612) 120-5289",
      email: "Susu@BIRCabo.com",
