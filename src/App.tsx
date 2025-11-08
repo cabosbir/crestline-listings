@@ -62,7 +62,8 @@ const App = () => (
           {/* Market Report Page */}
           <Route path="/market-report" element={<MarketReport />} />
           
-          {/* Agent-Specific New Client Forms - Updated to use NewClientForm with agentSlug */}
+          {/* New Client Forms */}
+          <Route path="/new-client" element={<NewClientForm />} />
           <Route path="/agents/:agentSlug/new-client" element={<NewClientForm />} />
           
           {/* Agent-Specific Seller Evaluation Forms */}

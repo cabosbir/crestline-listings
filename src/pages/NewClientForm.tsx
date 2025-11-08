@@ -98,6 +98,12 @@ const NewClientForm = () => {
     cellPhone: "",
     workInCabo: "",
     personalEmail: "",
+    
+    // Agent Selection
+    preferredAgentSlug: "",
+    preferredAgentName: "",
+    preferredAgentEmail: "",
+    
     yearsComingToCabo: "",
     stayingAt: "",
     propertyType: "",
@@ -114,6 +120,13 @@ const NewClientForm = () => {
     setIsSubmitting(true);
 
     try {
+      // Determine which agent to send to (URL agent takes priority over selected agent)
+      const finalAgent = agentSlug 
+        ? agent 
+        : (formData.preferredAgentSlug && agentsData[formData.preferredAgentSlug as keyof typeof agentsData])
+          ? agentsData[formData.preferredAgentSlug as keyof typeof agentsData]
+          : { id: 0, name: "BIR Office", email: "cabosbir@gmail.com", phone: "+52 624 143 5555" };
+
       // Map form fields to API expected field names
       const submissionData = {
         // Client info
@@ -134,13 +147,13 @@ const NewClientForm = () => {
         additionalNotes: `Work in Cabo: ${formData.workInCabo}\nStaying At: ${formData.stayingAt}\nOther Specifications: ${formData.otherSpecifications}\n\nFollow Up Notes:\n${formData.followUp}`,
         howDidYouHear: "New Client Form",
         
-        // Agent info (using URL agent)
-        agentName: agent.name,
-        agentEmail: agent.email,
-        agentId: agent.id,
+        // Agent info (using final selected agent)
+        agentName: finalAgent.name,
+        agentEmail: finalAgent.email,
+        agentId: finalAgent.id,
         
         // Metadata
-        source: `New Client Form - ${agent.name}`,
+        source: `New Client Form - ${finalAgent.name}`,
         formType: 'new-client-form',
         timestamp: new Date().toISOString()
       };
@@ -159,7 +172,7 @@ const NewClientForm = () => {
 
       toast({
         title: "Form Submitted Successfully! ✓",
-        description: `Thank you! ${agent.name} will contact you soon.`,
+        description: `Thank you! ${finalAgent.name} will contact you soon.`,
       });
 
       // Reset form
@@ -172,6 +185,9 @@ const NewClientForm = () => {
         cellPhone: "",
         workInCabo: "",
         personalEmail: "",
+        preferredAgentSlug: "",
+        preferredAgentName: "",
+        preferredAgentEmail: "",
         yearsComingToCabo: "",
         stayingAt: "",
         propertyType: "",
@@ -308,6 +324,54 @@ const NewClientForm = () => {
                 required
                 className="w-full"
               />
+            </div>
+
+            {/* Preferred Agent Selection */}
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">
+                Preferred Agent (Optional):
+              </Label>
+              <p className="text-sm text-gray-600 mb-3">
+                {agentSlug ? `Assigned to: ${agent.name}` : 'Select an agent to work with, or leave blank for office assignment'}
+              </p>
+              {!agentSlug && (
+                <select
+                  value={formData.preferredAgentSlug}
+                  onChange={(e) => {
+                    const selectedSlug = e.target.value;
+                    if (selectedSlug && agentsData[selectedSlug as keyof typeof agentsData]) {
+                      const selectedAgent = agentsData[selectedSlug as keyof typeof agentsData];
+                      setFormData({
+                        ...formData, 
+                        preferredAgentSlug: selectedSlug,
+                        preferredAgentName: selectedAgent.name,
+                        preferredAgentEmail: selectedAgent.email
+                      });
+                    } else {
+                      setFormData({
+                        ...formData, 
+                        preferredAgentSlug: '',
+                        preferredAgentName: '',
+                        preferredAgentEmail: ''
+                      });
+                    }
+                  }}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                >
+                  <option value="">No Preference - Office Will Assign</option>
+                  <option value="alfonso">Alfonso Puente</option>
+                  <option value="bob">Bob Van Patten</option>
+                  <option value="cozbi">Cozbi Sanchez</option>
+                  <option value="cristy">Cristy Cavazos</option>
+                  <option value="david">David Scott Piper</option>
+                  <option value="don">Don Weis</option>
+                  <option value="edgar">Edgar Pacheco</option>
+                  <option value="erika">Erika Aispuro</option>
+                  <option value="hector">Hector Mendoza</option>
+                  <option value="marisol">Marisol Tort</option>
+                  <option value="susu">Susu Vieira</option>
+                </select>
+              )}
             </div>
 
             {/* Years Coming to Cabo & Staying At */}

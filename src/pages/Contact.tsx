@@ -201,9 +201,9 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Hours</h3>
                     <p className="text-muted-foreground text-sm">
-                      Monday - Friday: 9:00 AM - 6:00 PM MST<br />
-                      Saturday: 10:00 AM - 4:00 PM MST<br />
-                      Sunday: 10:00 AM - 4:00 PM MST
+                      Monday - Friday: 9:00 AM - 6:00 PM PT<br />
+                      Saturday: 10:00 AM - 4:00 PM PT<br />
+                      Sunday: 10:00 AM - 4:00 PM PT
                     </p>
                   </div>
                 </div>
@@ -225,32 +225,15 @@ const Contact = () => {
                       New Client? Register Here
                     </h3>
                     <p className="text-muted-foreground mb-4">
-                      If you're a new client looking to work with a specific agent, complete our New Client Registration form for personalized service.
+                      Complete our New Client Registration form for personalized service. Select your preferred agent and share your property preferences.
                     </p>
-                    <Select
-                      onValueChange={(agentSlug) => {
-                        if (agentSlug) {
-                          window.location.href = `/agents/${agentSlug}/new-client`;
-                        }
-                      }}
+                    <Button 
+                      variant="luxury" 
+                      size="lg"
+                      onClick={() => window.location.href = '/new-client'}
                     >
-                      <SelectTrigger className="max-w-md bg-white">
-                        <SelectValue placeholder="Select your agent to register" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="alfonso">Alfonso Puente</SelectItem>
-                        <SelectItem value="bob">Bob Van Patten</SelectItem>
-                        <SelectItem value="cozbi">Cozbi Sanchez</SelectItem>
-                        <SelectItem value="cristy">Cristy Cavazos</SelectItem>
-                        <SelectItem value="david">David Scott Piper</SelectItem>
-                        <SelectItem value="don">Don Weis</SelectItem>
-                        <SelectItem value="edgar">Edgar Pacheco</SelectItem>
-                        <SelectItem value="erika">Erika Aispuro</SelectItem>
-                        <SelectItem value="hector">Hector Mendoza</SelectItem>
-                        <SelectItem value="marisol">Marisol Tort</SelectItem>
-                        <SelectItem value="susu">Susu Vieira</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      📋 Complete New Client Form
+                    </Button>
                   </div>
                 </div>
               </div>
