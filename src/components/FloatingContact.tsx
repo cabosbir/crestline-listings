@@ -77,7 +77,7 @@ const FloatingContact = () => {
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent"
             asChild
           >
-            <a href="tel:+526121698328">
+            <a href="tel:+526241435555">
               <Phone className="h-5 w-5 mb-1" />
               <span className="text-xs">Call</span>
             </a>
@@ -88,7 +88,7 @@ const FloatingContact = () => {
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent"
             asChild
           >
-            <a href="mailto:cabosbir@gmail.com">
+            <a href="mailto:info@bircabo.com">
               <Mail className="h-5 w-5 mb-1" />
               <span className="text-xs">Email</span>
             </a>
