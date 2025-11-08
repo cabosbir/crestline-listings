@@ -1,716 +1,302 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+// api/contact/seller-evaluation.js
+import nodemailer from 'nodemailer';
 
-// Agent data
-const agentsData = {
-  susu: {
-    id: 9,
-    name: "Susu Vieira",
-    email: "Susu@BIRCabo.com",
-    phone: "+1 (808) 226-6120"
-  },
-  bob: {
-    id: 1,
-    name: "Bob Van Patten",
-    email: "robertvanpatten2@gmail.com",
-    phone: "+52 624 127 6012"
-  },
-  alfonso: {
-    id: 3,
-    name: "Alfonso Puente",
-    email: "alfonso@bircabo.com",
-    phone: "+52 664 188 8681"
-  },
-  david: {
-    id: 8,
-    name: "David Scott Piper",
-    email: "David@bircabo.com",
-    phone: "+52 624 317 0297"
-  },
-  cristy: {
-    id: 6,
-    name: "Cristy Cavazos",
-    email: "Cristina.cavazos@grupoveq.com",
-    phone: "+52 624 178 0825"
-  },
-  erika: {
-    id: 2,
-    name: "Erika Aispuro",
-    email: "eaispuro80@gmail.com",
-    phone: "+52 624 109 7909"
-  },
-  hector: {
-    id: 5,
-    name: "Hector Mendoza",
-    email: "Hector@bircabo.com",
-    phone: "+52 624 211 4879"
-  },
-  marisol: {
-    id: 7,
-    name: "Marisol Tort",
-    email: "mtortricardi@gmail.com",
-    phone: "+52 624 264 3896"
-  },
-  cozbi: {
-    id: 4,
-    name: "Cozbi Sanchez",
-    email: "Cozbi@bajainternationalrealty.com",
-    phone: "+52 624 118 9512"
-  },
-  edgar: {
-    id: 10,
-    name: "Edgar Pacheco",
-    email: "Edgar@bircabo.com",
-    phone: "+52 612 169 8328"
-  },
-  don: {
-    id: 12,
-    name: "Don Weis",
-    email: "Don@bircabo.com",
-    phone: "+52 624 143 5555"
+export default async function handler(req, res) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
-};
 
-interface ImageFile {
-  file: File;
-  preview: string;
-  base64?: string;
-}
-
-const SellerEvaluationForm = () => {
-  const { toast } = useToast();
-  const { agentSlug } = useParams<{ agentSlug?: string }>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
-  const [isUploadingImages, setIsUploadingImages] = useState(false);
-
-  // Get agent data from URL param or default to office
-  const agent = agentSlug && agentsData[agentSlug as keyof typeof agentsData]
-    ? agentsData[agentSlug as keyof typeof agentsData]
-    : { id: 0, name: "BIR Office", email: "cabosbir@gmail.com", phone: "+52 624 143 5555" };
-
-  const [formData, setFormData] = useState({
-    date: new Date().toLocaleDateString('en-CA'),
-    lastName: "",
-    firstName: "",
-    cellPhone: "",
-    personalEmail: "",
-    
-    // Property Information
-    propertyAddress: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    propertyType: "",
-    numberOfBedrooms: "",
-    numberOfBathrooms: "",
-    squareFootage: "",
-    lotSize: "",
-    yearBuilt: "",
-    
-    // Selling Details
-    currentlyOccupied: "",
-    reasonForSelling: "",
-    desiredTimeframe: "",
-    expectedPrice: "",
-    mortgageBalance: "",
-    recentUpgrades: "",
-    
-    // Additional Information
-    additionalDetails: ""
-  });
-
-  // Image upload handler
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    // Check if adding these files would exceed the limit (10 images max)
-    if (uploadedImages.length + files.length > 10) {
-      toast({
-        title: "Too Many Images",
-        description: "You can upload a maximum of 10 images.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsUploadingImages(true);
-
-    try {
-      const newImages: ImageFile[] = [];
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-          toast({
-            title: "Invalid File",
-            description: `${file.name} is not an image file.`,
-            variant: "destructive",
-          });
-          continue;
-        }
-
-        // Validate file size (max 5MB per image)
-        if (file.size > 5 * 1024 * 1024) {
-          toast({
-            title: "File Too Large",
-            description: `${file.name} is larger than 5MB. Please compress it.`,
-            variant: "destructive",
-          });
-          continue;
-        }
-
-        // Create preview URL
-        const preview = URL.createObjectURL(file);
-
-        // Convert to base64 for email attachment
-        const base64 = await convertToBase64(file);
-
-        newImages.push({
-          file,
-          preview,
-          base64
-        });
-      }
-
-      setUploadedImages([...uploadedImages, ...newImages]);
-      
-      toast({
-        title: "Images Uploaded",
-        description: `${newImages.length} image(s) added successfully.`,
-      });
-    } catch (error) {
-      console.error('Error uploading images:', error);
-      toast({
-        title: "Upload Error",
-        description: "Failed to upload images. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploadingImages(false);
-      // Reset input
-      e.target.value = '';
-    }
-  };
-
-  // Convert file to base64
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
+  if (req.method !== 'POST') {
+    return res.status(405).json({ 
+      success: false, 
+      error: 'Method not allowed' 
     });
-  };
+  }
 
-  // Remove image
-  const removeImage = (index: number) => {
-    const newImages = [...uploadedImages];
-    URL.revokeObjectURL(newImages[index].preview); // Clean up preview URL
-    newImages.splice(index, 1);
-    setUploadedImages(newImages);
-  };
+  try {
+    const {
+      sellerName,
+      sellerEmail,
+      sellerPhone,
+      propertyAddress,
+      propertyCity,
+      propertyState,
+      propertyZip,
+      propertyType,
+      bedrooms,
+      bathrooms,
+      squareFootage,
+      lotSize,
+      yearBuilt,
+      currentlyOccupied,
+      reasonForSelling,
+      desiredTimeframe,
+      expectedPrice,
+      recentUpgrades,
+      additionalDetails,
+      images,
+      imageCount,
+      agentName,
+      agentEmail,
+      agentId,
+      source,
+      formType,
+      timestamp
+    } = req.body;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      // Prepare images for email attachment
-      const imageAttachments = uploadedImages.map((img, index) => ({
-        filename: img.file.name,
-        content: img.base64?.split(',')[1], // Remove data URL prefix
-        encoding: 'base64',
-        contentType: img.file.type
-      }));
-
-      const submissionData = {
-        // Seller info
-        sellerName: `${formData.firstName} ${formData.lastName}`,
-        sellerEmail: formData.personalEmail,
-        sellerPhone: formData.cellPhone,
-        
-        // Property details
-        propertyAddress: formData.propertyAddress,
-        propertyCity: formData.city,
-        propertyState: formData.state,
-        propertyZip: formData.zipCode,
-        propertyType: formData.propertyType,
-        bedrooms: formData.numberOfBedrooms,
-        bathrooms: formData.numberOfBathrooms,
-        squareFootage: formData.squareFootage,
-        lotSize: formData.lotSize,
-        yearBuilt: formData.yearBuilt,
-        
-        // Selling information
-        currentlyOccupied: formData.currentlyOccupied,
-        reasonForSelling: formData.reasonForSelling,
-        desiredTimeframe: formData.desiredTimeframe,
-        expectedPrice: formData.expectedPrice,
-        mortgageBalance: formData.mortgageBalance,
-        recentUpgrades: formData.recentUpgrades,
-        additionalDetails: formData.additionalDetails,
-        
-        // Images
-        images: imageAttachments,
-        imageCount: uploadedImages.length,
-        
-        // Agent info
-        agentName: agent.name,
-        agentEmail: agent.email,
-        agentId: agent.id,
-        
-        // Metadata
-        source: `Seller Evaluation Form - ${agent.name}`,
-        formType: 'seller-evaluation-form',
-        timestamp: new Date().toISOString()
-      };
-
-      const response = await fetch('/api/contact/seller-evaluation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submissionData),
+    // Validate required fields
+    if (!sellerName || !sellerEmail || !sellerPhone || !propertyAddress) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Missing required fields' 
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
-      }
-
-      toast({
-        title: "Form Submitted Successfully! ✓",
-        description: `Thank you! ${agent.name} will contact you soon with your free property evaluation.`,
-      });
-
-      // Reset form
-      setFormData({
-        date: new Date().toLocaleDateString('en-CA'),
-        lastName: "",
-        firstName: "",
-        cellPhone: "",
-        personalEmail: "",
-        propertyAddress: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        propertyType: "",
-        numberOfBedrooms: "",
-        numberOfBathrooms: "",
-        squareFootage: "",
-        lotSize: "",
-        yearBuilt: "",
-        currentlyOccupied: "",
-        reasonForSelling: "",
-        desiredTimeframe: "",
-        expectedPrice: "",
-        mortgageBalance: "",
-        recentUpgrades: "",
-        additionalDetails: ""
-      });
-
-      // Clean up image previews
-      uploadedImages.forEach(img => URL.revokeObjectURL(img.preview));
-      setUploadedImages([]);
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      toast({
-        title: "Error Submitting Form",
-        description: `Please try again or call ${agent.name} at ${agent.phone}`,
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
-  };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    // Validate email configuration
+    if (!process.env.OFFICE_APP_PASSWORD) {
+      console.error('OFFICE_APP_PASSWORD not configured');
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Email service not configured. Please contact us directly at cabosbir@gmail.com' 
+      });
+    }
 
-      <div className="container mx-auto px-4 py-8 sm:py-16 max-w-4xl">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-            <img 
-              src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762021536/Screenshot_2025-10-31_at_5.21.25_PM-removebg-preview_2_gndt9y.png"
-              alt="BIR Logo"
-              className="h-16 sm:h-20 w-auto"
-            />
-            <div className="text-center sm:text-right">
-              <label className="text-sm font-semibold text-gray-700">DATE:</label>
-              <Input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({...formData, date: e.target.value})}
-                className="mt-1 w-full sm:w-48"
-              />
+    // Create email transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+        pass: process.env.OFFICE_APP_PASSWORD
+      }
+    });
+
+    const submissionDate = new Date().toLocaleString('en-US', {
+      dateStyle: 'full',
+      timeStyle: 'short'
+    });
+
+    const officeEmail = process.env.OFFICE_EMAIL || 'cabosbir@gmail.com';
+    let emailRecipients = [officeEmail];
+
+    if (agentEmail && agentEmail !== officeEmail) {
+      emailRecipients.push(agentEmail);
+    }
+
+    // Prepare image attachments
+    const attachments = images?.map((img, index) => ({
+      filename: img.filename || `property-photo-${index + 1}.jpg`,
+      content: img.content,
+      encoding: 'base64',
+      contentType: img.contentType || 'image/jpeg'
+    })) || [];
+
+    // Business email HTML
+    const businessEmailHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #102f74 0%, #1a4ba8 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center; }
+          .header h1 { margin: 0; font-size: 28px; }
+          .header p { margin: 10px 0 0 0; opacity: 0.9; }
+          .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-top: none; }
+          .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+          .section h2 { color: #102f74; margin-top: 0; border-bottom: 2px solid #102f74; padding-bottom: 10px; font-size: 20px; }
+          .info-row { display: flex; padding: 8px 0; border-bottom: 1px solid #eee; }
+          .info-row:last-child { border-bottom: none; }
+          .info-label { font-weight: bold; width: 200px; color: #555; }
+          .info-value { flex: 1; color: #333; }
+          .alert-box { background: #fef2f2; padding: 20px; border-radius: 8px; border-left: 4px solid #ef4444; margin-top: 20px; }
+          .alert-box p { margin: 5px 0; color: #7f1d1d; }
+          .footer { background: #1f2937; padding: 20px; text-align: center; color: #9ca3af; font-size: 12px; border-radius: 0 0 10px 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>🏡 Seller Evaluation Request</h1>
+          <p>BAJA INTERNATIONAL REALTY</p>
+          ${agentName ? `<p style="color: #fbbf24; font-weight: bold;">⭐ For: ${agentName}</p>` : ''}
+        </div>
+        
+        <div class="content">
+          <div class="section">
+            <h2>👤 Seller Information</h2>
+            <div class="info-row"><div class="info-label">Name:</div><div class="info-value">${sellerName}</div></div>
+            <div class="info-row"><div class="info-label">Email:</div><div class="info-value"><a href="mailto:${sellerEmail}">${sellerEmail}</a></div></div>
+            <div class="info-row"><div class="info-label">Phone:</div><div class="info-value"><a href="tel:${sellerPhone}">${sellerPhone}</a></div></div>
+            <div class="info-row"><div class="info-label">Submission Date:</div><div class="info-value">${submissionDate}</div></div>
+          </div>
+          
+          <div class="section">
+            <h2>🏠 Property Details</h2>
+            <div class="info-row"><div class="info-label">Address:</div><div class="info-value">${propertyAddress}</div></div>
+            <div class="info-row"><div class="info-label">City:</div><div class="info-value">${propertyCity || 'Not provided'}</div></div>
+            <div class="info-row"><div class="info-label">State:</div><div class="info-value">${propertyState || 'Not provided'}</div></div>
+            <div class="info-row"><div class="info-label">Zip Code:</div><div class="info-value">${propertyZip || 'Not provided'}</div></div>
+            <div class="info-row"><div class="info-label">Property Type:</div><div class="info-value">${propertyType || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Bedrooms:</div><div class="info-value">${bedrooms || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Bathrooms:</div><div class="info-value">${bathrooms || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Square Footage:</div><div class="info-value">${squareFootage || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Lot Size:</div><div class="info-value">${lotSize || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Year Built:</div><div class="info-value">${yearBuilt || 'Not specified'}</div></div>
+          </div>
+          
+          <div class="section">
+            <h2>💼 Selling Information</h2>
+            <div class="info-row"><div class="info-label">Currently Occupied:</div><div class="info-value">${currentlyOccupied || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Desired Timeframe:</div><div class="info-value">${desiredTimeframe || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Expected Price:</div><div class="info-value">${expectedPrice || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Reason for Selling:</div><div class="info-value">${reasonForSelling || 'Not provided'}</div></div>
+          </div>
+          
+          ${recentUpgrades ? `
+          <div class="section">
+            <h2>🔧 Recent Upgrades/Renovations</h2>
+            <p style="white-space: pre-wrap;">${recentUpgrades}</p>
+          </div>
+          ` : ''}
+          
+          ${additionalDetails ? `
+          <div class="section">
+            <h2>📝 Additional Details</h2>
+            <p style="white-space: pre-wrap;">${additionalDetails}</p>
+          </div>
+          ` : ''}
+          
+          ${imageCount > 0 ? `
+          <div class="section">
+            <h2>📷 Property Photos</h2>
+            <p>${imageCount} photo(s) attached to this email</p>
+          </div>
+          ` : ''}
+          
+          <div class="alert-box">
+            <p style="font-weight: bold; color: #991b1b;">⚠️ Action Required:</p>
+            <p>${agentName ? `${agentName}, please` : 'Please'} contact this seller within 24 hours to schedule a property evaluation.</p>
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #fecaca;">
+              <p style="margin: 5px 0;">📞 <a href="tel:${sellerPhone}" style="color: #dc2626;">${sellerPhone}</a></p>
+              <p style="margin: 5px 0;">📧 <a href="mailto:${sellerEmail}" style="color: #dc2626;">Reply to seller</a></p>
             </div>
           </div>
-
-          <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-2">
-            FREE PROPERTY EVALUATION
-          </h1>
-          <p className="text-center text-gray-600 mb-2">Seller Information Form</p>
-          <p className="text-center text-sm text-gray-500 mb-8">Agent: {agent.name}</p>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
-            <div className="border-t pt-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Contact Information</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Last Name:</Label>
-                  <Input
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                    required
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">First Name(s):</Label>
-                  <Input
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                    required
-                    className="w-full"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Cell Phone:</Label>
-                  <Input
-                    type="tel"
-                    value={formData.cellPhone}
-                    onChange={(e) => setFormData({...formData, cellPhone: e.target.value})}
-                    required
-                    className="w-full"
-                    placeholder="+52 624 XXX XXXX"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Email Address:</Label>
-                  <Input
-                    type="email"
-                    value={formData.personalEmail}
-                    onChange={(e) => setFormData({...formData, personalEmail: e.target.value})}
-                    required
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Property Information */}
-            <div className="border-t pt-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Property Information</h2>
-              
-              <div className="mb-4">
-                <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Property Address:</Label>
-                <Input
-                  value={formData.propertyAddress}
-                  onChange={(e) => setFormData({...formData, propertyAddress: e.target.value})}
-                  required
-                  className="w-full"
-                  placeholder="Street address"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">City:</Label>
-                  <Input
-                    value={formData.city}
-                    onChange={(e) => setFormData({...formData, city: e.target.value})}
-                    required
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">State:</Label>
-                  <Input
-                    value={formData.state}
-                    onChange={(e) => setFormData({...formData, state: e.target.value})}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Zip Code:</Label>
-                  <Input
-                    value={formData.zipCode}
-                    onChange={(e) => setFormData({...formData, zipCode: e.target.value})}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-
-              {/* Property Type */}
-              <div className="mt-4">
-                <Label className="text-sm font-semibold text-gray-700 mb-3 block uppercase">Property Type:</Label>
-                <RadioGroup
-                  value={formData.propertyType}
-                  onValueChange={(value) => setFormData({...formData, propertyType: value})}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-3"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="CONDO" id="sell-condo" />
-                    <Label htmlFor="sell-condo" className="font-normal cursor-pointer">CONDO</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="HOUSE" id="sell-house" />
-                    <Label htmlFor="sell-house" className="font-normal cursor-pointer">HOUSE</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="VILLA" id="sell-villa" />
-                    <Label htmlFor="sell-villa" className="font-normal cursor-pointer">VILLA</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="LAND" id="sell-land" />
-                    <Label htmlFor="sell-land" className="font-normal cursor-pointer">LAND</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Property Details */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-4">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Bedrooms:</Label>
-                  <Input
-                    value={formData.numberOfBedrooms}
-                    onChange={(e) => setFormData({...formData, numberOfBedrooms: e.target.value})}
-                    className="w-full"
-                    placeholder="e.g., 3"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Bathrooms:</Label>
-                  <Input
-                    value={formData.numberOfBathrooms}
-                    onChange={(e) => setFormData({...formData, numberOfBathrooms: e.target.value})}
-                    className="w-full"
-                    placeholder="e.g., 2.5"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Year Built:</Label>
-                  <Input
-                    value={formData.yearBuilt}
-                    onChange={(e) => setFormData({...formData, yearBuilt: e.target.value})}
-                    className="w-full"
-                    placeholder="e.g., 2015"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Square Footage:</Label>
-                  <Input
-                    value={formData.squareFootage}
-                    onChange={(e) => setFormData({...formData, squareFootage: e.target.value})}
-                    className="w-full"
-                    placeholder="e.g., 2,500 sq ft"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Lot Size:</Label>
-                  <Input
-                    value={formData.lotSize}
-                    onChange={(e) => setFormData({...formData, lotSize: e.target.value})}
-                    className="w-full"
-                    placeholder="e.g., 5,000 sq ft"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Selling Details */}
-            <div className="border-t pt-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Selling Information</h2>
-              
-              <div className="mb-4">
-                <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Currently Occupied:</Label>
-                <RadioGroup
-                  value={formData.currentlyOccupied}
-                  onValueChange={(value) => setFormData({...formData, currentlyOccupied: value})}
-                  className="flex gap-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="YES" id="occupied-yes" />
-                    <Label htmlFor="occupied-yes" className="cursor-pointer">YES</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="NO" id="occupied-no" />
-                    <Label htmlFor="occupied-no" className="cursor-pointer">NO</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Desired Timeframe:</Label>
-                  <Input
-                    value={formData.desiredTimeframe}
-                    onChange={(e) => setFormData({...formData, desiredTimeframe: e.target.value})}
-                    className="w-full"
-                    placeholder="e.g., 3-6 months"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Expected Price:</Label>
-                  <Input
-                    value={formData.expectedPrice}
-                    onChange={(e) => setFormData({...formData, expectedPrice: e.target.value})}
-                    className="w-full"
-                    placeholder="e.g., $850,000"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Reason for Selling:</Label>
-                  <Input
-                    value={formData.reasonForSelling}
-                    onChange={(e) => setFormData({...formData, reasonForSelling: e.target.value})}
-                    className="w-full"
-                    placeholder="Optional"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Mortgage Balance:</Label>
-                  <Input
-                    value={formData.mortgageBalance}
-                    onChange={(e) => setFormData({...formData, mortgageBalance: e.target.value})}
-                    className="w-full"
-                    placeholder="Optional"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Recent Upgrades/Renovations:</Label>
-                <Textarea
-                  value={formData.recentUpgrades}
-                  onChange={(e) => setFormData({...formData, recentUpgrades: e.target.value})}
-                  className="w-full"
-                  placeholder="List any recent improvements, renovations, or upgrades..."
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            {/* Property Photos Upload */}
-            <div className="border-t pt-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Property Photos</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Upload photos of your property (optional, up to 10 images, max 5MB each)
-              </p>
-
-              {/* Upload Button */}
-              <div className="mb-4">
-                <label htmlFor="image-upload" className="cursor-pointer">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
-                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm font-semibold text-gray-700">Click to upload property photos</p>
-                    <p className="text-xs text-gray-500 mt-1">JPG, PNG, or WebP (max 5MB per image)</p>
-                  </div>
-                </label>
-                <input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  disabled={isUploadingImages || uploadedImages.length >= 10}
-                />
-              </div>
-
-              {/* Image Preview Grid */}
-              {uploadedImages.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {uploadedImages.map((image, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={image.preview}
-                        alt={`Property photo ${index + 1}`}
-                        className="w-full h-32 object-cover rounded-lg border border-gray-300"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Remove image"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                      <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                        {(image.file.size / 1024 / 1024).toFixed(1)}MB
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {isUploadingImages && (
-                <div className="text-center py-4">
-                  <div className="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <p className="text-sm text-gray-600 mt-2">Processing images...</p>
-                </div>
-              )}
-            </div>
-
-            {/* Additional Details */}
-            <div className="border-t pt-6">
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Additional Details / Notes:</Label>
-              <Textarea
-                value={formData.additionalDetails}
-                onChange={(e) => setFormData({...formData, additionalDetails: e.target.value})}
-                className="w-full min-h-[120px]"
-                placeholder="Any additional information you'd like to share about your property..."
-              />
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-6">
-              <Button
-                type="submit"
-                disabled={isSubmitting || isUploadingImages}
-                className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-blue-600 hover:bg-blue-700"
-              >
-                {isSubmitting ? 'Submitting...' : 'Request Free Property Evaluation'}
-              </Button>
-              <p className="text-xs text-center text-gray-500 mt-3">
-                By submitting this form, you agree to be contacted by Baja International Realty regarding your property evaluation.
-              </p>
-            </div>
-          </form>
         </div>
-      </div>
+        
+        <div class="footer">
+          <p>BAJA INTERNATIONAL REALTY | Blvd. Marina, Cabo San Lucas, BCS, Mexico</p>
+        </div>
+      </body>
+      </html>
+    `;
 
-      <Footer />
-    </div>
-  );
-};
+    // Send email to business
+    const mailOptions = {
+      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      to: emailRecipients.join(', '),
+      subject: `🏡 Seller Evaluation Request${agentName ? ` for ${agentName}` : ''} - ${sellerName}`,
+      html: businessEmailHtml,
+      replyTo: sellerEmail,
+      attachments: attachments
+    };
 
-export default SellerEvaluationForm;
+    await transporter.sendMail(mailOptions);
+
+    // Client confirmation email
+    const clientEmailHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #102f74 0%, #1a4ba8 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center; }
+          .header h1 { margin: 0; font-size: 28px; }
+          .content { background: #ffffff; padding: 30px; border: 1px solid #ddd; }
+          .info-box { background: #dbeafe; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #2563eb; }
+          .contact-box { background: #fef3c7; padding: 20px; border-radius: 8px; margin: 25px 0; }
+          .footer { background: #1f2937; padding: 25px; text-align: center; border-radius: 0 0 10px 10px; color: white; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Thank You for Your Request!</h1>
+          <p>BAJA INTERNATIONAL REALTY</p>
+        </div>
+        
+        <div class="content">
+          <p style="font-size: 16px;">Dear ${sellerName},</p>
+          
+          <p style="font-size: 16px;">
+            Thank you for requesting a free property evaluation from ${agentName || 'Baja International Realty'}! 
+            We've received your submission and ${agentName ? `<strong>${agentName}</strong> will` : 'our team will'} contact you within 24 hours.
+          </p>
+          
+          <div class="info-box">
+            <h3 style="margin-top: 0; color: #1e40af; font-size: 18px;">What Happens Next?</h3>
+            <p style="margin: 10px 0;">✅ We'll review your property details carefully</p>
+            <p style="margin: 10px 0;">📞 ${agentName ? `${agentName} will` : 'Our team will'} contact you within 24 hours</p>
+            <p style="margin: 10px 0;">🏡 Schedule an in-person property evaluation</p>
+            <p style="margin: 10px 0;">💰 Receive a comprehensive market analysis and pricing strategy</p>
+          </div>
+          
+          <div class="contact-box">
+            <h3 style="margin-top: 0; font-size: 18px;">Need Immediate Assistance?</h3>
+            <p style="margin: 8px 0;">📱 <strong>Office:</strong> <a href="tel:+526241435555" style="color: #2563eb;">+52 624 143 5555</a></p>
+            <p style="margin: 8px 0;">📧 <strong>Email:</strong> <a href="mailto:cabosbir@gmail.com" style="color: #2563eb;">cabosbir@gmail.com</a></p>
+            ${agentEmail ? `<p style="margin: 8px 0;">👤 <strong>${agentName}:</strong> <a href="mailto:${agentEmail}" style="color: #2563eb;">${agentEmail}</a></p>` : ''}
+          </div>
+          
+          <p style="font-size: 16px; margin-top: 30px;">
+            We look forward to helping you sell your property in Cabo San Lucas!
+          </p>
+          
+          <p style="font-size: 16px;">
+            Best regards,<br>
+            <strong style="color: #1e40af;">${agentName ? agentName + ' & ' : ''}The Baja International Realty Team</strong>
+          </p>
+        </div>
+        
+        <div class="footer">
+          <p style="margin: 5px 0; font-size: 14px; font-weight: bold;">Your Trusted Luxury Real Estate Partner</p>
+          <p style="margin: 5px 0; color: #9ca3af; font-size: 12px;">Blvd. Marina, Cabo San Lucas, BCS, Mexico</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const clientMailOptions = {
+      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      to: sellerEmail,
+      subject: `Thank You for Your Property Evaluation Request - ${agentName || 'Baja International Realty'}`,
+      html: clientEmailHtml
+    };
+
+    await transporter.sendMail(clientMailOptions);
+
+    console.log('✅ Seller evaluation emails sent successfully');
+
+    return res.status(200).json({
+      success: true,
+      message: agentName
+        ? `Thank you! ${agentName} will contact you within 24 hours with your property evaluation.`
+        : 'Thank you! We\'ll contact you within 24 hours with your property evaluation.'
+    });
+
+  } catch (error) {
+    console.error('❌ Email sending failed:', error);
+
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to send evaluation request. Please try calling us directly at +52 624 143 5555',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+}

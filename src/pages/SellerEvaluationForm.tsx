@@ -127,7 +127,6 @@ const SellerEvaluationForm = () => {
     reasonForSelling: "",
     desiredTimeframe: "",
     expectedPrice: "",
-    mortgageBalance: "",
     recentUpgrades: "",
     
     // Additional Information
@@ -271,7 +270,6 @@ const SellerEvaluationForm = () => {
         reasonForSelling: formData.reasonForSelling,
         desiredTimeframe: formData.desiredTimeframe,
         expectedPrice: formData.expectedPrice,
-        mortgageBalance: formData.mortgageBalance,
         recentUpgrades: formData.recentUpgrades,
         additionalDetails: formData.additionalDetails,
         
@@ -331,7 +329,6 @@ const SellerEvaluationForm = () => {
         reasonForSelling: "",
         desiredTimeframe: "",
         expectedPrice: "",
-        mortgageBalance: "",
         recentUpgrades: "",
         additionalDetails: ""
       });
@@ -649,25 +646,14 @@ const SellerEvaluationForm = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Reason for Selling:</Label>
-                  <Input
-                    value={formData.reasonForSelling}
-                    onChange={(e) => setFormData({...formData, reasonForSelling: e.target.value})}
-                    className="w-full"
-                    placeholder="Optional"
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Mortgage Balance:</Label>
-                  <Input
-                    value={formData.mortgageBalance}
-                    onChange={(e) => setFormData({...formData, mortgageBalance: e.target.value})}
-                    className="w-full"
-                    placeholder="Optional"
-                  />
-                </div>
+              <div className="mt-4">
+                <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Reason for Selling:</Label>
+                <Input
+                  value={formData.reasonForSelling}
+                  onChange={(e) => setFormData({...formData, reasonForSelling: e.target.value})}
+                  className="w-full"
+                  placeholder="Optional"
+                />
               </div>
 
               <div className="mt-4">
