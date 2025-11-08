@@ -33,7 +33,7 @@ const FloatingContact = () => {
           className="rounded-full shadow-hover"
           asChild
         >
-          <a href="tel:+526121698328" title="Call Us">
+          <a href="tel:+526241435555" title="Call Us">
             <Phone className="h-5 w-5" />
           </a>
         </Button>
