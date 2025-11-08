@@ -26,6 +26,7 @@ import MarisolLandingPage from "./pages/MarisolLandingPage";
 import SusuLandingPage from "./pages/SusuLandingPage";
 import MarketReport from "./pages/MarketReport";
 import NewClientForm from "./pages/NewClientForm";
+import SellerEvaluationForm from "./pages/SellerEvaluationForm";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,10 @@ const App = () => (
           
           {/* Agent-Specific New Client Forms - Updated to use NewClientForm with agentSlug */}
           <Route path="/agents/:agentSlug/new-client" element={<NewClientForm />} />
+          
+          {/* Agent-Specific Seller Evaluation Forms */}
+          <Route path="/seller-evaluation" element={<SellerEvaluationForm />} />
+          <Route path="/agents/:agentSlug/seller-evaluation" element={<SellerEvaluationForm />} />
           
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />

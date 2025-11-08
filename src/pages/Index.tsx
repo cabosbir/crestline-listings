@@ -178,7 +178,7 @@ const Index = () => {
               <p className="text-accent-foreground/80 mb-6">
                 Get a free property evaluation and discover how we can maximize your home's value.
               </p>
-              <Link to="/contact">
+              <Link to="/seller-evaluation">
                 <Button variant="default" size="lg" className="w-full">
                   Free Home Evaluation
                 </Button>
