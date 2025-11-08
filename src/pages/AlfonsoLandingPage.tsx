@@ -37,7 +37,7 @@ const agent = {
   languages: ["English", "Spanish"],
 };
 
-// Alfonso's Featured Listings
+// Featured Listings
 const agentListings = [
   {
     id: 1,
