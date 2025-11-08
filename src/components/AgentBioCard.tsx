@@ -129,16 +129,13 @@ const AgentBioCard = ({
             >
               View Full Bio
             </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                window.location.href = '/contact';
-              }}
-              className="flex-1 border border-gray-300 hover:bg-gray-100 font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
+            <a
+              href={`tel:${phone || phone2}`}
+              onClick={(e) => e.stopPropagation()}
+              className="flex-1 border border-gray-300 hover:bg-gray-100 font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer text-center leading-8"
             >
               Contact
-            </button>
+            </a>
           </div>
         </div>
       </div>
