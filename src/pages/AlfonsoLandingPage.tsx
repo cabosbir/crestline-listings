@@ -296,7 +296,7 @@ const AlfonsoLandingPage = () => {
             <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
               <p className="text-xl mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
-                Fill out a form and I will personally reach out to discuss your property goals.
+                I will personally reach out to discuss your property goals.
               </p>
             </div>
 
@@ -343,7 +343,7 @@ const AlfonsoLandingPage = () => {
                 </div>
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">Looking to buy or sell?</h3>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                  Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out to you.
+                  Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out.
                 </p>
               </div>
 
