@@ -39,14 +39,15 @@ const agent = {
 const agentListings = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    price: "$5,750,000",
-    title: "Exclusive Estate Investment",
-    location: "Pedregal, Cabo San Lucas",
-    beds: 6,
-    baths: 7,
-    sqft: "7,200 sq ft",
-    mlsNumber: "25-5134",
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
+    price: "$162,000",
+    title: "Two in One Home Fixer Upper",
+    location: "Cabo San Lucas",
+    beds: 4,
+    baths: 2,
+    totalM2: "160",
+    mlsNumber: "25-5249",
+    link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
   },
   {
     id: 2,
