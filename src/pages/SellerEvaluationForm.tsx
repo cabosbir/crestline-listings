@@ -105,6 +105,11 @@ const SellerEvaluationForm = () => {
     cellPhone: "",
     personalEmail: "",
     
+    // Agent Selection
+    preferredAgentSlug: "",
+    preferredAgentName: "",
+    preferredAgentEmail: "",
+    
     // Property Information
     propertyAddress: "",
     city: "",
@@ -236,6 +241,13 @@ const SellerEvaluationForm = () => {
         contentType: img.file.type
       }));
 
+      // Determine which agent to send to (URL agent takes priority over selected agent)
+      const finalAgent = agentSlug 
+        ? agent 
+        : (formData.preferredAgentSlug && agentsData[formData.preferredAgentSlug as keyof typeof agentsData])
+          ? agentsData[formData.preferredAgentSlug as keyof typeof agentsData]
+          : { id: 0, name: "BIR Office", email: "cabosbir@gmail.com", phone: "+52 624 143 5555" };
+
       const submissionData = {
         // Seller info
         sellerName: `${formData.firstName} ${formData.lastName}`,
@@ -267,13 +279,13 @@ const SellerEvaluationForm = () => {
         images: imageAttachments,
         imageCount: uploadedImages.length,
         
-        // Agent info
-        agentName: agent.name,
-        agentEmail: agent.email,
-        agentId: agent.id,
+        // Agent info (using final selected agent)
+        agentName: finalAgent.name,
+        agentEmail: finalAgent.email,
+        agentId: finalAgent.id,
         
         // Metadata
-        source: `Seller Evaluation Form - ${agent.name}`,
+        source: `Seller Evaluation Form - ${finalAgent.name}`,
         formType: 'seller-evaluation-form',
         timestamp: new Date().toISOString()
       };
@@ -292,7 +304,7 @@ const SellerEvaluationForm = () => {
 
       toast({
         title: "Form Submitted Successfully! ✓",
-        description: `Thank you! ${agent.name} will contact you soon with your free property evaluation.`,
+        description: `Thank you! ${finalAgent.name} will contact you soon with your free property evaluation.`,
       });
 
       // Reset form
@@ -302,6 +314,9 @@ const SellerEvaluationForm = () => {
         firstName: "",
         cellPhone: "",
         personalEmail: "",
+        preferredAgentSlug: "",
+        preferredAgentName: "",
+        preferredAgentEmail: "",
         propertyAddress: "",
         city: "",
         state: "",
@@ -417,6 +432,54 @@ const SellerEvaluationForm = () => {
                     className="w-full"
                   />
                 </div>
+              </div>
+
+              {/* Preferred Agent Selection */}
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">
+                  Preferred Agent (Optional):
+                </Label>
+                <p className="text-sm text-gray-600 mb-3">
+                  {agentSlug ? `Assigned to: ${agent.name}` : 'Select an agent to work with, or leave blank for office assignment'}
+                </p>
+                {!agentSlug && (
+                  <select
+                    value={formData.preferredAgentSlug}
+                    onChange={(e) => {
+                      const selectedSlug = e.target.value;
+                      if (selectedSlug && agentsData[selectedSlug as keyof typeof agentsData]) {
+                        const selectedAgent = agentsData[selectedSlug as keyof typeof agentsData];
+                        setFormData({
+                          ...formData, 
+                          preferredAgentSlug: selectedSlug,
+                          preferredAgentName: selectedAgent.name,
+                          preferredAgentEmail: selectedAgent.email
+                        });
+                      } else {
+                        setFormData({
+                          ...formData, 
+                          preferredAgentSlug: '',
+                          preferredAgentName: '',
+                          preferredAgentEmail: ''
+                        });
+                      }
+                    }}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="">No Preference - Office Will Assign</option>
+                    <option value="alfonso">Alfonso Puente</option>
+                    <option value="bob">Bob Van Patten</option>
+                    <option value="cozbi">Cozbi Sanchez</option>
+                    <option value="cristy">Cristy Cavazos</option>
+                    <option value="david">David Scott Piper</option>
+                    <option value="don">Don Weis</option>
+                    <option value="edgar">Edgar Pacheco</option>
+                    <option value="erika">Erika Aispuro</option>
+                    <option value="hector">Hector Mendoza</option>
+                    <option value="marisol">Marisol Tort</option>
+                    <option value="susu">Susu Vieira</option>
+                  </select>
+                )}
               </div>
             </div>
 
