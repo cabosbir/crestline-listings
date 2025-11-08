@@ -282,7 +282,7 @@ const BobLandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Bob</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Current Listings</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Listings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore exclusive properties I'm currently representing in Cabo San Lucas
             </p>
