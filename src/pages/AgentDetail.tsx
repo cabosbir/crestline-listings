@@ -38,6 +38,7 @@ const AgentDetail = () => {
   const agents = [
     {
       id: 12,
+      slug: "don",
       name: "Don Weis",
       title: "Founder & Broker",
       specialization: "Luxury Properties & Development",
@@ -57,6 +58,7 @@ const AgentDetail = () => {
     },
     {
       id: 1,
+      slug: "bob",
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
       specialization: "High Yield Investment Properties",
@@ -71,6 +73,7 @@ const AgentDetail = () => {
     },
     {
      id: 3,
+     slug: "alfonso",
      name: "Alfonso Puente",
      title: "Sales Manager & Commercial Real Estate Expert",
      specialization: "Real Estate Developments & Market Analysis",
@@ -86,6 +89,7 @@ const AgentDetail = () => {
     },
     {
       id: 8,
+      slug: "david",
       name: "David Scott Piper",
       title: "International Real Estate Specialist",
       specialization: "Resort & Second-Home Properties",
@@ -100,6 +104,7 @@ const AgentDetail = () => {
     },
     {
       id: 6,
+      slug: "cristy",
       name: "Cristy Cavazos",
       title: "Luxury Condo Specialist",
       specialization: "High-Rise & Penthouses",
@@ -114,6 +119,7 @@ const AgentDetail = () => {
     },
     {
       id: 2,
+      slug: "erika",
       name: "Erika Aispuro",
       title: "Luxury Property Specialist",
       specialization: "Oceanfront Estates",
@@ -128,6 +134,7 @@ const AgentDetail = () => {
     },
     {
       id: 5,
+      slug: "hector",
       name: "Hector Mendoza",
       title: "Investment Property Advisor",
       specialization: "Investment & Portfolio",
@@ -142,6 +149,7 @@ const AgentDetail = () => {
     },
     {
      id: 9,
+     slug: "susu",
      name: "Susu Vieira",
      title: "Real Estate Advisor",
      specialization: "Luxury Properties",
@@ -150,13 +158,14 @@ const AgentDetail = () => {
      phoneSecondary: "+52 (612) 120-5289",
      email: "Susu@BIRCabo.com",
      yearsExperience: 22,
-     propertiesSold: +50,
+     propertiesSold: 50,
      bio: "With decades of experience in Real Estate, Susu brings unmatched expertise and dedication to every client relationship. Living in Cabo San Lucas and La Paz full-time for six  years, has rewarded her with continuing knowledge on the ever expanding Baja market. Los Cabos has become a world renowned magnet for Billionaires and other investors to enjoy its unique lifestyle, customs, beauty, and high rate of returns on investment. Magically, Cabo has something for everyone's taste, budget, and financial goals. Whether it be helping clients find their dream home, marketing and selling their properties, flipping her own investments, or having the opportunities to stage and design hundreds of homes, she is all about full-service and results.",
      certifications: ["REALTOR®", "MLS Member", "US Real Estate License", "Interior Design Degree"],
      languages: ["English", "Spanish"],
     },
     {
       id: 7,
+      slug: "marisol",
       name: "Marisol Tort",
       title: "Real Estate Advisor",
       specialization: "Luxury Properties",
@@ -171,6 +180,7 @@ const AgentDetail = () => {
     },
     {
       id: 4,
+      slug: "cozbi",
       name: "Cozbi Sanchez",
       title: "Residential Specialist",
       specialization: "Family Homes & Condos",
@@ -185,6 +195,7 @@ const AgentDetail = () => {
     },
     {
       id: 10,
+      slug: "edgar",
       name: "Edgar Pacheco",
       title: "Real Estate Advisor",
       specialization: "Luxury Properties",
@@ -292,7 +303,7 @@ const AgentDetail = () => {
                     </div>
                     <Button 
                       className="w-full mt-4 bg-white text-primary hover:bg-gray-100"
-                      onClick={() => navigate('/contact')}
+                      onClick={() => navigate(`/new-client/${agent.slug}`)}
                     >
                       Schedule Consultation
                     </Button>
@@ -377,7 +388,7 @@ const AgentDetail = () => {
                     <Button 
                       size="lg"
                       className="flex-1 bg-white text-accent hover:bg-gray-100"
-                      onClick={() => navigate('/contact')}
+                      onClick={() => navigate(`/new-client/${agent.slug}`)}
                     >
                       <Mail className="w-4 h-4 mr-2" />
                       Get in Touch
