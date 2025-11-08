@@ -165,7 +165,7 @@ const Index = () => {
               <p className="text-primary-foreground/80 mb-6">
                 Let us help you find your dream property with expert guidance and personalized service.
               </p>
-              <Link to="/properties">
+              <Link to="/new-client">
                 <Button variant="hero" size="lg" className="w-full">
                   Start Your Search
                 </Button>
