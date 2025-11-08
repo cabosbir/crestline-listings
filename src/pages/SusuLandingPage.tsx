@@ -40,6 +40,18 @@ const agent = {
 const agentListings = [
   {
     id: 1,
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762632941/20250816215705384679000000-o_dpx9ui.jpg",
+    price: "$193,000",
+    title: "La Colina Town Home THTH2A",
+    location: "CSL North-West 19, Cabo San Lucas",
+    beds: 2,
+    baths: 2,
+    totalM2: "130",
+    mlsNumber: "25-3933",
+    link: "https://www.flexmls.com/share/D30em/La-Colina-Town-Home-THTH2A-M1L1-Para-so-Escondido-V-a-de-Lerry-2A-Cabo-San-Lucas-",
+  },
+  {
+    id: 1,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
     price: "$162,000",
     title: "Two in One Home Fixer Upper",
@@ -61,18 +73,6 @@ const agentListings = [
       totalM2: "372.06",
       mlsNumber: "25-1679",
       link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
-    },
-    {
-      id: 3,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
-      price: "$3,795,800",
-      title: "Casa Ducci Camino del Mar",
-      location: "Cabo San Lucas",
-      beds: 4,
-      baths: 4.5,
-      totalM2: "350.23",
-      mlsNumber: "24-1981",
-      link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
     },
 ];
 
