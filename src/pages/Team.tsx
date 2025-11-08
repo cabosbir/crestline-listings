@@ -139,7 +139,7 @@ const Team = () => {
       email: "Susu@bircabo.com",
       yearsExperience: 11,
       propertiesSold: 101,
-      bio: "With over a decade of experience in luxury real estate, Susu brings unmatched expertise and dedication to every client relationship.",
+      bio: "With decades of experience in Real Estate, Susu brings unmatched expertise and dedication to every client relationship. Living in Cabo San Lucas and La Paz full-time for six  years, has rewarded her with continuing knowledge on the ever expanding Baja market. Los Cabos has become a world renowned magnet for Billionaires and other investors to enjoy its unique lifestyle, customs, beauty, and high rate of returns on investment. Magically, Cabo has something for everyone's taste, budget, and financial goals. Whether it be helping clients find their dream home, marketing and selling their properties, flipping her own investments, or having the opportunities to stage and design hundreds of homes, she is all about full-service and results.",
       certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
