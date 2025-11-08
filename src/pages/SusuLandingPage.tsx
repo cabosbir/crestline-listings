@@ -345,9 +345,9 @@ const SusuLandingPage = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">Choose Your Path</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Looking to buy or sell?</h3>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                  Looking to buy or sell? Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out to you.
+                  Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out to you.
                 </p>
               </div>
 
