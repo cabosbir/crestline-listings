@@ -380,6 +380,7 @@ const Team = () => {
                       title={agent.title}
                       image={agent.image}
                       phone={agent.phone}
+                      phone2={agent.phoneSecondary}
                       email={agent.email}
                       specialization={agent.specialization}
                       propertiesSold={agent.propertiesSold}
