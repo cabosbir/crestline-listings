@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Helper function to format phone number for WhatsApp (removes all non-digits)
@@ -22,6 +22,7 @@ const getWhatsAppLink = (phone: string, agentName: string) => {
 // Susu Vieira - Baja International Realty Agent
 const agent = {
   id: 9,
+  slug: "susu", // ⭐ IMPORTANT: Change this for each agent
   name: "Susu Vieira",
   title: "Real Estate Advisor",
   specialization: "Luxury Properties",
@@ -30,7 +31,7 @@ const agent = {
   phoneSecondary: "+52 (612) 120-5289",
   email: "Susu@BIRCabo.com",
   yearsExperience: 22,
-  propertiesSold: +50,
+  propertiesSold: 50,
   bio: "With decades of experience in Real Estate, Susu brings unmatched expertise and dedication to every client relationship. Living in Cabo San Lucas and La Paz full-time for six  years, has rewarded her with continuing knowledge on the ever expanding Baja market. Los Cabos has become a world renowned magnet for Billionaires and other investors to enjoy its unique lifestyle, customs, beauty, and high rate of returns on investment. Magically, Cabo has something for everyone's taste, budget, and financial goals. Whether it be helping clients find their dream home, marketing and selling their properties, flipping her own investments, or having the opportunities to stage and design hundreds of homes, she is all about full-service and results.",
   certifications: ["REALTOR®", "MLS Member", "US Real Estate License", "Interior Design Degree"],
   languages: ["English", "Spanish"],
@@ -51,7 +52,7 @@ const agentListings = [
     link: "https://www.flexmls.com/share/D30em/La-Colina-Town-Home-THTH2A-M1L1-Para-so-Escondido-V-a-de-Lerry-2A-Cabo-San-Lucas-",
   },
   {
-    id: 1,
+    id: 2,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
     price: "$162,000",
     title: "Two in One Home Fixer Upper",
@@ -63,17 +64,17 @@ const agentListings = [
     link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
   },
   {
-      id: 2,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
-      price: "$499,000",
-      title: "La Vista LARGE PRIVATE YARD B101",
-      location: "Cabo San Lucas",
-      beds: 3,
-      baths: 3,
-      totalM2: "372.06",
-      mlsNumber: "25-1679",
-      link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
-    },
+    id: 3,
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
+    price: "$499,000",
+    title: "La Vista LARGE PRIVATE YARD B101",
+    location: "Cabo San Lucas",
+    beds: 3,
+    baths: 3,
+    totalM2: "372.06",
+    mlsNumber: "25-1679",
+    link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
+  },
 ];
 
 // Client Testimonials
@@ -97,6 +98,7 @@ const testimonials = [
 
 const SusuLandingPage = () => {
   const { toast } = useToast();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
     <div className="min-h-screen">
@@ -109,7 +111,7 @@ const SusuLandingPage = () => {
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-16 h-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-3xl group"
         style={{ backgroundColor: '#25D366' }}
-        aria-label="Contact Susu via WhatsApp"
+        aria-label={`Contact ${agent.name} via WhatsApp`}
       >
         <MessageCircle className="h-8 w-8 text-white" />
         
@@ -174,7 +176,7 @@ const SusuLandingPage = () => {
                 >
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Susu Now
+                    Call {agent.name.split(' ')[0]} Now
                   </a>
                 </Button>
                 <Button 
@@ -197,7 +199,7 @@ const SusuLandingPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About Susu</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">About {agent.name.split(' ')[0]}</h2>
             <p className="text-lg text-muted-foreground text-center mb-12 leading-relaxed">
               {agent.bio}
             </p>
@@ -244,7 +246,7 @@ const SusuLandingPage = () => {
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by Susu</p>
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by {agent.name.split(' ')[0]}</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Listings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Explore exclusive properties I'm currently representing in Cabo San Lucas
@@ -288,14 +290,14 @@ const SusuLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Section - New Client Form */}
+      {/* Contact Section - UPDATED WITH DROPDOWN */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Get Started?</h2>
               <p className="text-xl mb-8" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
-                Fill out our New Client Form and I will personally reach out to discuss your property goals.
+                Fill out a form and I will personally reach out to discuss your property goals.
               </p>
             </div>
 
@@ -311,7 +313,7 @@ const SusuLandingPage = () => {
                   <Phone className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Call Susu</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Call {agent.name.split(' ')[0]}</div>
                   <div className="text-xl font-bold text-white">{agent.phone}</div>
                   {agent.phoneSecondary && (
                     <div className="text-sm text-white mt-1">{agent.phoneSecondary}</div>
@@ -329,13 +331,13 @@ const SusuLandingPage = () => {
                   <Mail className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Email Susu</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Email {agent.name.split(' ')[0]}</div>
                   <div className="text-lg font-bold text-white break-all">{agent.email}</div>
                 </div>
               </a>
             </div>
 
-            {/* New Client Form CTA */}
+            {/* ⭐ NEW: Form Selector with Dropdown */}
             <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl">
               <div className="mb-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-900 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -343,21 +345,46 @@ const SusuLandingPage = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">Complete Our New Client Form</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Choose Your Path</h3>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                  Share your property preferences, investment goals, and timeline with Susu. This helps us provide you with the most relevant listings and personalized service.
+                  Looking to buy or sell? Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out to you.
                 </p>
               </div>
 
-              <Link to="/agents/susu/new-client">
+              {/* Dropdown Button */}
+              <div className="relative max-w-md mx-auto">
                 <Button 
                   size="lg"
-                  className="h-16 px-12 text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+                  className="w-full h-16 px-12 text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105 flex items-center justify-between"
                   style={{ backgroundColor: '#102f74', color: 'white' }}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
-                  📋 Fill Out New Client Form
+                  <span>📋 Select a Form</span>
+                  <ChevronDown className={`w-5 h-5 ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </Button>
-              </Link>
+
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div className="absolute w-full mt-2 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden z-10">
+                    <Link
+                      to={`/agents/${agent.slug}/new-client`}
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="block px-6 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100 text-left"
+                    >
+                      <div className="font-bold text-gray-900 text-lg mb-1">🏠 New Client Form</div>
+                      <div className="text-sm text-gray-600">Looking to buy property in Cabo</div>
+                    </Link>
+                    <Link
+                      to={`/agents/${agent.slug}/seller-evaluation`}
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="block px-6 py-4 hover:bg-gray-50 transition-colors text-left"
+                    >
+                      <div className="font-bold text-gray-900 text-lg mb-1">💰 Property Evaluation</div>
+                      <div className="text-sm text-gray-600">Get a free property valuation</div>
+                    </Link>
+                  </div>
+                )}
+              </div>
 
               <p className="text-sm text-gray-500 mt-6">
                 Takes only 2-3 minutes to complete • 100% confidential
