@@ -131,8 +131,8 @@ const Team = () => {
     {
       id: 9,
       name: "Susu Vieira",
-      title: "Real Estate Advisor",
-      specialization: "Luxury Properties",
+      title: "Luxury Real Estate",
+      specialization: "Staging and Design",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762637795/WhatsApp_Image_2025-11-08_at_2.18.56_PM_1_t5xufd.jpg",
       phone: "+1 (808) 226 6120",
       phoneSecondary: "+52 (612) 120 5289",
