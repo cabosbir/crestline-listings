@@ -289,11 +289,11 @@ const BobLandingPage = () => {
             </p>
           </div>
 
-          <div className="relative max-w-7xl mx-auto">
-            {/* Navigation Buttons */}
+          {/* Navigation Buttons - ABOVE carousel */}
+          <div className="flex justify-center gap-4 mb-6">
             <button
               onClick={() => scrollCarousel('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors -ml-4 hidden md:block"
+              className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors"
               style={{ border: '2px solid #102f74' }}
               aria-label="Scroll left"
             >
@@ -302,13 +302,15 @@ const BobLandingPage = () => {
             
             <button
               onClick={() => scrollCarousel('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors -mr-4 hidden md:block"
+              className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors"
               style={{ border: '2px solid #102f74' }}
               aria-label="Scroll right"
             >
               <ChevronRight className="h-6 w-6" style={{ color: '#102f74' }} />
             </button>
+          </div>
 
+          <div className="relative max-w-7xl mx-auto">
             {/* Carousel Container */}
             <div 
               ref={carouselRef}
