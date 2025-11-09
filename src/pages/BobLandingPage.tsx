@@ -21,7 +21,7 @@ const getWhatsAppLink = (phone: string, agentName: string) => {
 // Bob Van Patten - Baja International Realty Agent
 const agent = {
   id: 1,
-  slug: "bob", // ⭐ IMPORTANT: Change this for each agent
+  slug: "bob",
   name: "Bob Van Patten",
   title: "Senior Real Estate Advisor",
   specialization: "High Yield Investment Properties",
@@ -140,7 +140,6 @@ const BobLandingPage = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-
       {/* 🆕 FLOATING WHATSAPP BUTTON */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
