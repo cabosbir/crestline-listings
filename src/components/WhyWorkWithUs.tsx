@@ -136,7 +136,7 @@ const WhyWorkWithUs = () => {
             <h2 className="work-header-title text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-1">
               WORK WITH US
             </h2>
-            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
+            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base mb-0 pb-0">
               Click on any card to discover what makes us different
             </p>
           </div>
