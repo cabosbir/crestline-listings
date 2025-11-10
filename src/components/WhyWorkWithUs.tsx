@@ -32,7 +32,7 @@ const WhyWorkWithUs = () => {
   ];
 
   useEffect(() => {
-    // Header decorative lines - fade in from sides
+    // Header decorative lines - fade in from sides with scale
     gsap.from(".work-header-line-left", {
       scrollTrigger: {
         trigger: ".work-section",
@@ -40,6 +40,7 @@ const WhyWorkWithUs = () => {
         toggleActions: "play none none reverse"
       },
       scaleX: 0,
+      transformOrigin: "right center",
       opacity: 0,
       duration: 0.8,
       ease: "power3.out"
@@ -52,21 +53,22 @@ const WhyWorkWithUs = () => {
         toggleActions: "play none none reverse"
       },
       scaleX: 0,
+      transformOrigin: "left center",
       opacity: 0,
       duration: 0.8,
       ease: "power3.out"
     });
 
-    // Header text - fade in from bottom
+    // Header text - fade in from bottom with movement
     gsap.from(".work-header-label", {
       scrollTrigger: {
         trigger: ".work-section",
         start: "top 80%",
         toggleActions: "play none none reverse"
       },
-      y: 20,
+      y: 30,
       opacity: 0,
-      duration: 0.6,
+      duration: 0.8,
       ease: "power3.out"
     });
 
@@ -76,9 +78,9 @@ const WhyWorkWithUs = () => {
         start: "top 80%",
         toggleActions: "play none none reverse"
       },
-      y: 40,
+      y: 50,
       opacity: 0,
-      duration: 0.8,
+      duration: 1,
       delay: 0.2,
       ease: "power3.out"
     });
@@ -89,14 +91,14 @@ const WhyWorkWithUs = () => {
         start: "top 80%",
         toggleActions: "play none none reverse"
       },
-      y: 30,
+      y: 40,
       opacity: 0,
       duration: 0.8,
       delay: 0.3,
       ease: "power3.out"
     });
 
-    // Value Cards - Scale in with stagger
+    // Value Cards - Scale in with stagger and upward movement
     gsap.from(".work-value-card", {
       scrollTrigger: {
         trigger: ".work-cards-grid",
@@ -104,6 +106,7 @@ const WhyWorkWithUs = () => {
         toggleActions: "play none none reverse"
       },
       scale: 0.8,
+      y: 60,
       opacity: 0,
       duration: 0.8,
       stagger: 0.15,
