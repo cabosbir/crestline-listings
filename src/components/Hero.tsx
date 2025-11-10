@@ -4,8 +4,9 @@ import { Search } from "lucide-react";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { TextPlugin } from "gsap/TextPlugin";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const Hero = () => {
   const contentRef = useRef(null);
   const videoRef = useRef(null);
   const video2Ref = useRef(null);
+  const headingRef = useRef(null);
+  const subtitleRef = useRef(null);
 
   const handleSearchClick = () => {
     navigate('/properties');
@@ -76,13 +79,45 @@ const Hero = () => {
         ease: "none",
       });
 
-      // Initial fade-in animation on page load
-      gsap.from(contentRef.current, {
+      // Animated heading - split letter entrance
+      const headingLetters = headingRef.current.querySelectorAll('.letter');
+      gsap.from(headingLetters, {
         opacity: 0,
-        y: 50,
-        duration: 1.2,
+        y: 100,
+        rotationX: -90,
+        stagger: 0.03,
+        duration: 1,
+        ease: "back.out(1.7)",
+        delay: 0.2,
+      });
+
+      // Subtle continuous floating animation on heading
+      gsap.to(headingRef.current, {
+        y: -10,
+        duration: 3,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+        delay: 1.5,
+      });
+
+      // Subtitle fade and slide in
+      gsap.from(subtitleRef.current, {
+        opacity: 0,
+        y: 30,
+        duration: 1,
         ease: "power3.out",
-        delay: 0.3,
+        delay: 0.8,
+      });
+
+      // Glowing text effect (subtle pulse)
+      gsap.to(headingRef.current, {
+        textShadow: "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4)",
+        duration: 2,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+        delay: 2,
       });
 
     }, heroRef);
@@ -95,6 +130,15 @@ const Hero = () => {
       }
     };
   }, []);
+
+  // Split text into individual letters for animation
+  const splitText = (text) => {
+    return text.split('').map((char, index) => (
+      <span key={index} className="letter inline-block" style={{ display: 'inline-block' }}>
+        {char === ' ' ? '\u00A0' : char}
+      </span>
+    ));
+  };
 
   return (
     <section 
@@ -133,10 +177,16 @@ const Hero = () => {
         ref={contentRef}
         className="relative z-10 container mx-auto px-4 sm:px-6 text-center"
       >
-        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24">
-          BAJA INTERNATIONAL REALTY
+        <h1 
+          ref={headingRef}
+          className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24"
+        >
+          {splitText('BAJA INTERNATIONAL REALTY')}
         </h1>
-        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2">
+        <p 
+          ref={subtitleRef}
+          className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2"
+        >
           Discover Your Dream Property in<br className="sm:hidden" /> Cabo San Lucas & Baja California Sur
         </p>
 
