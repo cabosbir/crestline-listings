@@ -12,15 +12,47 @@ const Hero = () => {
   const heroRef = useRef(null);
   const contentRef = useRef(null);
   const videoRef = useRef(null);
+  const video2Ref = useRef(null);
 
   const handleSearchClick = () => {
     navigate('/properties');
   };
 
   useEffect(() => {
+    const video1 = videoRef.current;
+    const video2 = video2Ref.current;
+
+    // Crossfade logic for seamless looping
+    const handleTimeUpdate = () => {
+      const timeLeft = video1.duration - video1.currentTime;
+      
+      // Start crossfade 1 second before video ends
+      if (timeLeft < 1 && timeLeft > 0) {
+        const opacity = 1 - timeLeft;
+        video2.style.opacity = opacity;
+        
+        // Start video2 if not playing
+        if (video2.paused) {
+          video2.currentTime = 0;
+          video2.play();
+        }
+      }
+    };
+
+    const handleVideo1Ended = () => {
+      video1.currentTime = 0;
+      video1.play();
+      video2.style.opacity = 0;
+    };
+
+    if (video1 && video2) {
+      video1.addEventListener('timeupdate', handleTimeUpdate);
+      video1.addEventListener('ended', handleVideo1Ended);
+    }
+
     const ctx = gsap.context(() => {
-      // Parallax effect on video - zooms in as you scroll
-      gsap.to(videoRef.current, {
+      // Parallax effect on video container
+      gsap.to(heroRef.current.querySelector('.video-container'), {
         scrollTrigger: {
           trigger: heroRef.current,
           start: "top top",
@@ -55,7 +87,13 @@ const Hero = () => {
 
     }, heroRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      if (video1) {
+        video1.removeEventListener('timeupdate', handleTimeUpdate);
+        video1.removeEventListener('ended', handleVideo1Ended);
+      }
+    };
   }, []);
 
   return (
@@ -63,18 +101,30 @@ const Hero = () => {
       ref={heroRef}
       className="relative h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Background Video */}
+      {/* Background Video with Crossfade */}
       <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="https://res.cloudinary.com/dhwnr1pa5/video/upload/v1762179464/BIR_ktbna2.mp4" type="video/mp4" />
-        </video>
+        <div className="video-container absolute inset-0 w-full h-full">
+          {/* Primary video */}
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="https://res.cloudinary.com/dhwnr1pa5/video/upload/v1762179464/BIR_ktbna2.mp4" type="video/mp4" />
+          </video>
+          {/* Secondary video for crossfade */}
+          <video
+            ref={video2Ref}
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+            style={{ opacity: 0 }}
+          >
+            <source src="https://res.cloudinary.com/dhwnr1pa5/video/upload/v1762179464/BIR_ktbna2.mp4" type="video/mp4" />
+          </video>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
       </div>
 
