@@ -129,9 +129,9 @@ const WhyWorkWithUs = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="work-header-line-left h-px w-16 bg-border origin-right" />
+              <div className="work-header-line-left h-px w-16 bg-border" />
               <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">Why</p>
-              <div className="work-header-line-right h-px w-16 bg-border origin-left" />
+              <div className="work-header-line-right h-px w-16 bg-border" />
             </div>
             <h2 className="work-header-title text-5xl md:text-6xl font-bold text-foreground mb-4">
               WORK WITH US
