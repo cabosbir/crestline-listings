@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -7,11 +7,18 @@ import ValueModal from "@/components/ValueModal";
 import MilestoneModal from "@/components/MilestoneModal";
 import { Button } from "@/components/ui/button";
 import { Award, Users, TrendingUp, Heart, ArrowRight, Tv, Building2, Scale } from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
   const navigate = useNavigate();
   const [selectedValue, setSelectedValue] = useState<"client-first" | "excellence" | "expertise" | "integrity" | null>(null);
   const [selectedMilestone, setSelectedMilestone] = useState<"national-recognition" | "major-developments" | "industry-pioneer" | null>(null);
+
+  // Refs for counter animations
+  const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Updated team members with IDs matching Team.tsx
   const teamMembers = [
@@ -89,6 +96,203 @@ const About = () => {
     }
   ];
 
+  useEffect(() => {
+    // Hero Section - Fade in from bottom
+    gsap.from(".about-hero-title", {
+      y: 80,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power3.out",
+      delay: 0.2
+    });
+
+    gsap.from(".about-hero-subtitle", {
+      y: 60,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.4
+    });
+
+    // Story Section - Fade in from left and right
+    gsap.from(".story-heading", {
+      scrollTrigger: {
+        trigger: ".story-section",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      x: -80,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power3.out"
+    });
+
+    gsap.from(".story-text p", {
+      scrollTrigger: {
+        trigger: ".story-section",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: "power3.out"
+    });
+
+    gsap.from(".story-image", {
+      scrollTrigger: {
+        trigger: ".story-section",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      x: 80,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power3.out"
+    });
+
+    // Milestones - Scale in with stagger
+    gsap.from(".milestone-card", {
+      scrollTrigger: {
+        trigger: ".milestones-section",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: "back.out(1.7)"
+    });
+
+    // Values Cards - Scale in with stagger
+    gsap.from(".value-card", {
+      scrollTrigger: {
+        trigger: ".values-section",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: "back.out(1.7)"
+    });
+
+    // Team Members - Stagger from bottom
+    gsap.from(".team-member-card", {
+      scrollTrigger: {
+        trigger: ".team-section",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      y: 60,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: "power3.out"
+    });
+
+    // Stats Counter Animations
+    const animateCounter = (element: HTMLElement, endValue: number, prefix = "", suffix = "") => {
+      const obj = { value: 0 };
+      
+      gsap.to(obj, {
+        value: endValue,
+        duration: 2,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: element,
+          start: "top 85%",
+          toggleActions: "play none none none"
+        },
+        onUpdate: () => {
+          if (element) {
+            element.textContent = prefix + Math.round(obj.value).toLocaleString() + suffix;
+          }
+        }
+      });
+    };
+
+    // Animate each stat counter
+    if (statsRefs.current[0]) animateCounter(statsRefs.current[0], 75, "", "+");
+    if (statsRefs.current[1]) animateCounter(statsRefs.current[1], 1850, "", "+");
+    if (statsRefs.current[2]) animateCounter(statsRefs.current[2], 800, "$", "M+");
+
+    // Stats section fade in
+    gsap.from(".stats-section", {
+      scrollTrigger: {
+        trigger: ".stats-section",
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      },
+      y: 60,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    // Media logos stagger
+    gsap.from(".media-logo", {
+      scrollTrigger: {
+        trigger: ".media-section",
+        start: "top 85%",
+        toggleActions: "play none none reverse"
+      },
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: "back.out(1.7)"
+    });
+
+    // Founder Quote - Fade in with scale
+    gsap.from(".founder-quote", {
+      scrollTrigger: {
+        trigger: ".founder-quote",
+        start: "top 85%",
+        toggleActions: "play none none reverse"
+      },
+      scale: 0.95,
+      opacity: 0,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    gsap.from(".founder-image", {
+      scrollTrigger: {
+        trigger: ".founder-quote",
+        start: "top 85%",
+        toggleActions: "play none none reverse"
+      },
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.8,
+      ease: "back.out(1.7)"
+    });
+
+    // Section headings
+    gsap.utils.toArray<HTMLElement>(".section-heading").forEach((heading) => {
+      gsap.from(heading, {
+        scrollTrigger: {
+          trigger: heading,
+          start: "top 85%",
+          toggleActions: "play none none reverse"
+        },
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out"
+      });
+    });
+
+    // Cleanup
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -110,22 +314,22 @@ const About = () => {
       {/* Hero */}
       <section className="pt-32 pb-16 bg-secondary">
         <div className="container mx-auto px-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+          <h1 className="about-hero-title text-5xl md:text-6xl font-bold text-foreground mb-6">
             About Baja International Realty
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl">
+          <p className="about-hero-subtitle text-xl text-muted-foreground max-w-3xl">
             Pioneering luxury real estate in Cabo San Lucas since the late 1980s
           </p>
         </div>
       </section>
 
       {/* Our Story */}
-      <section className="py-24">
+      <section className="story-section py-24">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-4xl font-bold text-foreground mb-6">Our Story</h2>
-              <div className="space-y-4 text-muted-foreground leading-relaxed">
+              <h2 className="story-heading text-4xl font-bold text-foreground mb-6">Our Story</h2>
+              <div className="story-text space-y-4 text-muted-foreground leading-relaxed">
                 <p>
                   Founded in the late 1980s by visionary broker <span className="font-semibold text-foreground">Don Weis</span>, Baja International Realty has been a pioneering force in Cabo San Lucas real estate for over 35 years. Don's groundbreaking "Mexico Gold" real estate education seminars were featured on <span className="font-semibold text-foreground">CNN, 20/20, and national media</span>, helping establish foreign investor confidence in Baja real estate.
                 </p>
@@ -137,7 +341,7 @@ const About = () => {
                 </p>
               </div>
             </div>
-            <div className="relative h-96 lg:h-full min-h-[400px]">
+            <div className="story-image relative h-96 lg:h-full min-h-[400px]">
               <a 
                 href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
                 target="_blank" 
@@ -156,10 +360,10 @@ const About = () => {
       </section>
 
       {/* Key Milestones - NOW CLICKABLE! */}
-      <section className="py-24 bg-secondary">
+      <section className="milestones-section py-24 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="section-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
               Key Milestones
             </h2>
             <p className="text-muted-foreground">
@@ -174,7 +378,7 @@ const About = () => {
                 <div 
                   key={index}
                   onClick={() => setSelectedMilestone(milestone.milestoneKey)}
-                  className="bg-background p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  className="milestone-card bg-background p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
                 >
                   <div className="flex justify-center mb-6">
                     <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
@@ -198,10 +402,10 @@ const About = () => {
       </section>
 
       {/* Our Values */}
-      <section className="py-24">
+      <section className="values-section py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            <h2 className="section-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
               Our Core Values
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -216,7 +420,7 @@ const About = () => {
                 <div 
                   key={index}
                   onClick={() => setSelectedValue(value.valueKey)}
-                  className="bg-card p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  className="value-card bg-card p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
                 >
                   <div className="flex justify-center mb-6">
                     <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
@@ -240,10 +444,10 @@ const About = () => {
       </section>
 
       {/* Team */}
-      <section className="py-24 bg-secondary">
+      <section className="team-section py-24 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            <h2 className="section-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
               Meet Our Team
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -256,7 +460,7 @@ const About = () => {
               <div
                 key={member.id}
                 onClick={() => navigate(`/team/${member.id}`)}
-                className="group cursor-pointer"
+                className="team-member-card group cursor-pointer"
               >
                 <div className="bg-background rounded-xl overflow-hidden border border-border hover:shadow-hover transition-smooth">
                   <div className="aspect-[3/4] overflow-hidden">
@@ -291,7 +495,7 @@ const About = () => {
       </section>
 
       {/* Stats & Recognition */}
-      <section className="py-24 bg-primary text-primary-foreground">
+      <section className="stats-section py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -304,15 +508,15 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-6xl mx-auto">
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">75+</div>
+              <div ref={el => statsRefs.current[0] = el} className="text-5xl font-bold text-accent mb-2">0</div>
               <p className="text-primary-foreground/90">Combined Years of<br />Experience</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">1,850+</div>
+              <div ref={el => statsRefs.current[1] = el} className="text-5xl font-bold text-accent mb-2">0</div>
               <p className="text-primary-foreground/90">Families<br />Served</p>
             </div>
             <div className="text-center">
-              <div className="text-5xl font-bold text-accent mb-2">$800M+</div>
+              <div ref={el => statsRefs.current[2] = el} className="text-5xl font-bold text-accent mb-2">$0</div>
               <p className="text-primary-foreground/90">Total Sales<br />Volume</p>
             </div>
             <div className="text-center">
@@ -322,20 +526,20 @@ const About = () => {
           </div>
 
           {/* Media Recognition */}
-          <div className="mt-16 pt-16 border-t border-primary-foreground/20">
+          <div className="media-section mt-16 pt-16 border-t border-primary-foreground/20">
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold mb-4">As Featured On</h3>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-12">
-              <div className="text-center">
+              <div className="media-logo text-center">
                 <div className="text-3xl font-bold mb-1">CNN</div>
                 <p className="text-sm text-primary-foreground/70">National Television</p>
               </div>
-              <div className="text-center">
+              <div className="media-logo text-center">
                 <div className="text-3xl font-bold mb-1">20/20</div>
                 <p className="text-sm text-primary-foreground/70">ABC News</p>
               </div>
-              <div className="text-center">
+              <div className="media-logo text-center">
                 <div className="text-3xl font-bold mb-1">National Radio</div>
                 <p className="text-sm text-primary-foreground/70">Multiple Shows</p>
               </div>
@@ -347,8 +551,8 @@ const About = () => {
       {/* Founder Quote */}
       <section className="py-24">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-6">
+          <div className="founder-quote max-w-4xl mx-auto text-center">
+            <div className="founder-image mb-6">
               <img 
                 src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg"
                 alt="Don Weis - Founder & Broker"
