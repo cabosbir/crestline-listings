@@ -145,7 +145,7 @@ const WhyWorkWithUs = () => {
           </div>
 
           {/* Value Cards */}
-          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
