@@ -1,19 +1,72 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const navigate = useNavigate();
+  const heroRef = useRef(null);
+  const contentRef = useRef(null);
+  const videoRef = useRef(null);
 
   const handleSearchClick = () => {
     navigate('/properties');
   };
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Parallax effect on video - zooms in as you scroll
+      gsap.to(videoRef.current, {
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+        },
+        scale: 1.2,
+        ease: "none",
+      });
+
+      // Fade out content as you scroll down
+      gsap.to(contentRef.current, {
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+        },
+        opacity: 0,
+        y: -100,
+        ease: "none",
+      });
+
+      // Initial fade-in animation on page load
+      gsap.from(contentRef.current, {
+        opacity: 0,
+        y: 50,
+        duration: 1.2,
+        ease: "power3.out",
+        delay: 0.3,
+      });
+
+    }, heroRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <section 
+      ref={heroRef}
+      className="relative h-screen flex items-center justify-center overflow-hidden"
+    >
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
@@ -26,7 +79,10 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 text-center">
+      <div 
+        ref={contentRef}
+        className="relative z-10 container mx-auto px-4 sm:px-6 text-center"
+      >
         <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24">
           BAJA INTERNATIONAL REALTY
         </h1>
