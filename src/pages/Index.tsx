@@ -50,28 +50,32 @@ const Index = () => {
     },
   ];
 
-  // Team members - Updated with IDs to link to individual bio pages
+  // Team members - Updated with slugs for landing page routing
   const teamMembers = [
     {
       id: 12,
+      slug: "don",
       name: "Don Weis",
       title: "Founder & Broker",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg",
     },
     {
       id: 1,
+      slug: "bob",
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
     },
     {
       id: 3,
+      slug: "alfonso",
       name: "Alfonso Puente",
       title: "Sales Manager & Commercial Real Estate Expert",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
     },
     {
       id: 8,
+      slug: "david",
       name: "David Scott Piper",
       title: "Real Estate Advisor",
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
@@ -137,7 +141,11 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {teamMembers.map((member) => (
               <Link to={`/team/${member.id}`} key={member.id}>
-                <AgentBioCard {...member} showStats={false} />
+                <AgentBioCard 
+                  {...member} 
+                  showStats={false}
+                  landingPageSlug={member.slug}
+                />
               </Link>
             ))}
           </div>
