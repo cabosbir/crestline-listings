@@ -161,10 +161,10 @@ const WhyWorkWithUs = () => {
               <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">Why</p>
               <div className="work-header-line-right h-px w-16 bg-border" />
             </div>
-            <h2 className="work-header-title text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-3">
+            <h2 className="work-header-title text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-1">
               WORK WITH US
             </h2>
-            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
+            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base mb-0">
               Click on any card to discover what makes us different
             </p>
           </div>
