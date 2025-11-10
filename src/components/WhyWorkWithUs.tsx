@@ -127,10 +127,10 @@ const WhyWorkWithUs = () => {
         workType={selectedWork}
       />
       
-      <section className="work-section py-24 bg-secondary">
+      <section className="work-section py-16 bg-secondary">
         <div className="container mx-auto px-4">
           {/* Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-4 mb-4">
               <div className="work-header-line-left h-px w-16 bg-border" />
               <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">Why</p>
