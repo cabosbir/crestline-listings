@@ -137,9 +137,9 @@ const WhyWorkWithUs = () => {
            Options: py-8 (32px), py-10 (40px), py-12 (48px), py-14 (56px), py-16 (64px), py-20 (80px)
         
         2. HEADER BOTTOM MARGIN (Space between header and cards):
-           Current: mb-10 md:mb-12
-           - mb-10 = 40px (mobile)
-           - md:mb-12 = 48px (desktop)
+           Current: mb-4 md:mb-6
+           - mb-4 = 16px (mobile)
+           - md:mb-6 = 24px (desktop)
            Options: mb-6 (24px), mb-8 (32px), mb-10 (40px), mb-12 (48px), mb-14 (56px)
         
         3. CARD PADDING (Inside each card):
@@ -152,10 +152,10 @@ const WhyWorkWithUs = () => {
            - gap-5 = 20px
            Options: gap-3 (12px), gap-4 (16px), gap-5 (20px), gap-6 (24px)
       */}
-      <section className="work-section py-12 md:py-15 bg-secondary">
+      <section className="work-section py-8 md:py-10 bg-secondary">
         <div className="container mx-auto px-4">
           {/* Header */}
-          <div className="text-center mb-2 md:mb-3">
+          <div className="text-center mb-1">
             <div className="flex items-center justify-center gap-4 mb-3">
               <div className="work-header-line-left h-px w-16 bg-border" />
               <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">Why</p>
