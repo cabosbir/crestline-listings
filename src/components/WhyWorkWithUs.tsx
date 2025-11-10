@@ -124,8 +124,8 @@ const WhyWorkWithUs = () => {
       />
       
       {/* MINIMAL SPACING VERSION - Cards close to title */}
-      <section className="work-section py-6 md:py-8 bg-secondary">
-        <div className="container mx-auto px-4">
+      <section className="work-section py-6 md:py-8 bg-secondary flex items-center justify-center">
+        <div className="container mx-auto px-4 w-full">
           {/* Header - Minimal bottom margin */}
           <div className="text-center mb-1">
             <div className="flex items-center justify-center gap-4 mb-2">
