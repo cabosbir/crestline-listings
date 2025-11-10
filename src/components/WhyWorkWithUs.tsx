@@ -150,6 +150,7 @@ const WhyWorkWithUs = () => {
                   key={index}
                   onClick={() => setSelectedWork(value.workKey)}
                   className="work-value-card p-8 bg-background border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  style={{ opacity: 1, visibility: 'visible' }}
                 >
                   <div className="flex justify-center mb-6">
                     <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
