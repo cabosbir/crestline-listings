@@ -152,20 +152,6 @@ const About = () => {
       ease: "power3.out"
     });
 
-    // Milestones - Scale in with stagger
-    gsap.from(".milestone-card", {
-      scrollTrigger: {
-        trigger: ".milestones-section",
-        start: "top 80%",
-        toggleActions: "play none none reverse"
-      },
-      scale: 0.8,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: "back.out(1.7)"
-    });
-
     // Values Cards - Scale in with stagger
     gsap.from(".value-card", {
       scrollTrigger: {
