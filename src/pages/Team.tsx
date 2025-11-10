@@ -374,21 +374,22 @@ const Team = () => {
                 }}
               >
                 {agents.map((agent) => (
-                  <div key={agent.id} className="flex-shrink-0 w-[320px]">
-                    <AgentBioCard
-                      name={agent.name}
-                      title={agent.title}
-                      image={agent.image}
-                      phone={agent.phone}
-                      phone2={agent.phoneSecondary}
-                      email={agent.email}
-                      specialization={agent.specialization}
-                      propertiesSold={agent.propertiesSold}
-                      yearsExperience={agent.yearsExperience}
-                      onViewBio={() => handleViewBio(agent.id)}
-                      showStats={false}
-                    />
-                  </div>
+               <div key={agent.id} className="flex-shrink-0 w-[320px]">
+               <AgentBioCard
+                    name={agent.name}
+                    title={agent.title}
+                    image={agent.image}
+                    phone={agent.phone}
+                    phone2={agent.phoneSecondary}
+                    email={agent.email}
+                    specialization={agent.specialization}
+                    propertiesSold={agent.propertiesSold}
+                    yearsExperience={agent.yearsExperience}
+                    onViewBio={() => handleViewBio(agent.id)}
+                    showStats={false}
+                landingPageSlug={agent.slug} // ⭐ ADD THIS LINE
+                />
+                 </div>
                 ))}
               </div>
             </div>

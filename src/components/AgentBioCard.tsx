@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Phone, Mail, Award } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface AgentBioCardProps {
   name: string;
@@ -13,6 +14,7 @@ interface AgentBioCardProps {
   yearsExperience?: number;
   onViewBio?: () => void;
   showStats?: boolean;
+  landingPageSlug?: string; // ⭐ NEW: Landing page slug (e.g., "bob", "susu")
 }
 
 const AgentBioCard = ({ 
@@ -26,14 +28,26 @@ const AgentBioCard = ({
   propertiesSold,
   yearsExperience,
   onViewBio,
-  showStats = true
+  showStats = true,
+  landingPageSlug // ⭐ NEW: Landing page slug
 }: AgentBioCardProps) => {
+  const navigate = useNavigate();
   
   const handleViewBioClick = (e: any) => {
-    // Don't prevent default or stop propagation - let the Link work
     console.log('View Bio clicked for:', name);
     if (onViewBio) {
       onViewBio();
+    }
+  };
+
+  // ⭐ NEW: Handle Contact button click - route to landing page
+  const handleContactClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (landingPageSlug) {
+      navigate(`/${landingPageSlug}`);
+    } else {
+      // Fallback to phone call if no landing page slug provided
+      window.location.href = `tel:${phone || phone2}`;
     }
   };
 
@@ -129,13 +143,13 @@ const AgentBioCard = ({
             >
               View Full Bio
             </button>
-            <a
-              href={`tel:${phone || phone2}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex-1 border border-gray-300 hover:bg-gray-100 font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer text-center leading-8"
+            {/* ⭐ UPDATED: Contact button now routes to landing page */}
+            <button
+              onClick={handleContactClick}
+              className="flex-1 border border-gray-300 hover:bg-gray-100 font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
             >
               Contact
-            </a>
+            </button>
           </div>
         </div>
       </div>
