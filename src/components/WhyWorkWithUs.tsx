@@ -32,7 +32,6 @@ const WhyWorkWithUs = () => {
   ];
 
   useEffect(() => {
-    // Header decorative lines - fade in from sides with scale
     gsap.from(".work-header-line-left", {
       scrollTrigger: {
         trigger: ".work-section",
@@ -59,7 +58,6 @@ const WhyWorkWithUs = () => {
       ease: "power3.out"
     });
 
-    // Header text - fade in from bottom with movement
     gsap.from(".work-header-label", {
       scrollTrigger: {
         trigger: ".work-section",
@@ -98,7 +96,6 @@ const WhyWorkWithUs = () => {
       ease: "power3.out"
     });
 
-    // Value Cards - Scale in with stagger and upward movement
     gsap.from(".work-value-card", {
       scrollTrigger: {
         trigger: ".work-cards-grid",
@@ -113,7 +110,6 @@ const WhyWorkWithUs = () => {
       ease: "back.out(1.7)"
     });
 
-    // Cleanup
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
@@ -127,36 +123,12 @@ const WhyWorkWithUs = () => {
         workType={selectedWork}
       />
       
-      {/* 
-        SPACING MAP - Adjust these values to control section height:
-        
-        1. SECTION VERTICAL PADDING (Top & Bottom of entire section):
-           Current: py-12 md:py-15
-           - py-12 = 48px top + 48px bottom (mobile)
-           - md:py-15 = 60px top + 60px bottom (desktop)
-           Options: py-8 (32px), py-10 (40px), py-12 (48px), py-14 (56px), py-16 (64px), py-20 (80px)
-        
-        2. HEADER BOTTOM MARGIN (Space between header and cards):
-           Current: mb-4 md:mb-6
-           - mb-4 = 16px (mobile)
-           - md:mb-6 = 24px (desktop)
-           Options: mb-6 (24px), mb-8 (32px), mb-10 (40px), mb-12 (48px), mb-14 (56px)
-        
-        3. CARD PADDING (Inside each card):
-           Current: p-8
-           - p-8 = 32px all sides
-           Options: p-4 (16px), p-6 (24px), p-8 (32px), p-10 (40px)
-        
-        4. CARD GRID GAP (Space between cards):
-           Current: gap-5
-           - gap-5 = 20px
-           Options: gap-3 (12px), gap-4 (16px), gap-5 (20px), gap-6 (24px)
-      */}
-      <section className="work-section py-8 md:py-10 bg-secondary">
+      {/* MINIMAL SPACING VERSION - Cards close to title */}
+      <section className="work-section py-6 md:py-8 bg-secondary">
         <div className="container mx-auto px-4">
-          {/* Header */}
-          <div className="text-center mb-1">
-            <div className="flex items-center justify-center gap-4 mb-3">
+          {/* Header - Minimal bottom margin */}
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center gap-4 mb-2">
               <div className="work-header-line-left h-px w-16 bg-border" />
               <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">Why</p>
               <div className="work-header-line-right h-px w-16 bg-border" />
@@ -164,35 +136,35 @@ const WhyWorkWithUs = () => {
             <h2 className="work-header-title text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-1">
               WORK WITH US
             </h2>
-            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base mb-0">
+            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
               Click on any card to discover what makes us different
             </p>
           </div>
 
           {/* Value Cards */}
-          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
                 <Card 
                   key={index}
                   onClick={() => setSelectedWork(value.workKey)}
-                  className="work-value-card p-8 bg-background border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  className="work-value-card p-6 bg-background border-border hover:shadow-hover transition-smooth cursor-pointer group"
                   style={{ opacity: 1, visibility: 'visible' }}
                 >
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
-                      <Icon className="h-8 w-8 text-accent" />
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
+                      <Icon className="h-7 w-7 text-accent" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-4 text-center uppercase group-hover:text-accent transition-colors">
+                  <h3 className="text-lg font-bold text-foreground mb-3 text-center uppercase group-hover:text-accent transition-colors">
                     {value.title}
                   </h3>
-                  <p className="text-muted-foreground text-center mb-6 leading-relaxed">
+                  <p className="text-muted-foreground text-center mb-4 leading-relaxed text-sm">
                     {value.description}
                   </p>
                   <div className="text-center">
-                    <span className="text-accent group-hover:text-accent-light transition-fast font-medium underline-offset-4 group-hover:underline">
+                    <span className="text-accent group-hover:text-accent-light transition-fast font-medium underline-offset-4 group-hover:underline text-sm">
                       Learn More →
                     </span>
                   </div>
