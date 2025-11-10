@@ -402,7 +402,7 @@ const About = () => {
       </section>
 
       {/* Our Values */}
-      <section className="values-section py-24">
+      <section className="values-section py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="section-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
@@ -413,27 +413,28 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
                 <div 
                   key={index}
                   onClick={() => setSelectedValue(value.valueKey)}
-                  className="value-card bg-card p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  className="value-card bg-white p-8 rounded-xl border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  style={{ opacity: 1, visibility: 'visible' }}
                 >
                   <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
-                      <Icon className="h-8 w-8 text-accent" />
+                    <div className="p-4 rounded-full bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                      <Icon className="h-8 w-8 text-blue-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3 text-center group-hover:text-accent transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center group-hover:text-blue-600 transition-colors">
                     {value.title}
                   </h3>
-                  <p className="text-muted-foreground text-center text-sm leading-relaxed mb-4">
+                  <p className="text-gray-600 text-center text-sm leading-relaxed mb-4">
                     {value.description}
                   </p>
-                  <p className="text-accent text-sm font-semibold text-center group-hover:underline">
+                  <p className="text-blue-600 text-sm font-semibold text-center group-hover:underline">
                     Learn More →
                   </p>
                 </div>
