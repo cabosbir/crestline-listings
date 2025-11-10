@@ -127,7 +127,32 @@ const WhyWorkWithUs = () => {
         workType={selectedWork}
       />
       
-      <section className="work-section py-16 md:py-20 bg-secondary">
+      {/* 
+        SPACING MAP - Adjust these values to control section height:
+        
+        1. SECTION VERTICAL PADDING (Top & Bottom of entire section):
+           Current: py-12 md:py-15
+           - py-12 = 48px top + 48px bottom (mobile)
+           - md:py-15 = 60px top + 60px bottom (desktop)
+           Options: py-8 (32px), py-10 (40px), py-12 (48px), py-14 (56px), py-16 (64px), py-20 (80px)
+        
+        2. HEADER BOTTOM MARGIN (Space between header and cards):
+           Current: mb-10 md:mb-12
+           - mb-10 = 40px (mobile)
+           - md:mb-12 = 48px (desktop)
+           Options: mb-6 (24px), mb-8 (32px), mb-10 (40px), mb-12 (48px), mb-14 (56px)
+        
+        3. CARD PADDING (Inside each card):
+           Current: p-8
+           - p-8 = 32px all sides
+           Options: p-4 (16px), p-6 (24px), p-8 (32px), p-10 (40px)
+        
+        4. CARD GRID GAP (Space between cards):
+           Current: gap-5
+           - gap-5 = 20px
+           Options: gap-3 (12px), gap-4 (16px), gap-5 (20px), gap-6 (24px)
+      */}
+      <section className="work-section py-12 md:py-15 bg-secondary">
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="text-center mb-10 md:mb-12">
