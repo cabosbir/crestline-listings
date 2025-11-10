@@ -360,13 +360,13 @@ const About = () => {
       </section>
 
       {/* Key Milestones - NOW CLICKABLE! */}
-      <section className="milestones-section py-24 bg-secondary">
+      <section className="milestones-section py-24 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="section-heading text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="section-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Key Milestones
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-gray-600">
               Click to explore 35+ years of pioneering real estate excellence
             </p>
           </div>
@@ -378,20 +378,21 @@ const About = () => {
                 <div 
                   key={index}
                   onClick={() => setSelectedMilestone(milestone.milestoneKey)}
-                  className="milestone-card bg-background p-8 rounded-xl border border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  className="milestone-card bg-white p-8 rounded-xl border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  style={{ opacity: 1, visibility: 'visible' }}
                 >
                   <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
-                      <Icon className="h-8 w-8 text-accent" />
+                    <div className="p-4 rounded-full bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                      <Icon className="h-8 w-8 text-blue-600" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3 text-center group-hover:text-accent transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center group-hover:text-blue-600 transition-colors">
                     {milestone.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground text-center leading-relaxed mb-4">
+                  <p className="text-sm text-gray-600 text-center leading-relaxed mb-4">
                     {milestone.description}
                   </p>
-                  <p className="text-accent text-sm font-semibold text-center group-hover:underline">
+                  <p className="text-blue-600 text-sm font-semibold text-center group-hover:underline">
                     Learn More →
                   </p>
                 </div>
