@@ -127,7 +127,7 @@ const WhyWorkWithUs = () => {
       <section className="work-section py-6 md:py-8 bg-secondary">
         <div className="container mx-auto px-4">
           {/* Header - Minimal bottom margin */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-1">
             <div className="flex items-center justify-center gap-4 mb-2">
               <div className="work-header-line-left h-px w-16 bg-border" />
               <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">Why</p>
