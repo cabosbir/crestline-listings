@@ -142,7 +142,7 @@ const WhyWorkWithUs = () => {
           </div>
 
           {/* Value Cards */}
-          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-6">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
