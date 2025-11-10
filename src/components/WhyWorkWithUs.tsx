@@ -32,6 +32,7 @@ const WhyWorkWithUs = () => {
   ];
 
   useEffect(() => {
+    // Header decorative lines - fade in from sides with scale
     gsap.from(".work-header-line-left", {
       scrollTrigger: {
         trigger: ".work-section",
@@ -58,6 +59,7 @@ const WhyWorkWithUs = () => {
       ease: "power3.out"
     });
 
+    // Header text - fade in from bottom with movement
     gsap.from(".work-header-label", {
       scrollTrigger: {
         trigger: ".work-section",
@@ -96,6 +98,7 @@ const WhyWorkWithUs = () => {
       ease: "power3.out"
     });
 
+    // Value Cards - Scale in with stagger and upward movement
     gsap.from(".work-value-card", {
       scrollTrigger: {
         trigger: ".work-cards-grid",
@@ -110,6 +113,7 @@ const WhyWorkWithUs = () => {
       ease: "back.out(1.7)"
     });
 
+    // Cleanup
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
@@ -123,33 +127,33 @@ const WhyWorkWithUs = () => {
         workType={selectedWork}
       />
       
-      {/* MINIMAL SPACING VERSION - Cards close to title */}
-      <section className="work-section py-6 md:py-8 bg-secondary flex items-center justify-center">
+      <section className="work-section pt-4 pb-8 md:pt-6 md:pb-10 bg-secondary">
         <div className="container mx-auto px-4 w-full">
-          {/* Header - Minimal bottom margin */}
-          <div className="text-center mb-1">
+          {/* Header */}
+          <div className="text-center mb-4">
             <div className="flex items-center justify-center gap-4 mb-2">
               <div className="work-header-line-left h-px w-16 bg-border" />
-              <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">Why</p>
+              <p className="work-header-label text-muted-foreground uppercase tracking-wider text-sm">
+                Why
+              </p>
               <div className="work-header-line-right h-px w-16 bg-border" />
             </div>
             <h2 className="work-header-title text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-1">
               WORK WITH US
             </h2>
-            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base mb-0 pb-0">
+            <p className="work-header-subtitle text-muted-foreground max-w-2xl mx-auto text-sm md:text-base mb-0">
               Click on any card to discover what makes us different
             </p>
           </div>
-
-          {/* Value Cards */}
-          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
+          {/* Cards Grid */}
+          <div className="work-cards-grid grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto -mt-2">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
-                <Card 
+                <Card
                   key={index}
                   onClick={() => setSelectedWork(value.workKey)}
-                  className="work-value-card p-6 bg-background border-border hover:shadow-hover transition-smooth cursor-pointer group"
+                  className="work-value-card p-6 bg-background border-border hover:shadow-hover transition-all duration-300 cursor-pointer group"
                   style={{ opacity: 1, visibility: 'visible' }}
                 >
                   <div className="flex justify-center mb-4">
@@ -164,7 +168,7 @@ const WhyWorkWithUs = () => {
                     {value.description}
                   </p>
                   <div className="text-center">
-                    <span className="text-accent group-hover:text-accent-light transition-fast font-medium underline-offset-4 group-hover:underline text-sm">
+                    <span className="text-accent group-hover:text-accent-light font-medium underline-offset-4 group-hover:underline text-sm">
                       Learn More →
                     </span>
                   </div>
