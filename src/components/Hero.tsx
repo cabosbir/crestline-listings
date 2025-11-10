@@ -79,16 +79,24 @@ const Hero = () => {
         ease: "none",
       });
 
-      // Animated heading - split letter entrance
+      // Dimmer effect - text starts dim and brightens up letter by letter
       const headingLetters = headingRef.current.querySelectorAll('.letter');
       gsap.from(headingLetters, {
-        opacity: 0,
-        y: 100,
-        rotationX: -90,
-        stagger: 0.03,
-        duration: 1,
-        ease: "back.out(1.7)",
-        delay: 0.2,
+        opacity: 0.2,
+        filter: "brightness(0.3)",
+        stagger: 0.04,
+        duration: 0.8,
+        ease: "power2.out",
+        delay: 0.3,
+      });
+
+      // Subtitle dimmer effect
+      gsap.from(subtitleRef.current, {
+        opacity: 0.2,
+        filter: "brightness(0.3)",
+        duration: 1.2,
+        ease: "power2.out",
+        delay: 0.5,
       });
 
       // Subtle continuous floating animation on heading
@@ -98,16 +106,7 @@ const Hero = () => {
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
-        delay: 1.5,
-      });
-
-      // Subtitle fade and slide in
-      gsap.from(subtitleRef.current, {
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        ease: "power3.out",
-        delay: 0.8,
+        delay: 1.8,
       });
 
       // Glowing text effect (subtle pulse)
@@ -117,7 +116,7 @@ const Hero = () => {
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
-        delay: 2,
+        delay: 2.5,
       });
 
     }, heroRef);
