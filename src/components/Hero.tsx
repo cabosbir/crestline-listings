@@ -177,39 +177,39 @@ const Hero = () => {
         className="relative z-10 container mx-auto px-4 sm:px-6 text-center"
       >
         <h1 
-        ref={headingRef}
-        className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-[1.1] mt-20 md:mt-24 px-2 break-words text-balance"
+          ref={headingRef}
+          className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24 px-2"
         >
           {splitText('BAJA INTERNATIONAL REALTY')}
         </h1>
         <p 
           ref={subtitleRef}
-          className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-2"
+          className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-4"
         >
-          Discover Your Dream Property in<br className="sm:hidden" /> Cabo San Lucas & Baja California Sur
+          Discover Your Dream Property in Cabo San Lucas & Baja California Sur
         </p>
 
         {/* Call to Action Button */}
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center px-4">
           <Button
             onClick={handleSearchClick}
             size="lg"
-            className="h-14 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-12 rounded-lg transition-all duration-300 shadow-2xl hover:shadow-blue-900/50 text-lg"
+            className="h-12 sm:h-14 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-8 sm:px-12 rounded-lg transition-all duration-300 shadow-2xl hover:shadow-blue-900/50 text-base sm:text-lg"
           >
-            <Search className="w-6 h-6 mr-3" />
+            <Search className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
             Search Properties
           </Button>
         </div>
 
         {/* Key Features */}
-        <div className="mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto px-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 md:p-6 border border-white/20">
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2">1850+</div>
-            <div className="text-white/90 text-sm md:text-base">Properties Sold</div>
+        <div className="mt-10 md:mt-16 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto px-4">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-5 md:p-6 border border-white/20">
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">1850+</div>
+            <div className="text-white/90 text-xs sm:text-sm md:text-base">Properties Sold</div>
           </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 md:p-6 border border-white/20">
-            <div className="text-3xl md:text-4xl font-bold text-white mb-2">$800M+</div>
-            <div className="text-white/90 text-sm md:text-base">In Sales</div>
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-5 md:p-6 border border-white/20">
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">$800M+</div>
+            <div className="text-white/90 text-xs sm:text-sm md:text-base">In Sales</div>
           </div>
         </div>
 
