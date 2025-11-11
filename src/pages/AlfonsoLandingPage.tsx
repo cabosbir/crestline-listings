@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -19,25 +19,57 @@ const getWhatsAppLink = (phone, agentName) => {
   return `https://wa.me/${number}?text=${message}`;
 };
 
-// Alfonso Puente - Baja International Realty Agent
-const agent = {
-  id: 3,
-  slug: "alfonso", // ⭐ IMPORTANT: Change this for each agent
-  name: "Alfonso Puente",
-  title: "Sales Manager & Commercial Real Estate Expert",
-  specialization: "Real Estate Developments & Market Analysis",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
-  phone: "+52 664 188 8681",
-  email: "alfonso@bircabo.com",
-  yearsExperience: 18,
-  propertiesSold: 890,
-  bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
-  certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
-  languages: ["English", "Spanish"],
+// Shuffle function with localStorage cache (refreshes every 3 hours)
+const getShuffledListings = (listings, cacheKey) => {
+  const cacheTimeKey = `${cacheKey}-time`;
+  
+  if (typeof window === 'undefined') return listings;
+  
+  const cached = localStorage.getItem(cacheKey);
+  const cachedTime = localStorage.getItem(cacheTimeKey);
+  
+  const now = Date.now();
+  const threeHours = 3 * 60 * 60 * 1000;
+  
+  if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+    try {
+      return JSON.parse(cached);
+    } catch (e) {
+      console.error('Error parsing cached listings:', e);
+    }
+  }
+  
+  const shuffled = [...listings].sort(() => Math.random() - 0.5);
+  
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+    localStorage.setItem(cacheTimeKey, now.toString());
+  } catch (e) {
+    console.error('Error saving to localStorage:', e);
+  }
+  
+  return shuffled;
 };
 
-// Featured Listings
-const agentListings = [
+// ⭐⭐⭐ AGENT INFO - CHANGE FOR EACH AGENT ⭐⭐⭐
+const agent = {
+  id: 3,                    // ⭐ CHANGE: Agent ID
+  slug: "alfonso",          // ⭐ CHANGE: "bob", "hector", "erika", etc.
+  name: "Alfonso Puente",   // ⭐ CHANGE: Full name
+  title: "Sales Manager & Commercial Real Estate Expert",  // ⭐ CHANGE
+  specialization: "Real Estate Developments & Market Analysis",  // ⭐ CHANGE
+  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",  // ⭐ CHANGE
+  phone: "+52 664 188 8681",     // ⭐ CHANGE
+  email: "alfonso@bircabo.com",  // ⭐ CHANGE
+  yearsExperience: 18,      // ⭐ CHANGE
+  propertiesSold: 890,      // ⭐ CHANGE
+  bio: "Alfonso is a sales manager with a proven track record...",  // ⭐ CHANGE
+  certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],  // ⭐ CHANGE
+  languages: ["English", "Spanish"],  // ⭐ CHANGE
+};
+
+// ⭐⭐⭐ MY LISTINGS - Agent's Personal Properties (NO SHUFFLE) ⭐⭐⭐
+const originalMyListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
@@ -50,8 +82,15 @@ const agentListings = [
     mlsNumber: "25-4981",
     link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
   },
+  // ⭐ ADD MORE AGENT-SPECIFIC LISTINGS HERE
+];
+
+// ⭐⭐⭐ FEATURED LISTINGS - All Office Properties (WILL SHUFFLE) ⭐⭐⭐
+const originalFeaturedListings = [
+  ...originalMyListings,  // Include agent's own listings
+  // ⭐ ADD OFFICE-WIDE LISTINGS BELOW (from other agents, etc.)
   {
-    id: 2,
+    id: 101,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
     price: "$499,000",
     title: "La Vista LARGE PRIVATE YARD B101",
@@ -63,7 +102,7 @@ const agentListings = [
     link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
   },
   {
-    id: 3,
+    id: 102,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
     price: "$3,795,800",
     title: "Casa Ducci Camino del Mar",
@@ -76,21 +115,21 @@ const agentListings = [
   },
 ];
 
-// Client Testimonials
+// ⭐⭐⭐ TESTIMONIALS - CHANGE FOR EACH AGENT ⭐⭐⭐
 const testimonials = [
   {
-    name: "Jonathan & Rebecca Miller",
-    text: "Alfonso's expertise in commercial real estate and market analysis was invaluable. His leadership and results-driven approach made our investment in Cabo a tremendous success.",
+    name: "Jonathan & Rebecca Miller",  // ⭐ CHANGE
+    text: "Alfonso's expertise in commercial real estate...",  // ⭐ CHANGE
     rating: 5
   },
   {
-    name: "Marcus Davidson",
-    text: "Working with Alfonso was exceptional. His 18 years of experience and track record of 200+ closings speak for themselves. A true professional who delivers results!",
+    name: "Marcus Davidson",  // ⭐ CHANGE
+    text: "Working with Alfonso was exceptional...",  // ⭐ CHANGE
     rating: 5
   },
   {
-    name: "Susan & Richard Torres",
-    text: "Alfonso's detailed market analysis and clear communication gave us complete confidence in our development investment. His expertise is unmatched in Baja California Sur.",
+    name: "Susan & Richard Torres",  // ⭐ CHANGE
+    text: "Alfonso's detailed market analysis...",  // ⭐ CHANGE
     rating: 5
   }
 ];
@@ -98,12 +137,25 @@ const testimonials = [
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showMyListings, setShowMyListings] = useState(true); // Toggle: My Listings vs Featured
+  const [featuredListings, setFeaturedListings] = useState(originalFeaturedListings);
+
+  // Shuffle featured listings on mount and when switching to Featured mode
+  useEffect(() => {
+    if (!showMyListings) {
+      const shuffled = getShuffledListings(originalFeaturedListings, `${agent.slug}-featured-shuffle`);
+      setFeaturedListings(shuffled);
+    }
+  }, [showMyListings]);
+
+  // Determine which listings to display
+  const displayedListings = showMyListings ? originalMyListings : featuredListings;
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      {/* 🆕 FLOATING WHATSAPP BUTTON */}
+      {/* FLOATING WHATSAPP BUTTON */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -113,13 +165,9 @@ const AlfonsoLandingPage = () => {
         aria-label={`Contact ${agent.name} via WhatsApp`}
       >
         <MessageCircle className="h-8 w-8 text-white" />
-        
-        {/* Tooltip */}
         <span className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           Chat on WhatsApp
         </span>
-        
-        {/* Pulse animation */}
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
@@ -129,8 +177,6 @@ const AlfonsoLandingPage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            
-            {/* Agent Photo */}
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
@@ -139,7 +185,6 @@ const AlfonsoLandingPage = () => {
               />
             </div>
 
-            {/* Agent Info */}
             <div className="order-1 lg:order-2 text-center lg:text-left">
               <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
@@ -152,7 +197,6 @@ const AlfonsoLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
@@ -164,7 +208,6 @@ const AlfonsoLandingPage = () => {
                 </div>
               </div>
 
-              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button 
                   variant="default"
@@ -203,9 +246,7 @@ const AlfonsoLandingPage = () => {
               {agent.bio}
             </p>
 
-            {/* Credentials */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Certifications */}
               <div className="text-center">
                 <Award className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Certifications</h3>
@@ -219,7 +260,6 @@ const AlfonsoLandingPage = () => {
                 </div>
               </div>
 
-              {/* Languages */}
               <div className="text-center">
                 <Users className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Languages</h3>
@@ -230,7 +270,6 @@ const AlfonsoLandingPage = () => {
                 </div>
               </div>
 
-              {/* Expertise */}
               <div className="text-center">
                 <Home className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Specialization</h3>
@@ -241,19 +280,41 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
-      {/* Current Listings */}
+      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE ⭐⭐⭐ */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by {agent.name.split(' ')[0]}</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Listings</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore exclusive properties I'm currently representing in Cabo San Lucas
+          <div className="text-center mb-8">
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
             </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {showMyListings ? 'My Listings' : 'Featured Listings'}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+              {showMyListings 
+                ? `Exclusive properties I'm currently representing in Cabo San Lucas`
+                : 'Explore handpicked properties from our office (refreshed every 3 hours)'}
+            </p>
+
+            {/* Toggle Buttons */}
+            <div className="flex justify-center gap-2 mb-8">
+              <Button
+                variant={showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(true)}
+              >
+                My Listings ({originalMyListings.length})
+              </Button>
+              <Button
+                variant={!showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(false)}
+              >
+                Featured ({originalFeaturedListings.length})
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {agentListings.map((property) => (
+            {displayedListings.map((property) => (
               <PropertyCard key={property.id} {...property} />
             ))}
           </div>
@@ -289,7 +350,7 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Section - UPDATED WITH DROPDOWN */}
+      {/* Contact Section */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -300,9 +361,7 @@ const AlfonsoLandingPage = () => {
               </p>
             </div>
 
-            {/* Contact Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              {/* Phone Card */}
               <a 
                 href={`tel:${agent.phone}`}
                 className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
@@ -317,7 +376,6 @@ const AlfonsoLandingPage = () => {
                 </div>
               </a>
 
-              {/* Email Card */}
               <a 
                 href={`mailto:${agent.email}`}
                 className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
@@ -333,7 +391,6 @@ const AlfonsoLandingPage = () => {
               </a>
             </div>
 
-            {/* ⭐ NEW: Form Selector with Dropdown */}
             <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl">
               <div className="mb-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-900 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -347,7 +404,6 @@ const AlfonsoLandingPage = () => {
                 </p>
               </div>
 
-              {/* Dropdown Button */}
               <div className="relative max-w-md mx-auto">
                 <Button 
                   size="lg"
@@ -359,7 +415,6 @@ const AlfonsoLandingPage = () => {
                   <ChevronDown className={`w-5 h-5 ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </Button>
 
-                {/* Dropdown Menu */}
                 {isDropdownOpen && (
                   <div className="absolute w-full mt-2 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden z-10">
                     <Link

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import PropertyCard from "@/components/PropertyCard";
@@ -11,7 +12,43 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 const Index = () => {
-  const featuredProperties = [
+  // Shuffle function with localStorage cache (refreshes every 3 hours)
+  const getShuffledListings = (listings: any[], cacheKey: string) => {
+    const cacheTimeKey = `${cacheKey}-time`;
+    
+    // Check if we're in browser environment
+    if (typeof window === 'undefined') return listings;
+    
+    const cached = localStorage.getItem(cacheKey);
+    const cachedTime = localStorage.getItem(cacheTimeKey);
+    
+    const now = Date.now();
+    const threeHours = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+    
+    // Check if cache is still valid
+    if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+      try {
+        return JSON.parse(cached);
+      } catch (e) {
+        console.error('Error parsing cached listings:', e);
+      }
+    }
+    
+    // Create new shuffle
+    const shuffled = [...listings].sort(() => Math.random() - 0.5);
+    
+    // Save to localStorage
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+      localStorage.setItem(cacheTimeKey, now.toString());
+    } catch (e) {
+      console.error('Error saving to localStorage:', e);
+    }
+    
+    return shuffled;
+  };
+
+  const originalFeaturedProperties = [
     {
       id: 1,
       image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942726/20241014235115115464000000-o_hgb1vh.jpg",
@@ -49,6 +86,15 @@ const Index = () => {
       link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
     },
   ];
+
+  // State for shuffled properties
+  const [featuredProperties, setFeaturedProperties] = useState(originalFeaturedProperties);
+
+  // Shuffle on mount
+  useEffect(() => {
+    const shuffled = getShuffledListings(originalFeaturedProperties, 'featured-properties-shuffle');
+    setFeaturedProperties(shuffled);
+  }, []);
 
   // Team members - Updated with slugs for landing page routing
   const teamMembers = [
@@ -104,8 +150,8 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredProperties.map((property, index) => (
-              <PropertyCard key={index} {...property} />
+            {featuredProperties.map((property) => (
+              <PropertyCard key={property.id} {...property} />
             ))}
           </div>
 
