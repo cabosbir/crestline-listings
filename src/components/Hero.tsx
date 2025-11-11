@@ -177,8 +177,8 @@ const Hero = () => {
         className="relative z-10 container mx-auto px-4 sm:px-6 text-center"
       >
         <h1 
-          ref={headingRef}
-          className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24"
+        ref={headingRef}
+        className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-[1.1] mt-20 md:mt-24 px-2 break-words text-balance"
         >
           {splitText('BAJA INTERNATIONAL REALTY')}
         </h1>
