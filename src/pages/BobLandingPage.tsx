@@ -1,21 +1,54 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Home, Users, CheckCircle, ChevronLeft, ChevronRight, MessageCircle, ChevronDown } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Helper function to format phone number for WhatsApp (removes all non-digits)
-const getWhatsAppNumber = (phone: string) => {
+const getWhatsAppNumber = (phone) => {
   return phone.replace(/[^0-9]/g, '');
 };
 
 // Helper function to create WhatsApp link with pre-filled message
-const getWhatsAppLink = (phone: string, agentName: string) => {
+const getWhatsAppLink = (phone, agentName) => {
   const number = getWhatsAppNumber(phone);
   const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
   return `https://wa.me/${number}?text=${message}`;
+};
+
+// Shuffle function with localStorage cache (refreshes every 3 hours)
+const getShuffledListings = (listings, cacheKey) => {
+  const cacheTimeKey = `${cacheKey}-time`;
+  
+  if (typeof window === 'undefined') return listings;
+  
+  const cached = localStorage.getItem(cacheKey);
+  const cachedTime = localStorage.getItem(cacheTimeKey);
+  
+  const now = Date.now();
+  const threeHours = 3 * 60 * 60 * 1000;
+  
+  if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+    try {
+      return JSON.parse(cached);
+    } catch (e) {
+      console.error('Error parsing cached listings:', e);
+    }
+  }
+  
+  const shuffled = [...listings].sort(() => Math.random() - 0.5);
+  
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+    localStorage.setItem(cacheTimeKey, now.toString());
+  } catch (e) {
+    console.error('Error saving to localStorage:', e);
+  }
+  
+  return shuffled;
 };
 
 // Bob Van Patten - Baja International Realty Agent
@@ -120,27 +153,26 @@ const testimonials = [
 
 const BobLandingPage = () => {
   const { toast } = useToast();
-  const carouselRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showMyListings, setShowMyListings] = useState(false); // ⭐ CHANGED: Default to Featured (false)
+  const [featuredListings, setFeaturedListings] = useState(originalFeaturedListings);
 
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    if (carouselRef.current) {
-      const scrollAmount = 400;
-      const newScrollLeft = direction === 'left' 
-        ? carouselRef.current.scrollLeft - scrollAmount
-        : carouselRef.current.scrollLeft + scrollAmount;
-      
-      carouselRef.current.scrollTo({
-        left: newScrollLeft,
-        behavior: 'smooth'
-      });
+  // Shuffle featured listings on mount and when switching to Featured mode
+  useEffect(() => {
+    if (!showMyListings) {
+      const shuffled = getShuffledListings(originalFeaturedListings, `${agent.slug}-featured-shuffle`);
+      setFeaturedListings(shuffled);
     }
-  };
+  }, [showMyListings]);
+
+  // Determine which listings to display
+  const displayedListings = showMyListings ? originalMyListings : featuredListings;
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      {/* 🆕 FLOATING WHATSAPP BUTTON */}
+
+      {/* FLOATING WHATSAPP BUTTON */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -150,13 +182,9 @@ const BobLandingPage = () => {
         aria-label={`Contact ${agent.name} via WhatsApp`}
       >
         <MessageCircle className="h-8 w-8 text-white" />
-        
-        {/* Tooltip */}
         <span className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           Chat on WhatsApp
         </span>
-        
-        {/* Pulse animation */}
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
@@ -166,8 +194,6 @@ const BobLandingPage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            
-            {/* Agent Photo */}
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
@@ -176,7 +202,6 @@ const BobLandingPage = () => {
               />
             </div>
 
-            {/* Agent Info */}
             <div className="order-1 lg:order-2 text-center lg:text-left">
               <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
@@ -189,7 +214,6 @@ const BobLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
@@ -201,7 +225,6 @@ const BobLandingPage = () => {
                 </div>
               </div>
 
-              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button 
                   variant="default"
@@ -240,9 +263,7 @@ const BobLandingPage = () => {
               {agent.bio}
             </p>
 
-            {/* Credentials */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Certifications */}
               <div className="text-center">
                 <Award className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Certifications</h3>
@@ -256,7 +277,6 @@ const BobLandingPage = () => {
                 </div>
               </div>
 
-              {/* Languages */}
               <div className="text-center">
                 <Users className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Languages</h3>
@@ -267,7 +287,6 @@ const BobLandingPage = () => {
                 </div>
               </div>
 
-              {/* Expertise */}
               <div className="text-center">
                 <Home className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
                 <h3 className="font-bold mb-2">Specialization</h3>
@@ -278,99 +297,48 @@ const BobLandingPage = () => {
         </div>
       </section>
 
-      {/* Current Listings - Scrollable Carousel */}
+      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE ⭐⭐⭐ */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by {agent.name.split(' ')[0]}</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Listings</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore exclusive properties I'm currently representing in Cabo San Lucas
+          <div className="text-center mb-8">
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
             </p>
-          </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {showMyListings ? 'My Listings' : 'Featured Listings'}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+              {showMyListings 
+                ? `Exclusive properties I'm currently representing in Cabo San Lucas`
+                : 'Explore handpicked properties from our office (refreshed every 3 hours)'}
+            </p>
 
-          {/* Navigation Buttons - ABOVE carousel */}
-          <div className="flex justify-center gap-4 mb-6">
-            <button
-              onClick={() => scrollCarousel('left')}
-              className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors"
-              style={{ border: '2px solid #102f74' }}
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="h-6 w-6" style={{ color: '#102f74' }} />
-            </button>
-            
-            <button
-              onClick={() => scrollCarousel('right')}
-              className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors"
-              style={{ border: '2px solid #102f74' }}
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="h-6 w-6" style={{ color: '#102f74' }} />
-            </button>
-          </div>
-
-          <div className="relative max-w-7xl mx-auto">
-            {/* Carousel Container */}
-            <div 
-              ref={carouselRef}
-              className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory"
-              style={{ 
-                scrollbarWidth: 'none', 
-                msOverflowStyle: 'none',
-                WebkitOverflowScrolling: 'touch'
-              }}
-            >
-              <style>{`
-                div::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-              {agentListings.map((property) => (
-                <div key={property.id} className="flex-shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] snap-start">
-                  <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
-                    <div className="relative h-64 overflow-hidden">
-                      <img 
-                        src={property.image} 
-                        alt={property.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold" style={{ color: '#102f74' }}>
-                        {property.price}
-                      </div>
-                    </div>
-                    <div className="p-6 flex flex-col flex-grow">
-                      <h3 className="text-xl font-bold mb-2" style={{ color: '#102f74' }}>{property.title}</h3>
-                      <p className="text-muted-foreground mb-4">{property.location}</p>
-                      <div className="flex gap-4 mb-4 text-sm text-muted-foreground">
-                        <span>{property.beds} {property.beds === 1 ? 'Bed' : 'Beds'}</span>
-                        <span>•</span>
-                        <span>{property.baths} {property.baths === 1 ? 'Bath' : 'Baths'}</span>
-                        <span>•</span>
-                        <span>{property.sqft}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">{property.mlsNumber}</p>
-                      <div className="mt-auto">
-                        <Button 
-                          asChild 
-                          className="w-full"
-                          style={{ backgroundColor: '#102f74', color: 'white' }}
-                        >
-                          <a href={property.link} target="_blank" rel="noopener noreferrer">
-                            View Property
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            {/* Toggle Buttons */}
+            <div className="flex justify-center gap-2 mb-8">
+              <Button
+                variant={showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(true)}
+              >
+                My Listings ({originalMyListings.length})
+              </Button>
+              <Button
+                variant={!showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(false)}
+              >
+                Featured ({originalFeaturedListings.length})
+              </Button>
             </div>
           </div>
 
-          <div className="text-center mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {displayedListings.map((property) => (
+              <PropertyCard key={property.id} {...property} />
+            ))}
+          </div>
+
+          <div className="text-center">
             <Link to="/properties">
-              <Button size="lg" style={{ backgroundColor: '#d4af37', color: '#102f74' }} className="hover:opacity-90">
+              <Button variant="luxury" size="lg">
                 View All Properties
               </Button>
             </Link>
@@ -399,7 +367,7 @@ const BobLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Section - UPDATED WITH DROPDOWN */}
+      {/* Contact Section */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -410,9 +378,7 @@ const BobLandingPage = () => {
               </p>
             </div>
 
-            {/* Contact Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              {/* Phone Card */}
               <a 
                 href={`tel:${agent.phone}`}
                 className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
@@ -427,7 +393,6 @@ const BobLandingPage = () => {
                 </div>
               </a>
 
-              {/* Email Card */}
               <a 
                 href={`mailto:${agent.email}`}
                 className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
@@ -443,7 +408,6 @@ const BobLandingPage = () => {
               </a>
             </div>
 
-            {/* ⭐ NEW: Form Selector with Dropdown */}
             <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl">
               <div className="mb-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-900 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -453,11 +417,10 @@ const BobLandingPage = () => {
                 </div>
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">Looking to buy or sell?</h3>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                  Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out to you.
+                  Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out.
                 </p>
               </div>
 
-              {/* Dropdown Button */}
               <div className="relative max-w-md mx-auto">
                 <Button 
                   size="lg"
@@ -469,7 +432,6 @@ const BobLandingPage = () => {
                   <ChevronDown className={`w-5 h-5 ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </Button>
 
-                {/* Dropdown Menu */}
                 {isDropdownOpen && (
                   <div className="absolute w-full mt-2 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden z-10">
                     <Link
