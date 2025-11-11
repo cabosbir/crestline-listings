@@ -136,18 +136,6 @@ const originalMyListings = [
 const originalFeaturedListings = [
   ...originalMyListings,  // Include Bob's own listings
   // ⭐ ADD MORE OFFICE-WIDE LISTINGS BELOW
-  {
-    id: 6,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762632941/20250816215705384679000000-o_dpx9ui.jpg",
-    price: "$193,000",
-    title: "La Colina Town Home THTH2A",
-    location: "CSL North-West 19, Cabo San Lucas",
-    beds: 2,
-    baths: 2,
-    totalM2: "130",
-    mlsNumber: "25-3933",
-    link: "https://www.flexmls.com/share/D30em/La-Colina-Town-Home-THTH2A-M1L1-Para-so-Escondido-V-a-de-Lerry-2A-Cabo-San-Lucas-",
-  },
 ];
 
 // Client Testimonials
