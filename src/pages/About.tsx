@@ -359,42 +359,45 @@ const About = () => {
         </div>
       </section>
 
-      {/* Key Milestones - NOW CLICKABLE! */}
-      <section className="milestones-section py-24 bg-gray-50">
+      {/* Key Milestones */}
+      <section className="milestones-section pt-12 pb-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="section-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h2 className="section-heading text-4xl md:text-5xl font-bold text-foreground mb-2">
               Key Milestones
             </h2>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto mb-0">
               Click to explore 35+ years of pioneering real estate excellence
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto -mt-2">
             {milestones.map((milestone, index) => {
               const Icon = milestone.icon;
               return (
-                <div 
+                <div
                   key={index}
                   onClick={() => setSelectedMilestone(milestone.milestoneKey)}
-                  className="milestone-card bg-white p-8 rounded-xl border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  className="milestone-card bg-background border border-border rounded-2xl p-6 hover:shadow-hover transition-all duration-300 cursor-pointer group"
                   style={{ opacity: 1, visibility: 'visible' }}
                 >
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-blue-50 group-hover:bg-blue-100 transition-colors">
-                      <Icon className="h-8 w-8 text-blue-600" />
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
+                      <Icon className="h-7 w-7 text-accent" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-lg font-bold text-foreground mb-2 text-center uppercase group-hover:text-accent transition-colors">
                     {milestone.title}
                   </h3>
-                  <p className="text-sm text-gray-600 text-center leading-relaxed mb-4">
+                  <p className="text-muted-foreground text-center text-sm leading-relaxed mb-3">
                     {milestone.description}
                   </p>
-                  <p className="text-blue-600 text-sm font-semibold text-center group-hover:underline">
-                    Learn More →
-                  </p>
+                  <div className="text-center">
+                    <span className="text-accent text-sm font-medium underline-offset-4 group-hover:underline">
+                      Learn More →
+                    </span>
+                  </div>
                 </div>
               );
             })}
@@ -402,42 +405,45 @@ const About = () => {
         </div>
       </section>
 
-      {/* Our Values */}
-      <section className="values-section py-24 bg-background">
+      {/* Our Core Values */}
+      <section className="values-section pt-12 pb-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="section-heading text-4xl md:text-5xl font-bold text-foreground mb-4">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h2 className="section-heading text-4xl md:text-5xl font-bold text-foreground mb-2">
               Our Core Values
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto mb-0">
               Click on any value to learn more about our commitment to excellence
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto -mt-2">
             {values.map((value, index) => {
               const Icon = value.icon;
               return (
-                <div 
+                <div
                   key={index}
                   onClick={() => setSelectedValue(value.valueKey)}
-                  className="value-card bg-white p-8 rounded-xl border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                  className="value-card bg-background border border-border rounded-2xl p-6 hover:shadow-hover transition-all duration-300 cursor-pointer group"
                   style={{ opacity: 1, visibility: 'visible' }}
                 >
-                  <div className="flex justify-center mb-6">
-                    <div className="p-4 rounded-full bg-blue-50 group-hover:bg-blue-100 transition-colors">
-                      <Icon className="h-8 w-8 text-blue-600" />
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors">
+                      <Icon className="h-7 w-7 text-accent" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-lg font-bold text-foreground mb-2 text-center uppercase group-hover:text-accent transition-colors">
                     {value.title}
                   </h3>
-                  <p className="text-gray-600 text-center text-sm leading-relaxed mb-4">
+                  <p className="text-muted-foreground text-center text-sm leading-relaxed mb-3">
                     {value.description}
                   </p>
-                  <p className="text-blue-600 text-sm font-semibold text-center group-hover:underline">
-                    Learn More →
-                  </p>
+                  <div className="text-center">
+                    <span className="text-accent text-sm font-medium underline-offset-4 group-hover:underline">
+                      Learn More →
+                    </span>
+                  </div>
                 </div>
               );
             })}
