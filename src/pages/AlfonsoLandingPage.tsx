@@ -137,7 +137,7 @@ const testimonials = [
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showMyListings, setShowMyListings] = useState(true); // Toggle: My Listings vs Featured
+  const [showMyListings, setShowMyListings] = useState(false); // ⭐ CHANGED: Default to Featured (false)
   const [featuredListings, setFeaturedListings] = useState(originalFeaturedListings);
 
   // Shuffle featured listings on mount and when switching to Featured mode
