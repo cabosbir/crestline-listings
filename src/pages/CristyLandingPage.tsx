@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
 // Helper function to format phone number for WhatsApp (removes all non-digits)
 const getWhatsAppNumber = (phone: string) => {
@@ -19,10 +20,42 @@ const getWhatsAppLink = (phone: string, agentName: string) => {
   return `https://wa.me/${number}?text=${message}`;
 };
 
+// Shuffle function with localStorage cache (refreshes every 3 hours)
+const getShuffledListings = (listings: any[], cacheKey: string) => {
+  const cacheTimeKey = `${cacheKey}-time`;
+  
+  if (typeof window === 'undefined') return listings;
+  
+  const cached = localStorage.getItem(cacheKey);
+  const cachedTime = localStorage.getItem(cacheTimeKey);
+  
+  const now = Date.now();
+  const threeHours = 3 * 60 * 60 * 1000;
+  
+  if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+    try {
+      return JSON.parse(cached);
+    } catch (e) {
+      console.error('Error parsing cached listings:', e);
+    }
+  }
+  
+  const shuffled = [...listings].sort(() => Math.random() - 0.5);
+  
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+    localStorage.setItem(cacheTimeKey, now.toString());
+  } catch (e) {
+    console.error('Error saving to localStorage:', e);
+  }
+  
+  return shuffled;
+};
+
 // Cristy Cavazos - Baja International Realty Agent
 const agent = {
   id: 6,
-  slug: "cristy", // ⭐ IMPORTANT: Change this for each agent
+  slug: "cristy",
   name: "Cristy Cavazos",
   title: "Luxury Condo Specialist",
   specialization: "High-Rise & Penthouses",
@@ -36,8 +69,8 @@ const agent = {
   languages: ["English", "Spanish"],
 };
 
-// Cristy's Featured Listings
-const agentListings = [
+// ⭐ My Listings - Cristy's personal properties (NO SHUFFLE, HARDCODED)
+const originalMyListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
@@ -98,12 +131,82 @@ const testimonials = [
 const CristyLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showMyListings, setShowMyListings] = useState(false); // Default to Featured
+  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+
+  // Fetch and shuffle featured listings from FlexMLS API
+  useEffect(() => {
+    const loadFeaturedListings = async () => {
+      if (showMyListings) return; // Don't load if showing "My Listings"
+      
+      setIsLoadingFeatured(true);
+      
+      try {
+        // Check if we have cached data that's still valid (3 hours)
+        const cacheKey = `${agent.slug}-featured-api-data`;
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          // Use cached data
+          const cachedData = JSON.parse(cached);
+          setFeaturedListings(cachedData);
+          setIsLoadingFeatured(false);
+          return;
+        }
+        
+        // Fetch fresh data from API
+        const mlsData = await fetchListings({
+          city: 'Cabo San Lucas',
+          // Add more filters as needed
+        });
+        
+        // Convert API response to PropertyCard format
+        const convertedListings = mlsData.map(convertMLSToPropertyCard);
+        
+        // Shuffle the listings
+        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
+        
+        // Cache the API data
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching API data:', e);
+        }
+        
+        setFeaturedListings(shuffled);
+      } catch (error) {
+        console.error('Failed to load featured listings:', error);
+        
+        // Fallback to Cristy's own listings if API fails
+        toast({
+          title: "Notice",
+          description: "Showing available listings. Some listings may be loading.",
+          variant: "default",
+        });
+        setFeaturedListings(originalMyListings);
+      } finally {
+        setIsLoadingFeatured(false);
+      }
+    };
+
+    loadFeaturedListings();
+  }, [showMyListings, toast]);
+
+  // Determine which listings to display
+  const displayedListings = showMyListings ? originalMyListings : featuredListings;
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      {/* 🆕 FLOATING WHATSAPP BUTTON */}
+      {/* FLOATING WHATSAPP BUTTON */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -113,11 +216,9 @@ const CristyLandingPage = () => {
         aria-label={`Contact ${agent.name} via WhatsApp`}
       >
         <MessageCircle className="h-8 w-8 text-white" />
-        
         <span className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           Chat on WhatsApp
         </span>
-        
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
@@ -127,7 +228,6 @@ const CristyLandingPage = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
@@ -231,22 +331,60 @@ const CristyLandingPage = () => {
         </div>
       </section>
 
-      {/* Current Listings */}
+      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE & API INTEGRATION ⭐⭐⭐ */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>Featured by {agent.name.split(' ')[0]}</p>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Listings</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore exclusive properties I'm currently representing in Cabo San Lucas
+          <div className="text-center mb-8">
+            <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
             </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              {showMyListings ? 'My Listings' : 'Featured Listings'}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+              {showMyListings 
+                ? `Exclusive properties I'm currently representing in Cabo San Lucas`
+                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
+            </p>
+
+            {/* Toggle Buttons */}
+            <div className="flex justify-center gap-2 mb-8">
+              <Button
+                variant={showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(true)}
+              >
+                My Listings ({originalMyListings.length})
+              </Button>
+              <Button
+                variant={!showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(false)}
+              >
+                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
+              </Button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {agentListings.map((property) => (
-              <PropertyCard key={property.id} {...property} />
-            ))}
-          </div>
+          {/* Loading State */}
+          {isLoadingFeatured && !showMyListings ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
+              <p className="text-lg text-muted-foreground">Loading featured properties from FlexMLS...</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                {displayedListings.map((property) => (
+                  <PropertyCard key={property.id} {...property} />
+                ))}
+              </div>
+
+              {displayedListings.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-lg text-muted-foreground">No listings available at this time.</p>
+                </div>
+              )}
+            </>
+          )}
 
           <div className="text-center">
             <Link to="/properties">
@@ -279,7 +417,7 @@ const CristyLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Section - UPDATED WITH DROPDOWN */}
+      {/* Contact Section */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -320,7 +458,6 @@ const CristyLandingPage = () => {
               </a>
             </div>
 
-            {/* ⭐ NEW: Form Selector with Dropdown */}
             <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl">
               <div className="mb-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-900 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -330,7 +467,7 @@ const CristyLandingPage = () => {
                 </div>
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">Looking to buy or sell?</h3>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                  Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out to you.
+                  Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out.
                 </p>
               </div>
 

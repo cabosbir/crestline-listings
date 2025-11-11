@@ -4,8 +4,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
 // Helper function to format phone number for WhatsApp (removes all non-digits)
 const getWhatsAppNumber = (phone) => {
@@ -68,7 +69,7 @@ const agent = {
   languages: ["English", "Spanish"],  // ⭐ CHANGE
 };
 
-// ⭐⭐⭐ MY LISTINGS - Agent's Personal Properties (NO SHUFFLE) ⭐⭐⭐
+// ⭐⭐⭐ MY LISTINGS - Agent's Personal Properties (NO SHUFFLE, HARDCODED) ⭐⭐⭐
 const originalMyListings = [
   {
     id: 1,
@@ -108,36 +109,6 @@ const originalMyListings = [
   },
 ];
 
-// ⭐⭐⭐ FEATURED LISTINGS - All Office Properties (WILL SHUFFLE) ⭐⭐⭐
-const originalFeaturedListings = [
-  ...originalMyListings,  // Include agent's own listings
-  // ⭐ ADD OFFICE-WIDE LISTINGS BELOW (from other agents, etc.)
-  {
-    id: 101,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
-    price: "$499,000",
-    title: "La Vista LARGE PRIVATE YARD B101",
-    location: "Cabo San Lucas",
-    beds: 3,
-    baths: 3,
-    totalM2: "372.06",
-    mlsNumber: "25-1679",
-    link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
-  },
-  {
-    id: 102,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
-    price: "$3,795,800",
-    title: "Casa Ducci Camino del Mar",
-    location: "Cabo San Lucas",
-    beds: 4,
-    baths: 4.5,
-    totalM2: "350.23",
-    mlsNumber: "24-1981",
-    link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
-  },
-];
-
 // ⭐⭐⭐ TESTIMONIALS - CHANGE FOR EACH AGENT ⭐⭐⭐
 const testimonials = [
   {
@@ -160,16 +131,73 @@ const testimonials = [
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showMyListings, setShowMyListings] = useState(false); // ⭐ CHANGED: Default to Featured (false)
-  const [featuredListings, setFeaturedListings] = useState(originalFeaturedListings);
+  const [showMyListings, setShowMyListings] = useState(false); // ⭐ Default to Featured (false)
+  const [featuredListings, setFeaturedListings] = useState([]);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
 
-  // Shuffle featured listings on mount and when switching to Featured mode
+  // Fetch and shuffle featured listings from FlexMLS API
   useEffect(() => {
-    if (!showMyListings) {
-      const shuffled = getShuffledListings(originalFeaturedListings, `${agent.slug}-featured-shuffle`);
-      setFeaturedListings(shuffled);
-    }
-  }, [showMyListings]);
+    const loadFeaturedListings = async () => {
+      if (showMyListings) return; // Don't load if showing "My Listings"
+      
+      setIsLoadingFeatured(true);
+      
+      try {
+        // Check if we have cached data that's still valid (3 hours)
+        const cacheKey = `${agent.slug}-featured-api-data`;
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          // Use cached data
+          const cachedData = JSON.parse(cached);
+          setFeaturedListings(cachedData);
+          setIsLoadingFeatured(false);
+          return;
+        }
+        
+        // Fetch fresh data from API
+        const mlsData = await fetchListings({
+          city: 'Cabo San Lucas',
+          // Add more filters as needed
+        });
+        
+        // Convert API response to PropertyCard format
+        const convertedListings = mlsData.map(convertMLSToPropertyCard);
+        
+        // Shuffle the listings
+        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
+        
+        // Cache the API data
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching API data:', e);
+        }
+        
+        setFeaturedListings(shuffled);
+      } catch (error) {
+        console.error('Failed to load featured listings:', error);
+        
+        // Fallback to Alfonso's own listings if API fails
+        toast({
+          title: "Notice",
+          description: "Showing available listings. Some listings may be loading.",
+          variant: "default",
+        });
+        setFeaturedListings(originalMyListings);
+      } finally {
+        setIsLoadingFeatured(false);
+      }
+    };
+
+    loadFeaturedListings();
+  }, [showMyListings, toast]);
 
   // Determine which listings to display
   const displayedListings = showMyListings ? originalMyListings : featuredListings;
@@ -303,7 +331,7 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
-      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE ⭐⭐⭐ */}
+      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE & API INTEGRATION ⭐⭐⭐ */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -316,7 +344,7 @@ const AlfonsoLandingPage = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {showMyListings 
                 ? `Exclusive properties I'm currently representing in Cabo San Lucas`
-                : 'Explore handpicked properties from our office (refreshed every 3 hours)'}
+                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
             </p>
 
             {/* Toggle Buttons */}
@@ -331,16 +359,32 @@ const AlfonsoLandingPage = () => {
                 variant={!showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(false)}
               >
-                Featured ({originalFeaturedListings.length})
+                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-            {displayedListings.map((property) => (
-              <PropertyCard key={property.id} {...property} />
-            ))}
-          </div>
+          {/* Loading State */}
+          {isLoadingFeatured && !showMyListings ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
+              <p className="text-lg text-muted-foreground">Loading featured properties from FlexMLS...</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                {displayedListings.map((property) => (
+                  <PropertyCard key={property.id} {...property} />
+                ))}
+              </div>
+
+              {displayedListings.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-lg text-muted-foreground">No listings available at this time.</p>
+                </div>
+              )}
+            </>
+          )}
 
           <div className="text-center">
             <Link to="/properties">
