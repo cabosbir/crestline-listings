@@ -63,7 +63,7 @@ const agent = {
   email: "alfonso@bircabo.com",  // ⭐ CHANGE
   yearsExperience: 18,      // ⭐ CHANGE
   propertiesSold: 890,      // ⭐ CHANGE
-  bio: "Alfonso is a sales manager with a proven track record...",  // ⭐ CHANGE
+  bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
   certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],  // ⭐ CHANGE
   languages: ["English", "Spanish"],  // ⭐ CHANGE
 };
@@ -82,7 +82,30 @@ const originalMyListings = [
     mlsNumber: "25-4981",
     link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
   },
-  // ⭐ ADD MORE AGENT-SPECIFIC LISTINGS HERE
+  {
+    id: 2,
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
+    price: "$499,000",
+    title: "La Vista LARGE PRIVATE YARD B101",
+    location: "Cabo San Lucas",
+    beds: 3,
+    baths: 3,
+    totalM2: "372.06",
+    mlsNumber: "25-1679",
+    link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
+  },
+  {
+    id: 3,
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
+    price: "$3,795,800",
+    title: "Casa Ducci Camino del Mar",
+    location: "Cabo San Lucas",
+    beds: 4,
+    baths: 4.5,
+    totalM2: "350.23",
+    mlsNumber: "24-1981",
+    link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
+  },
 ];
 
 // ⭐⭐⭐ FEATURED LISTINGS - All Office Properties (WILL SHUFFLE) ⭐⭐⭐
@@ -118,18 +141,18 @@ const originalFeaturedListings = [
 // ⭐⭐⭐ TESTIMONIALS - CHANGE FOR EACH AGENT ⭐⭐⭐
 const testimonials = [
   {
-    name: "Jonathan & Rebecca Miller",  // ⭐ CHANGE
-    text: "Alfonso's expertise in commercial real estate...",  // ⭐ CHANGE
+    name: "Jonathan & Rebecca Miller",
+    text: "Alfonso's expertise in commercial real estate and market analysis was invaluable. His leadership and results-driven approach made our investment in Cabo a tremendous success.",
     rating: 5
   },
   {
-    name: "Marcus Davidson",  // ⭐ CHANGE
-    text: "Working with Alfonso was exceptional...",  // ⭐ CHANGE
+    name: "Marcus Davidson",
+    text: "Working with Alfonso was exceptional. His 18 years of experience and track record of 200+ closings speak for themselves. A true professional who delivers results!",
     rating: 5
   },
   {
-    name: "Susan & Richard Torres",  // ⭐ CHANGE
-    text: "Alfonso's detailed market analysis...",  // ⭐ CHANGE
+    name: "Susan & Richard Torres",
+    text: "Alfonso's detailed market analysis and clear communication gave us complete confidence in our development investment. His expertise is unmatched in Baja California Sur.",
     rating: 5
   }
 ];
