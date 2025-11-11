@@ -68,8 +68,8 @@ const agent = {
   languages: ["English"],
 };
 
-// Bob's Featured Listings
-const agentListings = [
+// ⭐ My Listings - Bob's personal properties (NO SHUFFLE)
+const originalMyListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762121002/20251017233106344278000000-o_mkittq.jpg",
@@ -79,7 +79,7 @@ const agentListings = [
     beds: 0,
     baths: 1,
     sqft: "422 sq ft",
-    mlsNumber: "MLS# 25-4668",
+    mlsNumber: "25-4668",
     link: "https://www.flexmls.com/share/D1Cgo/Marina-Cabo-Plaza-Paseo-de-la-Marina-103A-Cabo-San-Lucas-",
   },
   {
@@ -91,7 +91,7 @@ const agentListings = [
     beds: 2,
     baths: 2,
     sqft: "986 sq ft",
-    mlsNumber: "MLS# 24-2325",
+    mlsNumber: "24-2325",
     link: "https://www.flexmls.com/share/D1Cl1/Bahia-del-Tezal-I-605B-Cabo-Corridor-",
   },
   {
@@ -103,7 +103,7 @@ const agentListings = [
     beds: 2,
     baths: 2,
     sqft: "2,551 sq ft",
-    mlsNumber: "MLS# 24-804",
+    mlsNumber: "24-804",
     link: "https://www.flexmls.com/share/D1Clv/Solaria-E-102-Cabo-Corridor-",
   },
   {
@@ -115,7 +115,7 @@ const agentListings = [
     beds: 2,
     baths: 2,
     sqft: "2,551 sq ft",
-    mlsNumber: "MLS# 24-2165",
+    mlsNumber: "24-2165",
     link: "https://www.flexmls.com/share/D1CpK/Solaria-2-Bed-w-Pool-Bonus-C-104-Cabo-Corridor-",
   },
   {
@@ -127,9 +127,15 @@ const agentListings = [
     beds: 5,
     baths: 5,
     sqft: "0 sq ft",
-    mlsNumber: "MLS# 23-3132",
+    mlsNumber: "23-3132",
     link: "https://www.flexmls.com/share/D1Crp/Casa-DE-Los-Suenos-A-25-Fray-Junipero-Serra-Cabo-Corridor-",
   },
+];
+
+// ⭐ Featured Listings - All office properties (WILL SHUFFLE every 3 hours)
+const originalFeaturedListings = [
+  ...originalMyListings,  // Include Bob's own listings
+  // ⭐ ADD MORE OFFICE-WIDE LISTINGS BELOW
 ];
 
 // Client Testimonials
@@ -154,7 +160,7 @@ const testimonials = [
 const BobLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showMyListings, setShowMyListings] = useState(false); // ⭐ CHANGED: Default to Featured (false)
+  const [showMyListings, setShowMyListings] = useState(false); // Default to Featured
   const [featuredListings, setFeaturedListings] = useState(originalFeaturedListings);
 
   // Shuffle featured listings on mount and when switching to Featured mode
