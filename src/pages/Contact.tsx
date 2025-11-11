@@ -447,7 +447,7 @@ const Contact = () => {
               Get Directions to Our Office
             </a>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-              Located in the heart of Downtown Cabo San Lucas by the Marina, our office is easily accessible and ready to assist you. Visit us during business hours, or contact us to schedule an appointment at your convenience.
+              Conveniently located in the heart of Downtown Cabo San Lucas, just steps from the Marina, our office is easy to find and always ready to assist you. Visit us during regular business hours, or contact us to schedule a private appointment at your convenience.
             </p>
           </div>
         </div>
