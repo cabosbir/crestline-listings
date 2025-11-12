@@ -16,7 +16,6 @@ import IDXSearch from "./pages/IDXSearch";
 import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
 import BobLandingPage from "./pages/BobLandingPage";
 import CozbiLandingPage from "./pages/CozbiLandingPage";
-import CristyLandingPage from "./pages/CristyLandingPage";
 import DavidLandingPage from "./pages/DavidLandingPage";
 import DonLandingPage from "./pages/DonLandingPage";
 import EdgarLandingPage from "./pages/EdgarLandingPage";
@@ -76,7 +75,6 @@ const App = () => (
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/bob" element={<BobLandingPage />} />
           <Route path="/cozbi" element={<CozbiLandingPage />} />
-          <Route path="/cristy" element={<CristyLandingPage />} />
           <Route path="/david" element={<DavidLandingPage />} />
           <Route path="/don" element={<DonLandingPage />} />
           <Route path="/edgar" element={<EdgarLandingPage />} />
@@ -89,7 +87,6 @@ const App = () => (
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/agents/bob" element={<BobLandingPage />} />
           <Route path="/agents/cozbi" element={<CozbiLandingPage />} />
-          <Route path="/agents/cristy" element={<CristyLandingPage />} />
           <Route path="/agents/david" element={<DavidLandingPage />} />
           <Route path="/agents/don" element={<DonLandingPage />} />
           <Route path="/agents/edgar" element={<EdgarLandingPage />} />

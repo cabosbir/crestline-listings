@@ -35,12 +35,6 @@ const agentsData = {
     email: "David@bircabo.com",
     phone: "+52 624 317 0297"
   },
-  cristy: {
-    id: 6,
-    name: "Cristy Cavazos",
-    email: "Cristina.cavazos@grupoveq.com",
-    phone: "+52 624 178 0825"
-  },
   erika: {
     id: 2,
     name: "Erika Aispuro",
@@ -362,7 +356,6 @@ const NewClientForm = () => {
                   <option value="alfonso">Alfonso Puente</option>
                   <option value="bob">Bob Van Patten</option>
                   <option value="cozbi">Cozbi Sanchez</option>
-                  <option value="cristy">Cristy Cavazos</option>
                   <option value="david">David Scott Piper</option>
                   <option value="don">Don Weis</option>
                   <option value="edgar">Edgar Pacheco</option>

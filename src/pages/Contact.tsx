@@ -50,7 +50,6 @@ const Contact = () => {
     { id: 3, name: "Alfonso Puente", email: "alfonso@bircabo.com" },
     { id: 4, name: "Cozbi Sanchez", email: "Cozbi@bajainternationalrealty.com" },
     { id: 5, name: "Hector Mendoza", email: "Hector@bircabo.com" },
-    { id: 6, name: "Cristy Cavazos", email: "Cristina.cavazos@grupoveq.com" },
     { id: 7, name: "Marisol Tort", email: "mtortricardi@gmail.com" },
     { id: 8, name: "David Scott Piper", email: "David@bircabo.com" },
     { id: 9, name: "Susu Vieira", email: "Susu@bircabo.com" },
