@@ -92,21 +92,6 @@ const agents = [
     languages: ["English", "Spanish"]
   },
   {
-    id: 6,
-    slug: "cristy", // ⭐ ADD THIS
-    name: "Cristy Cavazos",
-    title: "Luxury Condo Specialist",
-    specialization: "High-Rise & Penthouses",
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761588682/a-soft-natural-light-portrait-photograph_2oZCo8O8TSWRNzgLxLaLew_-RP-wvPgSnKeu7bWvJ_y8A_bknfmc.jpg",
-    phone: "+52 624 178 0825",
-    email: "Cristina.cavazos@grupoveq.com",
-    yearsExperience: 11,
-    propertiesSold: 108,
-    bio: "I'm Cristy, a Cabo San Lucas real estate expert specializing in luxury and coastal properties.",
-    certifications: ["REALTOR®", "CLHMS", "GRI", "MLS Member"],
-    languages: ["English", "Spanish"]
-  },
-  {
     id: 2,
     slug: "erika", // ⭐ ADD THIS
     name: "Erika Aispuro",
