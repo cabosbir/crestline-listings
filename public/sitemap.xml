@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
-  <!-- Homepage - Primary Landing Page -->
+  <!-- Homepage -->
   <url>
     <loc>https://www.bircabo.com/</loc>
     <lastmod>2025-11-04</lastmod>
@@ -10,7 +9,7 @@
     <priority>1.0</priority>
   </url>
   
-  <!-- Properties Listing - High Priority Search Page -->
+  <!-- Main Pages -->
   <url>
     <loc>https://www.bircabo.com/properties</loc>
     <lastmod>2025-11-04</lastmod>
@@ -18,7 +17,6 @@
     <priority>0.9</priority>
   </url>
   
-  <!-- IDX Search - MLS Integration -->
   <url>
     <loc>https://www.bircabo.com/idx-search</loc>
     <lastmod>2025-11-04</lastmod>
@@ -26,7 +24,6 @@
     <priority>0.9</priority>
   </url>
   
-  <!-- Market Report - Authority Content -->
   <url>
     <loc>https://www.bircabo.com/market-report</loc>
     <lastmod>2025-11-04</lastmod>
@@ -34,7 +31,6 @@
     <priority>0.8</priority>
   </url>
   
-  <!-- About Page - Brand Authority -->
   <url>
     <loc>https://www.bircabo.com/about</loc>
     <lastmod>2025-11-04</lastmod>
@@ -42,7 +38,6 @@
     <priority>0.8</priority>
   </url>
   
-  <!-- Team Page - Trust Signals -->
   <url>
     <loc>https://www.bircabo.com/team</loc>
     <lastmod>2025-11-04</lastmod>
@@ -50,7 +45,6 @@
     <priority>0.8</priority>
   </url>
   
-  <!-- Contact Page - Conversion Page -->
   <url>
     <loc>https://www.bircabo.com/contact</loc>
     <lastmod>2025-11-04</lastmod>
@@ -58,15 +52,22 @@
     <priority>0.7</priority>
   </url>
   
-  <!-- New Client Form - Lead Generation -->
+  <!-- Forms -->
   <url>
-    <loc>https://www.bircabo.com/new-client-form</loc>
+    <loc>https://www.bircabo.com/new-client</loc>
     <lastmod>2025-11-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
-  <!-- Individual Agent Landing Pages - Short URLs (Primary) -->
+  <url>
+    <loc>https://www.bircabo.com/seller-evaluation</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Agent Landing Pages - Short URLs -->
   <url>
     <loc>https://www.bircabo.com/alfonso</loc>
     <lastmod>2025-11-04</lastmod>
@@ -137,7 +138,78 @@
     <priority>0.7</priority>
   </url>
   
-  <!-- Individual Agent Detail Pages -->
+  <!-- Agent Landing Pages - Full URLs -->
+  <url>
+    <loc>https://www.bircabo.com/agents/alfonso</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/bob</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/cozbi</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/david</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/don</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/edgar</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/erika</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/hector</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/marisol</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.bircabo.com/agents/susu</loc>
+    <lastmod>2025-11-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Team Detail Pages -->
   <url>
     <loc>https://www.bircabo.com/team/1</loc>
     <lastmod>2025-11-04</lastmod>
@@ -222,7 +294,7 @@
     <priority>0.6</priority>
   </url>
   
-  <!-- Sample Property Pages -->
+  <!-- Property Pages - Add actual property IDs -->
   <url>
     <loc>https://www.bircabo.com/property/sample-property-1</loc>
     <lastmod>2025-11-04</lastmod>
