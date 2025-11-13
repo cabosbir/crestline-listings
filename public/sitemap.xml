@@ -67,8 +67,6 @@
   </url>
   
   <!-- Individual Agent Landing Pages - Short URLs (Primary) -->
-  <!-- These are optimized for direct marketing and SEO -->
-  
   <url>
     <loc>https://www.bircabo.com/alfonso</loc>
     <lastmod>2025-11-04</lastmod>
@@ -85,13 +83,6 @@
   
   <url>
     <loc>https://www.bircabo.com/cozbi</loc>
-    <lastmod>2025-11-04</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.bircabo.com/cristy</loc>
     <lastmod>2025-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -146,9 +137,7 @@
     <priority>0.7</priority>
   </url>
   
-  <!-- Individual Agent Detail Pages (from Team section) -->
-  <!-- These pages accessed via /team/:id structure -->
-  
+  <!-- Individual Agent Detail Pages -->
   <url>
     <loc>https://www.bircabo.com/team/1</loc>
     <lastmod>2025-11-04</lastmod>
@@ -234,7 +223,6 @@
   </url>
   
   <!-- Sample Property Pages -->
-  <!-- Add your actual property IDs here - these are examples -->
   <url>
     <loc>https://www.bircabo.com/property/sample-property-1</loc>
     <lastmod>2025-11-04</lastmod>
@@ -248,81 +236,5 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
-  <!-- Add more property URLs dynamically as they're created -->
-  
+
 </urlset>
-```
-
-## Key Improvements Made:
-
-### 1. **Updated Domain**
-- Changed from `bajainternationalrealty.com` to `bircabo.com`
-- Updated all lastmod dates to current (2025-11-04)
-
-### 2. **Optimized Priorities**
-- **1.0**: Homepage (main entry point)
-- **0.9**: Properties listing & IDX Search (high-value search pages)
-- **0.8**: Market Report, About, Team (authority & trust pages)
-- **0.7**: Contact, New Client Form, Individual agent landing pages
-- **0.6**: Team detail pages (supporting content)
-- **0.8**: Individual property pages (transaction-focused)
-
-### 3. **Added Missing Pages**
-- **IDX Search page** - Critical for MLS integration
-- **Market Report** - Authority content that competitors have
-- **New Client Form** - Lead generation page
-- **All agent landing pages** - Both short URLs (/bob) and full URLs (/agents/bob)
-
-### 4. **Change Frequencies**
-- **Daily**: Homepage, properties, IDX search (dynamic content)
-- **Weekly**: Market reports, agent pages, property listings
-- **Monthly**: Static pages (about, contact, team details)
-
-### 5. **Strategic Structure**
-The sitemap now mirrors successful competitor structures while highlighting BIR Cabo's strengths:
-- Multiple entry points for agents (marketing flexibility)
-- Property-focused pages prioritized
-- Trust/authority pages properly weighted
-
-## Additional Recommendations:
-
-### Create a Dynamic Sitemap Generator
-Since you have property listings, consider creating a script that:
-1. Pulls all active property IDs from your database
-2. Generates property URLs automatically
-3. Updates the sitemap weekly
-
-### robots.txt File
-Create/update your `robots.txt`:
-```
-User-agent: *
-Allow: /
-Sitemap: https://www.bircabo.com/sitemap.xml
-
-# Block admin/form submission URLs
-Disallow: /admin/
-Disallow: /api/
-Disallow: /*?*utm_
-```
-
-### Additional Sitemaps to Create
-
-**1. Location-Based Sitemap** (if you create these pages):
-```
-/cabo-san-lucas-real-estate
-/san-jose-del-cabo-properties
-/cabo-corridor-homes
-/pedregal-real-estate
-/palmilla-properties
-/chileno-bay-homes
-etc.
-```
-
-**2. Property-Type Sitemap**:
-```
-/condos-for-sale
-/houses-for-sale
-/beachfront-properties
-/golf-course-homes
-/luxury-estates
