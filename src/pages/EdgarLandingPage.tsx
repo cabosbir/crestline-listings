@@ -254,6 +254,10 @@ const EdgarLandingPage = () => {
       
       setIsLoadingFeatured(true);
       
+      // TEMPORARILY DISABLED API - Using fallback listings until Spark API approval
+      // Uncomment the try-catch block below when API is ready
+      
+      /*
       try {
         // Check if we have cached data that's still valid (3 hours)
         const cacheKey = `${agent.slug}-featured-api-data`;
@@ -306,6 +310,11 @@ const EdgarLandingPage = () => {
       } finally {
         setIsLoadingFeatured(false);
       }
+      */
+      
+      // Temporarily show fallback listings directly
+      setFeaturedListings(fallbackFeaturedListings);
+      setIsLoadingFeatured(false);
     };
 
     loadFeaturedListings();
