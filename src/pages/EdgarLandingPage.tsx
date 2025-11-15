@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown } from "lucide-react";
 
 // Helper function to format phone number for WhatsApp (removes all non-digits)
 const getWhatsAppNumber = (phone: string) => {
@@ -18,38 +16,6 @@ const getWhatsAppLink = (phone: string, agentName: string) => {
   const number = getWhatsAppNumber(phone);
   const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
   return `https://wa.me/${number}?text=${message}`;
-};
-
-// Shuffle function with localStorage cache (refreshes every 3 hours)
-const getShuffledListings = (listings: any[], cacheKey: string) => {
-  const cacheTimeKey = `${cacheKey}-time`;
-  
-  if (typeof window === 'undefined') return listings;
-  
-  const cached = localStorage.getItem(cacheKey);
-  const cachedTime = localStorage.getItem(cacheTimeKey);
-  
-  const now = Date.now();
-  const threeHours = 3 * 60 * 60 * 1000;
-  
-  if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-    try {
-      return JSON.parse(cached);
-    } catch (e) {
-      console.error('Error parsing cached listings:', e);
-    }
-  }
-  
-  const shuffled = [...listings].sort(() => Math.random() - 0.5);
-  
-  try {
-    localStorage.setItem(cacheKey, JSON.stringify(shuffled));
-    localStorage.setItem(cacheTimeKey, now.toString());
-  } catch (e) {
-    console.error('Error saving to localStorage:', e);
-  }
-  
-  return shuffled;
 };
 
 // Edgar Pacheco - Baja International Realty Agent
@@ -109,6 +75,118 @@ const originalMyListings = [
   },
 ];
 
+// Featured Listings - Temporary until Spark API approval
+const featuredListings = [
+  {
+    id: 1,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171689/20250903162058154584000000-o_1_dtusih.jpg",
+    price: "$29,900,000",
+    title: "La Montaña 7, San Jose Corridor",
+    location: "San Jose Corridor",
+    beds: 6,
+    baths: 7,
+    totalM2: "N/A",
+    mlsNumber: "25-1563",
+    link: "https://www.flexmls.com/share/D4oNI/La-Monta-a-7-San-Jose-Corridor-",
+  },
+  {
+    id: 2,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171868/20241126184008646051000000-o_lv9fbu.jpg",
+    price: "$21,000,000",
+    title: "Espiritu del Mar, Casa Luna Escondida",
+    location: "San Jose Corridor",
+    beds: 10,
+    baths: 12,
+    totalM2: "22,596",
+    mlsNumber: "24-5344",
+    link: "https://www.flexmls.com/share/D4oOu/Casa-Luna-Escondida-Espiritu-del-Mar-San-Jose-Corridor-",
+  },
+  {
+    id: 3,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171913/20251030154706212946000000-o_erpyxt.jpg",
+    price: "$19,850,000",
+    title: "Casa R Caleta Palmilla, Beachfront",
+    location: "Caleta Palmilla, San Jose Corridor",
+    beds: 7,
+    baths: 7,
+    totalM2: "12,860",
+    mlsNumber: "25-4826",
+    link: "https://www.flexmls.com/share/D4oPV/Beachfront-Caleta-Palmilla-Casa-R-Caleta-Palmilla-Dr-San-Jose-Corridor-",
+  },
+  {
+    id: 4,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171969/20251010184556773187000000-o_hq2fyv.jpg",
+    price: "$17,900,000",
+    title: "Casita 11, Casa Amore",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 8,
+    totalM2: "12,819",
+    mlsNumber: "25-4958",
+    link: "https://www.flexmls.com/share/D4oQE/Casa-Amore-Casita-11-San-Jose-Corridor-",
+  },
+  {
+    id: 5,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172032/20251010204002587235000000-o_xs4xu1.jpg",
+    price: "$15,900,000",
+    title: "Casita 10, Villa Laura",
+    location: "San Jose Corridor",
+    beds: 8,
+    baths: 9,
+    totalM2: "10,874",
+    mlsNumber: "25-4500",
+    link: "https://www.flexmls.com/share/D4oQy/Villa-Laura-Casita-10-San-Jose-Corridor-",
+  },
+  {
+    id: 6,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172108/20250516213428349054000000-o_upkws3.jpg",
+    price: "$12,900,000",
+    title: "Hacienda 505",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 7,
+    totalM2: "N/A",
+    mlsNumber: "25-2623",
+    link: "https://www.flexmls.com/share/D4oSD/Hacienda-505-San-Jose-Corridor-",
+  },
+  {
+    id: 7,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172188/20251107153452735555000000-o_lnsjug.jpg",
+    price: "$11,900,000",
+    title: "Villas del Mar, Estate Villa 496",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 6,
+    totalM2: "8,102",
+    mlsNumber: "25-3280",
+    link: "https://www.flexmls.com/share/D4oTE/Estate-Villa-496-Villas-del-Mar-San-Jose-Corridor-",
+  },
+  {
+    id: 8,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172532/20250520183535938188000000-o_hywmj2.jpg",
+    price: "$8,500,000",
+    title: "Villas del Mar, Casita 382",
+    location: "San Jose Corridor",
+    beds: 4,
+    baths: 4,
+    totalM2: "5,724",
+    mlsNumber: "25-2575",
+    link: "https://www.flexmls.com/share/D4oU4/Casita-382-Villas-del-Mar-San-Jose-Corridor-",
+  },
+  {
+    id: 9,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172428/20251010043244963405000000-o_1_kexihr.jpg",
+    price: "$8,500,000",
+    title: "131 Villas del Mar Palmilla, Casa Abejas",
+    location: "Palmilla, San Jose Corridor",
+    beds: 4,
+    baths: 5,
+    totalM2: "5,017",
+    mlsNumber: "25-4856",
+    link: "https://www.flexmls.com/share/D4oVK/Villa-Buena-Vista-Casita-38-Villas-del-Mar-San-Jose-Corridor-",
+  },
+];
+
 // Client Testimonials
 const testimonials = [
   {
@@ -129,75 +207,8 @@ const testimonials = [
 ];
 
 const EdgarLandingPage = () => {
-  const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false); // Default to Featured
-  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
-  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
-
-  // Fetch and shuffle featured listings from FlexMLS API
-  useEffect(() => {
-    const loadFeaturedListings = async () => {
-      if (showMyListings) return; // Don't load if showing "My Listings"
-      
-      setIsLoadingFeatured(true);
-      
-      try {
-        // Check if we have cached data that's still valid (3 hours)
-        const cacheKey = `${agent.slug}-featured-api-data`;
-        const cacheTimeKey = `${cacheKey}-time`;
-        const cached = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheTimeKey);
-        
-        const now = Date.now();
-        const threeHours = 3 * 60 * 60 * 1000;
-        
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-          // Use cached data
-          const cachedData = JSON.parse(cached);
-          setFeaturedListings(cachedData);
-          setIsLoadingFeatured(false);
-          return;
-        }
-        
-        // Fetch fresh data from API
-        const mlsData = await fetchListings({
-          city: 'Cabo San Lucas',
-          // Add more filters as needed
-        });
-        
-        // Convert API response to PropertyCard format
-        const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        
-        // Shuffle the listings
-        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
-        
-        // Cache the API data
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
-          localStorage.setItem(cacheTimeKey, now.toString());
-        } catch (e) {
-          console.error('Error caching API data:', e);
-        }
-        
-        setFeaturedListings(shuffled);
-      } catch (error) {
-        console.error('Failed to load featured listings:', error);
-        
-        // Fallback to Edgar's own listings if API fails
-        toast({
-          title: "Notice",
-          description: "Showing available listings. Some listings may be loading.",
-          variant: "default",
-        });
-        setFeaturedListings(originalMyListings);
-      } finally {
-        setIsLoadingFeatured(false);
-      }
-    };
-
-    loadFeaturedListings();
-  }, [showMyListings, toast]);
 
   // Determine which listings to display
   const displayedListings = showMyListings ? originalMyListings : featuredListings;
@@ -331,7 +342,7 @@ const EdgarLandingPage = () => {
         </div>
       </section>
 
-      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE & API INTEGRATION ⭐⭐⭐ */}
+      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE ⭐⭐⭐ */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -359,31 +370,21 @@ const EdgarLandingPage = () => {
                 variant={!showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(false)}
               >
-                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
+                Featured ({featuredListings.length})
               </Button>
             </div>
           </div>
 
-          {/* Loading State */}
-          {isLoadingFeatured && !showMyListings ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
-              <p className="text-lg text-muted-foreground">Loading featured properties from FlexMLS...</p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                {displayedListings.map((property) => (
-                  <PropertyCard key={property.id} {...property} />
-                ))}
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {displayedListings.map((property) => (
+              <PropertyCard key={property.id} {...property} />
+            ))}
+          </div>
 
-              {displayedListings.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-lg text-muted-foreground">No listings available at this time.</p>
-                </div>
-              )}
-            </>
+          {displayedListings.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-lg text-muted-foreground">No listings available at this time.</p>
+            </div>
           )}
 
           <div className="text-center">
