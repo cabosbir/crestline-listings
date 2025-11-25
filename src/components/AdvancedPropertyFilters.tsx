@@ -1,8 +1,9 @@
-// src/components/AdvancedPropertyFilters.tsx - Updated to match FlexMLS native interface
+// src/components/AdvancedPropertyFilters.tsx - Fixed version
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Sheet,
   SheetContent,
@@ -56,33 +57,33 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
   });
 
   const cities = [
-    { value: "cabo-san-lucas", label: "Cabo San Lucas" },
-    { value: "san-jose-del-cabo", label: "San Jose del Cabo" },
-    { value: "todos-santos", label: "Todos Santos" },
-    { value: "la-paz", label: "La Paz" },
-    { value: "east-cape", label: "East Cape" },
-    { value: "corridor", label: "Corridor" },
-    { value: "pacific-coast", label: "Pacific Coast" },
+    { value: "Cabo San Lucas", label: "Cabo San Lucas" },
+    { value: "San Jose del Cabo", label: "San Jose del Cabo" },
+    { value: "Todos Santos", label: "Todos Santos" },
+    { value: "La Paz", label: "La Paz" },
+    { value: "East Cape", label: "East Cape" },
+    { value: "Corridor", label: "Corridor" },
+    { value: "Pacific Coast", label: "Pacific Coast" },
   ];
 
   const neighborhoods = [
-    { value: "marina", label: "Marina" },
-    { value: "downtown", label: "Downtown" },
-    { value: "pedregal", label: "Pedregal" },
-    { value: "chileno-bay", label: "Chileno Bay" },
-    { value: "palmilla", label: "Palmilla" },
-    { value: "puerto-los-cabos", label: "Puerto Los Cabos" },
-    { value: "costa-azul", label: "Costa Azul" },
+    { value: "Marina", label: "Marina" },
+    { value: "Downtown", label: "Downtown" },
+    { value: "Pedregal", label: "Pedregal" },
+    { value: "Chileno Bay", label: "Chileno Bay" },
+    { value: "Palmilla", label: "Palmilla" },
+    { value: "Puerto Los Cabos", label: "Puerto Los Cabos" },
+    { value: "Costa Azul", label: "Costa Azul" },
   ];
 
   const propertyTypes = [
-    { value: "single-family", label: "Single Family" },
-    { value: "townhouse", label: "Townhouse" },
-    { value: "condo", label: "Condo" },
-    { value: "penthouse", label: "Penthouse" },
-    { value: "villa", label: "Villa" },
-    { value: "lot-land", label: "Lot/Land" },
-    { value: "commercial", label: "Commercial" },
+    { value: "Single Family", label: "Single Family" },
+    { value: "Townhouse", label: "Townhouse" },
+    { value: "Condo", label: "Condo" },
+    { value: "Penthouse", label: "Penthouse" },
+    { value: "Villa", label: "Villa" },
+    { value: "Lot/Land", label: "Lot/Land" },
+    { value: "Commercial", label: "Commercial" },
   ];
 
   const handleMLSSearch = () => {
@@ -333,49 +334,45 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                 </div>
               </div>
 
-              {/* Features */}
+              {/* Features - FIXED: Using Checkbox instead of RadioGroupItem */}
               <div>
                 <Label className="text-base font-semibold mb-3 block">Features</Label>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem 
-                      value="waterfront" 
+                    <Checkbox 
                       id="waterfront"
                       checked={filters.waterfront}
-                      onClick={() => setFilters({ ...filters, waterfront: !filters.waterfront })}
+                      onCheckedChange={(checked) => setFilters({ ...filters, waterfront: checked as boolean })}
                     />
                     <label htmlFor="waterfront" className="text-sm cursor-pointer">
                       Waterfront
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem 
-                      value="oceanView" 
+                    <Checkbox 
                       id="oceanView"
                       checked={filters.oceanView}
-                      onClick={() => setFilters({ ...filters, oceanView: !filters.oceanView })}
+                      onCheckedChange={(checked) => setFilters({ ...filters, oceanView: checked as boolean })}
                     />
                     <label htmlFor="oceanView" className="text-sm cursor-pointer">
                       Ocean View
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem 
-                      value="pool" 
+                    <Checkbox 
                       id="pool"
                       checked={filters.pool}
-                      onClick={() => setFilters({ ...filters, pool: !filters.pool })}
+                      onCheckedChange={(checked) => setFilters({ ...filters, pool: checked as boolean })}
                     />
                     <label htmlFor="pool" className="text-sm cursor-pointer">
                       Pool
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem 
-                      value="golfCourse" 
+                    <Checkbox 
                       id="golfCourse"
                       checked={filters.golfCourse}
-                      onClick={() => setFilters({ ...filters, golfCourse: !filters.golfCourse })}
+                      onCheckedChange={(checked) => setFilters({ ...filters, golfCourse: checked as boolean })}
                     />
                     <label htmlFor="golfCourse" className="text-sm cursor-pointer">
                       Golf Course
