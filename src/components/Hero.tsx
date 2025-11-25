@@ -155,7 +155,7 @@ const Hero = () => {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="https://res.cloudinary.com/dbmhtlgz1/video/upload/v1764110136/BIR_copy_wrbv3e.mp4" />
+            <source src="/BIR.mp4" />
           </video>
           {/* Secondary video for crossfade */}
           <video
@@ -165,7 +165,7 @@ const Hero = () => {
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
             style={{ opacity: 0 }}
           >
-            <source src="https://res.cloudinary.com/dbmhtlgz1/video/upload/v1764110136/BIR_copy_wrbv3e.mp4" type="video/mp4" />
+            <source src="/BIR.mp4" type="video/mp4" />
           </video>
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
