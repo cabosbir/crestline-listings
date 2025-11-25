@@ -50,10 +50,16 @@ const Properties = () => {
     const selectedCommunity = filters.communities && filters.communities.length > 0 ? filters.communities[0] : undefined;
     
     // Convert price strings to numbers (remove $ and commas)
-    const parsePrice = (priceStr: string) => {
-      if (!priceStr || priceStr === "No Preference") return undefined;
+    const parsePrice = (priceStr: string | undefined) => {
+      // Check for undefined/null/empty BEFORE calling .replace()
+      if (!priceStr || priceStr === "No Preference" || priceStr === "") return undefined;
+      
       const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
       const num = parseFloat(cleaned);
+      
+      // Return undefined for invalid numbers
+      if (isNaN(num)) return undefined;
+      
       if (priceStr.includes('Million')) {
         return num * 1000000;
       }
@@ -61,9 +67,12 @@ const Properties = () => {
     };
     
     // Convert beds/baths strings to numbers
-    const parseBeds = (bedsStr: string) => {
-      if (!bedsStr || bedsStr === "Any") return undefined;
-      return parseInt(bedsStr.replace('+', ''));
+    const parseBeds = (bedsStr: string | undefined) => {
+      // Check for undefined/null/empty BEFORE calling .replace()
+      if (!bedsStr || bedsStr === "Any" || bedsStr === "") return undefined;
+      
+      const parsed = parseInt(bedsStr.replace('+', ''));
+      return isNaN(parsed) ? undefined : parsed;
     };
     
     const apiFilters = {
