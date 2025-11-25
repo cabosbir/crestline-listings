@@ -19,6 +19,7 @@ interface PropertyCardProps {
   propertyType?: string;
   latitude?: number;
   longitude?: number;
+  link?: string; // Add optional MLS link
 }
 
 const PropertyCard = ({
@@ -36,6 +37,7 @@ const PropertyCard = ({
   propertyType = "Single Family Home",
   latitude,
   longitude,
+  link,
 }: PropertyCardProps) => {
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(image);
@@ -59,6 +61,14 @@ const PropertyCard = ({
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
+    
+    // If link is provided (from featured properties), open it
+    if (link) {
+      window.open(link, '_blank');
+      return;
+    }
+    
+    // Otherwise, try to navigate to detail page
     navigate(`/property/${id}`);
   };
 
