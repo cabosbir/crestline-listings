@@ -9,91 +9,43 @@ import WhyWorkWithUs from "@/components/WhyWorkWithUs";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
 const Index = () => {
-  const originalFeaturedProperties = [
-    {
-      id: 1,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942726/20241014235115115464000000-o_hgb1vh.jpg",
-      price: "$6,950,000",
-      title: "Hacienda Beach Club",
-      location: "Cabo San Lucas",
-      beds: 4,
-      baths: 4,
-      sqft: "Private pool & OWNER FINANCING",
-      mlsNumber: "24-4467",
-      link: "https://www.flexmls.com/share/D0rH7/Hacienda-Beach-Club-private-pool-OWNER-FINANCING-1-100-Cabo-San-Lucas-",
-    },
-    {
-      id: 2,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
-      price: "$499,000",
-      title: "La Vista LARGE PRIVATE YARD B101",
-      location: "Cabo San Lucas",
-      beds: 3,
-      baths: 3,
-      totalM2: "372.06",
-      mlsNumber: "25-1679",
-      link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
-    },
-    {
-      id: 3,
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
-      price: "$3,795,800",
-      title: "Casa Ducci Camino del Mar",
-      location: "Cabo San Lucas",
-      beds: 4,
-      baths: 4.5,
-      totalM2: "350.23",
-      mlsNumber: "24-1981",
-      link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
-    },
-  ];
+  const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // State for shuffled properties - initialize with original to prevent undefined
-  const [featuredProperties, setFeaturedProperties] = useState(originalFeaturedProperties);
-
-  // Shuffle on mount - FIXED VERSION
+  // Fetch live properties on mount
   useEffect(() => {
-    // Shuffle function with safe localStorage handling
-    const getShuffledListings = (listings: any[], cacheKey: string) => {
-      // Check if we're in browser environment
-      if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
-        return [...listings].sort(() => Math.random() - 0.5);
-      }
-      
+    const loadFeaturedProperties = async () => {
+      setLoading(true);
       try {
-        const cacheTimeKey = `${cacheKey}-time`;
-        const cached = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheTimeKey);
+        console.log('📡 Loading featured properties from API...');
         
-        const now = Date.now();
-        const threeHours = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+        // Fetch properties with no filters to get latest listings
+        const mlsProperties: MLSProperty[] = await fetchListings();
+        console.log('✅ Received properties:', mlsProperties.length);
         
-        // Check if cache is still valid
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-          return JSON.parse(cached);
-        }
+        // Convert to PropertyCard format
+        const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
         
-        // Create new shuffle
-        const shuffled = [...listings].sort(() => Math.random() - 0.5);
+        // Shuffle and take first 3
+        const shuffled = [...convertedProperties].sort(() => Math.random() - 0.5);
+        const featured = shuffled.slice(0, 3);
         
-        // Save to localStorage
-        localStorage.setItem(cacheKey, JSON.stringify(shuffled));
-        localStorage.setItem(cacheTimeKey, now.toString());
-        
-        return shuffled;
-      } catch (e) {
-        console.error('Error with localStorage:', e);
-        // Fallback to simple shuffle
-        return [...listings].sort(() => Math.random() - 0.5);
+        setFeaturedProperties(featured);
+      } catch (error) {
+        console.error('❌ Error loading featured properties:', error);
+        // Set empty array on error
+        setFeaturedProperties([]);
+      } finally {
+        setLoading(false);
       }
     };
 
-    const shuffled = getShuffledListings(originalFeaturedProperties, 'featured-properties-shuffle');
-    setFeaturedProperties(shuffled);
-  }, []); // Empty dependency array is fine now since function is defined inside useEffect
+    loadFeaturedProperties();
+  }, []);
 
   // Team members - Updated with slugs for landing page routing
   const teamMembers = [
@@ -148,19 +100,35 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredProperties.map((property) => (
-              <PropertyCard key={property.id} {...property} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-12 w-12 animate-spin text-accent mb-4" />
+              <p className="text-muted-foreground">Loading featured properties...</p>
+            </div>
+          ) : featuredProperties.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground mb-4">No properties available at the moment.</p>
+              <Link to="/properties">
+                <Button variant="outline">View All Properties</Button>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                {featuredProperties.map((property) => (
+                  <PropertyCard key={property.id} {...property} />
+                ))}
+              </div>
 
-          <div className="text-center">
-            <Link to="/properties">
-              <Button variant="luxury" size="lg">
-                View All Properties <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+              <div className="text-center">
+                <Link to="/properties">
+                  <Button variant="luxury" size="lg">
+                    View All Properties <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
