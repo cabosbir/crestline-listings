@@ -1,4 +1,4 @@
-// src/components/AdvancedPropertyFilters.tsx - Exact FlexMLS Replica
+// src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,16 +17,21 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 interface FilterState {
   searchQuery: string;
   mlsNumber: string;
-  zones: string[];
   propertyTypes: string[];
+  status: string;
+  zones: string[];
+  areas: string[];
+  communities: string[];
+  subdivisions: string[];
   minPrice: string;
   maxPrice: string;
   minBeds: string;
   minBaths: string;
   minSqft: string;
   yearBuilt: string;
-  communities: string[];
-  subdivisions: string[];
+  sellerFinancing: boolean;
+  primaryView: boolean;
+  currentPrice: boolean;
 }
 
 interface AdvancedPropertyFiltersProps {
@@ -37,24 +42,50 @@ interface AdvancedPropertyFiltersProps {
 const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
+  const [showAllZones, setShowAllZones] = useState(false);
+  const [showAllAreas, setShowAllAreas] = useState(false);
+  const [showAllCommunities, setShowAllCommunities] = useState(false);
+  const [showAllSubdivisions, setShowAllSubdivisions] = useState(false);
   
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: "",
     mlsNumber: "",
+    propertyTypes: ["Condos", "Houses", "Land"],
+    status: "Active",
     zones: [],
-    propertyTypes: ["Home", "Condo", "Land"], // Default active like FlexMLS
+    areas: [],
+    communities: [],
+    subdivisions: [],
     minPrice: "$50,000",
     maxPrice: "$3 Million",
     minBeds: "1+",
     minBaths: "Any",
     minSqft: "No Preference",
     yearBuilt: "No Preference",
-    communities: [],
-    subdivisions: []
+    sellerFinancing: false,
+    primaryView: false,
+    currentPrice: false,
   });
 
+  const propertyTypes = [
+    "Condos",
+    "Houses", 
+    "Land",
+    "Commercial",
+    "Fractional",
+    "MultiFamily"
+  ];
+
+  const statusOptions = [
+    "Active",
+    "Pending",
+    "Closed",
+    "Expired",
+    "Withdrawn",
+    "Cancelled"
+  ];
+
   const zones = [
-    "All Zones",
     "Cabo Corridor",
     "Cabo San Lucas",
     "Comondu",
@@ -62,42 +93,193 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     "La Paz",
     "Loreto",
     "Mulege",
-    "Pacific Coast",
-    "San Jose del Cabo",
-    "Todos Santos"
+    "Pacific",
+    "San Jose Corridor",
+    "San Jose del Cabo"
   ];
 
-  const propertyTypes = [
-    "Home",
-    "Condo",
-    "Land",
-    "Fractional",
-    "MultiFamily",
-    "Commercial"
+  const areas = [
+    "Bay of Dreams",
+    "Cd. Constitución",
+    "Cerro Colorado",
+    "Constitucion",
+    "CSL Cor-Inland",
+    "CSL-Beach & Marina",
+    "CSL-Centro",
+    "CSL-Corr. Oceanside",
+    "CSL-North",
+    "East Cape North",
+    "East Cape South",
+    "Ejidos",
+    "El Centenario",
+    "El Sargento",
+    "Excondido South",
+    "Insurgentes",
+    "La Paz City",
+    "La Ventana",
+    "LaPaz Beach",
+    "Loreto",
+    "Los Planes",
+    "Mag Bay",
+    "Mid Pacific",
+    "Mulege",
+    "Nopolo",
+    "North Shore",
+    "Pacific North",
+    "Pacific South",
+    "San Juan de la Costa",
+    "San Pedro",
+    "Scorpion Bay",
+    "SJD Corr-Inland",
+    "SJD Corr-Oceanside",
+    "SJD-Beachside",
+    "SJD-Centro",
+    "SJD-East",
+    "SJD-Inland/Golf",
+    "SJD-North",
+    "South Shore"
   ];
 
-  const priceOptions = [
-    "$50,000", "$100,000", "$150,000", "$200,000", "$250,000",
-    "$300,000", "$350,000", "$400,000", "$450,000", "$500,000",
-    "$600,000", "$700,000", "$800,000", "$900,000", "$1 Million",
-    "$1.25 Million", "$1.5 Million", "$1.75 Million", "$2 Million",
-    "$2.5 Million", "$3 Million", "$4 Million", "$5 Million"
-  ];
-
-  const bedsOptions = ["1+", "2+", "3+", "4+", "5+"];
-  const bathsOptions = ["Any", "1+", "2+", "3+", "4+"];
-  
   const communities = [
-    "All Communities",
+    "Above Isla Coronado",
+    "Agua Verde",
+    "Bahia Concepcion",
+    "Bahía Asunción",
+    "Bay of Dreams",
+    "BayOfDreams/Ventanas",
+    "Beach north",
+    "Bellavista",
+    "BuenaVista/Rancho Leonero",
+    "BuenVsta/LosBarilles",
     "Cabo Bello/Santa Carmela",
-    "Cabo Del Sol",
+    "Cabo del Sol",
+    "Cabo del Sol Viejo",
+    "Cabo del Sol-Inland",
+    "Cabo Real-Inland",
+    "Cabo Real-Ocean Side",
+    "Centro",
+    "Centro- Cabo San Lucas",
+    "Centro- La Paz",
+    "Centro- San Jose del Cabo",
+    "CerroColorado-Inland",
+    "Cerro Colorado-Ocean",
+    "Chametla",
+    "Chileno Bay",
+    "Chileno Bay Club",
     "Chileno Bay/Montage",
+    "Chileno/Montage-Inland",
+    "Ciudad Constitución",
+    "Club Campestre",
+    "Colina del Sol",
+    "Comitan",
+    "Conquista Agraria",
+    "Constitucion Community",
+    "Costa Azul Beach",
+    "Costa Palmas",
+    "CSL Beach",
+    "CSL Country Club",
+    "CSL Marina",
+    "CSL Near Bch & Marina",
+    "CSL North-East 19",
+    "CSL North-West 19",
+    "Danzante Bay",
+    "Diamante Cabo San Lucas",
+    "Ejido La Purisima",
+    "Ejido Next South",
+    "Ejidos/ Comondu",
+    "El Aguajito",
+    "El Centenario",
+    "El Comitan",
+    "El Dorado",
+    "El Encanto & Laguna",
+    "El Jalito",
+    "El Jaral",
+    "El Mogote",
+    "El Rincon",
+    "El Sargento",
+    "El Teso",
     "El Tezal-East",
+    "El Tezal-OceanSide",
+    "El Tezal-West",
+    "El Tule-Inland",
+    "El Tule-Ocean Side",
+    "ElCardonal/N of Bariles",
+    "Elias Calles",
+    "Ensenada Blanca",
+    "Espiritu del Mar",
+    "Esterito",
+    "Fidepaz",
+    "Fonatur Golf & Hills",
+    "Forjadores SJD",
+    "Gringo & Lito Hills",
+    "Hot Springs",
+    "Insurgentes Community",
+    "La Perla",
+    "La Posada",
+    "La Ribera",
+    "La Ventana",
+    "Ladera San José",
+    "LaPaz Beach Community",
+    "LaPaz Centro Community",
+    "LaPaz East",
+    "LaPaz North Community",
+    "LaPaz West",
+    "Ligui",
+    "Lopez Mateos",
+    "Loreto",
+    "Loreto Bay",
+    "Los Planes",
+    "Magisterial / Infonavit",
+    "Maravilla",
+    "Mesa Colorada",
+    "Migrino Area",
+    "Miraflores/Santiago",
+    "Miramar",
     "Misiones",
-    "Palmilla",
-    "Pedregal",
+    "Mulege",
+    "Nopolo",
+    "Nopolo Hills",
+    "North Centro",
+    "North Loreto Bay",
+    "North Shore",
+    "Palmilla-Inland",
+    "Palmilla-Ocean Side",
+    "Pedregal CSL",
+    "Pedregal de La Paz",
+    "Pescadero/Cerritos",
+    "Pto. Escondido",
+    "Puerta Bugambilias",
     "Puerto Los Cabos",
-    "Rancho Cerro Colorado"
+    "Punta Ballena",
+    "Querencia-Inland",
+    "Querencia-Ocean side",
+    "Quivira",
+    "Rancho San Lucas",
+    "Saddles/Sunset Bch Rd",
+    "San Bartolo",
+    "San Cosme",
+    "San Cristobal",
+    "San Juan de la Costa",
+    "San Juanico",
+    "San Pedro",
+    "Santa Rosalia",
+    "Santo Domingo",
+    "Second Town Name",
+    "SJD above Hwy 1",
+    "SJD Downtown",
+    "SJD Marina",
+    "SJD North-E of 1",
+    "SJD North-W of 1",
+    "SJD-Beach",
+    "South",
+    "South LaPaz Community",
+    "Todos Santos",
+    "Todos Santos North",
+    "Uptown/Border Rd",
+    "Villas Gp. Development",
+    "Vinorama/Cabo Pulmo",
+    "Zacatitos/PtaPerfcta",
+    "Zaragoza"
   ];
 
   const subdivisions = [
@@ -112,6 +294,19 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     "Rancho San Lucas",
     "The Residences at Hacienda Encantada"
   ];
+
+  const priceOptions = [
+    "$50,000", "$100,000", "$150,000", "$200,000", "$250,000",
+    "$300,000", "$350,000", "$400,000", "$450,000", "$500,000",
+    "$600,000", "$700,000", "$800,000", "$900,000", "$1 Million",
+    "$1.25 Million", "$1.5 Million", "$1.75 Million", "$2 Million",
+    "$2.5 Million", "$3 Million", "$4 Million", "$5 Million"
+  ];
+
+  const bedsOptions = ["1+", "2+", "3+", "4+", "5+"];
+  const bathsOptions = ["Any", "1+", "2+", "3+", "4+"];
+  const sqftOptions = ["No Preference", "500+", "1000+", "1500+", "2000+", "2500+", "3000+", "4000+", "5000+"];
+  const yearBuiltOptions = ["No Preference", "2024+", "2023+", "2020+", "2015+", "2010+", "2000+"];
 
   const handleMLSSearch = () => {
     if (filters.mlsNumber.trim()) {
@@ -128,6 +323,14 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     setFilters({ ...filters, [key]: newArray });
   };
 
+  const selectAll = (key: keyof FilterState, options: string[]) => {
+    setFilters({ ...filters, [key]: options });
+  };
+
+  const selectNone = (key: keyof FilterState) => {
+    setFilters({ ...filters, [key]: [] });
+  };
+
   const handleSearch = () => {
     if (filters.mlsNumber.trim()) {
       handleMLSSearch();
@@ -137,14 +340,17 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     onApplyFilters(filters);
     setIsOpen(false);
     
-    // Count active filters
     let count = 0;
     if (filters.zones.length > 0) count++;
-    if (filters.propertyTypes.length > 0) count++;
+    if (filters.areas.length > 0) count++;
     if (filters.communities.length > 0) count++;
+    if (filters.subdivisions.length > 0) count++;
+    if (filters.propertyTypes.length !== 3) count++;
+    if (filters.status !== "Active") count++;
     if (filters.minPrice !== "$50,000") count++;
     if (filters.maxPrice !== "$3 Million") count++;
     if (filters.minBeds !== "1+") count++;
+    if (filters.sellerFinancing || filters.primaryView || filters.currentPrice) count++;
     setActiveFiltersCount(count);
   };
 
@@ -152,25 +358,37 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     setFilters({
       searchQuery: "",
       mlsNumber: "",
+      propertyTypes: ["Condos", "Houses", "Land"],
+      status: "Active",
       zones: [],
-      propertyTypes: ["Home", "Condo", "Land"],
+      areas: [],
+      communities: [],
+      subdivisions: [],
       minPrice: "$50,000",
       maxPrice: "$3 Million",
       minBeds: "1+",
       minBaths: "Any",
       minSqft: "No Preference",
       yearBuilt: "No Preference",
-      communities: [],
-      subdivisions: []
+      sellerFinancing: false,
+      primaryView: false,
+      currentPrice: false,
     });
     setActiveFiltersCount(0);
+    setShowAllZones(false);
+    setShowAllAreas(false);
+    setShowAllCommunities(false);
+    setShowAllSubdivisions(false);
     onReset();
     setIsOpen(false);
   };
 
+  const getDisplayedItems = (items: string[], showAll: boolean, limit: number = 10) => {
+    return showAll ? items : items.slice(0, limit);
+  };
+
   return (
     <div className="w-full">
-      {/* Quick Search Bar */}
       <div className="flex gap-2 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -190,7 +408,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
         <Button 
           variant="default" 
           onClick={handleSearch}
-          className="px-6 bg-purple-700 hover:bg-purple-800"
+          className="px-8 bg-purple-700 hover:bg-purple-800"
         >
           Search
         </Button>
@@ -219,7 +437,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
             <SheetHeader>
               <SheetTitle className="text-2xl">Advanced Property Search</SheetTitle>
               <SheetDescription>
-                Filter properties like a pro with MLS-style search
+                View Results: <span className="text-xl font-bold text-blue-600">4,528</span>
               </SheetDescription>
             </SheetHeader>
 
@@ -261,89 +479,314 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                 
                 {/* Property Type */}
                 <div className="mb-4">
-                  <Label className="font-medium mb-2 block">Property Type of</Label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {propertyTypes.map((type) => (
-                      <Button
-                        key={type}
-                        variant={filters.propertyTypes.includes(type) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => toggleArrayFilter('propertyTypes', type)}
-                        className={filters.propertyTypes.includes(type) ? "bg-blue-600 hover:bg-blue-700" : ""}
-                      >
-                        {type}
-                      </Button>
+                  <Label className="font-medium mb-2 block">
+                    Property Type of{" "}
+                    {propertyTypes.map((type, idx) => (
+                      <span key={type}>
+                        <button
+                          onClick={() => toggleArrayFilter('propertyTypes', type)}
+                          className={`text-blue-600 hover:underline ${
+                            filters.propertyTypes.includes(type) ? 'font-semibold' : ''
+                          }`}
+                        >
+                          {type}
+                        </button>
+                        {idx < propertyTypes.length - 1 && ", "}
+                      </span>
                     ))}
+                  </Label>
+                </div>
+
+                {/* MLS Search Input */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="text-blue-500">ℹ️</div>
+                    <Input
+                      placeholder="MLS #, address or map overlay"
+                      value={filters.searchQuery}
+                      onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
+                      className="flex-1"
+                    />
+                    <button className="text-blue-600 hover:underline text-sm whitespace-nowrap">
+                      Browse »
+                    </button>
                   </div>
                 </div>
 
-                {/* Status - Active (fixed) */}
-                <div className="flex items-center gap-2 mb-4">
-                  <Checkbox id="status-active" checked disabled />
-                  <label htmlFor="status-active" className="text-sm font-medium">
-                    Status of <span className="text-blue-600">Active</span>
-                  </label>
+                {/* Status */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Checkbox id="status-checkbox" checked disabled />
+                    <Label htmlFor="status-checkbox" className="font-medium">
+                      Status{" "}
+                      <span className="text-blue-600">of</span>{" "}
+                      <button className="text-blue-600 hover:underline">
+                        {filters.status}
+                      </button>
+                    </Label>
+                  </div>
+                  <select
+                    value={filters.status}
+                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                    size={6}
+                  >
+                    {statusOptions.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                  <button className="text-blue-600 hover:underline text-sm mt-1">
+                    See All and Select Date Ranges...
+                  </button>
                 </div>
 
                 {/* Zone */}
                 <div className="mb-4">
-                  <Label className="font-medium mb-2 block">Zone</Label>
-                  <div className="border border-gray-300 rounded max-h-48 overflow-y-auto p-2">
-                    {zones.map((zone) => (
-                      <div key={zone} className="flex items-center space-x-2 py-1">
-                        <Checkbox
-                          id={`zone-${zone}`}
-                          checked={filters.zones.includes(zone)}
-                          onCheckedChange={() => toggleArrayFilter('zones', zone)}
-                        />
-                        <label htmlFor={`zone-${zone}`} className="text-sm cursor-pointer">
-                          {zone}
-                        </label>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox 
+                        id="zone-checkbox" 
+                        checked={filters.zones.length > 0}
+                        onCheckedChange={(checked) => {
+                          if (!checked) selectNone('zones');
+                        }}
+                      />
+                      <Label htmlFor="zone-checkbox" className="font-bold">Zone</Label>
+                    </div>
+                    <button 
+                      onClick={() => setShowAllZones(false)}
+                      className="text-blue-600 hover:underline text-xl"
+                    >
+                      ×
+                    </button>
                   </div>
+                  <select
+                    multiple
+                    value={filters.zones}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      setFilters({ ...filters, zones: selected });
+                    }}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                    size={showAllZones ? 10 : 10}
+                  >
+                    {getDisplayedItems(zones, showAllZones).map((zone) => (
+                      <option key={zone} value={zone}>
+                        {zone}
+                      </option>
+                    ))}
+                  </select>
+                  {!showAllZones && zones.length > 10 && (
+                    <button 
+                      onClick={() => setShowAllZones(true)}
+                      className="text-blue-600 hover:underline text-sm mt-1"
+                    >
+                      See All...
+                    </button>
+                  )}
                 </div>
 
-                {/* Communities */}
+                {/* Area */}
                 <div className="mb-4">
-                  <Label className="font-medium mb-2 block">Community</Label>
-                  <div className="border border-gray-300 rounded max-h-48 overflow-y-auto p-2">
-                    {communities.map((community) => (
-                      <div key={community} className="flex items-center space-x-2 py-1">
-                        <Checkbox
-                          id={`community-${community}`}
-                          checked={filters.communities.includes(community)}
-                          onCheckedChange={() => toggleArrayFilter('communities', community)}
-                        />
-                        <label htmlFor={`community-${community}`} className="text-sm cursor-pointer">
-                          {community}
-                        </label>
-                      </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox 
+                        id="area-checkbox" 
+                        checked={filters.areas.length > 0}
+                        onCheckedChange={(checked) => {
+                          if (!checked) selectNone('areas');
+                        }}
+                      />
+                      <Label htmlFor="area-checkbox" className="font-bold">Area</Label>
+                    </div>
+                    <button 
+                      onClick={() => setShowAllAreas(false)}
+                      className="text-blue-600 hover:underline text-xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <select
+                    multiple
+                    value={filters.areas}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      setFilters({ ...filters, areas: selected });
+                    }}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                    size={10}
+                  >
+                    {getDisplayedItems(areas, showAllAreas, 10).map((area) => (
+                      <option key={area} value={area}>
+                        {area}
+                      </option>
                     ))}
+                  </select>
+                  {!showAllAreas && areas.length > 10 && (
+                    <button 
+                      onClick={() => setShowAllAreas(true)}
+                      className="text-blue-600 hover:underline text-sm mt-1"
+                    >
+                      See All...
+                    </button>
+                  )}
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => selectAll('areas', areas)}
+                      className="flex-1 text-blue-600 border-blue-300"
+                    >
+                      SELECT ALL
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => selectNone('areas')}
+                      className="flex-1 text-blue-600 border-blue-300"
+                    >
+                      SELECT NONE
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowAllAreas(false)}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      FINISHED
+                    </Button>
                   </div>
                 </div>
 
-                {/* Subdivisions */}
-                <div>
-                  <Label className="font-medium mb-2 block">Subdivision</Label>
-                  <div className="border border-gray-300 rounded max-h-48 overflow-y-auto p-2">
-                    {subdivisions.map((subdivision) => (
-                      <div key={subdivision} className="flex items-center space-x-2 py-1">
-                        <Checkbox
-                          id={`subdivision-${subdivision}`}
-                          checked={filters.subdivisions.includes(subdivision)}
-                          onCheckedChange={() => toggleArrayFilter('subdivisions', subdivision)}
-                        />
-                        <label htmlFor={`subdivision-${subdivision}`} className="text-sm cursor-pointer">
-                          {subdivision}
-                        </label>
-                      </div>
-                    ))}
+                {/* Community */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox 
+                        id="community-checkbox" 
+                        checked={filters.communities.length > 0}
+                        onCheckedChange={(checked) => {
+                          if (!checked) selectNone('communities');
+                        }}
+                      />
+                      <Label htmlFor="community-checkbox" className="font-bold">Community</Label>
+                    </div>
+                    <button 
+                      onClick={() => setShowAllCommunities(false)}
+                      className="text-blue-600 hover:underline text-xl"
+                    >
+                      ×
+                    </button>
                   </div>
+                  <select
+                    multiple
+                    value={filters.communities}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      setFilters({ ...filters, communities: selected });
+                    }}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                    size={10}
+                  >
+                    {getDisplayedItems(communities, showAllCommunities, 10).map((community) => (
+                      <option key={community} value={community}>
+                        {community}
+                      </option>
+                    ))}
+                  </select>
+                  {!showAllCommunities && communities.length > 10 && (
+                    <button 
+                      onClick={() => setShowAllCommunities(true)}
+                      className="text-blue-600 hover:underline text-sm mt-1"
+                    >
+                      See All...
+                    </button>
+                  )}
                   <p className="text-xs text-red-600 mt-1">
                     To select multiple items, hold down control (command ⌘ on Mac) on your keyboard while clicking.
                   </p>
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => selectAll('communities', communities)}
+                      className="flex-1 text-blue-600 border-blue-300"
+                    >
+                      SELECT ALL
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => selectNone('communities')}
+                      className="flex-1 text-blue-600 border-blue-300"
+                    >
+                      SELECT NONE
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowAllCommunities(false)}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      FINISHED
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Subdivision */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Checkbox 
+                      id="subdivision-checkbox" 
+                      checked={filters.subdivisions.length > 0}
+                      onCheckedChange={(checked) => {
+                        if (!checked) selectNone('subdivisions');
+                      }}
+                    />
+                    <Label htmlFor="subdivision-checkbox" className="font-bold">Subdivision</Label>
+                  </div>
+                </div>
+
+                {/* Additional Checkboxes */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="seller-financing"
+                      checked={filters.sellerFinancing}
+                      onCheckedChange={(checked) => setFilters({ ...filters, sellerFinancing: checked as boolean })}
+                    />
+                    <label htmlFor="seller-financing" className="text-sm cursor-pointer">
+                      Seller Financing Offered?
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="primary-view"
+                      checked={filters.primaryView}
+                      onCheckedChange={(checked) => setFilters({ ...filters, primaryView: checked as boolean })}
+                    />
+                    <label htmlFor="primary-view" className="text-sm cursor-pointer">
+                      Primary View
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="current-price"
+                      checked={filters.currentPrice}
+                      onCheckedChange={(checked) => setFilters({ ...filters, currentPrice: checked as boolean })}
+                    />
+                    <label htmlFor="current-price" className="text-sm cursor-pointer">
+                      Current Price
+                    </label>
+                  </div>
+                </div>
+
+                {/* Add a Field Button */}
+                <Button variant="default" className="mt-4 bg-blue-600 hover:bg-blue-700">
+                  Add a Field
+                </Button>
               </div>
 
               {/* Property Details Section */}
@@ -414,15 +857,9 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                       onChange={(e) => setFilters({ ...filters, minSqft: e.target.value })}
                       className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                     >
-                      <option>No Preference</option>
-                      <option>500+</option>
-                      <option>1000+</option>
-                      <option>1500+</option>
-                      <option>2000+</option>
-                      <option>2500+</option>
-                      <option>3000+</option>
-                      <option>4000+</option>
-                      <option>5000+</option>
+                      {sqftOptions.map(sqft => (
+                        <option key={sqft} value={sqft}>{sqft}</option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -435,24 +872,39 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                     onChange={(e) => setFilters({ ...filters, yearBuilt: e.target.value })}
                     className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                   >
-                    <option>No Preference</option>
-                    <option>2024+</option>
-                    <option>2023+</option>
-                    <option>2020+</option>
-                    <option>2015+</option>
-                    <option>2010+</option>
-                    <option>2000+</option>
+                    {yearBuiltOptions.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
                   </select>
                 </div>
               </div>
+
+              {/* Additional Search Options */}
+              <details className="border border-gray-200 rounded-lg">
+                <summary className="cursor-pointer p-4 font-bold text-blue-600 hover:bg-gray-50">
+                  + Additional Search Options
+                </summary>
+                <div className="p-4 pt-0">
+                  <p className="text-sm text-gray-600">
+                    Additional search filters can be configured here. Contact your MLS administrator for more options.
+                  </p>
+                </div>
+              </details>
             </div>
 
             {/* Action Buttons */}
             <div className="flex gap-3 mt-8 pt-6 border-t sticky bottom-0 bg-white">
-              <Button variant="outline" onClick={handleReset} className="flex-1">
+              <Button 
+                variant="outline" 
+                onClick={handleReset} 
+                className="flex-1"
+              >
                 Reset
               </Button>
-              <Button onClick={handleSearch} className="flex-1 bg-purple-700 hover:bg-purple-800">
+              <Button 
+                onClick={handleSearch} 
+                className="flex-1 bg-purple-700 hover:bg-purple-800"
+              >
                 Search
               </Button>
             </div>
@@ -465,10 +917,27 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
         <div className="flex flex-wrap gap-2 mb-4">
           {filters.zones.map((zone) => (
             <span key={zone} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              {zone}
+              Zone: {zone}
               <X className="h-3 w-3 cursor-pointer" onClick={() => toggleArrayFilter('zones', zone)} />
             </span>
           ))}
+          {filters.areas.map((area) => (
+            <span key={area} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              Area: {area}
+              <X className="h-3 w-3 cursor-pointer" onClick={() => toggleArrayFilter('areas', area)} />
+            </span>
+          ))}
+          {filters.communities.map((community) => (
+            <span key={community} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              Community: {community}
+              <X className="h-3 w-3 cursor-pointer" onClick={() => toggleArrayFilter('communities', community)} />
+            </span>
+          ))}
+          {filters.propertyTypes.length > 0 && filters.propertyTypes.length !== 3 && (
+            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              Types: {filters.propertyTypes.join(", ")}
+            </span>
+          )}
         </div>
       )}
     </div>
