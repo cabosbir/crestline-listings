@@ -13,39 +13,40 @@ import { ArrowRight } from "lucide-react";
 
 const Index = () => {
   // Shuffle function with localStorage cache (refreshes every 3 hours)
+  // Shuffle function with localStorage cache (refreshes every 3 hours)
   const getShuffledListings = (listings: any[], cacheKey: string) => {
     const cacheTimeKey = `${cacheKey}-time`;
     
     // Check if we're in browser environment
-    if (typeof window === 'undefined') return listings;
-    
-    const cached = localStorage.getItem(cacheKey);
-    const cachedTime = localStorage.getItem(cacheTimeKey);
-    
-    const now = Date.now();
-    const threeHours = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
-    
-    // Check if cache is still valid
-    if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-      try {
-        return JSON.parse(cached);
-      } catch (e) {
-        console.error('Error parsing cached listings:', e);
-      }
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return [...listings].sort(() => Math.random() - 0.5);
     }
     
-    // Create new shuffle
-    const shuffled = [...listings].sort(() => Math.random() - 0.5);
-    
-    // Save to localStorage
     try {
+      const cached = localStorage.getItem(cacheKey);
+      const cachedTime = localStorage.getItem(cacheTimeKey);
+      
+      const now = Date.now();
+      const threeHours = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+      
+      // Check if cache is still valid
+      if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+        return JSON.parse(cached);
+      }
+      
+      // Create new shuffle
+      const shuffled = [...listings].sort(() => Math.random() - 0.5);
+      
+      // Save to localStorage
       localStorage.setItem(cacheKey, JSON.stringify(shuffled));
       localStorage.setItem(cacheTimeKey, now.toString());
+      
+      return shuffled;
     } catch (e) {
-      console.error('Error saving to localStorage:', e);
+      console.error('Error with localStorage:', e);
+      // Fallback to simple shuffle
+      return [...listings].sort(() => Math.random() - 0.5);
     }
-    
-    return shuffled;
   };
 
   const originalFeaturedProperties = [
