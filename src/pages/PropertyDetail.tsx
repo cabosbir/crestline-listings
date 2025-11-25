@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,7 +13,6 @@ import { fetchPropertyById, type MLSProperty } from "@/services/flexMlsService";
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -27,46 +26,7 @@ const PropertyDetail = () => {
     setLoading(true);
     try {
       console.log('🔍 Loading property with ID:', id);
-      console.log('📦 Navigation state:', location.state);
       
-      // FIRST: Try to use data from navigation state (passed from PropertyCard)
-      if (location.state && location.state.id) {
-        console.log('✅ Using property data from navigation state');
-        
-        const stateProperty = location.state;
-        const convertedProperty = {
-          id: stateProperty.id,
-          mlsNumber: stateProperty.mlsNumber || id,
-          title: stateProperty.title || 'Luxury Property in Cabo San Lucas',
-          price: stateProperty.price,
-          location: stateProperty.location || 'Cabo San Lucas',
-          fullLocation: stateProperty.location || 'Cabo San Lucas, BCS',
-          beds: stateProperty.beds || 0,
-          baths: stateProperty.baths || 0,
-          sqft: stateProperty.sqft || 'N/A',
-          lotSize: 'N/A',
-          yearBuilt: 'N/A',
-          propertyType: stateProperty.propertyType || 'Residential',
-          status: stateProperty.status || 'Active',
-          image: stateProperty.image,
-          images: [stateProperty.image], // Single image for now
-          description: stateProperty.description || 'Beautiful luxury property in Cabo San Lucas with premium finishes and stunning views.',
-          features: [
-            'Modern Finishes',
-            'Open Floor Plan', 
-            'Prime Location',
-            'High-End Appliances',
-            'Quality Construction',
-            'Excellent Condition'
-          ]
-        };
-        
-        setProperty(convertedProperty);
-        setLoading(false);
-        return;
-      }
-      
-      // FALLBACK: Try to fetch from API if no state data
       if (!id) {
         console.error('❌ No property ID provided');
         setProperty(null);
@@ -74,11 +34,10 @@ const PropertyDetail = () => {
         return;
       }
       
-      console.log('⚠️ No navigation state, attempting API fetch...');
       const mlsProperty: MLSProperty | null = await fetchPropertyById(id);
       
       if (mlsProperty) {
-        console.log('✅ MLS Property received from API:', mlsProperty);
+        console.log('✅ MLS Property received:', mlsProperty);
         
         const convertedProperty = {
           id: mlsProperty.ListingKey,
@@ -102,10 +61,10 @@ const PropertyDetail = () => {
           features: extractFeatures(mlsProperty)
         };
         
-        console.log('✅ Converted property from API:', convertedProperty);
+        console.log('✅ Converted property:', convertedProperty);
         setProperty(convertedProperty);
       } else {
-        console.error('❌ Property not found in API');
+        console.error('❌ Property not found');
         setProperty(null);
       }
     } catch (error) {
