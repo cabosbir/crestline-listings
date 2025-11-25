@@ -1,7 +1,8 @@
-// api/flexmls-listings.ts - Authenticated Spark API
+// api/flexmls-listings.ts - RESO Web API v3
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY; // This is your Access Token
+const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
+const RESO_API_BASE = 'https://replication.sparkapi.com/Version/3/Reso/OData';
 
 export default async function handler(
   req: VercelRequest,
@@ -27,74 +28,63 @@ export default async function handler(
   }
 
   try {
-    const { city, minPrice, maxPrice, bedrooms, bathrooms, propertyType } = req.query;
+    const { city, minPrice, maxPrice, bedrooms, bathrooms } = req.query;
 
-    // Build Spark API filter string
+    // Build RESO OData $filter query
     const filters: string[] = [];
-    if (city) filters.push(`City Eq '${city}'`);
-    if (minPrice) filters.push(`ListPrice Ge ${minPrice}`);
-    if (maxPrice) filters.push(`ListPrice Le ${maxPrice}`);
-    if (bedrooms) filters.push(`BedroomsTotal Ge ${bedrooms}`);
-    if (bathrooms) filters.push(`BathroomsTotalInteger Ge ${bathrooms}`);
-    if (propertyType) filters.push(`PropertyType Eq '${propertyType}'`);
+    if (city) filters.push(`City eq '${city}'`);
+    if (minPrice) filters.push(`ListPrice ge ${minPrice}`);
+    if (maxPrice) filters.push(`ListPrice le ${maxPrice}`);
+    if (bedrooms) filters.push(`BedroomsTotal ge ${bedrooms}`);
+    if (bathrooms) filters.push(`BathroomsFull ge ${bathrooms}`);
     
-    const filterString = filters.length > 0 ? filters.join(' And ') : '';
+    const filterString = filters.length > 0 ? filters.join(' and ') : '';
     
-    // CORRECTED: Use the authenticated Spark API endpoint
-    const url = new URL('https://sparkapi.com/v1/listings');
+    // Build RESO OData URL
+    const url = new URL(`${RESO_API_BASE}/Property`);
     if (filterString) {
-      url.searchParams.append('_filter', filterString);
+      url.searchParams.append('$filter', filterString);
     }
-    url.searchParams.append('_expand', 'Photos');
-    url.searchParams.append('_limit', '50');
+    url.searchParams.append('$top', '50');
+    url.searchParams.append('$expand', 'Media');
 
-    console.log('🔍 Authenticated endpoint:', url.toString());
-    console.log('🔍 Filter:', filterString || 'none');
+    console.log('🔍 RESO API v3:', url.toString());
 
-    // Use SparkAPI authentication with Access Token
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
-        'Authorization': `OAuth ${FLEXMLS_API_KEY}`,
-        'X-SparkApi-User-Agent': 'BajaInternationalRealty',
+        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
         'Accept': 'application/json',
       }
     });
 
     console.log('📡 Status:', response.status);
-    console.log('📡 Headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText.substring(0, 500)
-      });
+      console.error('❌ Error:', errorText.substring(0, 300));
       
       return res.status(200).json({
         success: false,
         results: [],
         debug: {
           status: response.status,
-          endpoint: url.toString(),
-          authMethod: 'OAuth with Access Token',
-          errorPreview: errorText.substring(0, 200)
+          error: errorText.substring(0, 200)
         }
       });
     }
 
     const data = await response.json();
-    console.log('✅ Success! Results:', data.D?.Results?.length || 0);
+    console.log('✅ Results:', data.value?.length || 0);
     
     return res.status(200).json({
       success: true,
-      results: data.D?.Results || [],
-      count: data.D?.Results?.length || 0
+      results: data.value || [],
+      count: data.value?.length || 0
     });
 
   } catch (error) {
-    console.error('💥 Exception:', error);
+    console.error('💥 Error:', error);
     return res.status(200).json({ 
       success: false, 
       results: [],
