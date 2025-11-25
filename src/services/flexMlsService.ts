@@ -33,6 +33,9 @@ export interface MLSProperty {
   }>;
 }
 
+// In-memory cache for properties
+const propertyCache: Map<string, MLSProperty> = new Map();
+
 export async function fetchListings(params?: {
   city?: string;
   minPrice?: number;
@@ -61,6 +64,14 @@ export async function fetchListings(params?: {
     }
     
     console.log('✅ Fetched listings:', data.results?.length || 0);
+    
+    // Cache the properties for later retrieval
+    if (data.results && Array.isArray(data.results)) {
+      data.results.forEach((prop: MLSProperty) => {
+        propertyCache.set(prop.ListingKey, prop);
+      });
+    }
+    
     return data.results || getFallbackListings();
   } catch (error) {
     console.error('❌ Error fetching listings:', error);
@@ -70,41 +81,69 @@ export async function fetchListings(params?: {
 
 export async function fetchPropertyById(listingKey: string): Promise<MLSProperty | null> {
   try {
-    const url = `/api/flexmls-property/${listingKey}`;
-    
-    console.log('🔍 Fetching property by ID:', listingKey);
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      console.error('❌ Failed to fetch property:', response.status);
+    if (!listingKey || listingKey.trim() === '') {
+      console.error('❌ Invalid listing key provided:', listingKey);
       return null;
     }
 
+    const trimmedKey = listingKey.trim();
+    
+    // First, check if we have it cached from listings
+    if (propertyCache.has(trimmedKey)) {
+      console.log('✅ Found property in cache:', trimmedKey);
+      return propertyCache.get(trimmedKey) || null;
+    }
+
+    console.log('🔍 Searching for property by ListingKey:', trimmedKey);
+    
+    // Fetch listings without filters to get all properties
+    const url = `/api/flexmls-listings`;
+    
+    console.log('📡 Fetching all listings from:', url);
+    const response = await fetch(url);
     const data = await response.json();
     
-    if (!data.success || !data.result) {
-      console.error('❌ No property data returned');
+    if (!data.success || !data.results) {
+      console.error('❌ Failed to fetch listings');
       return null;
     }
+
+    console.log('✅ Fetched listings:', data.results?.length || 0);
     
-    console.log('✅ Property fetched:', data.result.ListingId);
-    return data.result;
+    // Find the property by ListingKey
+    const property = data.results.find((p: MLSProperty) => p.ListingKey === trimmedKey);
+    
+    if (!property) {
+      console.error('❌ Property not found:', trimmedKey);
+      return null;
+    }
+
+    console.log('✅ Property found:', {
+      ListingId: property.ListingId,
+      Beds: property.BedroomsTotal,
+      Baths: property.BathroomsFull
+    });
+    
+    // Cache it
+    propertyCache.set(trimmedKey, property);
+    
+    return property;
   } catch (error) {
     console.error('💥 Error fetching property:', error);
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+    }
     return null;
   }
 }
 
 export function convertMLSToPropertyCard(mlsProperty: MLSProperty) {
-  // Get the best available image
   let imageUrl = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop';
   
   if (mlsProperty.Media && mlsProperty.Media.length > 0) {
-    // Sort by Order if available
     const sortedMedia = [...mlsProperty.Media].sort((a, b) => (a.Order || 0) - (b.Order || 0));
     const firstImage = sortedMedia[0].MediaURL;
     
-    // Ensure the URL is valid
     if (firstImage && (firstImage.startsWith('http://') || firstImage.startsWith('https://'))) {
       imageUrl = firstImage;
     }
@@ -146,7 +185,7 @@ function getFallbackListings(): MLSProperty[] {
     LotSizeArea: 8000,
     YearBuilt: 2022,
     PropertyType: 'Single Family Home',
-    PublicRemarks: 'Stunning beachfront villa with panoramic ocean views. This property is shown as fallback data while the API is being configured.',
+    PublicRemarks: 'Stunning beachfront villa with panoramic ocean views.',
     StandardStatus: 'Active',
     Latitude: 22.8905,
     Longitude: -109.9167,
