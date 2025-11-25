@@ -1,30 +1,56 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import PropertyCard from "@/components/PropertyCard";
+import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, ExternalLink } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
+import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
 const Properties = () => {
-  const [mlsNumber, setMlsNumber] = useState("");
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
-  
-  const handleMLSSearch = () => {
-    if (mlsNumber.trim()) {
-      window.open(`${FLEXMLS_IFRAME_URL}?search=${encodeURIComponent(mlsNumber)}`, '_blank');
+
+  // Load initial properties
+  useEffect(() => {
+    loadProperties();
+  }, []);
+
+  const loadProperties = async (filters?: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const mlsProperties: MLSProperty[] = await fetchListings(filters);
+      const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
+      setProperties(convertedProperties);
+    } catch (err) {
+      console.error('Error loading properties:', err);
+      setError('Failed to load properties. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleApplyFilters = (filters: any) => {
+    loadProperties({
+      city: filters.city[0], // Get first selected city
+      minPrice: filters.minPrice > 0 ? filters.minPrice : undefined,
+      maxPrice: filters.maxPrice < 10000000 ? filters.maxPrice : undefined,
+      bedrooms: filters.minBeds > 0 ? filters.minBeds : undefined,
+      bathrooms: filters.minBaths > 0 ? filters.minBaths : undefined,
+    });
+  };
+
+  const handleReset = () => {
+    loadProperties();
   };
 
   const handleOpenFullSearch = () => {
     window.open(FLEXMLS_IFRAME_URL, '_blank');
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && mlsNumber.trim()) {
-      handleMLSSearch();
-    }
   };
 
   return (
@@ -43,68 +69,61 @@ const Properties = () => {
             San Jose del Cabo, Todos Santos, East Cape, and La Paz
           </p>
 
-          {/* MLS Quick Search */}
-          <div className="max-w-2xl">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search by MLS # or IDX number..."
-                  value={mlsNumber}
-                  onChange={(e) => setMlsNumber(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="pl-10"
-                />
-              </div>
-              <Button 
-                variant="default"
-                onClick={handleMLSSearch}
-                disabled={!mlsNumber.trim()}
-                className="px-6"
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Search
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={handleOpenFullSearch}
-                className="px-4"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Full Search
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Enter an MLS number for direct lookup, or browse all listings below
-            </p>
-          </div>
+          {/* Advanced Filters */}
+          <AdvancedPropertyFilters 
+            onApplyFilters={handleApplyFilters}
+            onReset={handleReset}
+          />
         </div>
       </section>
 
-      {/* Live FlexMLS Feed */}
-      <section className="py-8">
+      {/* Properties Grid */}
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-border">
-            <iframe 
-              src={FLEXMLS_IFRAME_URL}
-              frameBorder="0"
-              width="100%"
-              height="1400"
-              className="w-full"
-              title="MLS BCS Property Listings - Cabo San Lucas"
-              style={{ minHeight: '1400px' }}
-              allow="geolocation"
-            />
-          </div>
-          
-          <div className="text-center mt-6 space-y-2">
-            <Button 
-              variant="outline"
-              onClick={handleOpenFullSearch}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Open in New Window
-            </Button>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-12 w-12 animate-spin text-accent mb-4" />
+              <p className="text-muted-foreground">Loading properties...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button onClick={() => loadProperties()} variant="outline">
+                Try Again
+              </Button>
+            </div>
+          ) : properties.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground mb-4">No properties found matching your criteria.</p>
+              <Button onClick={handleReset} variant="outline">
+                Clear Filters
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="mb-6 flex justify-between items-center">
+                <p className="text-muted-foreground">
+                  Showing {properties.length} properties
+                </p>
+                <Button 
+                  variant="outline"
+                  onClick={handleOpenFullSearch}
+                  size="sm"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View in MLS
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {properties.map((property) => (
+                  <PropertyCard key={property.id} {...property} />
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="text-center mt-8 space-y-2">
             <p className="text-sm text-muted-foreground">
               All listings courtesy of MLS BCS (Multiple Listing Service of Baja California Sur)
             </p>

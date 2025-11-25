@@ -1,9 +1,9 @@
-// src/services/flexMlsService.ts - Updated for FlexMLS IDX Integration
+// src/services/flexMlsService.ts - Updated for FlexMLS IDX Integration with Vercel API Routes
 
 // Your FlexMLS IDX Link ID from the iframe URL
 const FLEXMLS_IDX_LINK_ID = '1lpm0zo1944e';
 const FLEXMLS_ACCOUNT_ID = '12';
-const FLEXMLS_PUBLIC_API = `https://api.flexmls.com/v1/public`;
+const FLEXMLS_API_FEED_ID = 'b6byf74jy5upy5';
 
 export interface MLSProperty {
   Id: string;
@@ -32,7 +32,7 @@ export interface MLSProperty {
   }>;
 }
 
-// Fetch listings from FlexMLS public feed
+// Fetch listings through our secure Vercel API route
 export async function fetchListings(params?: {
   city?: string;
   minPrice?: number;
@@ -42,39 +42,31 @@ export async function fetchListings(params?: {
   propertyType?: string;
 }): Promise<MLSProperty[]> {
   try {
-    // Build FlexMLS filter string
-    const filters: string[] = [];
+    // Build query parameters for our API route
+    const queryParams = new URLSearchParams();
     
     if (params?.city) {
-      filters.push(`City Eq '${params.city}'`);
+      queryParams.append('city', params.city);
     }
     if (params?.minPrice) {
-      filters.push(`ListPrice Ge ${params.minPrice}`);
+      queryParams.append('minPrice', params.minPrice.toString());
     }
     if (params?.maxPrice) {
-      filters.push(`ListPrice Le ${params.maxPrice}`);
+      queryParams.append('maxPrice', params.maxPrice.toString());
     }
     if (params?.bedrooms) {
-      filters.push(`BedroomsTotal Ge ${params.bedrooms}`);
+      queryParams.append('bedrooms', params.bedrooms.toString());
     }
     if (params?.bathrooms) {
-      filters.push(`BathroomsTotalInteger Ge ${params.bathrooms}`);
+      queryParams.append('bathrooms', params.bathrooms.toString());
+    }
+    if (params?.propertyType) {
+      queryParams.append('propertyType', params.propertyType);
     }
     
-    const filterString = filters.length > 0 ? filters.join(' And ') : '';
+    const url = `/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
-    const url = new URL(`${FLEXMLS_PUBLIC_API}/listings`);
-    if (filterString) {
-      url.searchParams.append('_filter', filterString);
-    }
-    url.searchParams.append('_expand', 'Photos');
-    url.searchParams.append('_limit', '50');
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        'X-SparkApi-User-Agent': 'BajaInternationalRealty',
-      }
-    });
+    const response = await fetch(url);
 
     if (!response.ok) {
       console.warn('FlexMLS API returned error, using fallback data');
@@ -82,30 +74,26 @@ export async function fetchListings(params?: {
     }
 
     const data = await response.json();
-    return data.D?.Results || getFallbackListings();
+    return data.results || getFallbackListings();
   } catch (error) {
     console.error('Error fetching listings from FlexMLS:', error);
     return getFallbackListings();
   }
 }
 
-// Fetch single property by MLS ID
+// Fetch single property by MLS ID through our secure API route
 export async function fetchPropertyById(mlsId: string): Promise<MLSProperty | null> {
   try {
-    const url = `${FLEXMLS_PUBLIC_API}/listings/${mlsId}?_expand=Photos`;
+    const url = `/api/flexmls-property/${mlsId}`;
     
-    const response = await fetch(url, {
-      headers: {
-        'X-SparkApi-User-Agent': 'BajaInternationalRealty',
-      }
-    });
+    const response = await fetch(url);
 
     if (!response.ok) {
       return null;
     }
 
     const data = await response.json();
-    return data.D?.Results?.[0] || null;
+    return data.result || null;
   } catch (error) {
     console.error('Error fetching property:', error);
     return null;
