@@ -6,7 +6,7 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { 
   Bed, Bath, Maximize, MapPin, ArrowLeft, X,
-  Calendar, CheckCircle2, Loader2
+  Calendar, CheckCircle2, Loader2, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { fetchPropertyById, type MLSProperty } from "@/services/flexMlsService";
 
@@ -15,6 +15,7 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -53,7 +54,7 @@ const PropertyDetail = () => {
           propertyType: mlsProperty.PropertyType || 'Residential',
           status: mlsProperty.StandardStatus || 'Active',
           image: mlsProperty.Media?.[0]?.MediaURL || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop',
-          images: mlsProperty.Media?.slice(0, 5).map(m => m.MediaURL) || [
+          images: mlsProperty.Media?.slice(0, 10).map(m => m.MediaURL) || [
             'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop'
           ],
           description: mlsProperty.PublicRemarks || 'Beautiful luxury property in Cabo San Lucas with premium finishes and stunning views.',
@@ -110,6 +111,22 @@ const PropertyDetail = () => {
     }
     
     return features.slice(0, 9);
+  };
+
+  const nextImage = () => {
+    if (property && property.images.length > 1) {
+      setCurrentImageIndex((prev) => 
+        prev === property.images.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
+  const prevImage = () => {
+    if (property && property.images.length > 1) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? property.images.length - 1 : prev - 1
+      );
+    }
   };
 
   if (loading) {
@@ -173,26 +190,100 @@ const PropertyDetail = () => {
         </div>
       </div>
 
+      {/* Hero Image Gallery */}
       <section className="pb-12">
         <div className="container mx-auto px-4">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl" style={{ height: "500px" }}>
             <img 
-              src={property.image}
-              alt={property.title}
-              className="w-full h-full object-cover"
+              src={property.images[currentImageIndex]}
+              alt={`${property.title} - Image ${currentImageIndex + 1}`}
+              className="w-full h-full object-cover transition-opacity duration-300"
               onError={(e) => {
                 e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop';
               }}
             />
             <div className="absolute top-4 left-4 flex gap-2">
-              <span className="bg-primary text-white px-4 py-2 rounded-lg font-semibold">
+              <span className="bg-primary text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
                 {property.status}
               </span>
-              <span className="bg-accent text-accent-foreground px-4 py-2 rounded-lg font-semibold">
+              <span className="bg-accent text-accent-foreground px-4 py-2 rounded-lg font-semibold shadow-lg">
                 MLS: {property.mlsNumber}
               </span>
             </div>
+
+            {/* Image Counter */}
+            {property.images.length > 1 && (
+              <div className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                {currentImageIndex + 1} / {property.images.length}
+              </div>
+            )}
           </div>
+
+          {/* Navigation Arrows Below Image */}
+          {property.images.length > 1 && (
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <Button
+                onClick={prevImage}
+                variant="outline"
+                size="lg"
+                className="rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                <ChevronLeft className="h-6 w-6" />
+                Previous
+              </Button>
+              
+              <div className="flex gap-2">
+                {property.images.map((_: any, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                      index === currentImageIndex 
+                        ? 'bg-accent w-8' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to image ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              <Button
+                onClick={nextImage}
+                variant="outline"
+                size="lg"
+                className="rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                Next
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            </div>
+          )}
+
+          {/* Thumbnail Gallery */}
+          {property.images.length > 1 && (
+            <div className="grid grid-cols-5 gap-4 mt-6">
+              {property.images.slice(0, 5).map((img: string, index: number) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`relative h-24 rounded-lg overflow-hidden transition-all ${
+                    index === currentImageIndex 
+                      ? 'ring-4 ring-accent scale-105' 
+                      : 'hover:ring-2 ring-gray-300 hover:scale-105 opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`Thumbnail ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=200&h=150&fit=crop';
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
