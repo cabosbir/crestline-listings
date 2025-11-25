@@ -1,94 +1,192 @@
-// api/flexmls-listings.ts - RESO Web API v3
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+// src/services/flexMlsService.ts - RESO Web API Format - PRODUCTION READY
 
-const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
-const RESO_API_BASE = 'https://replication.sparkapi.com/Version/3/Reso/OData';
+export interface MLSProperty {
+  ListingKey: string;
+  ListingId: string;
+  UnparsedAddress: string;
+  City: string;
+  StateOrProvince: string;
+  PostalCode: string;
+  ListPrice: number;
+  BedroomsTotal: number;
+  BathroomsFull: number;
+  LivingArea: number;
+  LotSizeArea: number;
+  YearBuilt: number;
+  PropertyType: string;
+  PublicRemarks: string;
+  StandardStatus: string;
+  Latitude?: number;
+  Longitude?: number;
+  Appliances?: string[];
+  ArchitecturalStyle?: string;
+  Cooling?: string;
+  Heating?: string;
+  ParkingFeatures?: string;
+  View?: string;
+  WaterfrontFeatures?: string;
+  PoolFeatures?: string;
+  PatioAndPorchFeatures?: string;
+  Media?: Array<{
+    MediaURL: string;
+    Order: number;
+  }>;
+}
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+// In-memory cache for properties
+const propertyCache: Map<string, MLSProperty> = new Map();
 
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  if (!FLEXMLS_API_KEY) {
-    return res.status(200).json({ 
-      success: false, 
-      error: 'API key not configured',
-      results: []
-    });
-  }
-
+export async function fetchListings(params?: {
+  city?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+}): Promise<MLSProperty[]> {
   try {
-    const { city, minPrice, maxPrice, bedrooms, bathrooms } = req.query;
-
-    // Build RESO OData $filter query
-    const filters: string[] = [];
-    if (city) filters.push(`City eq '${city}'`);
-    if (minPrice) filters.push(`ListPrice ge ${minPrice}`);
-    if (maxPrice) filters.push(`ListPrice le ${maxPrice}`);
-    if (bedrooms) filters.push(`BedroomsTotal ge ${bedrooms}`);
-    if (bathrooms) filters.push(`BathroomsFull ge ${bathrooms}`);
+    const queryParams = new URLSearchParams();
     
-    const filterString = filters.length > 0 ? filters.join(' and ') : '';
+    if (params?.city) queryParams.append('city', params.city);
+    if (params?.minPrice) queryParams.append('minPrice', params.minPrice.toString());
+    if (params?.maxPrice) queryParams.append('maxPrice', params.maxPrice.toString());
+    if (params?.bedrooms) queryParams.append('bedrooms', params.bedrooms.toString());
+    if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
     
-    // Build RESO OData URL
-    const url = new URL(`${RESO_API_BASE}/Property`);
-    if (filterString) {
-      url.searchParams.append('$filter', filterString);
+    const url = `/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    
+    console.log('📡 Fetching listings from:', url);
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (!data.success) {
+      console.warn('⚠️ API returned no results, using fallback');
+      return getFallbackListings();
     }
-    url.searchParams.append('$top', '50');
-    url.searchParams.append('$expand', 'Media');
-
-    console.log('🔍 RESO API v3:', url.toString());
-
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
-        'Accept': 'application/json',
-      }
-    });
-
-    console.log('📡 Status:', response.status);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Error:', errorText.substring(0, 300));
-      
-      return res.status(200).json({
-        success: false,
-        results: [],
-        debug: {
-          status: response.status,
-          error: errorText.substring(0, 200)
-        }
+    
+    console.log('✅ Fetched listings:', data.results?.length || 0);
+    
+    // Cache the properties for later retrieval
+    if (data.results && Array.isArray(data.results)) {
+      data.results.forEach((prop: MLSProperty) => {
+        propertyCache.set(prop.ListingKey, prop);
       });
     }
-
-    const data = await response.json();
-    console.log('✅ Results:', data.value?.length || 0);
     
-    return res.status(200).json({
-      success: true,
-      results: data.value || [],
-      count: data.value?.length || 0
-    });
-
+    return data.results || getFallbackListings();
   } catch (error) {
-    console.error('💥 Error:', error);
-    return res.status(200).json({ 
-      success: false, 
-      results: [],
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    console.error('❌ Error fetching listings:', error);
+    return getFallbackListings();
   }
+}
+
+export async function fetchPropertyById(listingKey: string): Promise<MLSProperty | null> {
+  try {
+    if (!listingKey || listingKey.trim() === '') {
+      console.error('❌ Invalid listing key provided:', listingKey);
+      return null;
+    }
+
+    const trimmedKey = listingKey.trim();
+    
+    // First, check if we have it cached from listings
+    if (propertyCache.has(trimmedKey)) {
+      console.log('✅ Found property in cache:', trimmedKey);
+      return propertyCache.get(trimmedKey) || null;
+    }
+
+    console.log('🔍 Fetching property by ListingKey:', trimmedKey);
+    
+    // Fetch ALL listings and filter by ListingKey
+    const allListings = await fetchListings();
+    
+    if (!allListings || allListings.length === 0) {
+      console.error('❌ No listings available');
+      return null;
+    }
+
+    // Find the property by ListingKey
+    const property = allListings.find(p => p.ListingKey === trimmedKey);
+    
+    if (!property) {
+      console.error('❌ Property not found in listings:', trimmedKey);
+      console.log('Available keys:', allListings.map(p => p.ListingKey).slice(0, 5));
+      return null;
+    }
+
+    console.log('✅ Property found:', {
+      ListingId: property.ListingId,
+      Beds: property.BedroomsTotal,
+      Baths: property.BathroomsFull
+    });
+    
+    // Cache it
+    propertyCache.set(trimmedKey, property);
+    
+    return property;
+  } catch (error) {
+    console.error('💥 Error fetching property:', error);
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+    }
+    return null;
+  }
+}
+
+export function convertMLSToPropertyCard(mlsProperty: MLSProperty) {
+  let imageUrl = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop';
+  
+  if (mlsProperty.Media && mlsProperty.Media.length > 0) {
+    const sortedMedia = [...mlsProperty.Media].sort((a, b) => (a.Order || 0) - (b.Order || 0));
+    const firstImage = sortedMedia[0].MediaURL;
+    
+    if (firstImage && (firstImage.startsWith('http://') || firstImage.startsWith('https://'))) {
+      imageUrl = firstImage;
+    }
+  }
+  
+  return {
+    id: mlsProperty.ListingKey,
+    mlsNumber: mlsProperty.ListingId,
+    image: imageUrl,
+    price: `$${mlsProperty.ListPrice?.toLocaleString() || '0'}`,
+    title: mlsProperty.UnparsedAddress || 'Luxury Property',
+    location: `${mlsProperty.City || ''}, ${mlsProperty.StateOrProvince || ''}`.trim(),
+    beds: mlsProperty.BedroomsTotal || 0,
+    baths: mlsProperty.BathroomsFull || 0,
+    sqft: `${mlsProperty.LivingArea?.toLocaleString() || '0'}`,
+    description: mlsProperty.PublicRemarks?.substring(0, 150) || '',
+    features: [],
+    status: mlsProperty.StandardStatus || 'Active',
+    propertyType: mlsProperty.PropertyType || 'Single Family Home',
+    yearBuilt: mlsProperty.YearBuilt,
+    lotSize: mlsProperty.LotSizeArea,
+    latitude: mlsProperty.Latitude,
+    longitude: mlsProperty.Longitude
+  };
+}
+
+function getFallbackListings(): MLSProperty[] {
+  return [{
+    ListingKey: 'fallback-1',
+    ListingId: 'DEMO-001',
+    UnparsedAddress: '123 Ocean View Drive',
+    City: 'Cabo San Lucas',
+    StateOrProvince: 'BCS',
+    PostalCode: '23450',
+    ListPrice: 2850000,
+    BedroomsTotal: 5,
+    BathroomsFull: 4,
+    LivingArea: 4500,
+    LotSizeArea: 8000,
+    YearBuilt: 2022,
+    PropertyType: 'Single Family Home',
+    PublicRemarks: 'Stunning beachfront villa with panoramic ocean views.',
+    StandardStatus: 'Active',
+    Latitude: 22.8905,
+    Longitude: -109.9167,
+    Media: [{
+      MediaURL: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
+      Order: 1
+    }]
+  }];
 }
