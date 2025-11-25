@@ -393,7 +393,7 @@ const PropertyDetail = () => {
                       variant="luxury" 
                       size="lg" 
                       className="w-full"
-                      onClick={() => navigate('/contact')}
+                      onClick={() => window.location.href = 'mailto:info@bircabo.com?subject=Property Inquiry - ' + encodeURIComponent(property.title)}
                     >
                       Contact Agent
                     </Button>
@@ -401,7 +401,15 @@ const PropertyDetail = () => {
                       variant="outline" 
                       size="lg" 
                       className="w-full"
-                      onClick={() => navigate('/contact')}
+                      onClick={() => navigate('/new-client', {
+                        state: {
+                          propertyId: property.id,
+                          mlsNumber: property.mlsNumber,
+                          propertyAddress: property.title,
+                          propertyPrice: property.price,
+                          propertyType: property.propertyType
+                        }
+                      })}
                     >
                       Schedule Viewing
                     </Button>
