@@ -155,7 +155,7 @@ const Hero = () => {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="/BIR.mp4" />
+            <source src="/BIR.mp4" type="video/mp4" />
           </video>
           {/* Secondary video for crossfade */}
           <video
