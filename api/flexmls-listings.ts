@@ -1,8 +1,8 @@
-// api/flexmls-listings.ts - Fixed version
+// api/flexmls-listings.ts - With FULL Feed ID
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
-const FLEXMLS_API_FEED_ID = 'b6byf74jy5upy5zp4'; // CORRECTED: Full Feed ID
+const FLEXMLS_API_FEED_ID = 'b6byf74jy5upy5zp4p87yyqei'; // FULL CORRECTED ID
 
 export default async function handler(
   req: VercelRequest,
@@ -20,15 +20,12 @@ export default async function handler(
   }
 
   if (!FLEXMLS_API_KEY) {
-    console.error('❌ FLEXMLS_API_KEY is missing');
-    return res.status(500).json({ 
+    return res.status(200).json({ 
       success: false, 
       error: 'API key not configured',
       results: []
     });
   }
-
-  console.log('✅ API Key present, length:', FLEXMLS_API_KEY.length);
 
   try {
     const { city, minPrice, maxPrice, bedrooms, bathrooms, propertyType } = req.query;
@@ -44,7 +41,7 @@ export default async function handler(
     
     const filterString = filters.length > 0 ? filters.join(' And ') : '';
     
-    // CORRECTED: Try without /v1/ in the path
+    // Try Spark API with full Feed ID
     const url = new URL(`https://sparkapi.com/${FLEXMLS_API_FEED_ID}/listings`);
     if (filterString) {
       url.searchParams.append('_filter', filterString);
@@ -52,8 +49,8 @@ export default async function handler(
     url.searchParams.append('_expand', 'Photos');
     url.searchParams.append('_limit', '50');
 
-    console.log('🔍 Attempting to fetch:', url.toString());
-    console.log('🔍 Filter string:', filterString || 'none');
+    console.log('🔍 Full Feed ID:', FLEXMLS_API_FEED_ID);
+    console.log('🔍 Endpoint:', url.toString());
 
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -64,31 +61,25 @@ export default async function handler(
       }
     });
 
-    console.log('📡 Response status:', response.status);
+    console.log('📡 Status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ FlexMLS API Error:', {
-        status: response.status,
-        body: errorText,
-        url: url.toString()
-      });
+      console.error('❌ Error:', { status: response.status, body: errorText.substring(0, 300) });
       
       return res.status(200).json({
         success: false,
         results: [],
         debug: {
-          apiStatus: response.status,
-          apiResponse: errorText.substring(0, 500),
-          endpoint: url.toString(),
-          feedId: FLEXMLS_API_FEED_ID,
+          status: response.status,
+          message: 'API endpoint not accessible. This might be an IDX-only feed.',
+          fullFeedId: FLEXMLS_API_FEED_ID
         }
       });
     }
 
     const data = await response.json();
-    
-    console.log('✅ Success! Results count:', data.D?.Results?.length || 0);
+    console.log('✅ Results:', data.D?.Results?.length || 0);
     
     return res.status(200).json({
       success: true,
@@ -97,7 +88,7 @@ export default async function handler(
     });
 
   } catch (error) {
-    console.error('💥 Exception:', error);
+    console.error('💥 Error:', error);
     return res.status(200).json({ 
       success: false, 
       results: [],
