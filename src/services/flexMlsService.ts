@@ -16,6 +16,8 @@ export interface MLSProperty {
   PropertyType: string;
   PublicRemarks: string;
   StandardStatus: string;
+  Latitude?: number;
+  Longitude?: number;
   Appliances?: string[];
   ArchitecturalStyle?: string;
   Cooling?: string;
@@ -117,12 +119,15 @@ export function convertMLSToPropertyCard(mlsProperty: MLSProperty) {
     location: `${mlsProperty.City || ''}, ${mlsProperty.StateOrProvince || ''}`.trim(),
     beds: mlsProperty.BedroomsTotal || 0,
     baths: mlsProperty.BathroomsFull || 0,
-    sqft: `${mlsProperty.LivingArea?.toLocaleString() || '0'} sq ft`,
+    sqft: `${mlsProperty.LivingArea?.toLocaleString() || '0'}`,
     description: mlsProperty.PublicRemarks?.substring(0, 150) || '',
     features: [],
     status: mlsProperty.StandardStatus || 'Active',
+    propertyType: mlsProperty.PropertyType || 'Single Family Home',
     yearBuilt: mlsProperty.YearBuilt,
-    lotSize: mlsProperty.LotSizeArea
+    lotSize: mlsProperty.LotSizeArea,
+    latitude: mlsProperty.Latitude,
+    longitude: mlsProperty.Longitude
   };
 }
 
@@ -140,9 +145,11 @@ function getFallbackListings(): MLSProperty[] {
     LivingArea: 4500,
     LotSizeArea: 8000,
     YearBuilt: 2022,
-    PropertyType: 'Residential',
+    PropertyType: 'Single Family Home',
     PublicRemarks: 'Stunning beachfront villa with panoramic ocean views. This property is shown as fallback data while the API is being configured.',
     StandardStatus: 'Active',
+    Latitude: 22.8905,
+    Longitude: -109.9167,
     Media: [{
       MediaURL: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
       Order: 1
