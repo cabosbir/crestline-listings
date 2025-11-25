@@ -57,18 +57,19 @@ const PropertyCard = ({
     }
   }, [latitude, longitude, location, title]);
 
-  const handleViewDetails = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('button')) {
-      return;
-    }
+  const handleViewDetails = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    console.log('🔍 View Details clicked:', { id, mlsNumber, link });
     
     // If link is provided (from featured properties), open it
     if (link) {
+      console.log('✅ Opening MLS link:', link);
       window.open(link, '_blank');
       return;
     }
     
     // Otherwise, try to navigate to detail page
+    console.log('✅ Navigating to:', `/property/${id}`);
     navigate(`/property/${id}`);
   };
 
@@ -179,7 +180,10 @@ const PropertyCard = ({
             variant="default"
             size="lg"
             className="bg-white text-black hover:bg-gray-100 font-semibold px-8"
-            onClick={handleViewDetails}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewDetails(e);
+            }}
           >
             View Details
           </Button>
