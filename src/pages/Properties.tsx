@@ -24,11 +24,13 @@ const Properties = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log('📡 Loading properties with filters:', filters);
       const mlsProperties: MLSProperty[] = await fetchListings(filters);
+      console.log('✅ Received properties:', mlsProperties.length);
       const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedProperties);
     } catch (err) {
-      console.error('Error loading properties:', err);
+      console.error('❌ Error loading properties:', err);
       setError('Failed to load properties. Please try again.');
     } finally {
       setLoading(false);
@@ -36,13 +38,45 @@ const Properties = () => {
   };
 
   const handleApplyFilters = (filters: any) => {
-    loadProperties({
-      city: filters.city[0], // Get first selected city
-      minPrice: filters.minPrice > 0 ? filters.minPrice : undefined,
-      maxPrice: filters.maxPrice < 10000000 ? filters.maxPrice : undefined,
-      bedrooms: filters.minBeds > 0 ? filters.minBeds : undefined,
-      bathrooms: filters.minBaths > 0 ? filters.minBaths : undefined,
-    });
+    console.log('🔍 Filters received:', filters);
+    
+    // Extract first zone if multiple selected
+    const selectedZone = filters.zones && filters.zones.length > 0 ? filters.zones[0] : undefined;
+    
+    // Extract first area if multiple selected
+    const selectedArea = filters.areas && filters.areas.length > 0 ? filters.areas[0] : undefined;
+    
+    // Extract first community if multiple selected
+    const selectedCommunity = filters.communities && filters.communities.length > 0 ? filters.communities[0] : undefined;
+    
+    // Convert price strings to numbers (remove $ and commas)
+    const parsePrice = (priceStr: string) => {
+      if (!priceStr || priceStr === "No Preference") return undefined;
+      const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
+      const num = parseFloat(cleaned);
+      if (priceStr.includes('Million')) {
+        return num * 1000000;
+      }
+      return num;
+    };
+    
+    // Convert beds/baths strings to numbers
+    const parseBeds = (bedsStr: string) => {
+      if (!bedsStr || bedsStr === "Any") return undefined;
+      return parseInt(bedsStr.replace('+', ''));
+    };
+    
+    const apiFilters = {
+      city: selectedZone || selectedArea || selectedCommunity, // Use zone, area, or community as city filter
+      minPrice: parsePrice(filters.minPrice),
+      maxPrice: parsePrice(filters.maxPrice),
+      bedrooms: parseBeds(filters.minBeds),
+      bathrooms: parseBeds(filters.minBaths),
+    };
+    
+    console.log('🚀 Sending to API:', apiFilters);
+    
+    loadProperties(apiFilters);
   };
 
   const handleReset = () => {

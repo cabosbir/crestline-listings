@@ -6,117 +6,16 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { 
   Bed, Bath, Maximize, MapPin, ArrowLeft, X,
-  Home, Calendar, CheckCircle2 
+  Calendar, CheckCircle2, Loader2
 } from "lucide-react";
-
-// Uncomment when FlexMLS is ready
-// import { fetchPropertyById } from "@/services/flexMlsService";
+import { fetchPropertyById, type MLSProperty } from "@/services/flexMlsService";
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [property, setProperty] = useState(null);
+  const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Mock data - will be replaced by FlexMLS
-  const mockProperties = [
-    {
-      id: 1,
-      title: "Beachfront Paradise Villa",
-      price: "$2,850,000",
-      location: "Marina District",
-      fullLocation: "Marina District, Cabo San Lucas",
-      beds: 5,
-      baths: 4,
-      sqft: "4,500 sq ft",
-      lotSize: "8,000 sqft",
-      yearBuilt: 2022,
-      propertyType: "Villa",
-      status: "Sale",
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop",
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&h=1000&fit=crop",
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&h=1000&fit=crop"
-      ],
-      description: "Extraordinary beachfront villa with panoramic ocean views. Modern Mexican architecture with premium finishes, expansive outdoor living, and direct beach access. This stunning property offers the ultimate coastal lifestyle.",
-      features: [
-        "Ocean Views",
-        "Infinity Pool",
-        "Outdoor Kitchen",
-        "Guest Casita",
-        "Beach Access",
-        "Smart Home",
-        "Wine Cellar",
-        "Home Theater",
-        "Gym"
-      ]
-    },
-    {
-      id: 2,
-      title: "Golf Course Estate",
-      price: "$3,200,000",
-      location: "Sunset Hills",
-      fullLocation: "Quivira, Cabo San Lucas",
-      beds: 4,
-      baths: 5,
-      sqft: "5,200 sq ft",
-      lotSize: "10,000 sqft",
-      yearBuilt: 2020,
-      propertyType: "Estate",
-      status: "Sale",
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&h=1000&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&h=1000&fit=crop",
-        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600&h=1000&fit=crop",
-        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1600&h=1000&fit=crop"
-      ],
-      description: "Extraordinary golf course estate in Quivira with panoramic ocean and fairway views. Modern Mexican architecture with premium finishes, expansive outdoor living, and access to world-class Jack Nicklaus golf course.",
-      features: [
-        "Golf Course Views",
-        "Ocean Views",
-        "Infinity Pool",
-        "Outdoor Kitchen",
-        "Game Room",
-        "Golf Cart",
-        "Guest Casita",
-        "Home Theater"
-      ]
-    },
-    {
-      id: 3,
-      title: "Oceanfront Penthouse",
-      price: "$4,500,000",
-      location: "Downtown Luxury",
-      fullLocation: "Downtown, Cabo San Lucas",
-      beds: 3,
-      baths: 3,
-      sqft: "3,200 sq ft",
-      lotSize: "N/A",
-      yearBuilt: 2021,
-      propertyType: "Penthouse",
-      status: "Sale",
-      image: "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1600&h=1000&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1600&h=1000&fit=crop",
-        "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1600&h=1000&fit=crop",
-        "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=1600&h=1000&fit=crop"
-      ],
-      description: "Luxurious oceanfront penthouse in the heart of downtown with breathtaking panoramic views. Modern design with floor-to-ceiling windows, premium finishes, and exclusive amenities.",
-      features: [
-        "Ocean Views",
-        "Rooftop Terrace",
-        "Infinity Pool",
-        "Concierge Service",
-        "Gym",
-        "Wine Storage",
-        "Smart Home",
-        "Private Elevator"
-      ]
-    }
-  ];
-
-  // Load property data
   useEffect(() => {
     window.scrollTo(0, 0);
     loadProperty();
@@ -125,56 +24,102 @@ const PropertyDetail = () => {
   const loadProperty = async () => {
     setLoading(true);
     try {
-      // TODO: Uncomment when FlexMLS is configured
-      /*
-      const mlsProperty = await fetchPropertyById(id);
+      console.log('🔍 Loading property with ID:', id);
+      
+      if (!id) {
+        console.error('❌ No property ID provided');
+        setProperty(null);
+        setLoading(false);
+        return;
+      }
+      
+      const mlsProperty: MLSProperty | null = await fetchPropertyById(id);
+      
       if (mlsProperty) {
-        // Convert MLS property to your format
+        console.log('✅ MLS Property received:', mlsProperty);
+        
         const convertedProperty = {
-          id: mlsProperty.id,
-          title: `${mlsProperty.address.streetNumber} ${mlsProperty.address.streetName}`,
-          price: `$${mlsProperty.price.toLocaleString()}`,
-          location: mlsProperty.address.city,
-          fullLocation: `${mlsProperty.address.city}, ${mlsProperty.address.state}`,
-          beds: mlsProperty.bedrooms,
-          baths: mlsProperty.bathrooms,
-          sqft: `${mlsProperty.squareFeet.toLocaleString()} sq ft`,
-          lotSize: `${mlsProperty.lotSize.toLocaleString()} sqft`,
-          yearBuilt: mlsProperty.yearBuilt,
-          propertyType: mlsProperty.propertyType,
-          status: mlsProperty.status,
-          image: mlsProperty.photos[0]?.url || '',
-          images: mlsProperty.photos.map(p => p.url),
-          description: mlsProperty.description,
-          features: mlsProperty.features
+          id: mlsProperty.ListingKey,
+          mlsNumber: mlsProperty.ListingId || id,
+          title: mlsProperty.UnparsedAddress || 'Luxury Property in Cabo San Lucas',
+          price: `$${mlsProperty.ListPrice?.toLocaleString() || '0'}`,
+          location: mlsProperty.City || 'Cabo San Lucas',
+          fullLocation: `${mlsProperty.City || 'Cabo San Lucas'}, ${mlsProperty.StateOrProvince || 'BCS'}`,
+          beds: mlsProperty.BedroomsTotal || 0,
+          baths: mlsProperty.BathroomsFull || 0,
+          sqft: `${mlsProperty.LivingArea?.toLocaleString() || '0'} sq ft`,
+          lotSize: mlsProperty.LotSizeArea ? `${mlsProperty.LotSizeArea.toLocaleString()} sqft` : 'N/A',
+          yearBuilt: mlsProperty.YearBuilt || 'N/A',
+          propertyType: mlsProperty.PropertyType || 'Residential',
+          status: mlsProperty.StandardStatus || 'Active',
+          image: mlsProperty.Media?.[0]?.MediaURL || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop',
+          images: mlsProperty.Media?.slice(0, 5).map(m => m.MediaURL) || [
+            'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop'
+          ],
+          description: mlsProperty.PublicRemarks || 'Beautiful luxury property in Cabo San Lucas with premium finishes and stunning views.',
+          features: extractFeatures(mlsProperty)
         };
+        
+        console.log('✅ Converted property:', convertedProperty);
         setProperty(convertedProperty);
       } else {
+        console.error('❌ Property not found');
         setProperty(null);
       }
-      */
-      
-      // For now, use mock data
-      const foundProperty = mockProperties.find(p => p.id === parseInt(id || "0"));
-      setProperty(foundProperty || null);
     } catch (error) {
-      console.error('Error loading property:', error);
-      // Fallback to mock data on error
-      const foundProperty = mockProperties.find(p => p.id === parseInt(id || "0"));
-      setProperty(foundProperty || null);
+      console.error('💥 Error loading property:', error);
+      setProperty(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Loading state
+  const extractFeatures = (mlsProperty: MLSProperty): string[] => {
+    const features: string[] = [];
+    
+    if (mlsProperty.Appliances && Array.isArray(mlsProperty.Appliances)) {
+      features.push(...mlsProperty.Appliances.slice(0, 3));
+    }
+    if (mlsProperty.ArchitecturalStyle) {
+      features.push(mlsProperty.ArchitecturalStyle);
+    }
+    if (mlsProperty.Cooling) {
+      features.push(`${mlsProperty.Cooling} Cooling`);
+    }
+    if (mlsProperty.Heating) {
+      features.push(`${mlsProperty.Heating} Heating`);
+    }
+    if (mlsProperty.ParkingFeatures) {
+      features.push(`Parking: ${mlsProperty.ParkingFeatures}`);
+    }
+    if (mlsProperty.View) {
+      features.push(`View: ${mlsProperty.View}`);
+    }
+    if (mlsProperty.WaterfrontFeatures) {
+      features.push('Waterfront');
+    }
+    if (mlsProperty.PoolFeatures) {
+      features.push('Pool');
+    }
+    if (mlsProperty.PatioAndPorchFeatures) {
+      features.push('Patio/Porch');
+    }
+    
+    if (features.length === 0) {
+      features.push('Modern Finishes', 'Open Floor Plan', 'Prime Location', 'High-End Appliances', 'Quality Construction', 'Excellent Condition');
+    }
+    
+    return features.slice(0, 9);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
-            <p className="text-xl text-muted-foreground">Loading property...</p>
+            <Loader2 className="h-12 w-12 animate-spin text-accent mb-4 mx-auto" />
+            <p className="text-xl text-muted-foreground">Loading property details...</p>
           </div>
         </div>
         <Footer />
@@ -182,7 +127,6 @@ const PropertyDetail = () => {
     );
   }
 
-  // Property not found
   if (!property) {
     return (
       <div className="min-h-screen bg-background">
@@ -190,7 +134,7 @@ const PropertyDetail = () => {
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">Property Not Found</h1>
-            <p className="text-muted-foreground mb-6">The property you're looking for doesn't exist.</p>
+            <p className="text-muted-foreground mb-6">The property you're looking for doesn't exist or has been removed.</p>
             <Button onClick={() => navigate('/properties')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Properties
@@ -207,7 +151,6 @@ const PropertyDetail = () => {
       <Navbar />
       <FloatingContact />
 
-      {/* Back Button & Close Button */}
       <div className="container mx-auto px-4 pt-32 pb-4">
         <div className="flex items-center justify-between">
           <Button 
@@ -230,7 +173,6 @@ const PropertyDetail = () => {
         </div>
       </div>
 
-      {/* Hero Image */}
       <section className="pb-12">
         <div className="container mx-auto px-4">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl" style={{ height: "500px" }}>
@@ -238,26 +180,26 @@ const PropertyDetail = () => {
               src={property.image}
               alt={property.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop';
+              }}
             />
             <div className="absolute top-4 left-4 flex gap-2">
               <span className="bg-primary text-white px-4 py-2 rounded-lg font-semibold">
-                Featured
+                {property.status}
               </span>
               <span className="bg-accent text-accent-foreground px-4 py-2 rounded-lg font-semibold">
-                Luxury
+                MLS: {property.mlsNumber}
               </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="pb-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Left Column - Property Details */}
             <div className="lg:col-span-2">
-              {/* Title & Price */}
               <div className="mb-8">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">{property.title}</h1>
                 <div className="text-4xl font-bold text-accent mb-4">{property.price}</div>
@@ -267,7 +209,6 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
-              {/* Quick Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-secondary border border-border rounded-xl p-4 text-center">
                   <Bed className="w-6 h-6 mx-auto mb-2 text-accent" />
@@ -291,19 +232,17 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
-              {/* About This Property */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-4">About This Property</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
+                <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
                   {property.description}
                 </p>
               </div>
 
-              {/* Features & Amenities */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-6">Features & Amenities</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {property.features.map((feature, index) => (
+                  {property.features.map((feature: string, index: number) => (
                     <div key={index} className="flex items-center gap-2">
                       <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
                       <span className="text-muted-foreground">{feature}</span>
@@ -312,7 +251,6 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
-              {/* Additional Details */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-6">Additional Details</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
@@ -329,14 +267,13 @@ const PropertyDetail = () => {
                     <div className="font-semibold">{property.status}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-muted-foreground mb-1">Property ID</div>
-                    <div className="font-semibold">{property.id}</div>
+                    <div className="text-sm text-muted-foreground mb-1">MLS Number</div>
+                    <div className="font-semibold">{property.mlsNumber}</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column - Contact Card */}
             <div className="lg:col-span-1">
               <div className="sticky top-32">
                 <div className="bg-card border border-border rounded-2xl p-6 shadow-elegant">
@@ -365,8 +302,8 @@ const PropertyDetail = () => {
                   </div>
 
                   <div className="border-t border-border pt-6">
-                    <div className="text-sm text-muted-foreground mb-2">Property ID</div>
-                    <div className="font-semibold mb-4">{property.id}</div>
+                    <div className="text-sm text-muted-foreground mb-2">MLS Number</div>
+                    <div className="font-semibold mb-4">{property.mlsNumber}</div>
                     
                     <div className="text-sm text-muted-foreground mb-2">Share Property</div>
                     <div className="flex gap-2">
