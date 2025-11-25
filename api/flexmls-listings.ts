@@ -1,8 +1,7 @@
-// api/flexmls-listings.ts - With FULL Feed ID
+// api/flexmls-listings.ts - Authenticated Spark API
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
-const FLEXMLS_API_FEED_ID = 'b6byf74jy5upy5zp4p87yyqei'; // FULL CORRECTED ID
+const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY; // This is your Access Token
 
 export default async function handler(
   req: VercelRequest,
@@ -30,7 +29,7 @@ export default async function handler(
   try {
     const { city, minPrice, maxPrice, bedrooms, bathrooms, propertyType } = req.query;
 
-    // Build filters
+    // Build Spark API filter string
     const filters: string[] = [];
     if (city) filters.push(`City Eq '${city}'`);
     if (minPrice) filters.push(`ListPrice Ge ${minPrice}`);
@@ -41,45 +40,52 @@ export default async function handler(
     
     const filterString = filters.length > 0 ? filters.join(' And ') : '';
     
-    // Try Spark API with full Feed ID
-    const url = new URL(`https://sparkapi.com/${FLEXMLS_API_FEED_ID}/listings`);
+    // CORRECTED: Use the authenticated Spark API endpoint
+    const url = new URL('https://sparkapi.com/v1/listings');
     if (filterString) {
       url.searchParams.append('_filter', filterString);
     }
     url.searchParams.append('_expand', 'Photos');
     url.searchParams.append('_limit', '50');
 
-    console.log('🔍 Full Feed ID:', FLEXMLS_API_FEED_ID);
-    console.log('🔍 Endpoint:', url.toString());
+    console.log('🔍 Authenticated endpoint:', url.toString());
+    console.log('🔍 Filter:', filterString || 'none');
 
+    // Use SparkAPI authentication with Access Token
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
+        'Authorization': `OAuth ${FLEXMLS_API_KEY}`,
         'X-SparkApi-User-Agent': 'BajaInternationalRealty',
         'Accept': 'application/json',
       }
     });
 
     console.log('📡 Status:', response.status);
+    console.log('📡 Headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Error:', { status: response.status, body: errorText.substring(0, 300) });
+      console.error('❌ API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText.substring(0, 500)
+      });
       
       return res.status(200).json({
         success: false,
         results: [],
         debug: {
           status: response.status,
-          message: 'API endpoint not accessible. This might be an IDX-only feed.',
-          fullFeedId: FLEXMLS_API_FEED_ID
+          endpoint: url.toString(),
+          authMethod: 'OAuth with Access Token',
+          errorPreview: errorText.substring(0, 200)
         }
       });
     }
 
     const data = await response.json();
-    console.log('✅ Results:', data.D?.Results?.length || 0);
+    console.log('✅ Success! Results:', data.D?.Results?.length || 0);
     
     return res.status(200).json({
       success: true,
@@ -88,7 +94,7 @@ export default async function handler(
     });
 
   } catch (error) {
-    console.error('💥 Error:', error);
+    console.error('💥 Exception:', error);
     return res.status(200).json({ 
       success: false, 
       results: [],
