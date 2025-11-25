@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,9 +13,11 @@ import { fetchPropertyById, type MLSProperty } from "@/services/flexMlsService";
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -24,16 +26,20 @@ const PropertyDetail = () => {
 
   const loadProperty = async () => {
     setLoading(true);
+    setError(null);
     try {
       console.log('🔍 Loading property with ID:', id);
+      console.log('📍 Location state:', location.state);
       
       if (!id) {
         console.error('❌ No property ID provided');
+        setError('No property ID provided');
         setProperty(null);
         setLoading(false);
         return;
       }
       
+      // First try to fetch from API
       const mlsProperty: MLSProperty | null = await fetchPropertyById(id);
       
       if (mlsProperty) {
@@ -64,11 +70,13 @@ const PropertyDetail = () => {
         console.log('✅ Converted property:', convertedProperty);
         setProperty(convertedProperty);
       } else {
-        console.error('❌ Property not found');
+        console.error('❌ Property not found from API');
+        setError('Property not found. The API returned no data.');
         setProperty(null);
       }
     } catch (error) {
       console.error('💥 Error loading property:', error);
+      setError('Error loading property details. Please try again.');
       setProperty(null);
     } finally {
       setLoading(false);
@@ -151,7 +159,14 @@ const PropertyDetail = () => {
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">Property Not Found</h1>
-            <p className="text-muted-foreground mb-6">The property you're looking for doesn't exist or has been removed.</p>
+            <p className="text-muted-foreground mb-6">
+              {error || "The property you're looking for doesn't exist or has been removed."}
+            </p>
+            <div className="mb-6 p-4 bg-secondary rounded-lg">
+              <p className="text-sm text-muted-foreground font-mono break-all">
+                Property ID: {id}
+              </p>
+            </div>
             <Button onClick={() => navigate('/properties')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Properties
