@@ -1,4 +1,4 @@
-// src/components/AdvancedPropertyFilters.tsx
+// src/components/AdvancedPropertyFilters.tsx - Updated to match FlexMLS native interface
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,38 +11,23 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Search, SlidersHorizontal, MapPin, Calendar, X, ExternalLink } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 
 interface FilterState {
   searchQuery: string;
   mlsNumber: string;
-  city: string[];
-  neighborhood: string[];
-  zipCode: string;
-  propertyType: string[];
-  minPrice: number;
-  maxPrice: number;
-  minBeds: number;
-  maxBeds: number;
-  minBaths: number;
-  maxBaths: number;
-  minSqft: number;
-  maxSqft: number;
-  minLotSize: number;
-  maxLotSize: number;
+  city: string;
+  neighborhood: string;
+  propertyType: string;
+  minPrice: string;
+  maxPrice: string;
+  minBeds: string;
+  minBaths: string;
   waterfront: boolean;
   oceanView: boolean;
   pool: boolean;
-  garage: boolean;
   golfCourse: boolean;
-  listingStatus: string[];
-  listedAfter: string;
-  listedBefore: string;
-  yearBuiltMin: number;
-  yearBuiltMax: number;
-  hoaMax: number;
-  keywords: string;
 }
 
 interface AdvancedPropertyFiltersProps {
@@ -57,80 +42,56 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: "",
     mlsNumber: "",
-    city: [],
-    neighborhood: [],
-    zipCode: "",
-    propertyType: [],
-    minPrice: 0,
-    maxPrice: 10000000,
-    minBeds: 0,
-    maxBeds: 10,
-    minBaths: 0,
-    maxBaths: 10,
-    minSqft: 0,
-    maxSqft: 10000,
-    minLotSize: 0,
-    maxLotSize: 50000,
+    city: "",
+    neighborhood: "",
+    propertyType: "",
+    minPrice: "",
+    maxPrice: "10000000",
+    minBeds: "",
+    minBaths: "",
     waterfront: false,
     oceanView: false,
     pool: false,
-    garage: false,
     golfCourse: false,
-    listingStatus: ["Active"],
-    listedAfter: "",
-    listedBefore: "",
-    yearBuiltMin: 1900,
-    yearBuiltMax: new Date().getFullYear(),
-    hoaMax: 10000,
-    keywords: ""
   });
 
   const cities = [
-    "Cabo San Lucas",
-    "San Jose del Cabo",
-    "Todos Santos",
-    "La Paz",
-    "East Cape",
-    "Pacific Coast",
-    "Corridor"
+    { value: "cabo-san-lucas", label: "Cabo San Lucas" },
+    { value: "san-jose-del-cabo", label: "San Jose del Cabo" },
+    { value: "todos-santos", label: "Todos Santos" },
+    { value: "la-paz", label: "La Paz" },
+    { value: "east-cape", label: "East Cape" },
+    { value: "corridor", label: "Corridor" },
+    { value: "pacific-coast", label: "Pacific Coast" },
   ];
 
   const neighborhoods = [
-    "Marina",
-    "Pedregal",
-    "Downtown",
-    "Palmilla",
-    "Chileno Bay",
-    "Costa Azul",
-    "Puerto Los Cabos"
+    { value: "marina", label: "Marina" },
+    { value: "downtown", label: "Downtown" },
+    { value: "pedregal", label: "Pedregal" },
+    { value: "chileno-bay", label: "Chileno Bay" },
+    { value: "palmilla", label: "Palmilla" },
+    { value: "puerto-los-cabos", label: "Puerto Los Cabos" },
+    { value: "costa-azul", label: "Costa Azul" },
   ];
 
   const propertyTypes = [
-    "Single Family",
-    "Condo",
-    "Townhouse",
-    "Villa",
-    "Penthouse",
-    "Lot/Land",
-    "Commercial"
-  ];
-
-  const listingStatuses = [
-    "Active",
-    "Pending",
-    "Under Contract",
-    "Coming Soon",
-    "Recently Sold"
+    { value: "single-family", label: "Single Family" },
+    { value: "townhouse", label: "Townhouse" },
+    { value: "condo", label: "Condo" },
+    { value: "penthouse", label: "Penthouse" },
+    { value: "villa", label: "Villa" },
+    { value: "lot-land", label: "Lot/Land" },
+    { value: "commercial", label: "Commercial" },
   ];
 
   const handleMLSSearch = () => {
     if (filters.mlsNumber.trim()) {
-      window.open(`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(filters.mlsNumber)}`, '_blank');
+      window.open(`https://link.flexmls.com/u67gqp77eml,12?search=${encodeURIComponent(filters.mlsNumber)}`, '_blank');
     }
   };
 
   const handleSearch = () => {
-    // If MLS number is provided, search FlexMLS directly
     if (filters.mlsNumber.trim()) {
       handleMLSSearch();
       return;
@@ -142,11 +103,14 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     // Count active filters
     let count = 0;
     if (filters.searchQuery) count++;
-    if (filters.city.length > 0) count++;
-    if (filters.propertyType.length > 0) count++;
-    if (filters.minPrice > 0) count++;
-    if (filters.maxPrice < 10000000) count++;
-    if (filters.waterfront || filters.oceanView || filters.pool) count++;
+    if (filters.city) count++;
+    if (filters.neighborhood) count++;
+    if (filters.propertyType) count++;
+    if (filters.minPrice) count++;
+    if (filters.maxPrice && filters.maxPrice !== "10000000") count++;
+    if (filters.minBeds) count++;
+    if (filters.minBaths) count++;
+    if (filters.waterfront || filters.oceanView || filters.pool || filters.golfCourse) count++;
     setActiveFiltersCount(count);
   };
 
@@ -154,45 +118,21 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
     setFilters({
       searchQuery: "",
       mlsNumber: "",
-      city: [],
-      neighborhood: [],
-      zipCode: "",
-      propertyType: [],
-      minPrice: 0,
-      maxPrice: 10000000,
-      minBeds: 0,
-      maxBeds: 10,
-      minBaths: 0,
-      maxBaths: 10,
-      minSqft: 0,
-      maxSqft: 10000,
-      minLotSize: 0,
-      maxLotSize: 50000,
+      city: "",
+      neighborhood: "",
+      propertyType: "",
+      minPrice: "",
+      maxPrice: "10000000",
+      minBeds: "",
+      minBaths: "",
       waterfront: false,
       oceanView: false,
       pool: false,
-      garage: false,
       golfCourse: false,
-      listingStatus: ["Active"],
-      listedAfter: "",
-      listedBefore: "",
-      yearBuiltMin: 1900,
-      yearBuiltMax: new Date().getFullYear(),
-      hoaMax: 10000,
-      keywords: ""
     });
     setActiveFiltersCount(0);
     onReset();
     setIsOpen(false);
-  };
-
-  const toggleArrayFilter = (key: keyof FilterState, value: string) => {
-    const currentArray = filters[key] as string[];
-    const newArray = currentArray.includes(value)
-      ? currentArray.filter(item => item !== value)
-      : [...currentArray, value];
-    
-    setFilters({ ...filters, [key]: newArray });
   };
 
   return (
@@ -215,7 +155,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
         </div>
 
         <Button 
-          variant="luxury" 
+          variant="default" 
           onClick={handleSearch}
           className="px-6"
         >
@@ -247,7 +187,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
             <div className="space-y-6 mt-6">
               {/* MLS Number Search */}
               <div className="bg-accent/10 border border-accent/20 rounded-lg p-4">
-                <Label className="text-lg font-semibold mb-2 block">MLS / IDX Number</Label>
+                <Label className="text-base font-semibold mb-2 block">MLS / IDX Number</Label>
                 <p className="text-sm text-muted-foreground mb-3">
                   Search directly by MLS listing number for instant results
                 </p>
@@ -264,7 +204,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                     }}
                   />
                   <Button
-                    variant="luxury"
+                    variant="default"
                     onClick={handleMLSSearch}
                     disabled={!filters.mlsNumber.trim()}
                   >
@@ -280,153 +220,162 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                 </p>
               </div>
 
-              {/* Location */}
-              <div className="space-y-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Location
-                </h3>
+              {/* Location - City */}
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">📍 Location</Label>
                 
                 <div>
-                  <Label>City</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {cities.map((city) => (
-                      <div key={city} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`city-${city}`}
-                          checked={filters.city.includes(city)}
-                          onCheckedChange={() => toggleArrayFilter('city', city)}
-                        />
-                        <label htmlFor={`city-${city}`} className="text-sm cursor-pointer">
-                          {city}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                  <Label className="text-sm font-medium mb-2 block">City</Label>
+                  <RadioGroup value={filters.city} onValueChange={(value) => setFilters({ ...filters, city: value })}>
+                    <div className="grid grid-cols-2 gap-3">
+                      {cities.map((city) => (
+                        <div key={city.value} className="flex items-center space-x-2">
+                          <RadioGroupItem value={city.value} id={`city-${city.value}`} />
+                          <label htmlFor={`city-${city.value}`} className="text-sm cursor-pointer">
+                            {city.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
                 </div>
 
+                {/* Neighborhood */}
                 <div>
-                  <Label>Neighborhood</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {neighborhoods.map((neighborhood) => (
-                      <div key={neighborhood} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`neighborhood-${neighborhood}`}
-                          checked={filters.neighborhood.includes(neighborhood)}
-                          onCheckedChange={() => toggleArrayFilter('neighborhood', neighborhood)}
-                        />
-                        <label htmlFor={`neighborhood-${neighborhood}`} className="text-sm cursor-pointer">
-                          {neighborhood}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                  <Label className="text-sm font-medium mb-2 block">Neighborhood</Label>
+                  <RadioGroup value={filters.neighborhood} onValueChange={(value) => setFilters({ ...filters, neighborhood: value })}>
+                    <div className="grid grid-cols-2 gap-3">
+                      {neighborhoods.map((neighborhood) => (
+                        <div key={neighborhood.value} className="flex items-center space-x-2">
+                          <RadioGroupItem value={neighborhood.value} id={`neighborhood-${neighborhood.value}`} />
+                          <label htmlFor={`neighborhood-${neighborhood.value}`} className="text-sm cursor-pointer">
+                            {neighborhood.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
                 </div>
               </div>
 
               {/* Property Type */}
               <div>
-                <Label>Property Type</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  {propertyTypes.map((type) => (
-                    <div key={type} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`type-${type}`}
-                        checked={filters.propertyType.includes(type)}
-                        onCheckedChange={() => toggleArrayFilter('propertyType', type)}
-                      />
-                      <label htmlFor={`type-${type}`} className="text-sm cursor-pointer">
-                        {type}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                <Label className="text-base font-semibold mb-3 block">Property Type</Label>
+                <RadioGroup value={filters.propertyType} onValueChange={(value) => setFilters({ ...filters, propertyType: value })}>
+                  <div className="grid grid-cols-2 gap-3">
+                    {propertyTypes.map((type) => (
+                      <div key={type.value} className="flex items-center space-x-2">
+                        <RadioGroupItem value={type.value} id={`type-${type.value}`} />
+                        <label htmlFor={`type-${type.value}`} className="text-sm cursor-pointer">
+                          {type.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </RadioGroup>
               </div>
 
               {/* Price Range */}
               <div>
-                <Label>Price Range</Label>
-                <div className="grid grid-cols-2 gap-4 mt-2">
+                <Label className="text-base font-semibold mb-2 block">Price Range</Label>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
+                    <Label className="text-sm mb-1 block">Min</Label>
                     <Input
                       type="number"
                       placeholder="Min"
-                      value={filters.minPrice || ""}
-                      onChange={(e) => setFilters({ ...filters, minPrice: Number(e.target.value) })}
+                      value={filters.minPrice}
+                      onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
                     />
                   </div>
                   <div>
+                    <Label className="text-sm mb-1 block">Max</Label>
                     <Input
                       type="number"
-                      placeholder="Max"
-                      value={filters.maxPrice || ""}
-                      onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
+                      placeholder="10000000"
+                      value={filters.maxPrice}
+                      onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Bedrooms & Bathrooms */}
+              {/* Beds & Baths */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Min Beds</Label>
-                  <Input
-                    type="number"
-                    placeholder="Any"
-                    value={filters.minBeds || ""}
-                    onChange={(e) => setFilters({ ...filters, minBeds: Number(e.target.value) })}
-                  />
+                  <Label className="text-sm font-medium mb-2 block">Min Beds</Label>
+                  <select
+                    value={filters.minBeds}
+                    onChange={(e) => setFilters({ ...filters, minBeds: e.target.value })}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Any</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                    <option value="5">5+</option>
+                  </select>
                 </div>
                 <div>
-                  <Label>Min Baths</Label>
-                  <Input
-                    type="number"
-                    placeholder="Any"
-                    value={filters.minBaths || ""}
-                    onChange={(e) => setFilters({ ...filters, minBaths: Number(e.target.value) })}
-                  />
+                  <Label className="text-sm font-medium mb-2 block">Min Baths</Label>
+                  <select
+                    value={filters.minBaths}
+                    onChange={(e) => setFilters({ ...filters, minBaths: e.target.value })}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Any</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                  </select>
                 </div>
               </div>
 
               {/* Features */}
               <div>
-                <Label>Features</Label>
-                <div className="grid grid-cols-2 gap-3 mt-2">
+                <Label className="text-base font-semibold mb-3 block">Features</Label>
+                <div className="grid grid-cols-2 gap-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox
+                    <RadioGroupItem 
+                      value="waterfront" 
                       id="waterfront"
                       checked={filters.waterfront}
-                      onCheckedChange={(checked) => setFilters({ ...filters, waterfront: checked as boolean })}
+                      onClick={() => setFilters({ ...filters, waterfront: !filters.waterfront })}
                     />
                     <label htmlFor="waterfront" className="text-sm cursor-pointer">
                       Waterfront
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox
+                    <RadioGroupItem 
+                      value="oceanView" 
                       id="oceanView"
                       checked={filters.oceanView}
-                      onCheckedChange={(checked) => setFilters({ ...filters, oceanView: checked as boolean })}
+                      onClick={() => setFilters({ ...filters, oceanView: !filters.oceanView })}
                     />
                     <label htmlFor="oceanView" className="text-sm cursor-pointer">
                       Ocean View
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox
+                    <RadioGroupItem 
+                      value="pool" 
                       id="pool"
                       checked={filters.pool}
-                      onCheckedChange={(checked) => setFilters({ ...filters, pool: checked as boolean })}
+                      onClick={() => setFilters({ ...filters, pool: !filters.pool })}
                     />
                     <label htmlFor="pool" className="text-sm cursor-pointer">
                       Pool
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox
+                    <RadioGroupItem 
+                      value="golfCourse" 
                       id="golfCourse"
                       checked={filters.golfCourse}
-                      onCheckedChange={(checked) => setFilters({ ...filters, golfCourse: checked as boolean })}
+                      onClick={() => setFilters({ ...filters, golfCourse: !filters.golfCourse })}
                     />
                     <label htmlFor="golfCourse" className="text-sm cursor-pointer">
                       Golf Course
@@ -442,7 +391,7 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
                 <X className="h-4 w-4 mr-2" />
                 Reset
               </Button>
-              <Button variant="luxury" onClick={handleSearch} className="flex-1">
+              <Button variant="default" onClick={handleSearch} className="flex-1">
                 <Search className="h-4 w-4 mr-2" />
                 Search
               </Button>
@@ -451,21 +400,21 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
         </Sheet>
       </div>
 
-      {/* Active Filters Pills */}
+      {/* Active Filters Display */}
       {activeFiltersCount > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
-          {filters.city.map((city) => (
-            <span key={city} className="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              {city}
-              <X className="h-3 w-3 cursor-pointer" onClick={() => toggleArrayFilter('city', city)} />
+          {filters.city && (
+            <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              {cities.find(c => c.value === filters.city)?.label}
+              <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters({ ...filters, city: "" })} />
             </span>
-          ))}
-          {filters.propertyType.map((type) => (
-            <span key={type} className="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              {type}
-              <X className="h-3 w-3 cursor-pointer" onClick={() => toggleArrayFilter('propertyType', type)} />
+          )}
+          {filters.propertyType && (
+            <span className="bg-accent/10 text-accent px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              {propertyTypes.find(t => t.value === filters.propertyType)?.label}
+              <X className="h-3 w-3 cursor-pointer" onClick={() => setFilters({ ...filters, propertyType: "" })} />
             </span>
-          ))}
+          )}
         </div>
       )}
     </div>
