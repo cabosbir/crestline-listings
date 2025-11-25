@@ -68,9 +68,26 @@ const PropertyCard = ({
       return;
     }
     
-    // Otherwise, try to navigate to detail page
+    // Otherwise, navigate to detail page with property data in state
     console.log('✅ Navigating to:', `/property/${id}`);
-    navigate(`/property/${id}`);
+    navigate(`/property/${id}`, {
+      state: {
+        id,
+        mlsNumber,
+        image,
+        price,
+        title,
+        location,
+        beds,
+        baths,
+        sqft,
+        description,
+        status,
+        propertyType,
+        latitude,
+        longitude
+      }
+    });
   };
 
   const handleNewClientForm = (e: React.MouseEvent) => {
