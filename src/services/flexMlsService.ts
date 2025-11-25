@@ -94,17 +94,31 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
 }
 
 export function convertMLSToPropertyCard(mlsProperty: MLSProperty) {
+  // Get the best available image
+  let imageUrl = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop';
+  
+  if (mlsProperty.Media && mlsProperty.Media.length > 0) {
+    // Sort by Order if available
+    const sortedMedia = [...mlsProperty.Media].sort((a, b) => (a.Order || 0) - (b.Order || 0));
+    const firstImage = sortedMedia[0].MediaURL;
+    
+    // Ensure the URL is valid
+    if (firstImage && (firstImage.startsWith('http://') || firstImage.startsWith('https://'))) {
+      imageUrl = firstImage;
+    }
+  }
+  
   return {
     id: mlsProperty.ListingKey,
     mlsNumber: mlsProperty.ListingId,
-    image: mlsProperty.Media?.[0]?.MediaURL || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
+    image: imageUrl,
     price: `$${mlsProperty.ListPrice?.toLocaleString() || '0'}`,
     title: mlsProperty.UnparsedAddress || 'Luxury Property',
     location: `${mlsProperty.City || ''}, ${mlsProperty.StateOrProvince || ''}`.trim(),
     beds: mlsProperty.BedroomsTotal || 0,
     baths: mlsProperty.BathroomsFull || 0,
     sqft: `${mlsProperty.LivingArea?.toLocaleString() || '0'} sq ft`,
-    description: mlsProperty.PublicRemarks || '',
+    description: mlsProperty.PublicRemarks?.substring(0, 150) || '',
     features: [],
     status: mlsProperty.StandardStatus || 'Active',
     yearBuilt: mlsProperty.YearBuilt,
