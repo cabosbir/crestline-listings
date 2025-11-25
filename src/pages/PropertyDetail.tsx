@@ -393,7 +393,7 @@ const PropertyDetail = () => {
                       variant="luxury" 
                       size="lg" 
                       className="w-full"
-                      onClick={() => window.location.href = 'mailto:info@bircabo.com?subject=Property Inquiry - ' + encodeURIComponent(property.title)}
+                      onClick={() => navigate('/contact')}
                     >
                       Contact Agent
                     </Button>
