@@ -28,7 +28,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img 
-              src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762021536/Screenshot_2025-10-31_at_5.21.25_PM-removebg-preview_2_gndt9y.png" 
+              src="https://res.cloudinary.com/dbmhtlgz1/image/upload/v1764108819/Screenshot_2025-10-31_at_5.21.25_PM-removebg-preview_2_gndt9y__1_-removebg-preview_iug1a3.png" 
               alt="Baja International Realty" 
               className="h-16 md:h-20 w-auto"
             />
