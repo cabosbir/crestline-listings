@@ -13,7 +13,7 @@ interface PropertyCardProps {
   location: string;
   beds: number;
   baths: number;
-  sqft: string;
+  sqft?: string; // Made optional since it can be undefined
   description?: string;
   status?: string;
   propertyType?: string;
@@ -88,7 +88,10 @@ const PropertyCard = ({
     }
   };
 
-  const formattedSqft = sqft.replace(/sq ft/i, '').trim();
+  // FIXED: Safe handling of sqft - check for undefined BEFORE calling .replace()
+  const formattedSqft = sqft && typeof sqft === 'string' 
+    ? sqft.replace(/sq ft/i, '').trim() 
+    : 'N/A';
 
   return (
     <Card 
@@ -140,11 +143,15 @@ const PropertyCard = ({
               <Bath className="w-5 h-5" />
               <span className="font-semibold">{baths} Baths</span>
             </div>
-            <span className="text-white/60">•</span>
-            <div className="flex items-center gap-1.5">
-              <Maximize className="w-5 h-5" />
-              <span className="font-semibold">{formattedSqft} SqFt</span>
-            </div>
+            {formattedSqft !== 'N/A' && (
+              <>
+                <span className="text-white/60">•</span>
+                <div className="flex items-center gap-1.5">
+                  <Maximize className="w-5 h-5" />
+                  <span className="font-semibold">{formattedSqft} SqFt</span>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="text-base mb-1 line-clamp-1 flex items-center gap-2">
