@@ -13,13 +13,13 @@ interface PropertyCardProps {
   location: string;
   beds: number;
   baths: number;
-  sqft?: string; // Made optional since it can be undefined
+  sqft?: string;
   description?: string;
   status?: string;
   propertyType?: string;
   latitude?: number;
   longitude?: number;
-  link?: string; // Add optional MLS link
+  link?: string;
 }
 
 const PropertyCard = ({
@@ -45,14 +45,11 @@ const PropertyCard = ({
   const [mapUrl, setMapUrl] = useState<string>("");
 
   useEffect(() => {
-    // Generate FREE OpenStreetMap static image
     if (latitude && longitude) {
-      // OpenStreetMap Static Map - 100% FREE, no API key needed
       const osmUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${latitude},${longitude}&zoom=13&size=400x300&maptype=mapnik&markers=${latitude},${longitude},red-pushpin`;
       setMapUrl(osmUrl);
       console.log('🗺️ Generated free map for:', title);
     } else if (location) {
-      // Fallback: Use geocoding (also free)
       console.log('📍 No coordinates for:', title, '- will show on detail page');
     }
   }, [latitude, longitude, location, title]);
@@ -61,33 +58,9 @@ const PropertyCard = ({
     e?.stopPropagation();
     console.log('🔍 View Details clicked:', { id, mlsNumber, link });
     
-    // If link is provided (from featured properties), open it
-    if (link) {
-      console.log('✅ Opening MLS link:', link);
-      window.open(link, '_blank');
-      return;
-    }
-    
-    // Otherwise, navigate to detail page with property data in state
+    // Navigate to detail page with the listing key/id
     console.log('✅ Navigating to:', `/property/${id}`);
-    navigate(`/property/${id}`, {
-      state: {
-        id,
-        mlsNumber,
-        image,
-        price,
-        title,
-        location,
-        beds,
-        baths,
-        sqft,
-        description,
-        status,
-        propertyType,
-        latitude,
-        longitude
-      }
-    });
+    navigate(`/property/${id}`);
   };
 
   const handleNewClientForm = (e: React.MouseEvent) => {
@@ -116,7 +89,6 @@ const PropertyCard = ({
     }
   };
 
-  // FIXED: Safe handling of sqft - check for undefined BEFORE calling .replace()
   const formattedSqft = sqft && typeof sqft === 'string' 
     ? sqft.replace(/sq ft/i, '').trim() 
     : 'N/A';
