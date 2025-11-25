@@ -64,7 +64,7 @@ const PropertyCard = ({
 
   const handleNewClientForm = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate('/new-client-form', { 
+    navigate('/new-client', {
       state: { 
         propertyId: id,
         mlsNumber: mlsNumber,

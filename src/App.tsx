@@ -61,8 +61,9 @@ const App = () => (
           {/* Market Report Page */}
           <Route path="/market-report" element={<MarketReport />} />
           
-          {/* New Client Forms - Both URL patterns supported */}
+          {/* New Client Forms - All URL patterns supported */}
           <Route path="/new-client" element={<NewClientForm />} />
+          <Route path="/new-client-form" element={<NewClientForm />} />
           <Route path="/new-client/:agentSlug" element={<NewClientForm />} />
           <Route path="/agents/:agentSlug/new-client" element={<NewClientForm />} />
           
