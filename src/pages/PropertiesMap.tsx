@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, List, Loader2, MapPin, Bed, Bath } from "lucide-react";
+import { ArrowLeft, List, Loader2, MapPin, Bed, Bath, ExternalLink } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
 const PropertiesMap = () => {
@@ -13,6 +13,7 @@ const PropertiesMap = () => {
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
+  const [hoveredProperty, setHoveredProperty] = useState<any>(null);
 
   useEffect(() => {
     loadProperties();
@@ -21,7 +22,6 @@ const PropertiesMap = () => {
   const loadProperties = async () => {
     setLoading(true);
     try {
-      // Get filters from URL params
       const filters: any = {};
       if (searchParams.get('city')) filters.city = searchParams.get('city');
       if (searchParams.get('minPrice')) filters.minPrice = searchParams.get('minPrice');
@@ -34,7 +34,7 @@ const PropertiesMap = () => {
       const mlsProperties: MLSProperty[] = await fetchListings(filters);
       const convertedProperties = mlsProperties
         .map(convertMLSToPropertyCard)
-        .filter(p => p.latitude && p.longitude); // Only show properties with coordinates
+        .filter(p => p.latitude && p.longitude);
       
       console.log('📍 Properties with coordinates:', convertedProperties.length);
       setProperties(convertedProperties);
@@ -45,10 +45,9 @@ const PropertiesMap = () => {
     }
   };
 
-  // Calculate center of map based on properties
   const getMapCenter = () => {
     if (properties.length === 0) {
-      return { lat: 23.0545, lng: -109.7084 }; // Cabo San Lucas default
+      return { lat: 23.0545, lng: -109.7084 };
     }
     
     const avgLat = properties.reduce((sum, p) => sum + (p.latitude || 0), 0) / properties.length;
@@ -59,20 +58,37 @@ const PropertiesMap = () => {
 
   const center = getMapCenter();
 
-  // Build Google Maps URL with markers
-  const buildMapUrl = () => {
-    const baseUrl = 'https://maps.google.com/maps?';
-    const params = new URLSearchParams({
-      t: '',
-      z: '12',
-      ie: 'UTF8',
-      iwloc: '',
-      output: 'embed',
-      q: `${center.lat},${center.lng}`
-    });
+  // Build Google Maps URL with property pins (limit to 50 for performance)
+  const buildMapUrlWithPins = () => {
+    const mapProperties = properties.slice(0, 50);
+    
+    // Create markers for Google Maps Static API
+    const markersParam = mapProperties
+      .map((p, i) => {
+        const label = String.fromCharCode(65 + (i % 26)); // A-Z labels
+        return `markers=color:red%7Clabel:${i + 1}%7C${p.latitude},${p.longitude}`;
+      })
+      .join('&');
+    
+    // Use Google Static Maps with markers
+    const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap';
+    const params = `?center=${center.lat},${center.lng}&zoom=11&size=640x640&${markersParam}`;
+    
+    return `${baseUrl}${params}`;
+  };
 
-    // Add markers for each property (Google Maps iframe has marker limit, so we'll use a different approach)
-    return `${baseUrl}${params.toString()}`;
+  // Build embed URL with center point
+  const buildEmbedMapUrl = () => {
+    return `https://maps.google.com/maps?q=${center.lat},${center.lng}&t=&z=11&ie=UTF8&iwloc=&output=embed`;
+  };
+
+  // Open FlexMLS with all properties on map
+  const openFlexMLSMap = () => {
+    // Build search with current filters to show in FlexMLS
+    const params = new URLSearchParams();
+    if (searchParams.get('city')) params.append('Location', searchParams.get('city')!);
+    
+    window.open(`https://link.flexmls.com/1lpm0zo1944e,12?${params.toString()}`, '_blank');
   };
 
   return (
@@ -80,37 +96,33 @@ const PropertiesMap = () => {
       <Navbar />
       <FloatingContact />
 
-      {/* Header */}
       <section className="pt-32 pb-6 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-4">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/properties')}
-            >
+            <Button variant="ghost" onClick={() => navigate('/properties')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to List View
             </Button>
             
-            <Button 
-              variant="default"
-              onClick={() => navigate('/properties')}
-            >
-              <List className="w-4 h-4 mr-2" />
-              Switch to List View
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={openFlexMLSMap}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Open in FlexMLS
+              </Button>
+              <Button variant="default" onClick={() => navigate('/properties')}>
+                <List className="w-4 h-4 mr-2" />
+                List View
+              </Button>
+            </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Map View
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Map View</h1>
           <p className="text-xl text-muted-foreground">
-            {loading ? 'Loading properties...' : `Showing ${properties.length} properties on map`}
+            {loading ? 'Loading properties...' : `Showing ${Math.min(properties.length, 50)} of ${properties.length} properties on map`}
           </p>
         </div>
       </section>
 
-      {/* Map Section */}
       <section className="py-8">
         <div className="container mx-auto px-4">
           {loading ? (
@@ -127,64 +139,83 @@ const PropertiesMap = () => {
               <p className="text-muted-foreground mb-6">
                 No properties with location data match your filters.
               </p>
-              <Button onClick={() => navigate('/properties')}>
-                View All Properties
-              </Button>
+              <Button onClick={() => navigate('/properties')}>View All Properties</Button>
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 gap-6">
-              {/* Map */}
               <div className="lg:col-span-2">
                 <div className="sticky top-4">
                   <div className="bg-secondary rounded-xl overflow-hidden border border-border shadow-lg">
+                    {/* Google Maps Embed */}
                     <iframe
-                      src={buildMapUrl()}
+                      src={buildEmbedMapUrl()}
                       className="w-full h-[600px] border-0"
                       title="Properties Map"
                       allowFullScreen
                       loading="lazy"
                     />
-                    <div className="p-4 bg-card">
-                      <div className="text-sm text-muted-foreground mb-2">
-                        📍 Showing {properties.length} properties with location data
+                    
+                    {/* Map Overlay with Property Markers */}
+                    <div className="relative">
+                      <div className="absolute inset-0 pointer-events-none">
+                        {/* This would need a proper mapping library for clickable pins */}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Note: Click on properties in the sidebar to view details. For interactive pins, 
-                        we recommend using the FlexMLS native map which supports advanced mapping features.
+                    </div>
+
+                    <div className="p-4 bg-card">
+                      <div className="text-sm font-semibold mb-2">
+                        📍 Showing {Math.min(properties.length, 50)} properties with location data
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Properties are numbered in the sidebar. Click any property card to view full details.
                       </p>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={openFlexMLSMap}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        View Interactive Map in FlexMLS (with clickable pins)
+                      </Button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Property List Sidebar */}
               <div className="lg:col-span-1">
                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                  {properties.map((property) => (
+                  {properties.slice(0, 50).map((property, index) => (
                     <div
                       key={property.id}
-                      className={`bg-card border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-lg ${
-                        selectedProperty?.id === property.id 
-                          ? 'border-accent shadow-lg' 
-                          : 'border-border'
+                      className={`bg-card border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
+                        selectedProperty?.id === property.id ? 'border-accent shadow-lg scale-[1.02]' : 'border-border'
+                      } ${
+                        hoveredProperty?.id === property.id ? 'ring-2 ring-accent' : ''
                       }`}
                       onClick={() => {
                         setSelectedProperty(property);
                         navigate(`/property/${property.id}`);
                       }}
+                      onMouseEnter={() => setHoveredProperty(property)}
+                      onMouseLeave={() => setHoveredProperty(null)}
                     >
-                      <img
-                        src={property.image}
-                        alt={property.title}
-                        className="w-full h-32 object-cover rounded-lg mb-3"
-                        onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=200&fit=crop';
-                        }}
-                      />
-                      
-                      <div className="text-2xl font-bold text-accent mb-2">
-                        {property.price}
+                      {/* Property Number Badge */}
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                          {index + 1}
+                        </div>
+                        <img
+                          src={property.image}
+                          alt={property.title}
+                          className="flex-1 h-32 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=200&fit=crop';
+                          }}
+                        />
                       </div>
+                      
+                      <div className="text-2xl font-bold text-accent mb-2">{property.price}</div>
 
                       <div className="flex items-center gap-3 mb-2 text-sm">
                         <div className="flex items-center gap-1">
@@ -198,18 +229,16 @@ const PropertiesMap = () => {
                         </div>
                       </div>
 
-                      <div className="text-sm line-clamp-2 mb-2">
-                        {property.title}
-                      </div>
+                      <div className="text-sm line-clamp-2 mb-2 font-medium">{property.title}</div>
 
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
                         <MapPin className="w-3 h-3" />
                         {property.location}
                       </div>
 
                       <Button 
                         size="sm" 
-                        className="w-full mt-3"
+                        className="w-full" 
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/property/${property.id}`);
@@ -219,6 +248,24 @@ const PropertiesMap = () => {
                       </Button>
                     </div>
                   ))}
+                  
+                  {properties.length > 50 && (
+                    <div className="bg-accent/10 border border-accent rounded-xl p-4 text-center">
+                      <p className="text-sm font-semibold mb-2">
+                        Showing first 50 of {properties.length} properties
+                      </p>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Add more filters to narrow your search
+                      </p>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => navigate('/properties')}
+                      >
+                        Back to Filters
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
