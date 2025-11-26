@@ -4,23 +4,20 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2 } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-// Helper function to format phone number for WhatsApp (removes all non-digits)
 const getWhatsAppNumber = (phone) => {
   return phone.replace(/[^0-9]/g, '');
 };
 
-// Helper function to create WhatsApp link with pre-filled message
 const getWhatsAppLink = (phone, agentName) => {
   const number = getWhatsAppNumber(phone);
   const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
   return `https://wa.me/${number}?text=${message}`;
 };
 
-// Shuffle function with localStorage cache (refreshes every 3 hours)
 const getShuffledListings = (listings, cacheKey) => {
   const cacheTimeKey = `${cacheKey}-time`;
   
@@ -52,24 +49,22 @@ const getShuffledListings = (listings, cacheKey) => {
   return shuffled;
 };
 
-// ⭐⭐⭐ AGENT INFO - CHANGE FOR EACH AGENT ⭐⭐⭐
 const agent = {
-  id: 3,                    // ⭐ CHANGE: Agent ID
-  slug: "alfonso",          // ⭐ CHANGE: "bob", "hector", "erika", etc.
-  name: "Alfonso Puente",   // ⭐ CHANGE: Full name
-  title: "Sales Manager & Commercial Real Estate Expert",  // ⭐ CHANGE
-  specialization: "Real Estate Developments & Market Analysis",  // ⭐ CHANGE
-  image: "/alfonso-puente.jpg",  // ⭐ CHANGE
-  phone: "+52 664 188 8681",     // ⭐ CHANGE
-  email: "alfonso@bircabo.com",  // ⭐ CHANGE
-  yearsExperience: 18,      // ⭐ CHANGE
-  propertiesSold: 890,      // ⭐ CHANGE
+  id: 3,
+  slug: "alfonso",
+  name: "Alfonso Puente",
+  title: "Sales Manager & Commercial Real Estate Expert",
+  specialization: "Real Estate Developments & Market Analysis",
+  image: "/alfonso-puente.jpg",
+  phone: "+52 664 188 8681",
+  email: "alfonso@bircabo.com",
+  yearsExperience: 18,
+  propertiesSold: 890,
   bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
-  certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],  // ⭐ CHANGE
-  languages: ["English", "Spanish"],  // ⭐ CHANGE
+  certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
+  languages: ["English", "Spanish"],
 };
 
-// ⭐⭐⭐ MY LISTINGS - Agent's Personal Properties (NO SHUFFLE, HARDCODED) ⭐⭐⭐
 const originalMyListings = [
   {
     id: 1,
@@ -109,7 +104,6 @@ const originalMyListings = [
   },
 ];
 
-// ⭐⭐⭐ TESTIMONIALS - CHANGE FOR EACH AGENT ⭐⭐⭐
 const testimonials = [
   {
     name: "Jonathan & Rebecca Miller",
@@ -131,19 +125,19 @@ const testimonials = [
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showMyListings, setShowMyListings] = useState(false); // ⭐ Default to Featured (false)
+  const [showMyListings, setShowMyListings] = useState(false);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 9;
 
-  // Fetch and shuffle featured listings from FlexMLS API
   useEffect(() => {
     const loadFeaturedListings = async () => {
-      if (showMyListings) return; // Don't load if showing "My Listings"
+      if (showMyListings) return;
       
       setIsLoadingFeatured(true);
       
       try {
-        // Check if we have cached data that's still valid (3 hours)
         const cacheKey = `${agent.slug}-featured-api-data`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
@@ -153,26 +147,19 @@ const AlfonsoLandingPage = () => {
         const threeHours = 3 * 60 * 60 * 1000;
         
         if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-          // Use cached data
           const cachedData = JSON.parse(cached);
           setFeaturedListings(cachedData);
           setIsLoadingFeatured(false);
           return;
         }
         
-        // Fetch fresh data from API
         const mlsData = await fetchListings({
           city: 'Cabo San Lucas',
-          // Add more filters as needed
         });
         
-        // Convert API response to PropertyCard format
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        
-        // Shuffle the listings
         const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
         
-        // Cache the API data
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));
           localStorage.setItem(cacheTimeKey, now.toString());
@@ -183,8 +170,6 @@ const AlfonsoLandingPage = () => {
         setFeaturedListings(shuffled);
       } catch (error) {
         console.error('Failed to load featured listings:', error);
-        
-        // Fallback to Alfonso's own listings if API fails
         toast({
           title: "Notice",
           description: "Showing available listings. Some listings may be loading.",
@@ -199,14 +184,25 @@ const AlfonsoLandingPage = () => {
     loadFeaturedListings();
   }, [showMyListings, toast]);
 
-  // Determine which listings to display
-  const displayedListings = showMyListings ? originalMyListings : featuredListings;
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [showMyListings]);
+
+  const allListings = showMyListings ? originalMyListings : featuredListings;
+  const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const displayedListings = allListings.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      {/* FLOATING WHATSAPP BUTTON */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -222,7 +218,6 @@ const AlfonsoLandingPage = () => {
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
-      {/* Hero Section */}
       <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
@@ -288,7 +283,6 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
-      {/* About Section */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -331,8 +325,7 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
-      {/* ⭐⭐⭐ LISTINGS SECTION WITH TOGGLE & API INTEGRATION ⭐⭐⭐ */}
-      <section className="py-16 bg-secondary/30">
+      <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
@@ -347,7 +340,6 @@ const AlfonsoLandingPage = () => {
                 : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
             </p>
 
-            {/* Toggle Buttons */}
             <div className="flex justify-center gap-2 mb-8">
               <Button
                 variant={showMyListings ? "luxury" : "outline"}
@@ -364,7 +356,6 @@ const AlfonsoLandingPage = () => {
             </div>
           </div>
 
-          {/* Loading State */}
           {isLoadingFeatured && !showMyListings ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
@@ -383,6 +374,39 @@ const AlfonsoLandingPage = () => {
                   <p className="text-lg text-muted-foreground">No listings available at this time.</p>
                 </div>
               )}
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 my-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "luxury" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </>
           )}
 
@@ -396,7 +420,6 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
@@ -417,7 +440,6 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">

@@ -5,13 +5,15 @@ import FloatingContact from "@/components/FloatingContact";
 import PropertyCard from "@/components/PropertyCard";
 import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
 const Properties = () => {
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 9;
   
   const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
 
@@ -29,6 +31,7 @@ const Properties = () => {
       console.log('✅ Received properties:', mlsProperties.length);
       const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedProperties);
+      setCurrentPage(1); // Reset to page 1 when loading new properties
     } catch (err) {
       console.error('❌ Error loading properties:', err);
       setError('Failed to load properties. Please try again.');
@@ -96,6 +99,17 @@ const Properties = () => {
     window.open(FLEXMLS_IFRAME_URL, '_blank');
   };
 
+  // Pagination calculations
+  const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const displayedProperties = properties.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -146,7 +160,7 @@ const Properties = () => {
             <>
               <div className="mb-6 flex justify-between items-center">
                 <p className="text-muted-foreground">
-                  Showing {properties.length} properties
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, properties.length)} of {properties.length} properties
                 </p>
                 <Button 
                   variant="outline"
@@ -158,11 +172,45 @@ const Properties = () => {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {properties.map((property) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                {displayedProperties.map((property) => (
                   <PropertyCard key={property.id} {...property} />
                 ))}
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 my-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </>
           )}
 
