@@ -78,7 +78,7 @@ const agent = {
 // My Listings - MLS numbers to fetch from API (maintains this exact order)
 const myListingMLSNumbers = [
   "25-4668",  // Marina Cabo Plaza - $279,000 (Active)
-  "25-4981",  // Terrasol Av Solmar 164 - $429,000 (Active - New Listing)
+  "25-5288",  // Terrasol Av Solmar 164 - $429,000 (Active - New Listing)
   "24-2073",  // Bahia del Tezal I 503B - $194,000 (Pending)
   "24-2325",  // Bahia del Tezal I 605B - $289,000 (Withdrawn)
   "24-804",   // Solaria E-102 - $625,000 (Withdrawn)
@@ -185,15 +185,62 @@ const BobLandingPage = () => {
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 9;
+  const ITEMS_PER_PAGE = 6; // Agent pages show 6 properties per page
 
   // ==================== START: SAVE CURRENT PAGE TO SESSION ====================
   useEffect(() => {
-    // Save this page as the return point for property detail pages
+    // Save this page as the return point for property detail pages with full state
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('propertyBrowseReturnUrl', window.location.pathname);
+      const browseState = {
+        url: window.location.pathname,
+        scrollPosition: window.scrollY,
+        activeTab: showMyListings ? 'my-listings' : 'featured',
+        currentPage: currentPage,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('propertyBrowseReturnUrl', JSON.stringify(browseState));
+    }
+  }, [showMyListings, currentPage]);
+
+  // ==================== START: RESTORE STATE ON LOAD ====================
+  useEffect(() => {
+    // Check if we're returning from a property detail page
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            // Only restore if we're on the same page and it's recent (within 30 minutes)
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (state.url === window.location.pathname && isRecent) {
+              // Restore tab
+              if (state.activeTab === 'my-listings') {
+                setShowMyListings(true);
+              } else {
+                setShowMyListings(false);
+              }
+              // Restore page
+              setCurrentPage(state.currentPage || 1);
+              // Restore scroll position after a brief delay
+              setTimeout(() => {
+                window.scrollTo({
+                  top: state.scrollPosition || 0,
+                  behavior: 'smooth'
+                });
+              }, 100);
+            }
+          } catch (e) {
+            console.error('Error restoring browse state:', e);
+          }
+        }
+        // Clear the returning flag
+        sessionStorage.removeItem('returningFromProperty');
+      }
     }
   }, []);
+  // ==================== END: RESTORE STATE ON LOAD ====================
   // ==================== END: SAVE CURRENT PAGE TO SESSION ====================
 
   // ==================== START: LOAD FEATURED LISTINGS ====================
@@ -280,40 +327,55 @@ const BobLandingPage = () => {
           return;
         }
         
-        // Fetch all listings from API (only once)
+        // Fetch WITHOUT city filter to get all listings
+        console.log('🔍 My Listings - Fetching without city filter...');
         const mlsData = await fetchListings({
-          city: 'Cabo San Lucas',
+          // Remove city filter - fetch all active listings
+          status: 'Active'
         });
         
         console.log('🔍 My Listings - Total API results:', mlsData.length);
         console.log('🔍 Looking for MLS numbers:', myListingMLSNumbers);
+        
+        // Check what fields are available in the API response
+        if (mlsData.length > 0) {
+          console.log('📋 Sample listing fields:', Object.keys(mlsData[0]));
+        }
         
         // Filter and sort by our MLS numbers (maintains exact order)
         const orderedListings = [];
         const notFoundMLS = [];
         
         myListingMLSNumbers.forEach((mlsNumber, index) => {
-          // Try to find by ListingId or MlsNumber field
+          // Try multiple field names that might contain the MLS number
           const listing = mlsData.find(item => 
             item.ListingId === mlsNumber || 
             item.MlsNumber === mlsNumber ||
-            item.mlsNumber === mlsNumber
+            item.mlsNumber === mlsNumber ||
+            item.ListingKey === mlsNumber ||
+            item.ListingKeyNumeric === mlsNumber
           );
           
           if (!listing) {
             console.warn(`⚠️ MLS ${mlsNumber} NOT FOUND in API results (position ${index + 1})`);
             notFoundMLS.push(mlsNumber);
           } else {
-            console.log(`✅ Found MLS ${mlsNumber}:`, listing.UnparsedAddress || listing.address);
+            console.log(`✅ Found MLS ${mlsNumber}:`, {
+              address: listing.UnparsedAddress || listing.address,
+              city: listing.City,
+              status: listing.StandardStatus,
+              listingId: listing.ListingId
+            });
             orderedListings.push(convertMLSToPropertyCard(listing));
           }
         });
         
         if (notFoundMLS.length > 0) {
           console.error('❌ Missing MLS numbers:', notFoundMLS);
+          console.log('💡 Tip: Check if these MLS numbers are Active status');
           toast({
             title: "Some listings unavailable",
-            description: `${notFoundMLS.length} listing(s) not found in current MLS data. Showing ${orderedListings.length} available listings.`,
+            description: `${notFoundMLS.length} listing(s) not found. They may be Pending, Sold, or in a different status.`,
             variant: "default",
           });
         }
