@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - SERVER-SIDE FILTERING (DOMINO EFFECT)
+// api/flexmls-listings.ts - FAST RESPONSE (Returns first 200 immediately)
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -10,7 +10,7 @@ export default async function handler(
 ) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Cache-Control', 'public, s-maxage=300'); // Cache for 5 minutes
+  res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1800'); // 10 min cache
   
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
@@ -24,66 +24,55 @@ export default async function handler(
 
   try {
     const { 
-      city,           // Zone/Area/Community (location)
+      city,
       minPrice, 
       maxPrice, 
-      bedrooms,       // minBeds
-      bathrooms,      // minBaths
-      propertyType,   // Condos, Houses, Land, etc.
-      status,         // Active, Pending, etc.
+      bedrooms,
+      bathrooms,
+      propertyType,
+      status,
       minSqft,
       yearBuilt
     } = req.query;
 
-    console.log('🔍 [Domino Effect] Filters received:', {
-      city, minPrice, maxPrice, bedrooms, bathrooms, propertyType, status, minSqft, yearBuilt
+    console.log('🔍 [Fast Response] Filters:', {
+      city, minPrice, maxPrice, bedrooms, bathrooms, propertyType, status
     });
 
     // ========================================
-    // BUILD RESO $filter QUERY (Server-side filtering!)
+    // BUILD RESO $filter QUERY
     // ========================================
     const filters: string[] = [];
 
-    // LOCATION (Zone/Area/Community)
+    // LOCATION
     if (city && typeof city === 'string') {
-      // FlexMLS uses City field for location
-      filters.push(`City eq '${city.replace(/'/g, "''")}'`); // Escape single quotes
+      filters.push(`City eq '${city.replace(/'/g, "''")}'`);
     }
 
-    // PRICE RANGE
+    // PRICE
     if (minPrice && typeof minPrice === 'string') {
       const min = parseFloat(minPrice);
-      if (!isNaN(min)) {
-        filters.push(`ListPrice ge ${min}`);
-      }
+      if (!isNaN(min)) filters.push(`ListPrice ge ${min}`);
     }
 
     if (maxPrice && typeof maxPrice === 'string') {
       const max = parseFloat(maxPrice);
-      if (!isNaN(max)) {
-        filters.push(`ListPrice le ${max}`);
-      }
+      if (!isNaN(max)) filters.push(`ListPrice le ${max}`);
     }
 
-    // BEDROOMS
+    // BEDS & BATHS
     if (bedrooms && typeof bedrooms === 'string') {
       const beds = parseInt(bedrooms);
-      if (!isNaN(beds)) {
-        filters.push(`BedroomsTotal ge ${beds}`);
-      }
+      if (!isNaN(beds)) filters.push(`BedroomsTotal ge ${beds}`);
     }
 
-    // BATHROOMS
     if (bathrooms && typeof bathrooms === 'string') {
       const baths = parseInt(bathrooms);
-      if (!isNaN(baths)) {
-        filters.push(`BathroomsFull ge ${baths}`);
-      }
+      if (!isNaN(baths)) filters.push(`BathroomsFull ge ${baths}`);
     }
 
     // PROPERTY TYPE
     if (propertyType && typeof propertyType === 'string') {
-      // Map frontend types to RESO PropertyType values
       const typeMap: Record<string, string> = {
         'Condos': 'Residential',
         'Houses': 'Residential', 
@@ -92,51 +81,43 @@ export default async function handler(
         'Fractional': 'Residential',
         'MultiFamily': 'Residential'
       };
-      
       const resoType = typeMap[propertyType];
-      if (resoType) {
-        filters.push(`PropertyType eq '${resoType}'`);
-      }
+      if (resoType) filters.push(`PropertyType eq '${resoType}'`);
     }
 
-    // STATUS (default to Active if not specified)
+    // STATUS (default Active)
     const statusValue = (status && typeof status === 'string') ? status : 'Active';
     filters.push(`StandardStatus eq '${statusValue}'`);
 
-    // SQUARE FEET
+    // SQFT
     if (minSqft && typeof minSqft === 'string' && minSqft !== 'No Preference') {
       const sqft = parseInt(minSqft.replace('+', ''));
-      if (!isNaN(sqft)) {
-        filters.push(`LivingArea ge ${sqft}`);
-      }
+      if (!isNaN(sqft)) filters.push(`LivingArea ge ${sqft}`);
     }
 
-    // YEAR BUILT
+    // YEAR
     if (yearBuilt && typeof yearBuilt === 'string' && yearBuilt !== 'No Preference') {
       const year = parseInt(yearBuilt.replace('+', ''));
-      if (!isNaN(year)) {
-        filters.push(`YearBuilt ge ${year}`);
-      }
+      if (!isNaN(year)) filters.push(`YearBuilt ge ${year}`);
     }
 
     const filterString = filters.join(' and ');
-    
-    console.log('🎯 [API Filter]:', filterString);
+    console.log('🎯 [Filter]:', filterString);
 
     // ========================================
-    // FETCH FROM FLEXMLS WITH FILTERS
+    // FETCH ONLY FIRST 200 (FAST!)
     // ========================================
-    const allListings = await fetchFilteredListings(filterString);
+    const listings = await fetchFirst200(filterString);
 
-    console.log(`✅ [Domino Result] Got ${allListings.length} listings matching filters`);
+    console.log(`✅ [Result] ${listings.length} listings`);
 
     return res.status(200).json({
       success: true,
-      results: allListings,
-      count: allListings.length,
-      total: allListings.length,
+      results: listings,
+      count: listings.length,
+      total: listings.length,
       filters: filterString,
-      cached: false
+      note: listings.length === 200 ? 'Showing first 200 results. Apply more filters to narrow search.' : undefined
     });
 
   } catch (error) {
@@ -150,93 +131,62 @@ export default async function handler(
 }
 
 // ========================================
-// FETCH WITH SERVER-SIDE FILTERS
+// FETCH FIRST 200 ONLY (FAST!)
 // ========================================
-async function fetchFilteredListings(filterString: string): Promise<any[]> {
-  let allListings: any[] = [];
-  let skip = 0;
-  const top = 200; // Fetch 200 per request
-  let hasMore = true;
-  let requestCount = 0;
-  const MAX_REQUESTS = 25; // Safety limit (5000 max listings)
-
-  while (hasMore && requestCount < MAX_REQUESTS) {
-    const url = new URL(`${RESO_API_BASE}/Property`);
-    
-    // Add filters
-    if (filterString) {
-      url.searchParams.append('$filter', filterString);
-    }
-    
-    // Add pagination
-    url.searchParams.append('$top', top.toString());
-    url.searchParams.append('$skip', skip.toString());
-    url.searchParams.append('$expand', 'Media');
-    url.searchParams.append('$orderby', 'ModificationTimestamp desc');
-
-    console.log(`📡 [Batch ${requestCount + 1}] Fetching skip=${skip}...`);
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
-      const response = await fetch(url.toString(), {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
-          'Accept': 'application/json',
-        },
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`❌ [Batch ${requestCount + 1}] Error:`, response.status, errorText.substring(0, 200));
-        
-        // On rate limit or error, return what we have
-        if (response.status === 429 || allListings.length > 0) {
-          console.log(`⚠️ Returning ${allListings.length} partial results`);
-          break;
-        }
-        
-        throw new Error(`API returned ${response.status}`);
-      }
-
-      const data = await response.json();
-      const results = data.value || [];
-      
-      console.log(`✅ [Batch ${requestCount + 1}] Got ${results.length} listings (total: ${allListings.length + results.length})`);
-      
-      if (results.length === 0) {
-        hasMore = false; // No more results
-      } else {
-        allListings = [...allListings, ...results];
-        
-        if (results.length < top) {
-          hasMore = false; // Last page
-        } else {
-          skip += top;
-          requestCount++;
-          
-          // Small delay to avoid rate limiting
-          await new Promise(resolve => setTimeout(resolve, 200));
-        }
-      }
-    } catch (error) {
-      console.error(`❌ [Batch ${requestCount + 1}] Failed:`, error);
-      
-      // Return what we have if we collected something
-      if (allListings.length > 0) {
-        console.log(`⚠️ Error occurred, returning ${allListings.length} listings`);
-        break;
-      }
-      
-      throw error;
-    }
+async function fetchFirst200(filterString: string): Promise<any[]> {
+  const url = new URL(`${RESO_API_BASE}/Property`);
+  
+  // Add filters
+  if (filterString) {
+    url.searchParams.append('$filter', filterString);
   }
+  
+  // ONLY FETCH 200 (one request!)
+  url.searchParams.append('$top', '200');
+  url.searchParams.append('$skip', '0');
+  url.searchParams.append('$expand', 'Media');
+  url.searchParams.append('$orderby', 'ModificationTimestamp desc');
 
-  console.log(`✅ [Final] Total listings: ${allListings.length}`);
-  return allListings;
+  console.log(`📡 [Fast Fetch] Getting first 200 listings...`);
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
+        'Accept': 'application/json',
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ [API Error]:`, response.status, errorText.substring(0, 200));
+      
+      // On 429, return empty array (better than crashing)
+      if (response.status === 429) {
+        console.log(`⚠️ [Rate Limited] Returning empty results`);
+        return [];
+      }
+      
+      throw new Error(`API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const results = data.value || [];
+    
+    console.log(`✅ [Success] Got ${results.length} listings`);
+    
+    return results;
+  } catch (error) {
+    console.error(`❌ [Fetch Failed]:`, error);
+    
+    // Return empty array instead of throwing (graceful degradation)
+    return [];
+  }
 }
