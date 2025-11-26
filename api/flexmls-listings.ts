@@ -1,13 +1,27 @@
-// api/flexmls-listings.ts - RESO Web API v3 - WITH CACHING & OPTIMIZATION
+// api/flexmls-listings.ts - PRODUCTION READY WITH MULTI-USER SUPPORT
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
 const RESO_API_BASE = 'https://replication.sparkapi.com/Version/3/Reso/OData';
 
-// In-memory cache (will persist during serverless function warm starts)
+// ========================================
+// SHARED CACHE (All users share this)
+// ========================================
 let cachedListings: any[] | null = null;
 let cacheTimestamp: number = 0;
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
+// ========================================
+// REQUEST QUEUE (Prevents rate limiting)
+// ========================================
+let ongoingFetch: Promise<any[]> | null = null;
+let waitingRequests: number = 0; // Track how many requests are waiting
+
+// ========================================
+// LAST FETCH TRACKING (Rate limit protection)
+// ========================================
+let lastFetchTime: number = 0;
+const MIN_FETCH_INTERVAL = 60 * 1000; // Don't fetch more than once per minute
 
 export default async function handler(
   req: VercelRequest,
@@ -15,6 +29,7 @@ export default async function handler(
 ) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=3600'); // CDN cache for 30 min
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -34,42 +49,95 @@ export default async function handler(
 
   try {
     const { city, minPrice, maxPrice, bedrooms, bathrooms } = req.query;
-
-    // Check if cache is valid
     const now = Date.now();
+
+    // ========================================
+    // STEP 1: Check if cache is valid
+    // ========================================
     const isCacheValid = cachedListings && (now - cacheTimestamp) < CACHE_DURATION;
+    const cacheAge = now - cacheTimestamp;
 
     let allListings: any[] = [];
 
     if (isCacheValid && cachedListings) {
-      console.log('✅ Using cached listings:', cachedListings.length);
+      console.log(`✅ [User] Using cached listings: ${cachedListings.length} (age: ${Math.round(cacheAge / 1000)}s)`);
       allListings = cachedListings;
     } else {
-      console.log('🔄 Cache expired or empty, fetching new listings...');
-      
-      try {
-        // Fetch with limited results to avoid timeout
-        allListings = await fetchListingsWithLimit(1000); // Limit to 1000 to stay under 30s
+      // ========================================
+      // STEP 2: Check if we can fetch (rate limit protection)
+      // ========================================
+      const timeSinceLastFetch = now - lastFetchTime;
+      const canFetch = timeSinceLastFetch >= MIN_FETCH_INTERVAL;
+
+      if (!canFetch && cachedListings && cachedListings.length > 0) {
+        // Too soon to fetch again, but we have cache - use stale cache
+        console.log(`⏰ [User] Rate limit protection: using stale cache (${cachedListings.length} listings, age: ${Math.round(cacheAge / 1000)}s)`);
+        allListings = cachedListings;
+      } else if (ongoingFetch) {
+        // ========================================
+        // STEP 3: Another request is already fetching - wait for it
+        // ========================================
+        waitingRequests++;
+        console.log(`⏳ [User ${waitingRequests}] Waiting for ongoing fetch...`);
         
-        // Update cache
-        cachedListings = allListings;
-        cacheTimestamp = now;
+        try {
+          allListings = await ongoingFetch;
+          console.log(`✅ [User ${waitingRequests}] Got results from ongoing fetch: ${allListings.length}`);
+        } finally {
+          waitingRequests--;
+        }
+      } else {
+        // ========================================
+        // STEP 4: Start a new fetch (only if no one else is fetching)
+        // ========================================
+        console.log(`🔄 [Primary] Starting new fetch (${waitingRequests} users waiting)...`);
         
-        console.log('✅ Cached', allListings.length, 'listings');
-      } catch (error) {
-        console.error('❌ Error fetching listings:', error);
+        ongoingFetch = fetchListingsWithLimit(1000);
+        lastFetchTime = now; // Mark when we started fetching
         
-        // If fetch fails but we have old cache, use it
-        if (cachedListings) {
-          console.log('⚠️ Using stale cache due to fetch error');
-          allListings = cachedListings;
-        } else {
-          throw error; // No cache available, throw error
+        try {
+          allListings = await ongoingFetch;
+          
+          // Update cache only if we got results
+          if (allListings.length > 0) {
+            cachedListings = allListings;
+            cacheTimestamp = now;
+            console.log(`✅ [Primary] Cached ${allListings.length} listings for all users`);
+          } else {
+            console.log(`⚠️ [Primary] Got 0 results, keeping old cache`);
+            
+            // Use old cache if new fetch returned nothing
+            if (cachedListings && cachedListings.length > 0) {
+              allListings = cachedListings;
+            }
+          }
+        } catch (error) {
+          console.error(`❌ [Primary] Fetch error:`, error);
+          
+          // Use stale cache on error
+          if (cachedListings && cachedListings.length > 0) {
+            console.log(`⚠️ [Primary] Using stale cache due to error: ${cachedListings.length}`);
+            allListings = cachedListings;
+          } else {
+            // No cache available at all
+            return res.status(200).json({
+              success: false,
+              results: [],
+              count: 0,
+              total: 0,
+              error: 'Unable to fetch listings. Please try again in a few moments.',
+              retryAfter: 60
+            });
+          }
+        } finally {
+          ongoingFetch = null; // Clear ongoing fetch
         }
       }
     }
 
-    // Apply client-side filters
+    // ========================================
+    // STEP 5: Apply client-side filters (fast!)
+    // ========================================
     let filteredListings = allListings;
 
     if (city && typeof city === 'string') {
@@ -106,7 +174,7 @@ export default async function handler(
       );
     }
 
-    console.log('✅ Returning', filteredListings.length, 'filtered listings');
+    console.log(`✅ [Response] Returning ${filteredListings.length} filtered listings (from ${allListings.length} total)`);
     
     return res.status(200).json({
       success: true,
@@ -114,11 +182,12 @@ export default async function handler(
       count: filteredListings.length,
       total: allListings.length,
       cached: isCacheValid,
-      cacheAge: isCacheValid ? Math.round((now - cacheTimestamp) / 1000) : 0
+      cacheAge: Math.round(cacheAge / 1000),
+      serverTime: new Date().toISOString()
     });
 
   } catch (error) {
-    console.error('💥 Error:', error);
+    console.error('💥 [Error] Handler error:', error);
     return res.status(200).json({ 
       success: false, 
       results: [],
@@ -127,7 +196,9 @@ export default async function handler(
   }
 }
 
-// Fetch listings with a limit to avoid timeout
+// ========================================
+// FETCH FUNCTION WITH RATE LIMIT PROTECTION
+// ========================================
 async function fetchListingsWithLimit(maxListings: number): Promise<any[]> {
   let allListings: any[] = [];
   let skip = 0;
@@ -135,15 +206,17 @@ async function fetchListingsWithLimit(maxListings: number): Promise<any[]> {
   let hasMore = true;
   let requestCount = 0;
   const maxRequests = Math.ceil(maxListings / top); // e.g., 5 requests for 1000 listings
+  let consecutiveErrors = 0;
+  const MAX_CONSECUTIVE_ERRORS = 2;
 
-  while (hasMore && requestCount < maxRequests) {
+  while (hasMore && requestCount < maxRequests && consecutiveErrors < MAX_CONSECUTIVE_ERRORS) {
     const url = new URL(`${RESO_API_BASE}/Property`);
     url.searchParams.append('$top', top.toString());
     url.searchParams.append('$skip', skip.toString());
     url.searchParams.append('$expand', 'Media');
     url.searchParams.append('$orderby', 'ModificationTimestamp desc');
 
-    console.log(`📡 Fetching batch ${requestCount + 1}/${maxRequests} (skip: ${skip})...`);
+    console.log(`📡 [API] Fetching batch ${requestCount + 1}/${maxRequests} (skip: ${skip})...`);
 
     try {
       const response = await fetch(url.toString(), {
@@ -152,26 +225,38 @@ async function fetchListingsWithLimit(maxListings: number): Promise<any[]> {
           'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
           'Accept': 'application/json',
         },
-        signal: AbortSignal.timeout(10000) // 10 second timeout per request
+        signal: AbortSignal.timeout(15000) // 15 second timeout per request
       });
 
       if (!response.ok) {
+        consecutiveErrors++;
         const errorText = await response.text();
-        console.error('❌ Error on batch:', response.status, errorText.substring(0, 200));
+        console.error(`❌ [API] Error on batch ${requestCount + 1}:`, response.status, errorText.substring(0, 200));
         
         // If we hit rate limit (429), stop and return what we have
         if (response.status === 429) {
-          console.log('⚠️ Rate limit hit, returning partial results:', allListings.length);
+          console.log(`⚠️ [API] Rate limit hit, returning partial results: ${allListings.length}`);
           break;
         }
         
-        break; // Stop on other errors
+        // On other errors, if we have some results, return them
+        if (allListings.length > 0) {
+          console.log(`⚠️ [API] Error but returning ${allListings.length} listings collected`);
+          break;
+        }
+        
+        // Add delay before retry
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        continue;
       }
 
       const data = await response.json();
       const results = data.value || [];
       
-      console.log(`✅ Batch ${requestCount + 1}: ${results.length} listings (total: ${allListings.length + results.length})`);
+      // Reset error counter on success
+      consecutiveErrors = 0;
+      
+      console.log(`✅ [API] Batch ${requestCount + 1}: ${results.length} listings (total: ${allListings.length + results.length})`);
       
       if (results.length === 0) {
         hasMore = false;
@@ -184,16 +269,27 @@ async function fetchListingsWithLimit(maxListings: number): Promise<any[]> {
           skip += top;
           requestCount++;
           
-          // Small delay to avoid rate limiting (100ms between requests)
-          await new Promise(resolve => setTimeout(resolve, 100));
+          // Progressive delay: 1s after 1st request, 2s after 2nd, 3s after 3rd, etc.
+          const delayMs = Math.min(1000 * (requestCount + 1), 5000);
+          console.log(`⏱️ [API] Waiting ${delayMs}ms before next batch...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
         }
       }
     } catch (error) {
-      console.error('❌ Request error:', error instanceof Error ? error.message : error);
-      break; // Stop on request errors
+      consecutiveErrors++;
+      console.error('❌ [API] Request error:', error instanceof Error ? error.message : error);
+      
+      // If we have some results, return them
+      if (allListings.length > 0) {
+        console.log(`⚠️ [API] Error but returning ${allListings.length} listings collected`);
+        break;
+      }
+      
+      // Add delay before retry
+      await new Promise(resolve => setTimeout(resolve, 3000));
     }
   }
 
-  console.log('✅ Total fetched:', allListings.length, 'listings');
+  console.log(`✅ [API] Total fetched: ${allListings.length} listings`);
   return allListings;
 }
