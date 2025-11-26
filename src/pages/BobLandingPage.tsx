@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -177,6 +177,7 @@ const testimonials = [
 
 const BobLandingPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false);
   const [myListings, setMyListings] = useState(originalMyListings);
@@ -185,6 +186,15 @@ const BobLandingPage = () => {
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
+
+  // ==================== START: SAVE CURRENT PAGE TO SESSION ====================
+  useEffect(() => {
+    // Save this page as the return point for property detail pages
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('propertyBrowseReturnUrl', window.location.pathname);
+    }
+  }, []);
+  // ==================== END: SAVE CURRENT PAGE TO SESSION ====================
 
   // ==================== START: LOAD FEATURED LISTINGS ====================
   useEffect(() => {
