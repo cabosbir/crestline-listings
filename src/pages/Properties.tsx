@@ -146,6 +146,8 @@ const Properties = () => {
           <AdvancedPropertyFilters 
             onApplyFilters={handleApplyFilters}
             onReset={handleReset}
+            resultCount={properties.length}  // 🔥 PASS DYNAMIC COUNT
+            totalCount={4528}                 // 🔥 TOTAL IN DATABASE
           />
         </div>
       </section>

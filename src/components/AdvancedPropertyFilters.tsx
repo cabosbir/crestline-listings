@@ -1,4 +1,4 @@
-// src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version
+// src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version WITH DYNAMIC COUNT
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,9 +37,16 @@ interface FilterState {
 interface AdvancedPropertyFiltersProps {
   onApplyFilters: (filters: FilterState) => void;
   onReset: () => void;
+  resultCount?: number; // 🔥 NEW: Dynamic count from API
+  totalCount?: number;  // 🔥 NEW: Total available in database
 }
 
-const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFiltersProps) => {
+const AdvancedPropertyFilters = ({ 
+  onApplyFilters, 
+  onReset,
+  resultCount = 0,     // 🔥 NEW: Default 0
+  totalCount = 4528    // 🔥 NEW: Default total
+}: AdvancedPropertyFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
   const [showAllZones, setShowAllZones] = useState(false);
@@ -437,7 +444,20 @@ const AdvancedPropertyFilters = ({ onApplyFilters, onReset }: AdvancedPropertyFi
             <SheetHeader>
               <SheetTitle className="text-2xl">Advanced Property Search</SheetTitle>
               <SheetDescription>
-                View Results: <span className="text-xl font-bold text-blue-600">4,528</span>
+                {/* 🔥 CHANGED: Dynamic count instead of hardcoded 4,528 */}
+                View Results: <span className="text-xl font-bold text-blue-600">
+                  {resultCount > 0 ? resultCount.toLocaleString() : totalCount.toLocaleString()}
+                </span>
+                {resultCount > 0 && resultCount < 200 && (
+                  <span className="text-sm text-gray-500 ml-2">
+                    (filtered results)
+                  </span>
+                )}
+                {resultCount === 200 && (
+                  <span className="text-sm text-orange-600 ml-2">
+                    (showing first 200)
+                  </span>
+                )}
               </SheetDescription>
             </SheetHeader>
 
