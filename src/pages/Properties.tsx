@@ -8,6 +8,7 @@ import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
+import { searchProperties } from "@/services/intelligentSearch";
 
 const Properties = () => {
   const location = useLocation();
@@ -62,7 +63,7 @@ const Properties = () => {
     }
   };
 
-  // 🚀 SUPER-POWERED UNIVERSAL SEARCH - Searches ALL property fields
+  // 🎯 INTELLIGENT ON-DEMAND SEARCH - Queries API when needed, like real websites
   const performUniversalSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       loadProperties();
@@ -74,79 +75,42 @@ const Properties = () => {
     setActiveSearchQuery(searchQuery);
     
     try {
-      console.log('🔍 [SUPER SEARCH] Searching for:', searchQuery);
+      const query = searchQuery.trim();
+      console.log('🔍 [INTELLIGENT SEARCH] Querying API for:', query);
       
-      // Load all active properties first if not loaded
-      let searchData = allProperties;
-      if (allProperties.length === 0) {
-        console.log('📡 [SUPER SEARCH] Loading all properties first...');
-        const mlsProperties: MLSProperty[] = await fetchListings({ city: 'Cabo San Lucas' });
-        setAllProperties(mlsProperties);
-        searchData = mlsProperties;
-        console.log('✅ [SUPER SEARCH] Loaded', mlsProperties.length, 'properties to search');
+      // 🎯 AUTO-DETECT SEARCH TYPE
+      const isMlsNumber = /^[\d-]+$/.test(query);
+      const searchType = isMlsNumber ? 'mls' : 'text';
+      
+      console.log(`🎯 [SEARCH TYPE] Detected: ${searchType}`);
+      
+      // 🚀 QUERY THE API ON-DEMAND (like Zillow, Realtor.com, etc.)
+      const mlsProperties = await searchProperties(query, searchType);
+      
+      console.log(`✅ [API RESULT] Found ${mlsProperties.length} properties`);
+      
+      if (mlsProperties.length > 0) {
+        console.log('📋 [SAMPLE]', {
+          ListingId: mlsProperties[0].ListingId,
+          Address: mlsProperties[0].UnparsedAddress,
+          Price: mlsProperties[0].ListPrice
+        });
       }
-
-      const query = searchQuery.toLowerCase().trim();
-      console.log('🎯 [SUPER SEARCH] Searching', searchData.length, 'properties for:', query);
       
-      // 🎯 CORRECTED FIELD MAPPING FOR FLEXMLS
-      const results = searchData.filter((property: any) => {
-        // CRITICAL: ListingId is the MLS number (e.g., "25-4668")
-        const listingId = property.ListingId || '';
-        const mlsMatch = listingId.toLowerCase().includes(query) || 
-                        listingId.replace(/-/g, '').toLowerCase().includes(query.replace(/-/g, ''));
-        
-        // Search in Address
-        const address = property.UnparsedAddress || '';
-        const addressMatch = address.toLowerCase().includes(query);
-        
-        // Search in City
-        const city = property.City || '';
-        const cityMatch = city.toLowerCase().includes(query);
-        
-        // Search in Property Type
-        const propertyType = property.PropertyType || '';
-        const typeMatch = propertyType.toLowerCase().includes(query);
-        
-        // Search in Public Remarks (description)
-        const remarks = property.PublicRemarks || '';
-        const remarksMatch = remarks.toLowerCase().includes(query);
-        
-        // Additional fields that might exist
-        const postalCode = property.PostalCode || '';
-        const postalMatch = postalCode.toLowerCase().includes(query);
-        
-        const stateOrProvince = property.StateOrProvince || '';
-        const stateMatch = stateOrProvince.toLowerCase().includes(query);
-        
-        // Log matches for debugging
-        if (mlsMatch) {
-          console.log('✅ MLS Match:', listingId);
-        }
-        
-        // Return true if ANY field matches
-        return mlsMatch || addressMatch || cityMatch || typeMatch || 
-               remarksMatch || postalMatch || stateMatch;
-      });
-
-      console.log(`✅ [SUPER SEARCH] Found ${results.length} matches for "${searchQuery}"`);
-      
-      if (results.length === 0) {
-        console.log('💡 [SUPER SEARCH] No matches found. Suggestions:');
-        console.log('   - Try MLS Number: "25-4668" or "254668"');
-        console.log('   - Try Address: "Marina" or "Paseo"');
-        console.log('   - Try City: "Cabo San Lucas"');
-        console.log('   - Try Property Type: "Condo" or "House"');
-        console.log('📋 [DEBUG] Sample property structure:', results[0] || searchData[0]);
-      }
-
-      const convertedResults = results.map(convertMLSToPropertyCard);
+      // Convert and display results
+      const convertedResults = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedResults);
+      setAllProperties(mlsProperties); // Cache for reference
       setCurrentPage(1);
       
-    } catch (err) {
-      console.error('❌ [SUPER SEARCH] Error:', err);
-      setError('Search failed. Please try again.');
+    } catch (err: any) {
+      console.error('❌ [SEARCH ERROR]:', err);
+      
+      if (err.message?.includes('Rate limit') || err.message?.includes('429')) {
+        setError('FlexMLS is rate limiting requests. Please wait a moment and try again.');
+      } else {
+        setError('Search failed. Please try again or use the "View in MLS" button.');
+      }
     } finally {
       setLoading(false);
     }
@@ -308,11 +272,27 @@ const Properties = () => {
             </div>
           ) : properties.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-4 text-lg font-semibold">
                 {activeSearchQuery 
                   ? `No properties found matching "${activeSearchQuery}"`
                   : "No properties found matching your criteria"}
               </p>
+              
+              {activeSearchQuery && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-2xl mx-auto mb-6">
+                  <h3 className="font-semibold text-yellow-800 mb-3">💡 Why am I not seeing results?</h3>
+                  <div className="text-sm text-yellow-700 space-y-2 text-left">
+                    <p>• <strong>API Limitation:</strong> Our search currently loads the first 200 active listings from FlexMLS</p>
+                    <p>• <strong>Your property might exist</strong> but isn't in this initial batch</p>
+                    <p>• <strong>429 Rate Limit:</strong> FlexMLS is throttling requests (see console)</p>
+                  </div>
+                  <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                    <p className="text-sm text-blue-800 font-medium">✅ Solution:</p>
+                    <p className="text-sm text-blue-700 mt-1">Use the <strong>"View in MLS"</strong> button above to search all 4,500+ listings directly in FlexMLS</p>
+                  </div>
+                </div>
+              )}
+              
               <p className="text-sm text-gray-500 mb-4">
                 Try searching by:
               </p>
