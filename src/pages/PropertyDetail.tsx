@@ -381,33 +381,65 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
-              {/* 🔥 NEW: FlexMLS Map Section */}
+              {/* 🔥 UPDATED: Clean Google Maps Integration (FREE - No API Key Required) */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-6">Location Map</h2>
                 <div className="bg-secondary rounded-xl overflow-hidden border border-border shadow-lg">
-                  <iframe
-                    src={`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(property.mlsNumber)}`}
-                    className="w-full h-96 border-0"
-                    title="Property Map"
-                    allowFullScreen
-                  />
+                  {property.latitude && property.longitude ? (
+                    // FREE Google Maps embed with coordinates
+                    <iframe
+                      src={`https://maps.google.com/maps?q=${property.latitude},${property.longitude}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                      className="w-full h-96 border-0"
+                      title="Property Location Map"
+                      allowFullScreen
+                      loading="lazy"
+                    />
+                  ) : (
+                    // FREE Google Maps embed by address
+                    <iframe
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(property.title + ', ' + property.fullLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                      className="w-full h-96 border-0"
+                      title="Property Location Map"
+                      allowFullScreen
+                      loading="lazy"
+                    />
+                  )}
                   <div className="p-4 bg-card">
                     <div className="flex items-start gap-3 mb-3">
                       <MapPin className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
-                      <div>
+                      <div className="flex-1">
                         <div className="font-semibold text-lg mb-1">{property.title}</div>
                         <div className="text-muted-foreground">{property.fullLocation}</div>
                       </div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={() => window.open(`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(property.mlsNumber)}`, '_blank')}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      View Full Map in FlexMLS
-                    </Button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          const mapUrl = property.latitude && property.longitude
+                            ? `https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}`
+                            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(property.title + ', ' + property.fullLocation)}`;
+                          window.open(mapUrl, '_blank');
+                        }}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Google Maps
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          const wazeUrl = property.latitude && property.longitude
+                            ? `https://waze.com/ul?ll=${property.latitude},${property.longitude}&navigate=yes`
+                            : `https://waze.com/ul?q=${encodeURIComponent(property.title + ', ' + property.fullLocation)}&navigate=yes`;
+                          window.open(wazeUrl, '_blank');
+                        }}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Waze
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
