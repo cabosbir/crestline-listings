@@ -275,28 +275,40 @@ const BobLandingPage = () => {
           city: 'Cabo San Lucas',
         });
         
-        console.log('✅ Fetched listings for My Listings:', mlsData.length);
+        console.log('🔍 My Listings - Total API results:', mlsData.length);
+        console.log('🔍 Looking for MLS numbers:', myListingMLSNumbers);
         
         // Filter and sort by our MLS numbers (maintains exact order)
-        const orderedListings = myListingMLSNumbers
-          .map(mlsNumber => {
-            // Try to find by ListingId or MlsNumber field
-            const listing = mlsData.find(item => 
-              item.ListingId === mlsNumber || 
-              item.MlsNumber === mlsNumber ||
-              item.mlsNumber === mlsNumber
-            );
-            
-            if (!listing) {
-              console.warn(`⚠️ MLS ${mlsNumber} not found in API results`);
-              return null;
-            }
-            
-            return convertMLSToPropertyCard(listing);
-          })
-          .filter(Boolean); // Remove any null values if MLS not found
+        const orderedListings = [];
+        const notFoundMLS = [];
         
-        console.log('✅ Matched listings:', orderedListings.length, 'out of', myListingMLSNumbers.length);
+        myListingMLSNumbers.forEach((mlsNumber, index) => {
+          // Try to find by ListingId or MlsNumber field
+          const listing = mlsData.find(item => 
+            item.ListingId === mlsNumber || 
+            item.MlsNumber === mlsNumber ||
+            item.mlsNumber === mlsNumber
+          );
+          
+          if (!listing) {
+            console.warn(`⚠️ MLS ${mlsNumber} NOT FOUND in API results (position ${index + 1})`);
+            notFoundMLS.push(mlsNumber);
+          } else {
+            console.log(`✅ Found MLS ${mlsNumber}:`, listing.UnparsedAddress || listing.address);
+            orderedListings.push(convertMLSToPropertyCard(listing));
+          }
+        });
+        
+        if (notFoundMLS.length > 0) {
+          console.error('❌ Missing MLS numbers:', notFoundMLS);
+          toast({
+            title: "Some listings unavailable",
+            description: `${notFoundMLS.length} listing(s) not found in current MLS data. Showing ${orderedListings.length} available listings.`,
+            variant: "default",
+          });
+        }
+        
+        console.log(`✅ Successfully matched ${orderedListings.length} out of ${myListingMLSNumbers.length} listings`);
         
         // Use fetched data if we got results, otherwise fallback
         const finalListings = orderedListings.length > 0 ? orderedListings : originalMyListings;
@@ -320,7 +332,7 @@ const BobLandingPage = () => {
     };
 
     loadMyListings();
-  }, [showMyListings]);
+  }, [showMyListings, toast]);
   // ==================== END: LOAD MY LISTINGS FROM API ====================
 
   // ==================== START: RESET PAGE ON TAB SWITCH ====================
