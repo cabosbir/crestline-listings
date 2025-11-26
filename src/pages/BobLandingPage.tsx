@@ -78,7 +78,7 @@ const agent = {
 // My Listings - MLS numbers to fetch from API (maintains this exact order)
 const myListingMLSNumbers = [
   "25-4668",  // Marina Cabo Plaza - $279,000 (Active)
-  "25-5288",  // Terrasol Av Solmar 164 - $429,000 (Active - New Listing)
+  "25-4981",  // Terrasol Av Solmar 164 - $429,000 (Active - New Listing)
   "24-2073",  // Bahia del Tezal I 503B - $194,000 (Pending)
   "24-2325",  // Bahia del Tezal I 605B - $289,000 (Withdrawn)
   "24-804",   // Solaria E-102 - $625,000 (Withdrawn)
