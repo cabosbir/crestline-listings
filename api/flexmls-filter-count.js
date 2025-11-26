@@ -12,15 +12,12 @@ export default async function handler(req, res) {
       });
     }
 
-    // Get filter parameters from query
     const { zones, areas, communities, minPrice, maxPrice, beds, baths, propertyTypes, status } = req.query;
     
     console.log('📊 [FILTER COUNT] Calculating for filters:', req.query);
 
-    // Build OData filter
     let filters = [];
     
-    // LOCATION FILTERS
     if (zones) {
       const zoneList = Array.isArray(zones) ? zones : [zones];
       const zoneFilters = zoneList.map(z => `City eq '${z}'`).join(' or ');
@@ -39,7 +36,6 @@ export default async function handler(req, res) {
       if (communityFilters) filters.push(`(${communityFilters})`);
     }
     
-    // PRICE RANGE
     if (minPrice) {
       filters.push(`ListPrice ge ${minPrice}`);
     }
@@ -47,7 +43,6 @@ export default async function handler(req, res) {
       filters.push(`ListPrice le ${maxPrice}`);
     }
     
-    // BEDS & BATHS
     if (beds) {
       filters.push(`BedroomsTotal ge ${beds}`);
     }
@@ -55,11 +50,9 @@ export default async function handler(req, res) {
       filters.push(`BathroomsFull ge ${baths}`);
     }
     
-    // PROPERTY TYPE
     if (propertyTypes) {
       const typeList = Array.isArray(propertyTypes) ? propertyTypes : [propertyTypes];
       const typeFilters = typeList.map(t => {
-        // Map friendly names to FlexMLS values
         const typeMap = {
           'Condos': 'Residential',
           'Houses': 'Residential',
@@ -73,17 +66,14 @@ export default async function handler(req, res) {
       if (typeFilters) filters.push(`(${typeFilters})`);
     }
     
-    // STATUS
     if (status && status !== 'Active') {
       filters.push(`StandardStatus eq '${status}'`);
     } else {
-      filters.push(`StandardStatus eq 'Active'`); // Default to Active
+      filters.push(`StandardStatus eq 'Active'`);
     }
     
-    // Combine all filters
     const filterString = filters.length > 0 ? filters.join(' and ') : 'StandardStatus eq "Active"';
     
-    // Use $count to get total without fetching data
     const url = `${FLEXMLS_API_URL}?$filter=${encodeURIComponent(filterString)}&$top=0&$count=true`;
     
     console.log('📡 [FILTER COUNT] Query URL:', url);
@@ -97,7 +87,6 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       if (response.status === 429) {
-        // Rate limited - return cached estimate
         return res.status(200).json({
           success: true,
           count: 0,
