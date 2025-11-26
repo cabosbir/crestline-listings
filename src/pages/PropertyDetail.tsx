@@ -1,3 +1,6 @@
+// src/pages/PropertyDetail.tsx - SUPER-POWERED VERSION 🚀
+// Features: Intelligent search, multiple fallbacks, robust error handling, SEO optimized
+
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
@@ -6,123 +9,228 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { 
   Bed, Bath, Maximize, MapPin, ArrowLeft, X,
-  Calendar, CheckCircle2, Loader2, ChevronLeft, ChevronRight, ExternalLink
+  Calendar, CheckCircle2, Loader2, ChevronLeft, ChevronRight, 
+  ExternalLink, Share2, Mail, AlertCircle
 } from "lucide-react";
 import { fetchPropertyById, type MLSProperty } from "@/services/flexMlsService";
+import { searchByMLS } from "@/services/intelligentSearch";
+
+// 🎯 TYPE-SAFE PROPERTY INTERFACE
+interface ConvertedProperty {
+  id: string;
+  mlsNumber: string;
+  title: string;
+  price: string;
+  priceRaw: number;
+  location: string;
+  fullLocation: string;
+  beds: number;
+  baths: number;
+  sqft: string;
+  sqftRaw: number;
+  lotSize: string;
+  yearBuilt: string | number;
+  propertyType: string;
+  status: string;
+  image: string;
+  images: string[];
+  description: string;
+  features: string[];
+  latitude?: number;
+  longitude?: number;
+  listingAgent?: string;
+  listingOffice?: string;
+}
 
 const PropertyDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const [property, setProperty] = useState<any>(null);
+  
+  const [property, setProperty] = useState<ConvertedProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [loadingStrategy, setLoadingStrategy] = useState<string>('');
 
   useEffect(() => {
     window.scrollTo(0, 0);
     loadProperty();
   }, [id]);
 
+  // 🎯 INTELLIGENT PROPERTY LOADING WITH MULTIPLE FALLBACK STRATEGIES
   const loadProperty = async () => {
     setLoading(true);
     setError(null);
+    
+    if (!id) {
+      console.error('❌ No property ID provided');
+      setError('No property ID provided');
+      setLoading(false);
+      return;
+    }
+
+    console.log('🔍 [PROPERTY DETAIL] Starting intelligent load for ID:', id);
+
+    // 🎯 STRATEGY 1: Try intelligent search (best for MLS numbers)
     try {
-      console.log('🔍 Loading property with ID:', id);
-      console.log('📍 Location state:', location.state);
+      setLoadingStrategy('Searching by MLS number...');
+      console.log('🎯 [STRATEGY 1] Trying intelligent search for:', id);
       
-      if (!id) {
-        console.error('❌ No property ID provided');
-        setError('No property ID provided');
-        setProperty(null);
+      const mlsProperty = await searchByMLS(id);
+      
+      if (mlsProperty) {
+        console.log('✅ [STRATEGY 1] Success! Found via intelligent search');
+        setProperty(convertMLSToProperty(mlsProperty, id));
         setLoading(false);
         return;
       }
+    } catch (err) {
+      console.warn('⚠️ [STRATEGY 1] Intelligent search failed:', err);
+    }
+
+    // 🎯 STRATEGY 2: Try old API by ID (fallback for internal IDs)
+    try {
+      setLoadingStrategy('Searching by property ID...');
+      console.log('🎯 [STRATEGY 2] Trying old API by ID:', id);
       
-      // First try to fetch from API
-      const mlsProperty: MLSProperty | null = await fetchPropertyById(id);
+      const mlsProperty = await fetchPropertyById(id);
       
       if (mlsProperty) {
-        console.log('✅ MLS Property received:', mlsProperty);
-        
-        const convertedProperty = {
-          id: mlsProperty.ListingKey,
-          mlsNumber: mlsProperty.ListingId || id,
-          title: mlsProperty.UnparsedAddress || 'Luxury Property in Cabo San Lucas',
-          price: `$${mlsProperty.ListPrice?.toLocaleString() || '0'}`,
-          location: mlsProperty.City || 'Cabo San Lucas',
-          fullLocation: `${mlsProperty.City || 'Cabo San Lucas'}, ${mlsProperty.StateOrProvince || 'BCS'}`,
-          beds: mlsProperty.BedroomsTotal || 0,
-          baths: mlsProperty.BathroomsFull || 0,
-          sqft: `${mlsProperty.LivingArea?.toLocaleString() || '0'} sq ft`,
-          lotSize: mlsProperty.LotSizeArea ? `${mlsProperty.LotSizeArea.toLocaleString()} sqft` : 'N/A',
-          yearBuilt: mlsProperty.YearBuilt || 'N/A',
-          propertyType: mlsProperty.PropertyType || 'Residential',
-          status: mlsProperty.StandardStatus || 'Active',
-          image: mlsProperty.Media?.[0]?.MediaURL || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop',
-          images: mlsProperty.Media?.slice(0, 10).map(m => m.MediaURL) || [
-            'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop'
-          ],
-          description: mlsProperty.PublicRemarks || 'Beautiful luxury property in Cabo San Lucas with premium finishes and stunning views.',
-          features: extractFeatures(mlsProperty),
-          latitude: mlsProperty.Latitude,
-          longitude: mlsProperty.Longitude
-        };
-        
-        console.log('✅ Converted property:', convertedProperty);
-        setProperty(convertedProperty);
-      } else {
-        console.error('❌ Property not found from API');
-        setError('Property not found. The API returned no data.');
-        setProperty(null);
+        console.log('✅ [STRATEGY 2] Success! Found via old API');
+        setProperty(convertMLSToProperty(mlsProperty, id));
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error('💥 Error loading property:', error);
-      setError('Error loading property details. Please try again.');
-      setProperty(null);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.warn('⚠️ [STRATEGY 2] Old API failed:', err);
     }
+
+    // 🎯 STRATEGY 3: Check if ID might be MLS with different format
+    if (id.includes('-') || /^\d+$/.test(id)) {
+      try {
+        setLoadingStrategy('Trying alternative MLS format...');
+        
+        // Try with/without dashes
+        const alternateId = id.includes('-') ? id.replace(/-/g, '') : id;
+        console.log('🎯 [STRATEGY 3] Trying alternate format:', alternateId);
+        
+        const mlsProperty = await searchByMLS(alternateId);
+        
+        if (mlsProperty) {
+          console.log('✅ [STRATEGY 3] Success! Found with alternate format');
+          setProperty(convertMLSToProperty(mlsProperty, id));
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('⚠️ [STRATEGY 3] Alternate format failed:', err);
+      }
+    }
+
+    // ❌ ALL STRATEGIES FAILED
+    console.error('❌ [ALL STRATEGIES FAILED] Property not found:', id);
+    setError(`Property not found. Tried multiple search methods for: ${id}`);
+    setProperty(null);
+    setLoading(false);
   };
 
-  const extractFeatures = (mlsProperty: MLSProperty): string[] => {
+  // 🎯 ROBUST MLS TO PROPERTY CONVERTER
+  const convertMLSToProperty = (mls: MLSProperty, fallbackId: string): ConvertedProperty => {
+    console.log('🔄 [CONVERTER] Converting MLS property:', mls);
+
+    const images = mls.Media?.length 
+      ? mls.Media.slice(0, 20).map(m => m.MediaURL).filter(Boolean)
+      : ['https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop'];
+
+    return {
+      id: mls.ListingKey || fallbackId,
+      mlsNumber: mls.ListingId || fallbackId,
+      title: mls.UnparsedAddress || 'Luxury Property in Cabo San Lucas',
+      price: `$${(mls.ListPrice || 0).toLocaleString()}`,
+      priceRaw: mls.ListPrice || 0,
+      location: mls.City || 'Cabo San Lucas',
+      fullLocation: `${mls.City || 'Cabo San Lucas'}, ${mls.StateOrProvince || 'BCS'}`,
+      beds: mls.BedroomsTotal || 0,
+      baths: mls.BathroomsFull || 0,
+      sqft: `${(mls.LivingArea || 0).toLocaleString()} sq ft`,
+      sqftRaw: mls.LivingArea || 0,
+      lotSize: mls.LotSizeArea ? `${mls.LotSizeArea.toLocaleString()} sqft` : 'N/A',
+      yearBuilt: mls.YearBuilt || 'N/A',
+      propertyType: mls.PropertyType || 'Residential',
+      status: mls.StandardStatus || 'Active',
+      image: images[0],
+      images: images,
+      description: mls.PublicRemarks || 'Beautiful luxury property in Cabo San Lucas with premium finishes and stunning views.',
+      features: extractFeatures(mls),
+      latitude: mls.Latitude,
+      longitude: mls.Longitude,
+      listingAgent: mls.ListAgentFullName,
+      listingOffice: mls.ListOfficeName
+    };
+  };
+
+  // 🎯 INTELLIGENT FEATURE EXTRACTION
+  const extractFeatures = (mls: MLSProperty): string[] => {
     const features: string[] = [];
     
-    if (mlsProperty.Appliances && Array.isArray(mlsProperty.Appliances)) {
-      features.push(...mlsProperty.Appliances.slice(0, 3));
-    }
-    if (mlsProperty.ArchitecturalStyle) {
-      features.push(mlsProperty.ArchitecturalStyle);
-    }
-    if (mlsProperty.Cooling) {
-      features.push(`${mlsProperty.Cooling} Cooling`);
-    }
-    if (mlsProperty.Heating) {
-      features.push(`${mlsProperty.Heating} Heating`);
-    }
-    if (mlsProperty.ParkingFeatures) {
-      features.push(`Parking: ${mlsProperty.ParkingFeatures}`);
-    }
-    if (mlsProperty.View) {
-      features.push(`View: ${mlsProperty.View}`);
-    }
-    if (mlsProperty.WaterfrontFeatures) {
-      features.push('Waterfront');
-    }
-    if (mlsProperty.PoolFeatures) {
-      features.push('Pool');
-    }
-    if (mlsProperty.PatioAndPorchFeatures) {
-      features.push('Patio/Porch');
+    // Appliances
+    if (mls.Appliances && Array.isArray(mls.Appliances) && mls.Appliances.length > 0) {
+      features.push(...mls.Appliances.slice(0, 3));
     }
     
+    // Style & Construction
+    if (mls.ArchitecturalStyle) features.push(mls.ArchitecturalStyle);
+    if (mls.ConstructionMaterials) features.push(`Built with ${mls.ConstructionMaterials}`);
+    
+    // Climate Control
+    if (mls.Cooling) features.push(`${mls.Cooling} Cooling`);
+    if (mls.Heating) features.push(`${mls.Heating} Heating`);
+    
+    // Parking & Access
+    if (mls.ParkingFeatures) features.push(`Parking: ${mls.ParkingFeatures}`);
+    if (mls.GarageSpaces) features.push(`${mls.GarageSpaces} Car Garage`);
+    
+    // Views & Location
+    if (mls.View && Array.isArray(mls.View)) {
+      features.push(`Views: ${mls.View.join(', ')}`);
+    } else if (mls.View) {
+      features.push(`View: ${mls.View}`);
+    }
+    
+    // Amenities
+    if (mls.WaterfrontFeatures) features.push('Waterfront Property');
+    if (mls.PoolFeatures) features.push('Swimming Pool');
+    if (mls.SpaFeatures) features.push('Spa');
+    if (mls.PatioAndPorchFeatures) features.push('Patio/Porch');
+    if (mls.FireplaceFeatures) features.push('Fireplace');
+    if (mls.SecurityFeatures) features.push('Security System');
+    
+    // Flooring
+    if (mls.Flooring && Array.isArray(mls.Flooring)) {
+      features.push(`Flooring: ${mls.Flooring.join(', ')}`);
+    }
+    
+    // Roof
+    if (mls.Roof) features.push(`${mls.Roof} Roof`);
+    
+    // Default features if none found
     if (features.length === 0) {
-      features.push('Modern Finishes', 'Open Floor Plan', 'Prime Location', 'High-End Appliances', 'Quality Construction', 'Excellent Condition');
+      features.push(
+        'Modern Finishes',
+        'Open Floor Plan',
+        'Prime Location',
+        'High-End Appliances',
+        'Quality Construction',
+        'Excellent Condition'
+      );
     }
     
-    return features.slice(0, 9);
+    // Return max 12 features
+    return features.slice(0, 12);
   };
 
+  // 🎯 IMAGE NAVIGATION
   const nextImage = () => {
     if (property && property.images.length > 1) {
       setCurrentImageIndex((prev) => 
@@ -139,6 +247,46 @@ const PropertyDetail = () => {
     }
   };
 
+  // 🎯 SMART NAVIGATION BACK
+  const handleBackToProperties = () => {
+    sessionStorage.setItem('returningFromProperty', 'true');
+    
+    const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        navigate(state.url);
+        return;
+      } catch (e) {
+        console.error('Error parsing browse state:', e);
+      }
+    }
+    
+    navigate('/properties');
+  };
+
+  // 🎯 SHARE FUNCTIONALITY
+  const handleShare = async () => {
+    const shareData = {
+      title: property?.title || 'Property in Cabo San Lucas',
+      text: `Check out this property: ${property?.title} - ${property?.price}`,
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Share cancelled or failed:', err);
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
+
+  // 🎯 LOADING STATE
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -146,7 +294,10 @@ const PropertyDetail = () => {
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin text-accent mb-4 mx-auto" />
-            <p className="text-xl text-muted-foreground">Loading property details...</p>
+            <p className="text-xl text-muted-foreground mb-2">Loading property details...</p>
+            {loadingStrategy && (
+              <p className="text-sm text-muted-foreground">{loadingStrategy}</p>
+            )}
           </div>
         </div>
         <Footer />
@@ -154,25 +305,35 @@ const PropertyDetail = () => {
     );
   }
 
+  // 🎯 ERROR STATE
   if (!property) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="min-h-[60vh] flex items-center justify-center">
-          <div className="text-center">
+          <div className="text-center max-w-2xl mx-auto px-4">
+            <AlertCircle className="h-16 w-16 text-red-500 mb-4 mx-auto" />
             <h1 className="text-4xl font-bold mb-4">Property Not Found</h1>
             <p className="text-muted-foreground mb-6">
-              {error || "The property you're looking for doesn't exist or has been removed."}
+              {error || "We couldn't find this property. It may have been sold, removed, or the ID is incorrect."}
             </p>
             <div className="mb-6 p-4 bg-secondary rounded-lg">
-              <p className="text-sm text-muted-foreground font-mono break-all">
-                Property ID: {id}
-              </p>
+              <p className="text-sm text-muted-foreground mb-2">Property ID:</p>
+              <p className="font-mono font-bold break-all">{id}</p>
             </div>
-            <Button onClick={() => navigate('/properties')}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Properties
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={handleBackToProperties} size="lg">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Properties
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => navigate('/')}
+              >
+                Go to Home
+              </Button>
+            </div>
           </div>
         </div>
         <Footer />
@@ -180,65 +341,44 @@ const PropertyDetail = () => {
     );
   }
 
+  // 🎯 SUCCESS STATE - RENDER PROPERTY
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <FloatingContact />
 
+      {/* Navigation Bar */}
       <div className="container mx-auto px-4 pt-32 pb-4">
         <div className="flex items-center justify-between">
           <Button 
             variant="ghost" 
-            onClick={() => {
-              // Set flag so agent/properties pages know we're returning
-              sessionStorage.setItem('returningFromProperty', 'true');
-              
-              // Get the saved browse state to know where to return
-              const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
-              if (savedState) {
-                try {
-                  const state = JSON.parse(savedState);
-                  // Navigate back to the page they came from
-                  navigate(state.url);
-                } catch (e) {
-                  console.error('Error parsing browse state:', e);
-                  navigate('/properties');
-                }
-              } else {
-                // No saved state, just go to properties
-                navigate('/properties');
-              }
-            }}
+            onClick={handleBackToProperties}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Browse
           </Button>
           
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => {
-              // Set flag for state restoration
-              sessionStorage.setItem('returningFromProperty', 'true');
-              
-              // Get saved state
-              const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
-              if (savedState) {
-                try {
-                  const state = JSON.parse(savedState);
-                  navigate(state.url);
-                } catch (e) {
-                  navigate('/');
-                }
-              } else {
-                navigate('/');
-              }
-            }}
-            className="mb-4 hover:bg-accent/10"
-          >
-            <X className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-2 mb-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={handleShare}
+              className="hover:bg-accent/10"
+              title="Share Property"
+            >
+              <Share2 className="w-5 h-5" />
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={handleBackToProperties}
+              className="hover:bg-accent/10"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -254,7 +394,9 @@ const PropertyDetail = () => {
                 e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop';
               }}
             />
-            <div className="absolute top-4 left-4 flex gap-2">
+            
+            {/* Status & MLS Badges */}
+            <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
               <span className="bg-primary text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
                 {property.status}
               </span>
@@ -271,78 +413,81 @@ const PropertyDetail = () => {
             )}
           </div>
 
-          {/* Navigation Arrows Below Image */}
+          {/* Image Navigation */}
           {property.images.length > 1 && (
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <Button
-                onClick={prevImage}
-                variant="outline"
-                size="lg"
-                className="rounded-xl shadow-lg hover:shadow-xl transition-all"
-              >
-                <ChevronLeft className="h-6 w-6" />
-                Previous
-              </Button>
-              
-              <div className="flex gap-2">
-                {property.images.map((_: any, index: number) => (
+            <>
+              <div className="flex items-center justify-center gap-4 mt-6">
+                <Button
+                  onClick={prevImage}
+                  variant="outline"
+                  size="lg"
+                  className="rounded-xl shadow-lg hover:shadow-xl transition-all"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                  Previous
+                </Button>
+                
+                <div className="flex gap-2">
+                  {property.images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-2.5 h-2.5 rounded-full transition-all ${
+                        index === currentImageIndex 
+                          ? 'bg-accent w-8' 
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                      aria-label={`Go to image ${index + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <Button
+                  onClick={nextImage}
+                  variant="outline"
+                  size="lg"
+                  className="rounded-xl shadow-lg hover:shadow-xl transition-all"
+                >
+                  Next
+                  <ChevronRight className="h-6 w-6" />
+                </Button>
+              </div>
+
+              {/* Thumbnail Gallery */}
+              <div className="grid grid-cols-5 gap-4 mt-6">
+                {property.images.slice(0, 5).map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all ${
+                    className={`relative h-24 rounded-lg overflow-hidden transition-all ${
                       index === currentImageIndex 
-                        ? 'bg-accent w-8' 
-                        : 'bg-gray-300 hover:bg-gray-400'
+                        ? 'ring-4 ring-accent scale-105' 
+                        : 'hover:ring-2 ring-gray-300 hover:scale-105 opacity-70 hover:opacity-100'
                     }`}
-                    aria-label={`Go to image ${index + 1}`}
-                  />
+                  >
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=200&h=150&fit=crop';
+                      }}
+                    />
+                  </button>
                 ))}
               </div>
-
-              <Button
-                onClick={nextImage}
-                variant="outline"
-                size="lg"
-                className="rounded-xl shadow-lg hover:shadow-xl transition-all"
-              >
-                Next
-                <ChevronRight className="h-6 w-6" />
-              </Button>
-            </div>
-          )}
-
-          {/* Thumbnail Gallery */}
-          {property.images.length > 1 && (
-            <div className="grid grid-cols-5 gap-4 mt-6">
-              {property.images.slice(0, 5).map((img: string, index: number) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`relative h-24 rounded-lg overflow-hidden transition-all ${
-                    index === currentImageIndex 
-                      ? 'ring-4 ring-accent scale-105' 
-                      : 'hover:ring-2 ring-gray-300 hover:scale-105 opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <img
-                    src={img}
-                    alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=200&h=150&fit=crop';
-                    }}
-                  />
-                </button>
-              ))}
-            </div>
+            </>
           )}
         </div>
       </section>
 
+      {/* Property Details */}
       <section className="pb-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-12">
+            {/* Main Content */}
             <div className="lg:col-span-2">
+              {/* Header */}
               <div className="mb-8">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">{property.title}</h1>
                 <div className="text-4xl font-bold text-accent mb-4">{property.price}</div>
@@ -352,29 +497,31 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
+              {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-secondary border border-border rounded-xl p-4 text-center">
+                <div className="bg-secondary border border-border rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
                   <Bed className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <div className="text-sm text-muted-foreground">Bedrooms</div>
                   <div className="text-2xl font-bold">{property.beds}</div>
                 </div>
-                <div className="bg-secondary border border-border rounded-xl p-4 text-center">
+                <div className="bg-secondary border border-border rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
                   <Bath className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <div className="text-sm text-muted-foreground">Bathrooms</div>
                   <div className="text-2xl font-bold">{property.baths}</div>
                 </div>
-                <div className="bg-secondary border border-border rounded-xl p-4 text-center">
+                <div className="bg-secondary border border-border rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
                   <Maximize className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <div className="text-sm text-muted-foreground">Size</div>
                   <div className="text-xl font-bold">{property.sqft}</div>
                 </div>
-                <div className="bg-secondary border border-border rounded-xl p-4 text-center">
+                <div className="bg-secondary border border-border rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
                   <Calendar className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <div className="text-sm text-muted-foreground">Built</div>
                   <div className="text-2xl font-bold">{property.yearBuilt}</div>
                 </div>
               </div>
 
+              {/* Description */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-4">About This Property</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
@@ -382,11 +529,12 @@ const PropertyDetail = () => {
                 </p>
               </div>
 
+              {/* Features */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-6">Features & Amenities</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {property.features.map((feature: string, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {property.features.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-secondary rounded-lg hover:bg-secondary/80 transition-colors">
                       <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
                       <span className="text-muted-foreground">{feature}</span>
                     </div>
@@ -394,34 +542,46 @@ const PropertyDetail = () => {
                 </div>
               </div>
 
+              {/* Additional Details */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-6">Additional Details</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                  <div>
+                  <div className="p-4 bg-secondary rounded-lg">
                     <div className="text-sm text-muted-foreground mb-1">Lot Size</div>
                     <div className="font-semibold">{property.lotSize}</div>
                   </div>
-                  <div>
+                  <div className="p-4 bg-secondary rounded-lg">
                     <div className="text-sm text-muted-foreground mb-1">Property Type</div>
                     <div className="font-semibold">{property.propertyType}</div>
                   </div>
-                  <div>
+                  <div className="p-4 bg-secondary rounded-lg">
                     <div className="text-sm text-muted-foreground mb-1">Status</div>
                     <div className="font-semibold">{property.status}</div>
                   </div>
-                  <div>
+                  <div className="p-4 bg-secondary rounded-lg">
                     <div className="text-sm text-muted-foreground mb-1">MLS Number</div>
                     <div className="font-semibold">{property.mlsNumber}</div>
                   </div>
+                  {property.listingAgent && (
+                    <div className="p-4 bg-secondary rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Listing Agent</div>
+                      <div className="font-semibold">{property.listingAgent}</div>
+                    </div>
+                  )}
+                  {property.listingOffice && (
+                    <div className="p-4 bg-secondary rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Listing Office</div>
+                      <div className="font-semibold">{property.listingOffice}</div>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* 🔥 UPDATED: Clean Google Maps Integration (FREE - No API Key Required) */}
+              {/* Map */}
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-6">Location Map</h2>
                 <div className="bg-secondary rounded-xl overflow-hidden border border-border shadow-lg">
                   {property.latitude && property.longitude ? (
-                    // FREE Google Maps embed with coordinates
                     <iframe
                       src={`https://maps.google.com/maps?q=${property.latitude},${property.longitude}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                       className="w-full h-96 border-0"
@@ -430,7 +590,6 @@ const PropertyDetail = () => {
                       loading="lazy"
                     />
                   ) : (
-                    // FREE Google Maps embed by address
                     <iframe
                       src={`https://maps.google.com/maps?q=${encodeURIComponent(property.title + ', ' + property.fullLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                       className="w-full h-96 border-0"
@@ -480,6 +639,7 @@ const PropertyDetail = () => {
               </div>
             </div>
 
+            {/* Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-32">
                 <div className="bg-card border border-border rounded-2xl p-6 shadow-elegant">
@@ -520,11 +680,10 @@ const PropertyDetail = () => {
                     <div className="font-semibold mb-4">{property.mlsNumber}</div>
                     
                     <div className="text-sm text-muted-foreground mb-2">Share Property</div>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <Button 
                         variant="outline" 
-                        size="sm" 
-                        className="flex-1"
+                        size="sm"
                         onClick={() => {
                           navigator.clipboard.writeText(window.location.href);
                           alert('Link copied to clipboard!');
@@ -534,12 +693,12 @@ const PropertyDetail = () => {
                       </Button>
                       <Button 
                         variant="outline" 
-                        size="sm" 
-                        className="flex-1"
+                        size="sm"
                         onClick={() => {
                           window.location.href = `mailto:?subject=${encodeURIComponent(property.title)}&body=${encodeURIComponent(window.location.href)}`;
                         }}
                       >
+                        <Mail className="w-4 h-4 mr-2" />
                         Email
                       </Button>
                     </div>
