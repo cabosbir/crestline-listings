@@ -189,7 +189,26 @@ const PropertyDetail = () => {
         <div className="flex items-center justify-between">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/properties')}
+            onClick={() => {
+              // Set flag so agent/properties pages know we're returning
+              sessionStorage.setItem('returningFromProperty', 'true');
+              
+              // Get the saved browse state to know where to return
+              const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
+              if (savedState) {
+                try {
+                  const state = JSON.parse(savedState);
+                  // Navigate back to the page they came from
+                  navigate(state.url);
+                } catch (e) {
+                  console.error('Error parsing browse state:', e);
+                  navigate('/properties');
+                }
+              } else {
+                // No saved state, just go to properties
+                navigate('/properties');
+              }
+            }}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -199,7 +218,23 @@ const PropertyDetail = () => {
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={() => navigate('/')}
+            onClick={() => {
+              // Set flag for state restoration
+              sessionStorage.setItem('returningFromProperty', 'true');
+              
+              // Get saved state
+              const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
+              if (savedState) {
+                try {
+                  const state = JSON.parse(savedState);
+                  navigate(state.url);
+                } catch (e) {
+                  navigate('/');
+                }
+              } else {
+                navigate('/');
+              }
+            }}
             className="mb-4 hover:bg-accent/10"
           >
             <X className="w-5 h-5" />

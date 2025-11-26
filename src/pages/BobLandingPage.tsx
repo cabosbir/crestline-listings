@@ -302,7 +302,6 @@ const BobLandingPage = () => {
     loadFeaturedListings();
   }, [showMyListings, toast]);
   // ==================== END: LOAD FEATURED LISTINGS ====================
-
   // ==================== START: LOAD MY LISTINGS FROM API ====================
   useEffect(() => {
     const loadMyListings = async () => {
@@ -327,12 +326,9 @@ const BobLandingPage = () => {
           return;
         }
         
-        // Fetch WITHOUT city filter to get all listings
-        console.log('🔍 My Listings - Fetching without city filter...');
-        const mlsData = await fetchListings({
-          // Remove city filter - fetch all active listings
-          status: 'Active'
-        });
+        // 🔥 FIX 1: Fetch ALL listings (no status filter)
+        console.log('🔍 My Listings - Fetching ALL listings (no filters)...');
+        const mlsData = await fetchListings();  // NO FILTERS - get Active, Pending, Withdrawn
         
         console.log('🔍 My Listings - Total API results:', mlsData.length);
         console.log('🔍 Looking for MLS numbers:', myListingMLSNumbers);
@@ -340,6 +336,7 @@ const BobLandingPage = () => {
         // Check what fields are available in the API response
         if (mlsData.length > 0) {
           console.log('📋 Sample listing fields:', Object.keys(mlsData[0]));
+          console.log('📋 Sample ListingId:', mlsData[0].ListingId);
         }
         
         // Filter and sort by our MLS numbers (maintains exact order)
@@ -347,9 +344,12 @@ const BobLandingPage = () => {
         const notFoundMLS = [];
         
         myListingMLSNumbers.forEach((mlsNumber, index) => {
-          // Try multiple field names that might contain the MLS number
+          // 🔥 FIX 2: Try MLS number with AND without dash
+          const mlsWithoutDash = mlsNumber.replace('-', '');
+          
           const listing = mlsData.find(item => 
-            item.ListingId === mlsNumber || 
+            item.ListingId === mlsNumber ||           // Try with dash: "25-4668"
+            item.ListingId === mlsWithoutDash ||      // Try without dash: "254668"
             item.MlsNumber === mlsNumber ||
             item.mlsNumber === mlsNumber ||
             item.ListingKey === mlsNumber ||
@@ -372,10 +372,10 @@ const BobLandingPage = () => {
         
         if (notFoundMLS.length > 0) {
           console.error('❌ Missing MLS numbers:', notFoundMLS);
-          console.log('💡 Tip: Check if these MLS numbers are Active status');
+          console.log('💡 These listings may have been removed from FlexMLS');
           toast({
             title: "Some listings unavailable",
-            description: `${notFoundMLS.length} listing(s) not found. They may be Pending, Sold, or in a different status.`,
+            description: `${notFoundMLS.length} listing(s) not found. They may have been removed from FlexMLS.`,
             variant: "default",
           });
         }
@@ -594,7 +594,6 @@ const BobLandingPage = () => {
         </div>
       </section>
       {/* ==================== END: ABOUT SECTION ==================== */}
-
       {/* ==================== START: LISTINGS SECTION ==================== */}
       <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
