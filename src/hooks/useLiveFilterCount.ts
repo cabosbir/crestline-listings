@@ -1,4 +1,4 @@
-// src/hooks/useLiveFilterCount.ts - Custom hook for live filter count preview
+// src/hooks/useLiveFilterCount.ts - WITH CACHING to prevent rate limits
 import { useState, useEffect, useRef } from 'react';
 
 interface FilterState {
@@ -19,6 +19,10 @@ interface FilterCountResult {
   estimated: boolean;
 }
 
+// 🔥 IN-MEMORY CACHE to reduce API calls
+const countCache = new Map<string, { count: number; timestamp: number; estimated: boolean }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export function useLiveFilterCount(filters: FilterState): FilterCountResult {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -37,10 +41,22 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
       abortControllerRef.current.abort();
     }
 
-    // 🎯 DEBOUNCE: Wait 500ms after user stops selecting
+    // Check cache first
+    const cacheKey = getCacheKey(filters);
+    const cached = countCache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      console.log('💾 [CACHE HIT] Using cached count:', cached.count);
+      setCount(cached.count);
+      setEstimated(cached.estimated);
+      setLoading(false);
+      return;
+    }
+
+    // 🎯 DEBOUNCE: Wait 2 seconds after user stops selecting (increased from 500ms)
     timeoutRef.current = setTimeout(() => {
       fetchFilterCount();
-    }, 500);
+    }, 2000);
 
     return () => {
       if (timeoutRef.current) {
@@ -61,6 +77,20 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
     filters.propertyTypes,
     filters.status
   ]);
+
+  const getCacheKey = (filters: FilterState): string => {
+    return JSON.stringify({
+      zones: filters.zones?.sort() || [],
+      areas: filters.areas?.sort() || [],
+      communities: filters.communities?.sort() || [],
+      minPrice: filters.minPrice || '',
+      maxPrice: filters.maxPrice || '',
+      minBeds: filters.minBeds || '',
+      minBaths: filters.minBaths || '',
+      propertyTypes: filters.propertyTypes?.sort() || [],
+      status: filters.status || 'Active'
+    });
+  };
 
   const fetchFilterCount = async () => {
     // Create new abort controller
@@ -100,9 +130,21 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
       const data = await response.json();
 
       if (data.success) {
-        setCount(data.count);
-        setEstimated(data.estimated || false);
-        console.log(`✅ [LIVE COUNT] ${data.count} properties match`);
+        const resultCount = data.count;
+        const isEstimated = data.estimated || false;
+        
+        setCount(resultCount);
+        setEstimated(isEstimated);
+        
+        // 💾 CACHE THE RESULT
+        const cacheKey = getCacheKey(filters);
+        countCache.set(cacheKey, {
+          count: resultCount,
+          timestamp: Date.now(),
+          estimated: isEstimated
+        });
+        
+        console.log(`✅ [LIVE COUNT] ${resultCount} properties match (cached for 5min)`);
       }
 
     } catch (error: any) {

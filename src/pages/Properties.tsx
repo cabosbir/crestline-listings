@@ -23,10 +23,11 @@ const Properties = () => {
   
   const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
 
-  // Load initial properties
-  useEffect(() => {
-    loadProperties();
-  }, []);
+  // 🔥 REMOVED: No longer pre-load 200 properties on page load
+  // Properties load on-demand when user searches or filters
+  // useEffect(() => {
+  //   loadProperties();
+  // }, []);
 
   // Fetch real MLS total count
   useEffect(() => {
@@ -283,22 +284,66 @@ const Properties = () => {
             </div>
           ) : properties.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4 text-lg font-semibold">
-                {activeSearchQuery 
-                  ? `No properties found matching "${activeSearchQuery}"`
-                  : "No properties found matching your criteria"}
-              </p>
-              
-              {activeSearchQuery && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto mb-6">
-                  <h3 className="font-semibold text-blue-800 mb-3">💡 Search Tips</h3>
-                  <div className="text-sm text-blue-700 space-y-2 text-left">
-                    <p>• Try searching with different spelling or format</p>
-                    <p>• Remove dashes from MLS numbers (e.g., "254668" instead of "25-4668")</p>
-                    <p>• Try searching by address or city instead</p>
-                    <p>• Use the <strong>"View in MLS"</strong> button to access the full FlexMLS portal</p>
+              {activeSearchQuery ? (
+                // User searched but no results
+                <>
+                  <p className="text-muted-foreground mb-4 text-lg font-semibold">
+                    No properties found matching "{activeSearchQuery}"
+                  </p>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto mb-6">
+                    <h3 className="font-semibold text-blue-800 mb-3">💡 Search Tips</h3>
+                    <div className="text-sm text-blue-700 space-y-2 text-left">
+                      <p>• Try searching with different spelling or format</p>
+                      <p>• Remove dashes from MLS numbers (e.g., "254668" instead of "25-4668")</p>
+                      <p>• Try searching by address or city instead</p>
+                      <p>• Use the <strong>"View in MLS"</strong> button to access the full FlexMLS portal</p>
+                    </div>
                   </div>
-                </div>
+                  
+                  <Button onClick={handleReset} variant="outline">
+                    Clear Search
+                  </Button>
+                </>
+              ) : (
+                // No search yet - encourage user to search
+                <>
+                  <div className="mb-6">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-3">
+                      Search {totalCount.toLocaleString()}+ Luxury Properties
+                    </h2>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                      Use the search bar above or Advanced Filters to find your perfect property in Cabo San Lucas, 
+                      San Jose del Cabo, and throughout Baja California Sur.
+                    </p>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
+                    <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="text-4xl mb-3">🔍</div>
+                      <h3 className="font-semibold text-blue-900 mb-2">Quick Search</h3>
+                      <p className="text-sm text-blue-700">
+                        Search by MLS number, address, or property type in the search bar above
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="text-4xl mb-3">🎯</div>
+                      <h3 className="font-semibold text-purple-900 mb-2">Advanced Filters</h3>
+                      <p className="text-sm text-purple-700">
+                        Use the Advanced Filters button to search by location, price, beds, and more
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 bg-green-50 rounded-lg border border-green-200">
+                      <div className="text-4xl mb-3">🗺️</div>
+                      <h3 className="font-semibold text-green-900 mb-2">Map Search</h3>
+                      <p className="text-sm text-green-700">
+                        Browse properties visually with our interactive map search feature
+                      </p>
+                    </div>
+                  </div>
+                </>
               )}
               
               <p className="text-sm text-gray-500 mb-4">
@@ -310,9 +355,6 @@ const Properties = () => {
                 <p>• City (e.g., "Cabo San Lucas")</p>
                 <p>• Property Type (e.g., "Condo")</p>
               </div>
-              <Button onClick={handleReset} variant="outline">
-                Clear Filters
-              </Button>
             </div>
           ) : (
             <>
