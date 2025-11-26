@@ -508,18 +508,12 @@ const AdvancedPropertyFilters = ({
             <SheetHeader>
               <SheetTitle className="text-2xl">Advanced Property Search</SheetTitle>
               <SheetDescription>
-                {/* 🔥 CHANGED: Dynamic count instead of hardcoded 4,528 */}
-                View Results: <span className="text-xl font-bold text-blue-600">
-                  {resultCount > 0 ? resultCount.toLocaleString() : totalCount.toLocaleString()}
-                </span>
-                {resultCount > 0 && resultCount < 200 && (
-                  <span className="text-sm text-gray-500 ml-2">
-                    (filtered results)
-                  </span>
-                )}
-                {resultCount === 200 && (
-                  <span className="text-sm text-orange-600 ml-2">
-                    (showing first 200)
+                Search across <span className="text-xl font-bold text-blue-600">
+                  {totalCount.toLocaleString()}
+                </span> luxury properties in Baja California Sur
+                {resultCount > 0 && (
+                  <span className="block text-sm text-gray-600 mt-1">
+                    Currently viewing: {resultCount.toLocaleString()} {resultCount === 1 ? 'property' : 'properties'}
                   </span>
                 )}
               </SheetDescription>

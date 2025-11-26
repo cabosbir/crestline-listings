@@ -8,7 +8,7 @@ import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
-import { searchProperties } from "@/services/intelligentSearch";
+import { searchProperties, getFlexMLSTotalCount } from "@/services/intelligentSearch";
 
 const Properties = () => {
   const location = useLocation();
@@ -18,6 +18,7 @@ const Properties = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeSearchQuery, setActiveSearchQuery] = useState<string>("");
+  const [totalCount, setTotalCount] = useState(4528); // Real MLS total
   const ITEMS_PER_PAGE = 9;
   
   const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
@@ -25,6 +26,16 @@ const Properties = () => {
   // Load initial properties
   useEffect(() => {
     loadProperties();
+  }, []);
+
+  // Fetch real MLS total count
+  useEffect(() => {
+    const fetchTotalCount = async () => {
+      const total = await getFlexMLSTotalCount();
+      setTotalCount(total);
+    };
+    
+    fetchTotalCount();
   }, []);
 
   // Handle URL parameters for direct MLS/address search
@@ -223,7 +234,7 @@ const Properties = () => {
             Cabo San Lucas Properties
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mb-6">
-            Search 4,370+ luxury properties across Baja California Sur including Cabo San Lucas, 
+            Search {totalCount.toLocaleString()}+ luxury properties across Baja California Sur including Cabo San Lucas, 
             San Jose del Cabo, Todos Santos, East Cape, and La Paz
           </p>
 
@@ -232,7 +243,7 @@ const Properties = () => {
             onApplyFilters={handleApplyFilters}
             onReset={handleReset}
             resultCount={properties.length}
-            totalCount={4528}
+            totalCount={totalCount}
           />
           
           {/* Active Search Query Display - NO TITLE */}
@@ -279,16 +290,13 @@ const Properties = () => {
               </p>
               
               {activeSearchQuery && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-2xl mx-auto mb-6">
-                  <h3 className="font-semibold text-yellow-800 mb-3">💡 Why am I not seeing results?</h3>
-                  <div className="text-sm text-yellow-700 space-y-2 text-left">
-                    <p>• <strong>API Limitation:</strong> Our search currently loads the first 200 active listings from FlexMLS</p>
-                    <p>• <strong>Your property might exist</strong> but isn't in this initial batch</p>
-                    <p>• <strong>429 Rate Limit:</strong> FlexMLS is throttling requests (see console)</p>
-                  </div>
-                  <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-                    <p className="text-sm text-blue-800 font-medium">✅ Solution:</p>
-                    <p className="text-sm text-blue-700 mt-1">Use the <strong>"View in MLS"</strong> button above to search all 4,500+ listings directly in FlexMLS</p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto mb-6">
+                  <h3 className="font-semibold text-blue-800 mb-3">💡 Search Tips</h3>
+                  <div className="text-sm text-blue-700 space-y-2 text-left">
+                    <p>• Try searching with different spelling or format</p>
+                    <p>• Remove dashes from MLS numbers (e.g., "254668" instead of "25-4668")</p>
+                    <p>• Try searching by address or city instead</p>
+                    <p>• Use the <strong>"View in MLS"</strong> button to access the full FlexMLS portal</p>
                   </div>
                 </div>
               )}

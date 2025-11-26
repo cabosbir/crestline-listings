@@ -56,3 +56,20 @@ export async function searchByAddress(address: string): Promise<MLSProperty[]> {
 export async function searchByCity(city: string): Promise<MLSProperty[]> {
   return await searchProperties(city, 'city');
 }
+// Get real total count from FlexMLS
+export async function getFlexMLSTotalCount(): Promise<number> {
+  try {
+    const response = await fetch('/api/flexmls-total-count');
+    const data = await response.json();
+    
+    if (data.success && data.total) {
+      console.log(`📊 FlexMLS Total: ${data.total.toLocaleString()} properties`);
+      return data.total;
+    }
+    
+    return 4528; // Fallback
+  } catch (error) {
+    console.error('Error fetching total:', error);
+    return 4528; // Fallback
+  }
+}
