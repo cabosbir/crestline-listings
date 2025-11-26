@@ -1,4 +1,4 @@
-// src/services/flexMlsService.ts - RESO Web API Format - PRODUCTION READY
+// src/services/flexMlsService.ts - UPDATED WITH PAGINATION NOTES
 
 export interface MLSProperty {
   ListingKey: string;
@@ -36,6 +36,64 @@ export interface MLSProperty {
 // In-memory cache for properties
 const propertyCache: Map<string, MLSProperty> = new Map();
 
+/*
+  ⚠️ IMPORTANT: YOUR BACKEND API NEEDS TO FETCH ALL LISTINGS
+  
+  The issue: Your FlexMLS has 4,541 listings but your API only returns 50.
+  
+  SOLUTION: Your backend /api/flexmls-listings endpoint needs to:
+  
+  1. Implement pagination loops to fetch ALL pages from FlexMLS API
+  2. FlexMLS API typically returns 25-50 results per page
+  3. You need to loop until you get all ~4,500 listings
+  
+  Example backend implementation (Node.js/Express):
+  
+  ```javascript
+  async function fetchAllListings() {
+    let allListings = [];
+    let page = 1;
+    let hasMore = true;
+    
+    while (hasMore) {
+      const response = await fetch(`https://sparkapi.flexmls.com/v1/listings?_limit=200&_page=${page}`, {
+        headers: {
+          'X-SparkApi-User-Agent': 'YourApp',
+          'Authorization': 'OAuth YOUR_ACCESS_TOKEN'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.D && data.D.Results) {
+        allListings = [...allListings, ...data.D.Results];
+        
+        // Check if there are more pages
+        if (data.D.Results.length < 200) {
+          hasMore = false; // Last page
+        } else {
+          page++;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+    
+    return allListings; // Should return ~4,500 listings
+  }
+  ```
+  
+  ALTERNATIVE: Use FlexMLS pagination metadata
+  - FlexMLS returns pagination info in the response
+  - Look for: D.Pagination.TotalRows, D.Pagination.TotalPages
+  - Loop until you've fetched all pages
+  
+  PERFORMANCE TIP:
+  - Cache all listings in memory or Redis
+  - Refresh every 15-30 minutes
+  - This prevents hitting the API on every user search
+*/
+
 export async function fetchListings(params?: {
   city?: string;
   minPrice?: number;
@@ -64,6 +122,7 @@ export async function fetchListings(params?: {
     }
     
     console.log('✅ Fetched listings:', data.results?.length || 0);
+    console.log('📊 Total in MLS:', data.total || 'Unknown'); // Your API should return total count
     
     // Cache the properties for later retrieval
     if (data.results && Array.isArray(data.results)) {

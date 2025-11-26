@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - RESO Web API v3
+// api/flexmls-listings.ts - RESO Web API v3 - WITH PAGINATION
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -40,47 +40,16 @@ export default async function handler(
     
     const filterString = filters.length > 0 ? filters.join(' and ') : '';
     
-    // Build RESO OData URL
-    const url = new URL(`${RESO_API_BASE}/Property`);
-    if (filterString) {
-      url.searchParams.append('$filter', filterString);
-    }
-    url.searchParams.append('$top', '50');
-    url.searchParams.append('$expand', 'Media');
-
-    console.log('🔍 RESO API v3:', url.toString());
-
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
-        'Accept': 'application/json',
-      }
-    });
-
-    console.log('📡 Status:', response.status);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Error:', errorText.substring(0, 300));
-      
-      return res.status(200).json({
-        success: false,
-        results: [],
-        debug: {
-          status: response.status,
-          error: errorText.substring(0, 200)
-        }
-      });
-    }
-
-    const data = await response.json();
-    console.log('✅ Results:', data.value?.length || 0);
+    // 🔥 NEW: Fetch ALL listings with pagination
+    const allListings = await fetchAllListings(filterString);
+    
+    console.log('✅ Total listings fetched:', allListings.length);
     
     return res.status(200).json({
       success: true,
-      results: data.value || [],
-      count: data.value?.length || 0
+      results: allListings,
+      count: allListings.length,
+      total: allListings.length
     });
 
   } catch (error) {
@@ -91,4 +60,65 @@ export default async function handler(
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
+}
+
+// 🔥 NEW FUNCTION: Fetch all listings with pagination
+async function fetchAllListings(filterString: string): Promise<any[]> {
+  let allListings: any[] = [];
+  let skip = 0;
+  const top = 200; // Fetch 200 per request (max allowed by most RESO APIs)
+  let hasMore = true;
+
+  while (hasMore) {
+    // Build RESO OData URL with pagination
+    const url = new URL(`${RESO_API_BASE}/Property`);
+    if (filterString) {
+      url.searchParams.append('$filter', filterString);
+    }
+    url.searchParams.append('$top', top.toString());
+    url.searchParams.append('$skip', skip.toString());
+    url.searchParams.append('$expand', 'Media');
+    url.searchParams.append('$orderby', 'ModificationTimestamp desc'); // Most recent first
+
+    console.log(`📡 Fetching page ${skip / top + 1} (skip: ${skip})...`);
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
+        'Accept': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Error on page:', errorText.substring(0, 300));
+      break; // Stop pagination on error
+    }
+
+    const data = await response.json();
+    const results = data.value || [];
+    
+    console.log(`✅ Fetched ${results.length} listings (total so far: ${allListings.length + results.length})`);
+    
+    if (results.length === 0) {
+      hasMore = false; // No more results
+    } else {
+      allListings = [...allListings, ...results];
+      
+      if (results.length < top) {
+        hasMore = false; // Last page (got fewer than requested)
+      } else {
+        skip += top; // Move to next page
+      }
+    }
+
+    // Safety limit: Stop after fetching 5000 listings (adjust as needed)
+    if (allListings.length >= 5000) {
+      console.log('⚠️ Reached safety limit of 5000 listings');
+      hasMore = false;
+    }
+  }
+
+  return allListings;
 }
