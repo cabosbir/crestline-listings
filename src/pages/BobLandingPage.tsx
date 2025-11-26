@@ -245,6 +245,41 @@ const BobLandingPage = () => {
     setCurrentPage(page);
     document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  // Smart pagination: show max 7 page numbers with ellipsis
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 7;
+    
+    if (totalPages <= maxVisible) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+      
+      if (currentPage <= 3) {
+        // Near beginning: show 1,2,3,4,...,last
+        pages.push(2, 3, 4);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        // Near end: show 1,...,last-3,last-2,last-1,last
+        pages.push('ellipsis-start');
+        pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        // Middle: show 1,...,current-1,current,current+1,...,last
+        pages.push('ellipsis-start');
+        pages.push(currentPage - 1, currentPage, currentPage + 1);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
   // ==================== END: PAGINATION LOGIC ====================
 
   return (
@@ -432,35 +467,58 @@ const BobLandingPage = () => {
 
               {/* ==================== START: PAGINATION ==================== */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 my-8">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
+                <div className="flex flex-col items-center gap-4 my-8">
+                  {/* Page Info */}
+                  <div className="text-sm text-muted-foreground">
+                    Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
+                  </div>
                   
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  {/* Pagination Controls */}
+                  <div className="flex items-center gap-2">
                     <Button
-                      key={page}
-                      variant={currentPage === page ? "luxury" : "outline"}
+                      variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(page)}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-10 px-3"
                     >
-                      {page}
+                      <ChevronLeft className="h-4 w-4" />
+                      <span className="ml-1 hidden sm:inline">Previous</span>
                     </Button>
-                  ))}
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                    
+                    {getPageNumbers().map((page, index) => {
+                      if (page === 'ellipsis-start' || page === 'ellipsis-end') {
+                        return (
+                          <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                            ...
+                          </span>
+                        );
+                      }
+                      
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "luxury" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page)}
+                          className="h-10 w-10 p-0"
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-10 px-3"
+                    >
+                      <span className="mr-1 hidden sm:inline">Next</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               )}
               {/* ==================== END: PAGINATION ==================== */}
