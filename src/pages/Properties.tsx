@@ -178,9 +178,9 @@ const Properties = () => {
                 ))}
               </div>
 
-              {/* Pagination Controls */}
+              {/* Pagination Controls - Smart Limited Pages */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 my-8">
+                <div className="flex items-center justify-center gap-2 my-8 flex-wrap">
                   <Button
                     variant="outline"
                     size="sm"
@@ -190,16 +190,54 @@ const Properties = () => {
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handlePageChange(page)}
-                    >
-                      {page}
-                    </Button>
-                  ))}
+                  {/* First Page */}
+                  {currentPage > 3 && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(1)}
+                      >
+                        1
+                      </Button>
+                      {currentPage > 4 && (
+                        <span className="px-2 text-muted-foreground">...</span>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Current Page and Neighbors */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(page => {
+                      // Show pages within 2 of current page
+                      return page >= currentPage - 2 && page <= currentPage + 2;
+                    })
+                    .map((page) => (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(page)}
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                  
+                  {/* Last Page */}
+                  {currentPage < totalPages - 2 && (
+                    <>
+                      {currentPage < totalPages - 3 && (
+                        <span className="px-2 text-muted-foreground">...</span>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        {totalPages}
+                      </Button>
+                    </>
+                  )}
                   
                   <Button
                     variant="outline"
