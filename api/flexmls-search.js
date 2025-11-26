@@ -1,5 +1,5 @@
-// api/flexmls-search.js - Intelligent on-demand search endpoint
-const FLEXMLS_API_URL = 'https://sparkapi.flexmls.com/v1/listings';
+// api/flexmls-search.js - RESO Web API v3 on-demand search
+const FLEXMLS_API_URL = 'https://replication.sparkapi.com/Version/3/Reso/OData/Property';
 
 export default async function handler(req, res) {
   const { query, type } = req.query;
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const FLEXMLS_TOKEN = process.env.FLEXMLS_API_KEY;
+    const FLEXMLS_TOKEN = process.env.FLEXMLS_API_KEY || process.env.FLEXMLS_OAUTH_TOKEN;
     
     if (!FLEXMLS_TOKEN) {
       return res.status(500).json({
@@ -23,34 +23,34 @@ export default async function handler(req, res) {
 
     console.log(`🔍 [API] Searching for: ${query} (type: ${type})`);
     
-    let searchParams = new URLSearchParams({
-      _limit: '50',
-      _expand: 'Photos'
-    });
-
-    // Build filter based on search type
+    // Build OData filter for RESO API v3
+    let filter = '';
+    
     if (type === 'mls' || /^[\d-]+$/.test(query)) {
       console.log('🎯 [MLS SEARCH] Querying by ListingId');
-      searchParams.append('_filter', `ListingId Eq '${query}'`);
+      filter = `ListingId eq '${query}'`;
       
     } else if (type === 'address') {
       console.log('🏠 [ADDRESS SEARCH] Querying by address');
-      searchParams.append('_filter', `UnparsedAddress Contains '${query}'`);
+      filter = `contains(UnparsedAddress,'${query}')`;
       
     } else if (type === 'city') {
       console.log('🌆 [CITY SEARCH] Querying by city');
-      searchParams.append('_filter', `City Eq '${query}'`);
+      filter = `City eq '${query}'`;
       
     } else {
       console.log('📝 [TEXT SEARCH] Multi-field query');
-      searchParams.append('_filter', `ListingId Contains '${query}' Or UnparsedAddress Contains '${query}' Or City Contains '${query}' Or MLSAreaMajor Contains '${query}'`);
+      filter = `contains(ListingId,'${query}') or contains(UnparsedAddress,'${query}') or contains(City,'${query}')`;
     }
 
-    const response = await fetch(`${FLEXMLS_API_URL}?${searchParams.toString()}`, {
+    const url = `${FLEXMLS_API_URL}?$filter=${encodeURIComponent(filter)}&$top=50&$expand=Media`;
+    
+    console.log('📡 [REQUEST]:', url);
+
+    const response = await fetch(url, {
       headers: {
-        'X-SparkApi-User-Agent': 'BIRCabo/1.0',
-        'Authorization': `OAuth ${FLEXMLS_TOKEN}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${FLEXMLS_TOKEN}`,
+        'Accept': 'application/json'
       }
     });
 
@@ -63,13 +63,13 @@ export default async function handler(req, res) {
         });
       }
       
-      const errorData = await response.json();
-      console.error('❌ [FLEXMLS ERROR]:', errorData);
+      const errorText = await response.text();
+      console.error('❌ [FLEXMLS ERROR]:', response.status, errorText);
       throw new Error(`FlexMLS API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const results = data.D?.Results || [];
+    const results = data.value || [];
     
     console.log(`✅ [API] Found ${results.length} results for "${query}"`);
 
