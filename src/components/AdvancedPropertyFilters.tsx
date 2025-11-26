@@ -1,5 +1,6 @@
 // src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version WITH DYNAMIC COUNT
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +48,7 @@ const AdvancedPropertyFilters = ({
   resultCount = 0,     // 🔥 NEW: Default 0
   totalCount = 4528    // 🔥 NEW: Default total
 }: AdvancedPropertyFiltersProps) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
   const [showAllZones, setShowAllZones] = useState(false);
@@ -394,6 +396,21 @@ const AdvancedPropertyFilters = ({
     return showAll ? items : items.slice(0, limit);
   };
 
+  // Helper functions for Map Search button
+  const parsePrice = (priceStr: string | undefined) => {
+    if (!priceStr || priceStr === "No Preference" || priceStr === "") return undefined;
+    const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
+    const num = parseFloat(cleaned);
+    if (isNaN(num)) return undefined;
+    return priceStr.includes('Million') ? num * 1000000 : num;
+  };
+
+  const parseNumber = (str: string | undefined) => {
+    if (!str || str === "Any" || str === "No Preference" || str === "") return undefined;
+    const parsed = parseInt(str.replace('+', ''));
+    return isNaN(parsed) ? undefined : parsed;
+  };
+
   return (
     <div className="w-full">
       <div className="flex gap-2 mb-4">
@@ -423,6 +440,32 @@ const AdvancedPropertyFilters = ({
         <Button 
           variant="outline" 
           className="px-6"
+          onClick={() => {
+            // Build URL with current filters
+            const params = new URLSearchParams();
+            if (filters.zones.length > 0) params.append('city', filters.zones[0]);
+            else if (filters.areas.length > 0) params.append('city', filters.areas[0]);
+            else if (filters.communities.length > 0) params.append('city', filters.communities[0]);
+            
+            if (filters.minPrice && filters.minPrice !== '$50,000') {
+              const min = parsePrice(filters.minPrice);
+              if (min) params.append('minPrice', min.toString());
+            }
+            if (filters.maxPrice && filters.maxPrice !== '$3 Million') {
+              const max = parsePrice(filters.maxPrice);
+              if (max) params.append('maxPrice', max.toString());
+            }
+            if (filters.minBeds && filters.minBeds !== '1+') {
+              const beds = parseNumber(filters.minBeds);
+              if (beds) params.append('bedrooms', beds.toString());
+            }
+            if (filters.minBaths && filters.minBaths !== 'Any') {
+              const baths = parseNumber(filters.minBaths);
+              if (baths) params.append('bathrooms', baths.toString());
+            }
+            
+            navigate(`/properties/map?${params.toString()}`);
+          }}
         >
           Map Search
         </Button>
