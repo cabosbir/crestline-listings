@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bed, Bath, Maximize, MapPin, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface PropertyCardProps {
   id: string;
@@ -42,17 +42,6 @@ const PropertyCard = ({
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(image);
   const [imgError, setImgError] = useState(false);
-  const [mapUrl, setMapUrl] = useState<string>("");
-
-  useEffect(() => {
-    if (latitude && longitude) {
-      const osmUrl = `https://staticmap.openstreetmap.de/staticmap.php?center=${latitude},${longitude}&zoom=13&size=400x300&maptype=mapnik&markers=${latitude},${longitude},red-pushpin`;
-      setMapUrl(osmUrl);
-      console.log('🗺️ Generated free map for:', title);
-    } else if (location) {
-      console.log('📍 No coordinates for:', title, '- will show on detail page');
-    }
-  }, [latitude, longitude, location, title]);
 
   const handleViewDetails = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -115,18 +104,7 @@ const PropertyCard = ({
           </span>
         </div>
 
-        {mapUrl && (
-          <div className="absolute top-4 right-4 w-24 h-24 rounded-lg overflow-hidden border-2 border-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <img
-              src={mapUrl}
-              alt="Property location"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          </div>
-        )}
+        {/* 🔥 REMOVED: Mini-map hover box (was causing empty gray box) */}
 
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
           <div className="text-4xl font-bold mb-3">

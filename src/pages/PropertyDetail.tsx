@@ -6,7 +6,7 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { 
   Bed, Bath, Maximize, MapPin, ArrowLeft, X,
-  Calendar, CheckCircle2, Loader2, ChevronLeft, ChevronRight
+  Calendar, CheckCircle2, Loader2, ChevronLeft, ChevronRight, ExternalLink
 } from "lucide-react";
 import { fetchPropertyById, type MLSProperty } from "@/services/flexMlsService";
 
@@ -64,7 +64,9 @@ const PropertyDetail = () => {
             'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&h=1000&fit=crop'
           ],
           description: mlsProperty.PublicRemarks || 'Beautiful luxury property in Cabo San Lucas with premium finishes and stunning views.',
-          features: extractFeatures(mlsProperty)
+          features: extractFeatures(mlsProperty),
+          latitude: mlsProperty.Latitude,
+          longitude: mlsProperty.Longitude
         };
         
         console.log('✅ Converted property:', convertedProperty);
@@ -375,6 +377,37 @@ const PropertyDetail = () => {
                   <div>
                     <div className="text-sm text-muted-foreground mb-1">MLS Number</div>
                     <div className="font-semibold">{property.mlsNumber}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 🔥 NEW: FlexMLS Map Section */}
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold mb-6">Location Map</h2>
+                <div className="bg-secondary rounded-xl overflow-hidden border border-border shadow-lg">
+                  <iframe
+                    src={`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(property.mlsNumber)}`}
+                    className="w-full h-96 border-0"
+                    title="Property Map"
+                    allowFullScreen
+                  />
+                  <div className="p-4 bg-card">
+                    <div className="flex items-start gap-3 mb-3">
+                      <MapPin className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                      <div>
+                        <div className="font-semibold text-lg mb-1">{property.title}</div>
+                        <div className="text-muted-foreground">{property.fullLocation}</div>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={() => window.open(`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(property.mlsNumber)}`, '_blank')}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View Full Map in FlexMLS
+                    </Button>
                   </div>
                 </div>
               </div>
