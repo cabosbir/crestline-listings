@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -9,10 +10,13 @@ import { ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
 const Properties = () => {
+  const location = useLocation();
   const [properties, setProperties] = useState<any[]>([]);
+  const [allProperties, setAllProperties] = useState<MLSProperty[]>([]); // Store raw MLS data for searching
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeSearchQuery, setActiveSearchQuery] = useState<string>("");
   const ITEMS_PER_PAGE = 9;
   
   const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
@@ -22,6 +26,20 @@ const Properties = () => {
     loadProperties();
   }, []);
 
+  // Handle URL parameters for direct MLS/address search
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const mlsNumberParam = params.get('mlsNumber');
+    const addressParam = params.get('address');
+    const searchParam = params.get('search');
+    
+    if (mlsNumberParam || addressParam || searchParam) {
+      const searchQuery = mlsNumberParam || addressParam || searchParam || "";
+      setActiveSearchQuery(searchQuery);
+      performUniversalSearch(searchQuery);
+    }
+  }, [location.search]);
+
   const loadProperties = async (filters?: any) => {
     setLoading(true);
     setError(null);
@@ -29,9 +47,13 @@ const Properties = () => {
       console.log('📡 Loading properties with filters:', filters);
       const mlsProperties: MLSProperty[] = await fetchListings(filters);
       console.log('✅ Received properties:', mlsProperties.length);
+      
+      // Store raw MLS data for searching
+      setAllProperties(mlsProperties);
+      
       const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedProperties);
-      setCurrentPage(1); // Reset to page 1 when loading new properties
+      setCurrentPage(1);
     } catch (err) {
       console.error('❌ Error loading properties:', err);
       setError('Failed to load properties. Please try again.');
@@ -40,8 +62,111 @@ const Properties = () => {
     }
   };
 
-  const handleApplyFilters = (filters: any) => {
+  // 🚀 SUPER-POWERED UNIVERSAL SEARCH
+  const performUniversalSearch = async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      loadProperties();
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setActiveSearchQuery(searchQuery);
+    
+    try {
+      console.log('🔍 [SUPER SEARCH] Searching for:', searchQuery);
+      
+      // Load all active properties first if not loaded
+      let searchData = allProperties;
+      if (allProperties.length === 0) {
+        const mlsProperties: MLSProperty[] = await fetchListings({ city: 'Cabo San Lucas' });
+        setAllProperties(mlsProperties);
+        searchData = mlsProperties;
+      }
+
+      const query = searchQuery.toLowerCase().trim();
+      
+      // 🎯 MULTI-FIELD SEARCH LOGIC
+      const results = searchData.filter((property: any) => {
+        // Search in MLS Number (with and without dash)
+        const mlsNumber = property.StandardFields?.ListingId || property.ListingId || '';
+        const mlsMatch = mlsNumber.toLowerCase().includes(query) || 
+                        mlsNumber.replace(/-/g, '').toLowerCase().includes(query.replace(/-/g, ''));
+        
+        // Search in Address
+        const address = property.StandardFields?.UnparsedAddress || property.UnparsedAddress || '';
+        const addressMatch = address.toLowerCase().includes(query);
+        
+        // Search in Street Name
+        const streetName = property.StandardFields?.StreetName || property.StreetName || '';
+        const streetMatch = streetName.toLowerCase().includes(query);
+        
+        // Search in City
+        const city = property.StandardFields?.City || property.City || '';
+        const cityMatch = city.toLowerCase().includes(query);
+        
+        // Search in Area/Community
+        const area = property.StandardFields?.MLSAreaMajor || property.MLSAreaMajor || '';
+        const areaMatch = area.toLowerCase().includes(query);
+        
+        // Search in Subdivision
+        const subdivision = property.StandardFields?.SubdivisionName || property.SubdivisionName || '';
+        const subdivisionMatch = subdivision.toLowerCase().includes(query);
+        
+        // Search in Property Type
+        const propertyType = property.StandardFields?.PropertyType || property.PropertyType || '';
+        const typeMatch = propertyType.toLowerCase().includes(query);
+        
+        // Search in Listing Agent Name
+        const listAgent = property.StandardFields?.ListAgentFullName || property.ListAgentFullName || '';
+        const agentMatch = listAgent.toLowerCase().includes(query);
+        
+        // Search in Property Name (for named buildings/developments)
+        const propertyName = property.StandardFields?.BuildingName || property.BuildingName || '';
+        const nameMatch = propertyName.toLowerCase().includes(query);
+        
+        // Search in Public Remarks (description)
+        const remarks = property.StandardFields?.PublicRemarks || property.PublicRemarks || '';
+        const remarksMatch = remarks.toLowerCase().includes(query);
+        
+        // Return true if ANY field matches
+        return mlsMatch || addressMatch || streetMatch || cityMatch || 
+               areaMatch || subdivisionMatch || typeMatch || agentMatch || 
+               nameMatch || remarksMatch;
+      });
+
+      console.log(`✅ [SUPER SEARCH] Found ${results.length} matches for "${searchQuery}"`);
+      
+      if (results.length === 0) {
+        console.log('💡 [SUPER SEARCH] No matches found. Try:');
+        console.log('   - MLS Number (e.g., "25-4668")');
+        console.log('   - Address (e.g., "Marina Cabo Plaza")');
+        console.log('   - Area (e.g., "Pedregal")');
+        console.log('   - Agent Name');
+        console.log('   - Property Type');
+      }
+
+      const convertedResults = results.map(convertMLSToPropertyCard);
+      setProperties(convertedResults);
+      setCurrentPage(1);
+      
+    } catch (err) {
+      console.error('❌ [SUPER SEARCH] Error:', err);
+      setError('Search failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApplyFilters = (filters: any, searchQuery?: string) => {
     console.log('🔍 [Domino] Filters received:', filters);
+    console.log('🔍 [Domino] Search query:', searchQuery);
+    
+    // If there's a search query, use universal search
+    if (searchQuery && searchQuery.trim()) {
+      performUniversalSearch(searchQuery);
+      return;
+    }
     
     // Helper: Convert price strings to numbers
     const parsePrice = (priceStr: string | undefined) => {
@@ -59,16 +184,16 @@ const Properties = () => {
       return isNaN(parsed) ? undefined : parsed;
     };
     
-    // Build API filters (send ALL filters to backend!)
+    // Build API filters
     const apiFilters: any = {};
     
     // LOCATION: Priority order - Zone > Area > Community
     if (filters.zones && filters.zones.length > 0) {
-      apiFilters.city = filters.zones[0]; // Use first zone
+      apiFilters.city = filters.zones[0];
     } else if (filters.areas && filters.areas.length > 0) {
-      apiFilters.city = filters.areas[0]; // Use first area
+      apiFilters.city = filters.areas[0];
     } else if (filters.communities && filters.communities.length > 0) {
-      apiFilters.city = filters.communities[0]; // Use first community
+      apiFilters.city = filters.communities[0];
     }
     
     // PRICE RANGE
@@ -83,7 +208,7 @@ const Properties = () => {
     if (bedrooms) apiFilters.bedrooms = bedrooms;
     if (bathrooms) apiFilters.bathrooms = bathrooms;
     
-    // PROPERTY TYPE (send first selected type)
+    // PROPERTY TYPE
     if (filters.propertyTypes && filters.propertyTypes.length > 0) {
       apiFilters.propertyType = filters.propertyTypes[0];
     }
@@ -102,12 +227,14 @@ const Properties = () => {
     if (yearBuilt) apiFilters.yearBuilt = yearBuilt;
     
     console.log('🎯 [Domino] Sending filters to API:', apiFilters);
-    console.log(`📊 [Domino] Expected: FlexMLS will return only listings matching these filters`);
     
+    // Clear search query when using filters
+    setActiveSearchQuery("");
     loadProperties(apiFilters);
   };
 
   const handleReset = () => {
+    setActiveSearchQuery("");
     loadProperties();
   };
 
@@ -146,9 +273,24 @@ const Properties = () => {
           <AdvancedPropertyFilters 
             onApplyFilters={handleApplyFilters}
             onReset={handleReset}
-            resultCount={properties.length}  // 🔥 PASS DYNAMIC COUNT
-            totalCount={4528}                 // 🔥 TOTAL IN DATABASE
+            resultCount={properties.length}
+            totalCount={4528}
           />
+          
+          {/* Active Search Query Display */}
+          {activeSearchQuery && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm">
+                🔍 Searching for: <span className="font-semibold text-blue-700">"{activeSearchQuery}"</span>
+                <button 
+                  onClick={handleReset}
+                  className="ml-3 text-blue-600 hover:text-blue-800 underline text-xs"
+                >
+                  Clear Search
+                </button>
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -169,7 +311,21 @@ const Properties = () => {
             </div>
           ) : properties.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4">No properties found matching your criteria.</p>
+              <p className="text-muted-foreground mb-4">
+                {activeSearchQuery 
+                  ? `No properties found matching "${activeSearchQuery}"`
+                  : "No properties found matching your criteria"}
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                Try searching by:
+              </p>
+              <div className="text-sm text-gray-600 mb-6 space-y-1">
+                <p>• MLS Number (e.g., "25-4668")</p>
+                <p>• Address (e.g., "Marina Cabo Plaza")</p>
+                <p>• Area/Community (e.g., "Pedregal")</p>
+                <p>• Agent Name</p>
+                <p>• Property Type (e.g., "Condo")</p>
+              </div>
               <Button onClick={handleReset} variant="outline">
                 Clear Filters
               </Button>
@@ -179,6 +335,11 @@ const Properties = () => {
               <div className="mb-6 flex justify-between items-center">
                 <p className="text-muted-foreground">
                   Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, properties.length)} of {properties.length} properties
+                  {activeSearchQuery && (
+                    <span className="ml-2 text-blue-600 font-medium">
+                      matching "{activeSearchQuery}"
+                    </span>
+                  )}
                 </p>
                 <Button 
                   variant="outline"
@@ -196,7 +357,7 @@ const Properties = () => {
                 ))}
               </div>
 
-              {/* Pagination Controls - Smart Limited Pages */}
+              {/* Pagination Controls */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 my-8 flex-wrap">
                   <Button
@@ -227,7 +388,6 @@ const Properties = () => {
                   {/* Current Page and Neighbors */}
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(page => {
-                      // Show pages within 2 of current page
                       return page >= currentPage - 2 && page <= currentPage + 2;
                     })
                     .map((page) => (

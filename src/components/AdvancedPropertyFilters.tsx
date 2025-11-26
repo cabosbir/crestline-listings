@@ -1,4 +1,4 @@
-// src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version WITH DYNAMIC COUNT
+// src/components/AdvancedPropertyFilters-COMPLETE.tsx - SUPER-POWERED VERSION
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X, Zap } from "lucide-react";
 
 interface FilterState {
   searchQuery: string;
@@ -36,17 +36,17 @@ interface FilterState {
 }
 
 interface AdvancedPropertyFiltersProps {
-  onApplyFilters: (filters: FilterState) => void;
+  onApplyFilters: (filters: FilterState, searchQuery?: string) => void;
   onReset: () => void;
-  resultCount?: number; // 🔥 NEW: Dynamic count from API
-  totalCount?: number;  // 🔥 NEW: Total available in database
+  resultCount?: number;
+  totalCount?: number;
 }
 
 const AdvancedPropertyFilters = ({ 
   onApplyFilters, 
   onReset,
-  resultCount = 0,     // 🔥 NEW: Default 0
-  totalCount = 4528    // 🔥 NEW: Default total
+  resultCount = 0,
+  totalCount = 4528
 }: AdvancedPropertyFiltersProps) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -317,9 +317,18 @@ const AdvancedPropertyFilters = ({
   const sqftOptions = ["No Preference", "500+", "1000+", "1500+", "2000+", "2500+", "3000+", "4000+", "5000+"];
   const yearBuiltOptions = ["No Preference", "2024+", "2023+", "2020+", "2015+", "2010+", "2000+"];
 
+  // 🚀 SUPER-POWERED MLS SEARCH - Searches YOUR database, not FlexMLS portal!
   const handleMLSSearch = () => {
-    if (filters.mlsNumber.trim()) {
-      window.open(`https://link.flexmls.com/1lpm0zo1944e,12?search=${encodeURIComponent(filters.mlsNumber)}`, '_blank');
+    const searchTerm = filters.mlsNumber.trim() || filters.searchQuery.trim();
+    if (searchTerm) {
+      console.log('🔍 [SUPER SEARCH] Initiating universal search for:', searchTerm);
+      
+      // Navigate to properties page with search parameter
+      navigate(`/properties?search=${encodeURIComponent(searchTerm)}`);
+      setIsOpen(false);
+      
+      // Also trigger the search through onApplyFilters
+      onApplyFilters(filters, searchTerm);
     }
   };
 
@@ -341,14 +350,20 @@ const AdvancedPropertyFilters = ({
   };
 
   const handleSearch = () => {
-    if (filters.mlsNumber.trim()) {
+    // Priority 1: If there's a search query (MLS, address, etc.), use universal search
+    const searchTerm = filters.mlsNumber.trim() || filters.searchQuery.trim();
+    if (searchTerm) {
+      console.log('🎯 [SUPER SEARCH] Using universal search for:', searchTerm);
       handleMLSSearch();
       return;
     }
     
+    // Priority 2: Apply advanced filters
+    console.log('🎯 [FILTER SEARCH] Using advanced filters');
     onApplyFilters(filters);
     setIsOpen(false);
     
+    // Count active filters
     let count = 0;
     if (filters.zones.length > 0) count++;
     if (filters.areas.length > 0) count++;
@@ -417,7 +432,7 @@ const AdvancedPropertyFilters = ({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="MLS #, address or map overlay"
+            placeholder="🔍 Search by MLS #, address, area, agent name, or property name..."
             value={filters.searchQuery}
             onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
             onKeyPress={(e) => {
@@ -425,8 +440,16 @@ const AdvancedPropertyFilters = ({
                 handleSearch();
               }
             }}
-            className="pl-10"
+            className="pl-10 pr-4"
           />
+          {filters.searchQuery && (
+            <button
+              onClick={() => setFilters({ ...filters, searchQuery: "" })}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         <Button 
@@ -485,9 +508,11 @@ const AdvancedPropertyFilters = ({
           
           <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
             <SheetHeader>
-              <SheetTitle className="text-2xl">Advanced Property Search</SheetTitle>
+              <SheetTitle className="text-2xl flex items-center gap-2">
+                <Zap className="h-6 w-6 text-purple-600" />
+                Advanced Property Search
+              </SheetTitle>
               <SheetDescription>
-                {/* 🔥 CHANGED: Dynamic count instead of hardcoded 4,528 */}
                 View Results: <span className="text-xl font-bold text-blue-600">
                   {resultCount > 0 ? resultCount.toLocaleString() : totalCount.toLocaleString()}
                 </span>
@@ -505,29 +530,39 @@ const AdvancedPropertyFilters = ({
             </SheetHeader>
 
             <div className="space-y-6 mt-6">
-              {/* MLS Number Search */}
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <Label className="text-base font-semibold mb-2 block">MLS / IDX Number</Label>
+              {/* 🚀 SUPER-POWERED UNIVERSAL SEARCH BOX */}
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="h-5 w-5 text-purple-600" />
+                  <Label className="text-base font-semibold">Universal Search</Label>
+                  <span className="text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">SUPER-POWERED</span>
+                </div>
                 <p className="text-sm text-gray-600 mb-3">
-                  Search directly by MLS listing number for instant results
+                  Search by MLS number, address, area, agent name, subdivision, or any keyword
                 </p>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="e.g., 25-4733"
+                    placeholder="e.g., 25-4733, Marina Cabo Plaza, Pedregal, Bob Johnson..."
                     value={filters.mlsNumber}
                     onChange={(e) => setFilters({ ...filters, mlsNumber: e.target.value })}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') handleMLSSearch();
                     }}
+                    className="flex-1"
                   />
                   <Button
                     className="bg-purple-700 hover:bg-purple-800"
                     onClick={handleMLSSearch}
-                    disabled={!filters.mlsNumber.trim()}
+                    disabled={!filters.mlsNumber.trim() && !filters.searchQuery.trim()}
                   >
+                    <Search className="h-4 w-4 mr-2" />
                     Search
                   </Button>
                 </div>
+                <p className="text-xs text-purple-600 mt-2 flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  Searches YOUR internal database - finds results instantly!
+                </p>
               </div>
 
               <div className="border-t pt-4">
@@ -558,22 +593,6 @@ const AdvancedPropertyFilters = ({
                       </span>
                     ))}
                   </Label>
-                </div>
-
-                {/* MLS Search Input */}
-                <div className="mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="text-blue-500">ℹ️</div>
-                    <Input
-                      placeholder="MLS #, address or map overlay"
-                      value={filters.searchQuery}
-                      onChange={(e) => setFilters({ ...filters, searchQuery: e.target.value })}
-                      className="flex-1"
-                    />
-                    <button className="text-blue-600 hover:underline text-sm whitespace-nowrap">
-                      Browse »
-                    </button>
-                  </div>
                 </div>
 
                 {/* Status */}
@@ -968,6 +987,7 @@ const AdvancedPropertyFilters = ({
                 onClick={handleSearch} 
                 className="flex-1 bg-purple-700 hover:bg-purple-800"
               >
+                <Search className="h-4 w-4 mr-2" />
                 Search
               </Button>
             </div>
