@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const FLEXMLS_TOKEN = process.env.FLEXMLS_OAUTH_TOKEN;
+    const FLEXMLS_TOKEN = process.env.FLEXMLS_API_KEY;
     
     if (!FLEXMLS_TOKEN) {
       return res.status(500).json({
