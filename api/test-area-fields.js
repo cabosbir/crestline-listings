@@ -1,22 +1,15 @@
-// api/test-cabo-fields.js - Diagnostic to find correct field for Cabo San Lucas
+// api/test-area-fields.js - Test area field names
 const FLEXMLS_API_URL = 'https://replication.sparkapi.com/Version/3/Reso/OData/Property';
 
 export default async function handler(req, res) {
   try {
     const FLEXMLS_TOKEN = process.env.FLEXMLS_API_KEY || process.env.FLEXMLS_OAUTH_TOKEN;
     
-    if (!FLEXMLS_TOKEN) {
-      return res.status(500).json({ error: 'Token not configured' });
-    }
-
-    // Test different field names for "Cabo San Lucas"
     const testsToRun = [
-      { field: 'City', value: 'Cabo San Lucas' },
-      { field: 'PostalCity', value: 'Cabo San Lucas' },
-      { field: 'MLSAreaMajor', value: 'Cabo San Lucas' },
-      { field: 'StateOrProvince', value: 'Cabo San Lucas' },
-      { field: 'City', value: 'CSL' },
-      { field: 'PostalCity', value: 'CSL' }
+      { field: 'MLSAreaMajor', value: 'CSL-Beach & Marina' },
+      { field: 'MLSAreaMinor', value: 'CSL-Beach & Marina' },
+      { field: 'Area', value: 'CSL-Beach & Marina' },
+      { field: 'SubdivisionName', value: 'CSL-Beach & Marina' }
     ];
 
     const results = {};
@@ -35,8 +28,7 @@ export default async function handler(req, res) {
 
         if (response.ok) {
           const data = await response.json();
-          const count = data['@odata.count'] || 0;
-          results[`${test.field} eq '${test.value}'`] = count;
+          results[`${test.field} eq '${test.value}'`] = data['@odata.count'] || 0;
         } else {
           results[`${test.field} eq '${test.value}'`] = `Error: ${response.status}`;
         }
@@ -45,8 +37,8 @@ export default async function handler(req, res) {
       }
     }
 
-    // Also get one sample property to see its fields
-    const sampleUrl = `${FLEXMLS_API_URL}?$top=1&$filter=StandardStatus eq 'Active'`;
+    // Get sample to see actual area field values
+    const sampleUrl = `${FLEXMLS_API_URL}?$top=1&$filter=City eq 'Cabo San Lucas'`;
     const sampleResponse = await fetch(sampleUrl, {
       headers: {
         'Authorization': `Bearer ${FLEXMLS_TOKEN}`,
@@ -59,11 +51,10 @@ export default async function handler(req, res) {
       const data = await sampleResponse.json();
       if (data.value && data.value.length > 0) {
         sampleProperty = {
-          City: data.value[0].City,
-          PostalCity: data.value[0].PostalCity,
           MLSAreaMajor: data.value[0].MLSAreaMajor,
-          StateOrProvince: data.value[0].StateOrProvince,
-          UnparsedAddress: data.value[0].UnparsedAddress
+          MLSAreaMinor: data.value[0].MLSAreaMinor,
+          SubdivisionName: data.value[0].SubdivisionName,
+          City: data.value[0].City
         };
       }
     }
@@ -71,8 +62,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       tests: results,
-      sampleProperty: sampleProperty,
-      note: 'Check which field has the most properties for Cabo San Lucas'
+      sampleProperty: sampleProperty
     });
 
   } catch (error) {
