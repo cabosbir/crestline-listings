@@ -60,7 +60,7 @@ export default async function handler(req, res) {
       const typeList = Array.isArray(propertyTypes) ? propertyTypes : [propertyTypes];
       const typeFilters = typeList.map(t => {
         // Map friendly names to FlexMLS values
-        const typeMap: any = {
+        const typeMap = {
           'Condos': 'Residential',
           'Houses': 'Residential',
           'Land': 'Land',
