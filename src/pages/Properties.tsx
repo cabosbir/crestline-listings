@@ -12,7 +12,7 @@ import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/ser
 const Properties = () => {
   const location = useLocation();
   const [properties, setProperties] = useState<any[]>([]);
-  const [allProperties, setAllProperties] = useState<MLSProperty[]>([]); // Store raw MLS data for searching
+  const [allProperties, setAllProperties] = useState<MLSProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,7 +62,7 @@ const Properties = () => {
     }
   };
 
-  // 🚀 SUPER-POWERED UNIVERSAL SEARCH
+  // 🚀 SUPER-POWERED UNIVERSAL SEARCH - Searches ALL property fields
   const performUniversalSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
       loadProperties();
@@ -79,71 +79,65 @@ const Properties = () => {
       // Load all active properties first if not loaded
       let searchData = allProperties;
       if (allProperties.length === 0) {
+        console.log('📡 [SUPER SEARCH] Loading all properties first...');
         const mlsProperties: MLSProperty[] = await fetchListings({ city: 'Cabo San Lucas' });
         setAllProperties(mlsProperties);
         searchData = mlsProperties;
+        console.log('✅ [SUPER SEARCH] Loaded', mlsProperties.length, 'properties to search');
       }
 
       const query = searchQuery.toLowerCase().trim();
+      console.log('🎯 [SUPER SEARCH] Searching', searchData.length, 'properties for:', query);
       
-      // 🎯 MULTI-FIELD SEARCH LOGIC
+      // 🎯 CORRECTED FIELD MAPPING FOR FLEXMLS
       const results = searchData.filter((property: any) => {
-        // Search in MLS Number (with and without dash)
-        const mlsNumber = property.StandardFields?.ListingId || property.ListingId || '';
-        const mlsMatch = mlsNumber.toLowerCase().includes(query) || 
-                        mlsNumber.replace(/-/g, '').toLowerCase().includes(query.replace(/-/g, ''));
+        // CRITICAL: ListingId is the MLS number (e.g., "25-4668")
+        const listingId = property.ListingId || '';
+        const mlsMatch = listingId.toLowerCase().includes(query) || 
+                        listingId.replace(/-/g, '').toLowerCase().includes(query.replace(/-/g, ''));
         
         // Search in Address
-        const address = property.StandardFields?.UnparsedAddress || property.UnparsedAddress || '';
+        const address = property.UnparsedAddress || '';
         const addressMatch = address.toLowerCase().includes(query);
         
-        // Search in Street Name
-        const streetName = property.StandardFields?.StreetName || property.StreetName || '';
-        const streetMatch = streetName.toLowerCase().includes(query);
-        
         // Search in City
-        const city = property.StandardFields?.City || property.City || '';
+        const city = property.City || '';
         const cityMatch = city.toLowerCase().includes(query);
         
-        // Search in Area/Community
-        const area = property.StandardFields?.MLSAreaMajor || property.MLSAreaMajor || '';
-        const areaMatch = area.toLowerCase().includes(query);
-        
-        // Search in Subdivision
-        const subdivision = property.StandardFields?.SubdivisionName || property.SubdivisionName || '';
-        const subdivisionMatch = subdivision.toLowerCase().includes(query);
-        
         // Search in Property Type
-        const propertyType = property.StandardFields?.PropertyType || property.PropertyType || '';
+        const propertyType = property.PropertyType || '';
         const typeMatch = propertyType.toLowerCase().includes(query);
         
-        // Search in Listing Agent Name
-        const listAgent = property.StandardFields?.ListAgentFullName || property.ListAgentFullName || '';
-        const agentMatch = listAgent.toLowerCase().includes(query);
-        
-        // Search in Property Name (for named buildings/developments)
-        const propertyName = property.StandardFields?.BuildingName || property.BuildingName || '';
-        const nameMatch = propertyName.toLowerCase().includes(query);
-        
         // Search in Public Remarks (description)
-        const remarks = property.StandardFields?.PublicRemarks || property.PublicRemarks || '';
+        const remarks = property.PublicRemarks || '';
         const remarksMatch = remarks.toLowerCase().includes(query);
         
+        // Additional fields that might exist
+        const postalCode = property.PostalCode || '';
+        const postalMatch = postalCode.toLowerCase().includes(query);
+        
+        const stateOrProvince = property.StateOrProvince || '';
+        const stateMatch = stateOrProvince.toLowerCase().includes(query);
+        
+        // Log matches for debugging
+        if (mlsMatch) {
+          console.log('✅ MLS Match:', listingId);
+        }
+        
         // Return true if ANY field matches
-        return mlsMatch || addressMatch || streetMatch || cityMatch || 
-               areaMatch || subdivisionMatch || typeMatch || agentMatch || 
-               nameMatch || remarksMatch;
+        return mlsMatch || addressMatch || cityMatch || typeMatch || 
+               remarksMatch || postalMatch || stateMatch;
       });
 
       console.log(`✅ [SUPER SEARCH] Found ${results.length} matches for "${searchQuery}"`);
       
       if (results.length === 0) {
-        console.log('💡 [SUPER SEARCH] No matches found. Try:');
-        console.log('   - MLS Number (e.g., "25-4668")');
-        console.log('   - Address (e.g., "Marina Cabo Plaza")');
-        console.log('   - Area (e.g., "Pedregal")');
-        console.log('   - Agent Name');
-        console.log('   - Property Type');
+        console.log('💡 [SUPER SEARCH] No matches found. Suggestions:');
+        console.log('   - Try MLS Number: "25-4668" or "254668"');
+        console.log('   - Try Address: "Marina" or "Paseo"');
+        console.log('   - Try City: "Cabo San Lucas"');
+        console.log('   - Try Property Type: "Condo" or "House"');
+        console.log('📋 [DEBUG] Sample property structure:', results[0] || searchData[0]);
       }
 
       const convertedResults = results.map(convertMLSToPropertyCard);
@@ -277,18 +271,21 @@ const Properties = () => {
             totalCount={4528}
           />
           
-          {/* Active Search Query Display */}
+          {/* Active Search Query Display - NO TITLE */}
           {activeSearchQuery && (
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
               <p className="text-sm">
-                🔍 Searching for: <span className="font-semibold text-blue-700">"{activeSearchQuery}"</span>
-                <button 
-                  onClick={handleReset}
-                  className="ml-3 text-blue-600 hover:text-blue-800 underline text-xs"
-                >
-                  Clear Search
-                </button>
+                🔍 <span className="font-semibold text-blue-700">"{activeSearchQuery}"</span>
+                <span className="text-gray-600 ml-2">
+                  ({properties.length} {properties.length === 1 ? 'result' : 'results'})
+                </span>
               </p>
+              <button 
+                onClick={handleReset}
+                className="text-blue-600 hover:text-blue-800 underline text-sm"
+              >
+                Clear Search
+              </button>
             </div>
           )}
         </div>
@@ -322,8 +319,7 @@ const Properties = () => {
               <div className="text-sm text-gray-600 mb-6 space-y-1">
                 <p>• MLS Number (e.g., "25-4668")</p>
                 <p>• Address (e.g., "Marina Cabo Plaza")</p>
-                <p>• Area/Community (e.g., "Pedregal")</p>
-                <p>• Agent Name</p>
+                <p>• City (e.g., "Cabo San Lucas")</p>
                 <p>• Property Type (e.g., "Condo")</p>
               </div>
               <Button onClick={handleReset} variant="outline">
@@ -335,11 +331,6 @@ const Properties = () => {
               <div className="mb-6 flex justify-between items-center">
                 <p className="text-muted-foreground">
                   Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, properties.length)} of {properties.length} properties
-                  {activeSearchQuery && (
-                    <span className="ml-2 text-blue-600 font-medium">
-                      matching "{activeSearchQuery}"
-                    </span>
-                  )}
                 </p>
                 <Button 
                   variant="outline"
