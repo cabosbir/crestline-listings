@@ -68,7 +68,7 @@ const Index = () => {
       slug: "alfonso",
       name: "Alfonso Puente",
       title: "Sales Manager & Commercial Real Estate Expert",
-      image: "/alfonso-puente.jpg.png",
+      image: "/alfonso-puente.jpg",
     },
     {
       id: 8,

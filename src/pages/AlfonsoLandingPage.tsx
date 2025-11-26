@@ -59,7 +59,7 @@ const agent = {
   name: "Alfonso Puente",   // ⭐ CHANGE: Full name
   title: "Sales Manager & Commercial Real Estate Expert",  // ⭐ CHANGE
   specialization: "Real Estate Developments & Market Analysis",  // ⭐ CHANGE
-  image: "/alfonso-puente.jpg.png",  // ⭐ CHANGE
+  image: "/alfonso-puente.jpg",  // ⭐ CHANGE
   phone: "+52 664 188 8681",     // ⭐ CHANGE
   email: "alfonso@bircabo.com",  // ⭐ CHANGE
   yearsExperience: 18,      // ⭐ CHANGE

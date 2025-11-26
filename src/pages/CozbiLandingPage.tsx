@@ -59,7 +59,7 @@ const agent = {
   name: "Cozbi Sanchez",
   title: "Residential Specialist",
   specialization: "Family Homes & Condos",
-  image: "/cozbi-sanchez.jpg.png",
+  image: "/cozbi-sanchez.png",
   phone: "+52 624 118 9512",
   email: "Cozbi@bajainternationalrealty.com",
   yearsExperience: 8,
