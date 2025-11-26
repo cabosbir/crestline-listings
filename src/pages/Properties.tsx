@@ -8,23 +8,32 @@ import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
-import { searchProperties } from "@/services/intelligentSearch";
+import { searchProperties, getFlexMLSTotalCount } from "@/services/intelligentSearch";
 
 const Properties = () => {
   const location = useLocation();
   const [properties, setProperties] = useState<any[]>([]);
   const [allProperties, setAllProperties] = useState<MLSProperty[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeSearchQuery, setActiveSearchQuery] = useState<string>("");
+  const [totalCount, setTotalCount] = useState(4528);
   const ITEMS_PER_PAGE = 9;
   
   const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
 
-  // Load initial properties
+  // 🔥 REMOVED: No longer pre-load 200 properties on page load
+  // Properties load on-demand when user searches or filters
+
+  // Fetch real MLS total count
   useEffect(() => {
-    loadProperties();
+    const fetchTotalCount = async () => {
+      const total = await getFlexMLSTotalCount();
+      setTotalCount(total);
+    };
+    
+    fetchTotalCount();
   }, []);
 
   // Handle URL parameters for direct MLS/address search
@@ -49,7 +58,6 @@ const Properties = () => {
       const mlsProperties: MLSProperty[] = await fetchListings(filters);
       console.log('✅ Received properties:', mlsProperties.length);
       
-      // Store raw MLS data for searching
       setAllProperties(mlsProperties);
       
       const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
@@ -63,10 +71,11 @@ const Properties = () => {
     }
   };
 
-  // 🎯 INTELLIGENT ON-DEMAND SEARCH - Queries API when needed, like real websites
+  // 🎯 INTELLIGENT ON-DEMAND SEARCH - Queries API when needed
   const performUniversalSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
-      loadProperties();
+      setProperties([]);
+      setLoading(false);
       return;
     }
 
@@ -78,13 +87,11 @@ const Properties = () => {
       const query = searchQuery.trim();
       console.log('🔍 [INTELLIGENT SEARCH] Querying API for:', query);
       
-      // 🎯 AUTO-DETECT SEARCH TYPE
       const isMlsNumber = /^[\d-]+$/.test(query);
       const searchType = isMlsNumber ? 'mls' : 'text';
       
       console.log(`🎯 [SEARCH TYPE] Detected: ${searchType}`);
       
-      // 🚀 QUERY THE API ON-DEMAND (like Zillow, Realtor.com, etc.)
       const mlsProperties = await searchProperties(query, searchType);
       
       console.log(`✅ [API RESULT] Found ${mlsProperties.length} properties`);
@@ -97,10 +104,9 @@ const Properties = () => {
         });
       }
       
-      // Convert and display results
       const convertedResults = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedResults);
-      setAllProperties(mlsProperties); // Cache for reference
+      setAllProperties(mlsProperties);
       setCurrentPage(1);
       
     } catch (err: any) {
@@ -120,13 +126,11 @@ const Properties = () => {
     console.log('🔍 [Domino] Filters received:', filters);
     console.log('🔍 [Domino] Search query:', searchQuery);
     
-    // If there's a search query, use universal search
     if (searchQuery && searchQuery.trim()) {
       performUniversalSearch(searchQuery);
       return;
     }
     
-    // Helper: Convert price strings to numbers
     const parsePrice = (priceStr: string | undefined) => {
       if (!priceStr || priceStr === "No Preference" || priceStr === "") return undefined;
       const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
@@ -135,17 +139,14 @@ const Properties = () => {
       return priceStr.includes('Million') ? num * 1000000 : num;
     };
     
-    // Helper: Convert beds/baths strings to numbers
     const parseNumber = (str: string | undefined) => {
       if (!str || str === "Any" || str === "No Preference" || str === "") return undefined;
       const parsed = parseInt(str.replace('+', ''));
       return isNaN(parsed) ? undefined : parsed;
     };
     
-    // Build API filters
     const apiFilters: any = {};
     
-    // LOCATION: Priority order - Zone > Area > Community
     if (filters.zones && filters.zones.length > 0) {
       apiFilters.city = filters.zones[0];
     } else if (filters.areas && filters.areas.length > 0) {
@@ -154,53 +155,45 @@ const Properties = () => {
       apiFilters.city = filters.communities[0];
     }
     
-    // PRICE RANGE
     const minPrice = parsePrice(filters.minPrice);
     const maxPrice = parsePrice(filters.maxPrice);
     if (minPrice) apiFilters.minPrice = minPrice;
     if (maxPrice) apiFilters.maxPrice = maxPrice;
     
-    // BEDROOMS & BATHROOMS
     const bedrooms = parseNumber(filters.minBeds);
     const bathrooms = parseNumber(filters.minBaths);
     if (bedrooms) apiFilters.bedrooms = bedrooms;
     if (bathrooms) apiFilters.bathrooms = bathrooms;
     
-    // PROPERTY TYPE
     if (filters.propertyTypes && filters.propertyTypes.length > 0) {
       apiFilters.propertyType = filters.propertyTypes[0];
     }
     
-    // STATUS
     if (filters.status && filters.status !== "Active") {
       apiFilters.status = filters.status;
     }
     
-    // SQUARE FEET
     const minSqft = parseNumber(filters.minSqft);
     if (minSqft) apiFilters.minSqft = minSqft;
     
-    // YEAR BUILT
     const yearBuilt = parseNumber(filters.yearBuilt);
     if (yearBuilt) apiFilters.yearBuilt = yearBuilt;
     
     console.log('🎯 [Domino] Sending filters to API:', apiFilters);
     
-    // Clear search query when using filters
     setActiveSearchQuery("");
     loadProperties(apiFilters);
   };
 
   const handleReset = () => {
     setActiveSearchQuery("");
-    loadProperties();
+    setProperties([]);
   };
 
   const handleOpenFullSearch = () => {
     window.open(FLEXMLS_IFRAME_URL, '_blank');
   };
 
-  // Pagination calculations
   const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
@@ -216,26 +209,23 @@ const Properties = () => {
       <Navbar />
       <FloatingContact />
 
-      {/* Header Section */}
       <section className="pt-32 pb-8 bg-secondary">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
             Cabo San Lucas Properties
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mb-6">
-            Search 4,370+ luxury properties across Baja California Sur including Cabo San Lucas, 
+            Search {totalCount.toLocaleString()}+ luxury properties across Baja California Sur including Cabo San Lucas, 
             San Jose del Cabo, Todos Santos, East Cape, and La Paz
           </p>
 
-          {/* Advanced Filters */}
           <AdvancedPropertyFilters 
             onApplyFilters={handleApplyFilters}
             onReset={handleReset}
             resultCount={properties.length}
-            totalCount={4528}
+            totalCount={totalCount}
           />
           
-          {/* Active Search Query Display - NO TITLE */}
           {activeSearchQuery && (
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
               <p className="text-sm">
@@ -255,7 +245,6 @@ const Properties = () => {
         </div>
       </section>
 
-      {/* Properties Grid */}
       <section className="py-12">
         <div className="container mx-auto px-4">
           {loading ? (
@@ -272,39 +261,75 @@ const Properties = () => {
             </div>
           ) : properties.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4 text-lg font-semibold">
-                {activeSearchQuery 
-                  ? `No properties found matching "${activeSearchQuery}"`
-                  : "No properties found matching your criteria"}
-              </p>
-              
-              {activeSearchQuery && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-2xl mx-auto mb-6">
-                  <h3 className="font-semibold text-yellow-800 mb-3">💡 Why am I not seeing results?</h3>
-                  <div className="text-sm text-yellow-700 space-y-2 text-left">
-                    <p>• <strong>API Limitation:</strong> Our search currently loads the first 200 active listings from FlexMLS</p>
-                    <p>• <strong>Your property might exist</strong> but isn't in this initial batch</p>
-                    <p>• <strong>429 Rate Limit:</strong> FlexMLS is throttling requests (see console)</p>
+              {activeSearchQuery ? (
+                <>
+                  <p className="text-muted-foreground mb-4 text-lg font-semibold">
+                    No properties found matching "{activeSearchQuery}"
+                  </p>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto mb-6">
+                    <h3 className="font-semibold text-blue-800 mb-3">💡 Search Tips</h3>
+                    <div className="text-sm text-blue-700 space-y-2 text-left">
+                      <p>• Try searching with different spelling or format</p>
+                      <p>• Remove dashes from MLS numbers (e.g., "254668" instead of "25-4668")</p>
+                      <p>• Try searching by address or city instead</p>
+                      <p>• Use the <strong>"View in MLS"</strong> button to access the full FlexMLS portal</p>
+                    </div>
                   </div>
-                  <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-                    <p className="text-sm text-blue-800 font-medium">✅ Solution:</p>
-                    <p className="text-sm text-blue-700 mt-1">Use the <strong>"View in MLS"</strong> button above to search all 4,500+ listings directly in FlexMLS</p>
+                  
+                  <Button onClick={handleReset} variant="outline">
+                    Clear Search
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-3">
+                      Search {totalCount.toLocaleString()}+ Luxury Properties
+                    </h2>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                      Use the search bar above or Advanced Filters to find your perfect property in Cabo San Lucas, 
+                      San Jose del Cabo, and throughout Baja California Sur.
+                    </p>
                   </div>
-                </div>
+                  
+                  <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
+                    <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="text-4xl mb-3">🔍</div>
+                      <h3 className="font-semibold text-blue-900 mb-2">Quick Search</h3>
+                      <p className="text-sm text-blue-700">
+                        Search by MLS number, address, or property type in the search bar above
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 bg-purple-50 rounded-lg border border-purple-200">
+                      <div className="text-4xl mb-3">🎯</div>
+                      <h3 className="font-semibold text-purple-900 mb-2">Advanced Filters</h3>
+                      <p className="text-sm text-purple-700">
+                        Use the Advanced Filters button to search by location, price, beds, and more
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 bg-green-50 rounded-lg border border-green-200">
+                      <div className="text-4xl mb-3">🗺️</div>
+                      <h3 className="font-semibold text-green-900 mb-2">Map Search</h3>
+                      <p className="text-sm text-green-700">
+                        Browse properties visually with our interactive map search feature
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-500 mb-4">
+                    Try searching by:
+                  </p>
+                  <div className="text-sm text-gray-600 mb-6 space-y-1">
+                    <p>• MLS Number (e.g., "25-4668")</p>
+                    <p>• Address (e.g., "Marina Cabo Plaza")</p>
+                    <p>• City (e.g., "Cabo San Lucas")</p>
+                    <p>• Property Type (e.g., "Condo")</p>
+                  </div>
+                </>
               )}
-              
-              <p className="text-sm text-gray-500 mb-4">
-                Try searching by:
-              </p>
-              <div className="text-sm text-gray-600 mb-6 space-y-1">
-                <p>• MLS Number (e.g., "25-4668")</p>
-                <p>• Address (e.g., "Marina Cabo Plaza")</p>
-                <p>• City (e.g., "Cabo San Lucas")</p>
-                <p>• Property Type (e.g., "Condo")</p>
-              </div>
-              <Button onClick={handleReset} variant="outline">
-                Clear Filters
-              </Button>
             </div>
           ) : (
             <>
@@ -328,7 +353,6 @@ const Properties = () => {
                 ))}
               </div>
 
-              {/* Pagination Controls */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 my-8 flex-wrap">
                   <Button
@@ -340,7 +364,6 @@ const Properties = () => {
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   
-                  {/* First Page */}
                   {currentPage > 3 && (
                     <>
                       <Button
@@ -356,7 +379,6 @@ const Properties = () => {
                     </>
                   )}
                   
-                  {/* Current Page and Neighbors */}
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(page => {
                       return page >= currentPage - 2 && page <= currentPage + 2;
@@ -372,7 +394,6 @@ const Properties = () => {
                       </Button>
                     ))}
                   
-                  {/* Last Page */}
                   {currentPage < totalPages - 2 && (
                     <>
                       {currentPage < totalPages - 3 && (
