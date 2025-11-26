@@ -8,19 +8,16 @@ import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDow
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-// Helper function to format phone number for WhatsApp (removes all non-digits)
 const getWhatsAppNumber = (phone) => {
   return phone.replace(/[^0-9]/g, '');
 };
 
-// Helper function to create WhatsApp link with pre-filled message
 const getWhatsAppLink = (phone, agentName) => {
   const number = getWhatsAppNumber(phone);
   const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
   return `https://wa.me/${number}?text=${message}`;
 };
 
-// Shuffle function with localStorage cache (refreshes every 3 hours)
 const getShuffledListings = (listings, cacheKey) => {
   const cacheTimeKey = `${cacheKey}-time`;
   
@@ -52,7 +49,6 @@ const getShuffledListings = (listings, cacheKey) => {
   return shuffled;
 };
 
-// Bob Van Patten - Baja International Realty Agent
 const agent = {
   id: 1,
   slug: "bob",
@@ -69,7 +65,6 @@ const agent = {
   languages: ["English"],
 };
 
-// ⭐ My Listings - Bob's personal properties (NO SHUFFLE, HARDCODED)
 const originalMyListings = [
   {
     id: 1,
@@ -133,7 +128,6 @@ const originalMyListings = [
   },
 ];
 
-// Client Testimonials
 const testimonials = [
   {
     name: "Gregory & Patricia Hamilton",
@@ -161,7 +155,6 @@ const BobLandingPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
-  // Fetch and shuffle featured listings from FlexMLS API
   useEffect(() => {
     const loadFeaturedListings = async () => {
       if (showMyListings) return;
@@ -215,12 +208,10 @@ const BobLandingPage = () => {
     loadFeaturedListings();
   }, [showMyListings, toast]);
 
-  // Reset to page 1 when switching between My Listings and Featured
   useEffect(() => {
     setCurrentPage(1);
   }, [showMyListings]);
 
-  // Pagination logic
   const allListings = showMyListings ? originalMyListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
@@ -236,8 +227,7 @@ const BobLandingPage = () => {
     <div className="min-h-screen">
       <Navbar />
 
-      {/* FLOATING WHATSAPP BUTTON */}
-      
+      <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
         rel="noopener noreferrer"
@@ -245,14 +235,13 @@ const BobLandingPage = () => {
         style={{ backgroundColor: '#25D366' }}
         aria-label={`Contact ${agent.name} via WhatsApp`}
       >
-      <a   <MessageCircle className="h-8 w-8 text-white" />
+        <MessageCircle className="h-8 w-8 text-white" />
         <span className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           Chat on WhatsApp
         </span>
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
-      {/* Hero Section */}
       <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
@@ -318,7 +307,6 @@ const BobLandingPage = () => {
         </div>
       </section>
 
-      {/* About Section */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -361,7 +349,6 @@ const BobLandingPage = () => {
         </div>
       </section>
 
-      {/* ⭐⭐⭐ LISTINGS SECTION WITH PAGINATION ⭐⭐⭐ */}
       <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -377,7 +364,6 @@ const BobLandingPage = () => {
                 : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
             </p>
 
-            {/* Toggle Buttons */}
             <div className="flex justify-center gap-2 mb-8">
               <Button
                 variant={showMyListings ? "luxury" : "outline"}
@@ -394,7 +380,6 @@ const BobLandingPage = () => {
             </div>
           </div>
 
-          {/* Loading State */}
           {isLoadingFeatured && !showMyListings ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
@@ -414,7 +399,6 @@ const BobLandingPage = () => {
                 </div>
               )}
 
-              {/* Pagination Controls */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 my-8">
                   <Button
@@ -460,7 +444,6 @@ const BobLandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
@@ -481,7 +464,6 @@ const BobLandingPage = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
