@@ -235,6 +235,8 @@ const BobLandingPage = () => {
   // ==================== END: RESET PAGE ON TAB SWITCH ====================
 
   // ==================== START: PAGINATION LOGIC ====================
+  // IMPORTANT: My Listings are NEVER shuffled - they maintain original order
+  // Only Featured Listings get shuffled (handled in useEffect above)
   const allListings = showMyListings ? originalMyListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
