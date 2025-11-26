@@ -189,6 +189,7 @@ const BobLandingPage = () => {
   // ==================== START: LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
+      // Only load when on Featured tab
       if (showMyListings) return;
       
       setIsLoadingFeatured(true);
@@ -209,9 +210,13 @@ const BobLandingPage = () => {
           return;
         }
         
+        console.log('🔄 Loading Featured Listings from API...');
+        
         const mlsData = await fetchListings({
           city: 'Cabo San Lucas',
         });
+        
+        console.log('✅ Fetched listings for Featured:', mlsData.length);
         
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
         const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
@@ -265,18 +270,33 @@ const BobLandingPage = () => {
           return;
         }
         
-        // Fetch all listings from API
+        // Fetch all listings from API (only once)
         const mlsData = await fetchListings({
           city: 'Cabo San Lucas',
         });
         
+        console.log('✅ Fetched listings for My Listings:', mlsData.length);
+        
         // Filter and sort by our MLS numbers (maintains exact order)
         const orderedListings = myListingMLSNumbers
           .map(mlsNumber => {
-            const listing = mlsData.find(item => item.ListingId === mlsNumber);
-            return listing ? convertMLSToPropertyCard(listing) : null;
+            // Try to find by ListingId or MlsNumber field
+            const listing = mlsData.find(item => 
+              item.ListingId === mlsNumber || 
+              item.MlsNumber === mlsNumber ||
+              item.mlsNumber === mlsNumber
+            );
+            
+            if (!listing) {
+              console.warn(`⚠️ MLS ${mlsNumber} not found in API results`);
+              return null;
+            }
+            
+            return convertMLSToPropertyCard(listing);
           })
           .filter(Boolean); // Remove any null values if MLS not found
+        
+        console.log('✅ Matched listings:', orderedListings.length, 'out of', myListingMLSNumbers.length);
         
         // Use fetched data if we got results, otherwise fallback
         const finalListings = orderedListings.length > 0 ? orderedListings : originalMyListings;
