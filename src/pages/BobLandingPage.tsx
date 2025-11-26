@@ -75,6 +75,16 @@ const agent = {
 
 // ==================== START: LISTINGS DATA ====================
 
+// My Listings - MLS numbers to fetch from API (maintains this exact order)
+const myListingMLSNumbers = [
+  "25-4668",  // Marina Cabo Plaza
+  "24-2325",  // Bahia del Tezal #605B
+  "24-804",   // Solaria E-102
+  "24-2165",  // Solaria 2 Bed w/Pool, Bonus
+  "23-3132",  // Casa DE Los Suenos
+];
+
+// Fallback data if API fails
 const originalMyListings = [
   {
     id: 1,
@@ -168,8 +178,10 @@ const BobLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false);
+  const [myListings, setMyListings] = useState(originalMyListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+  const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
@@ -228,6 +240,68 @@ const BobLandingPage = () => {
   }, [showMyListings, toast]);
   // ==================== END: LOAD FEATURED LISTINGS ====================
 
+  // ==================== START: LOAD MY LISTINGS FROM API ====================
+  useEffect(() => {
+    const loadMyListings = async () => {
+      if (!showMyListings) return;
+      
+      setIsLoadingMyListings(true);
+      
+      try {
+        const cacheKey = `${agent.slug}-my-listings-api-data`;
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        // Check cache first
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          const cachedData = JSON.parse(cached);
+          setMyListings(cachedData);
+          setIsLoadingMyListings(false);
+          return;
+        }
+        
+        // Fetch all listings from API
+        const mlsData = await fetchListings({
+          city: 'Cabo San Lucas',
+        });
+        
+        // Filter and sort by our MLS numbers (maintains exact order)
+        const orderedListings = myListingMLSNumbers
+          .map(mlsNumber => {
+            const listing = mlsData.find(item => item.ListingId === mlsNumber);
+            return listing ? convertMLSToPropertyCard(listing) : null;
+          })
+          .filter(Boolean); // Remove any null values if MLS not found
+        
+        // Use fetched data if we got results, otherwise fallback
+        const finalListings = orderedListings.length > 0 ? orderedListings : originalMyListings;
+        
+        // Cache the results
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(finalListings));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching my listings:', e);
+        }
+        
+        setMyListings(finalListings);
+      } catch (error) {
+        console.error('Failed to load my listings from API:', error);
+        // Fallback to static data
+        setMyListings(originalMyListings);
+      } finally {
+        setIsLoadingMyListings(false);
+      }
+    };
+
+    loadMyListings();
+  }, [showMyListings]);
+  // ==================== END: LOAD MY LISTINGS FROM API ====================
+
   // ==================== START: RESET PAGE ON TAB SWITCH ====================
   useEffect(() => {
     setCurrentPage(1);
@@ -235,9 +309,9 @@ const BobLandingPage = () => {
   // ==================== END: RESET PAGE ON TAB SWITCH ====================
 
   // ==================== START: PAGINATION LOGIC ====================
-  // IMPORTANT: My Listings are NEVER shuffled - they maintain original order
-  // Only Featured Listings get shuffled (handled in useEffect above)
-  const allListings = showMyListings ? originalMyListings : featuredListings;
+  // IMPORTANT: My Listings maintain exact order (no shuffling)
+  // Featured Listings get shuffled (handled in useEffect above)
+  const allListings = showMyListings ? myListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
@@ -437,7 +511,7 @@ const BobLandingPage = () => {
                 variant={showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(true)}
               >
-                My Listings ({originalMyListings.length})
+                My Listings ({myListingMLSNumbers.length})
               </Button>
               <Button
                 variant={!showMyListings ? "luxury" : "outline"}
@@ -448,10 +522,12 @@ const BobLandingPage = () => {
             </div>
           </div>
 
-          {isLoadingFeatured && !showMyListings ? (
+          {(isLoadingFeatured && !showMyListings) || (isLoadingMyListings && showMyListings) ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
-              <p className="text-lg text-muted-foreground">Loading featured properties from FlexMLS...</p>
+              <p className="text-lg text-muted-foreground">
+                {showMyListings ? 'Loading my listings from FlexMLS...' : 'Loading featured properties from FlexMLS...'}
+              </p>
             </div>
           ) : (
             <>
