@@ -1,27 +1,8 @@
-// api/flexmls-listings.ts - PRODUCTION READY WITH MULTI-USER SUPPORT
+// api/flexmls-listings.ts - SERVER-SIDE FILTERING (DOMINO EFFECT)
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
 const RESO_API_BASE = 'https://replication.sparkapi.com/Version/3/Reso/OData';
-
-// ========================================
-// SHARED CACHE (All users share this)
-// ========================================
-let cachedListings: any[] | null = null;
-let cacheTimestamp: number = 0;
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
-
-// ========================================
-// REQUEST QUEUE (Prevents rate limiting)
-// ========================================
-let ongoingFetch: Promise<any[]> | null = null;
-let waitingRequests: number = 0; // Track how many requests are waiting
-
-// ========================================
-// LAST FETCH TRACKING (Rate limit protection)
-// ========================================
-let lastFetchTime: number = 0;
-const MIN_FETCH_INTERVAL = 60 * 1000; // Don't fetch more than once per minute
 
 export default async function handler(
   req: VercelRequest,
@@ -29,16 +10,10 @@ export default async function handler(
 ) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=3600'); // CDN cache for 30 min
+  res.setHeader('Cache-Control', 'public, s-maxage=300'); // Cache for 5 minutes
   
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   if (!FLEXMLS_API_KEY) {
     return res.status(200).json({ 
       success: false, 
@@ -48,146 +23,124 @@ export default async function handler(
   }
 
   try {
-    const { city, minPrice, maxPrice, bedrooms, bathrooms } = req.query;
-    const now = Date.now();
+    const { 
+      city,           // Zone/Area/Community (location)
+      minPrice, 
+      maxPrice, 
+      bedrooms,       // minBeds
+      bathrooms,      // minBaths
+      propertyType,   // Condos, Houses, Land, etc.
+      status,         // Active, Pending, etc.
+      minSqft,
+      yearBuilt
+    } = req.query;
+
+    console.log('🔍 [Domino Effect] Filters received:', {
+      city, minPrice, maxPrice, bedrooms, bathrooms, propertyType, status, minSqft, yearBuilt
+    });
 
     // ========================================
-    // STEP 1: Check if cache is valid
+    // BUILD RESO $filter QUERY (Server-side filtering!)
     // ========================================
-    const isCacheValid = cachedListings && (now - cacheTimestamp) < CACHE_DURATION;
-    const cacheAge = now - cacheTimestamp;
+    const filters: string[] = [];
 
-    let allListings: any[] = [];
-
-    if (isCacheValid && cachedListings) {
-      console.log(`✅ [User] Using cached listings: ${cachedListings.length} (age: ${Math.round(cacheAge / 1000)}s)`);
-      allListings = cachedListings;
-    } else {
-      // ========================================
-      // STEP 2: Check if we can fetch (rate limit protection)
-      // ========================================
-      const timeSinceLastFetch = now - lastFetchTime;
-      const canFetch = timeSinceLastFetch >= MIN_FETCH_INTERVAL;
-
-      if (!canFetch && cachedListings && cachedListings.length > 0) {
-        // Too soon to fetch again, but we have cache - use stale cache
-        console.log(`⏰ [User] Rate limit protection: using stale cache (${cachedListings.length} listings, age: ${Math.round(cacheAge / 1000)}s)`);
-        allListings = cachedListings;
-      } else if (ongoingFetch) {
-        // ========================================
-        // STEP 3: Another request is already fetching - wait for it
-        // ========================================
-        waitingRequests++;
-        console.log(`⏳ [User ${waitingRequests}] Waiting for ongoing fetch...`);
-        
-        try {
-          allListings = await ongoingFetch;
-          console.log(`✅ [User ${waitingRequests}] Got results from ongoing fetch: ${allListings.length}`);
-        } finally {
-          waitingRequests--;
-        }
-      } else {
-        // ========================================
-        // STEP 4: Start a new fetch (only if no one else is fetching)
-        // ========================================
-        console.log(`🔄 [Primary] Starting new fetch (${waitingRequests} users waiting)...`);
-        
-        ongoingFetch = fetchListingsWithLimit(1000);
-        lastFetchTime = now; // Mark when we started fetching
-        
-        try {
-          allListings = await ongoingFetch;
-          
-          // Update cache only if we got results
-          if (allListings.length > 0) {
-            cachedListings = allListings;
-            cacheTimestamp = now;
-            console.log(`✅ [Primary] Cached ${allListings.length} listings for all users`);
-          } else {
-            console.log(`⚠️ [Primary] Got 0 results, keeping old cache`);
-            
-            // Use old cache if new fetch returned nothing
-            if (cachedListings && cachedListings.length > 0) {
-              allListings = cachedListings;
-            }
-          }
-        } catch (error) {
-          console.error(`❌ [Primary] Fetch error:`, error);
-          
-          // Use stale cache on error
-          if (cachedListings && cachedListings.length > 0) {
-            console.log(`⚠️ [Primary] Using stale cache due to error: ${cachedListings.length}`);
-            allListings = cachedListings;
-          } else {
-            // No cache available at all
-            return res.status(200).json({
-              success: false,
-              results: [],
-              count: 0,
-              total: 0,
-              error: 'Unable to fetch listings. Please try again in a few moments.',
-              retryAfter: 60
-            });
-          }
-        } finally {
-          ongoingFetch = null; // Clear ongoing fetch
-        }
-      }
-    }
-
-    // ========================================
-    // STEP 5: Apply client-side filters (fast!)
-    // ========================================
-    let filteredListings = allListings;
-
+    // LOCATION (Zone/Area/Community)
     if (city && typeof city === 'string') {
-      filteredListings = filteredListings.filter(listing => 
-        listing.City?.toLowerCase().includes(city.toLowerCase())
-      );
+      // FlexMLS uses City field for location
+      filters.push(`City eq '${city.replace(/'/g, "''")}'`); // Escape single quotes
     }
 
+    // PRICE RANGE
     if (minPrice && typeof minPrice === 'string') {
       const min = parseFloat(minPrice);
-      filteredListings = filteredListings.filter(listing => 
-        listing.ListPrice >= min
-      );
+      if (!isNaN(min)) {
+        filters.push(`ListPrice ge ${min}`);
+      }
     }
 
     if (maxPrice && typeof maxPrice === 'string') {
       const max = parseFloat(maxPrice);
-      filteredListings = filteredListings.filter(listing => 
-        listing.ListPrice <= max
-      );
+      if (!isNaN(max)) {
+        filters.push(`ListPrice le ${max}`);
+      }
     }
 
+    // BEDROOMS
     if (bedrooms && typeof bedrooms === 'string') {
       const beds = parseInt(bedrooms);
-      filteredListings = filteredListings.filter(listing => 
-        listing.BedroomsTotal >= beds
-      );
+      if (!isNaN(beds)) {
+        filters.push(`BedroomsTotal ge ${beds}`);
+      }
     }
 
+    // BATHROOMS
     if (bathrooms && typeof bathrooms === 'string') {
       const baths = parseInt(bathrooms);
-      filteredListings = filteredListings.filter(listing => 
-        listing.BathroomsFull >= baths
-      );
+      if (!isNaN(baths)) {
+        filters.push(`BathroomsFull ge ${baths}`);
+      }
     }
 
-    console.log(`✅ [Response] Returning ${filteredListings.length} filtered listings (from ${allListings.length} total)`);
+    // PROPERTY TYPE
+    if (propertyType && typeof propertyType === 'string') {
+      // Map frontend types to RESO PropertyType values
+      const typeMap: Record<string, string> = {
+        'Condos': 'Residential',
+        'Houses': 'Residential', 
+        'Land': 'Land',
+        'Commercial': 'Commercial',
+        'Fractional': 'Residential',
+        'MultiFamily': 'Residential'
+      };
+      
+      const resoType = typeMap[propertyType];
+      if (resoType) {
+        filters.push(`PropertyType eq '${resoType}'`);
+      }
+    }
+
+    // STATUS (default to Active if not specified)
+    const statusValue = (status && typeof status === 'string') ? status : 'Active';
+    filters.push(`StandardStatus eq '${statusValue}'`);
+
+    // SQUARE FEET
+    if (minSqft && typeof minSqft === 'string' && minSqft !== 'No Preference') {
+      const sqft = parseInt(minSqft.replace('+', ''));
+      if (!isNaN(sqft)) {
+        filters.push(`LivingArea ge ${sqft}`);
+      }
+    }
+
+    // YEAR BUILT
+    if (yearBuilt && typeof yearBuilt === 'string' && yearBuilt !== 'No Preference') {
+      const year = parseInt(yearBuilt.replace('+', ''));
+      if (!isNaN(year)) {
+        filters.push(`YearBuilt ge ${year}`);
+      }
+    }
+
+    const filterString = filters.join(' and ');
     
+    console.log('🎯 [API Filter]:', filterString);
+
+    // ========================================
+    // FETCH FROM FLEXMLS WITH FILTERS
+    // ========================================
+    const allListings = await fetchFilteredListings(filterString);
+
+    console.log(`✅ [Domino Result] Got ${allListings.length} listings matching filters`);
+
     return res.status(200).json({
       success: true,
-      results: filteredListings,
-      count: filteredListings.length,
+      results: allListings,
+      count: allListings.length,
       total: allListings.length,
-      cached: isCacheValid,
-      cacheAge: Math.round(cacheAge / 1000),
-      serverTime: new Date().toISOString()
+      filters: filterString,
+      cached: false
     });
 
   } catch (error) {
-    console.error('💥 [Error] Handler error:', error);
+    console.error('💥 [Error]:', error);
     return res.status(200).json({ 
       success: false, 
       results: [],
@@ -197,69 +150,67 @@ export default async function handler(
 }
 
 // ========================================
-// FETCH FUNCTION WITH RATE LIMIT PROTECTION
+// FETCH WITH SERVER-SIDE FILTERS
 // ========================================
-async function fetchListingsWithLimit(maxListings: number): Promise<any[]> {
+async function fetchFilteredListings(filterString: string): Promise<any[]> {
   let allListings: any[] = [];
   let skip = 0;
   const top = 200; // Fetch 200 per request
   let hasMore = true;
   let requestCount = 0;
-  const maxRequests = Math.ceil(maxListings / top); // e.g., 5 requests for 1000 listings
-  let consecutiveErrors = 0;
-  const MAX_CONSECUTIVE_ERRORS = 2;
+  const MAX_REQUESTS = 25; // Safety limit (5000 max listings)
 
-  while (hasMore && requestCount < maxRequests && consecutiveErrors < MAX_CONSECUTIVE_ERRORS) {
+  while (hasMore && requestCount < MAX_REQUESTS) {
     const url = new URL(`${RESO_API_BASE}/Property`);
+    
+    // Add filters
+    if (filterString) {
+      url.searchParams.append('$filter', filterString);
+    }
+    
+    // Add pagination
     url.searchParams.append('$top', top.toString());
     url.searchParams.append('$skip', skip.toString());
     url.searchParams.append('$expand', 'Media');
     url.searchParams.append('$orderby', 'ModificationTimestamp desc');
 
-    console.log(`📡 [API] Fetching batch ${requestCount + 1}/${maxRequests} (skip: ${skip})...`);
+    console.log(`📡 [Batch ${requestCount + 1}] Fetching skip=${skip}...`);
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
       const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
           'Accept': 'application/json',
         },
-        signal: AbortSignal.timeout(15000) // 15 second timeout per request
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        consecutiveErrors++;
         const errorText = await response.text();
-        console.error(`❌ [API] Error on batch ${requestCount + 1}:`, response.status, errorText.substring(0, 200));
+        console.error(`❌ [Batch ${requestCount + 1}] Error:`, response.status, errorText.substring(0, 200));
         
-        // If we hit rate limit (429), stop and return what we have
-        if (response.status === 429) {
-          console.log(`⚠️ [API] Rate limit hit, returning partial results: ${allListings.length}`);
+        // On rate limit or error, return what we have
+        if (response.status === 429 || allListings.length > 0) {
+          console.log(`⚠️ Returning ${allListings.length} partial results`);
           break;
         }
         
-        // On other errors, if we have some results, return them
-        if (allListings.length > 0) {
-          console.log(`⚠️ [API] Error but returning ${allListings.length} listings collected`);
-          break;
-        }
-        
-        // Add delay before retry
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        continue;
+        throw new Error(`API returned ${response.status}`);
       }
 
       const data = await response.json();
       const results = data.value || [];
       
-      // Reset error counter on success
-      consecutiveErrors = 0;
-      
-      console.log(`✅ [API] Batch ${requestCount + 1}: ${results.length} listings (total: ${allListings.length + results.length})`);
+      console.log(`✅ [Batch ${requestCount + 1}] Got ${results.length} listings (total: ${allListings.length + results.length})`);
       
       if (results.length === 0) {
-        hasMore = false;
+        hasMore = false; // No more results
       } else {
         allListings = [...allListings, ...results];
         
@@ -269,27 +220,23 @@ async function fetchListingsWithLimit(maxListings: number): Promise<any[]> {
           skip += top;
           requestCount++;
           
-          // Progressive delay: 1s after 1st request, 2s after 2nd, 3s after 3rd, etc.
-          const delayMs = Math.min(1000 * (requestCount + 1), 5000);
-          console.log(`⏱️ [API] Waiting ${delayMs}ms before next batch...`);
-          await new Promise(resolve => setTimeout(resolve, delayMs));
+          // Small delay to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 200));
         }
       }
     } catch (error) {
-      consecutiveErrors++;
-      console.error('❌ [API] Request error:', error instanceof Error ? error.message : error);
+      console.error(`❌ [Batch ${requestCount + 1}] Failed:`, error);
       
-      // If we have some results, return them
+      // Return what we have if we collected something
       if (allListings.length > 0) {
-        console.log(`⚠️ [API] Error but returning ${allListings.length} listings collected`);
+        console.log(`⚠️ Error occurred, returning ${allListings.length} listings`);
         break;
       }
       
-      // Add delay before retry
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      throw error;
     }
   }
 
-  console.log(`✅ [API] Total fetched: ${allListings.length} listings`);
+  console.log(`✅ [Final] Total listings: ${allListings.length}`);
   return allListings;
 }

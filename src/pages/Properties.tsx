@@ -41,52 +41,68 @@ const Properties = () => {
   };
 
   const handleApplyFilters = (filters: any) => {
-    console.log('🔍 Filters received:', filters);
+    console.log('🔍 [Domino] Filters received:', filters);
     
-    // Extract first zone if multiple selected
-    const selectedZone = filters.zones && filters.zones.length > 0 ? filters.zones[0] : undefined;
-    
-    // Extract first area if multiple selected
-    const selectedArea = filters.areas && filters.areas.length > 0 ? filters.areas[0] : undefined;
-    
-    // Extract first community if multiple selected
-    const selectedCommunity = filters.communities && filters.communities.length > 0 ? filters.communities[0] : undefined;
-    
-    // Convert price strings to numbers (remove $ and commas)
+    // Helper: Convert price strings to numbers
     const parsePrice = (priceStr: string | undefined) => {
-      // Check for undefined/null/empty BEFORE calling .replace()
       if (!priceStr || priceStr === "No Preference" || priceStr === "") return undefined;
-      
       const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
       const num = parseFloat(cleaned);
-      
-      // Return undefined for invalid numbers
       if (isNaN(num)) return undefined;
-      
-      if (priceStr.includes('Million')) {
-        return num * 1000000;
-      }
-      return num;
+      return priceStr.includes('Million') ? num * 1000000 : num;
     };
     
-    // Convert beds/baths strings to numbers
-    const parseBeds = (bedsStr: string | undefined) => {
-      // Check for undefined/null/empty BEFORE calling .replace()
-      if (!bedsStr || bedsStr === "Any" || bedsStr === "") return undefined;
-      
-      const parsed = parseInt(bedsStr.replace('+', ''));
+    // Helper: Convert beds/baths strings to numbers
+    const parseNumber = (str: string | undefined) => {
+      if (!str || str === "Any" || str === "No Preference" || str === "") return undefined;
+      const parsed = parseInt(str.replace('+', ''));
       return isNaN(parsed) ? undefined : parsed;
     };
     
-    const apiFilters = {
-      city: selectedZone || selectedArea || selectedCommunity, // Use zone, area, or community as city filter
-      minPrice: parsePrice(filters.minPrice),
-      maxPrice: parsePrice(filters.maxPrice),
-      bedrooms: parseBeds(filters.minBeds),
-      bathrooms: parseBeds(filters.minBaths),
-    };
+    // Build API filters (send ALL filters to backend!)
+    const apiFilters: any = {};
     
-    console.log('🚀 Sending to API:', apiFilters);
+    // LOCATION: Priority order - Zone > Area > Community
+    if (filters.zones && filters.zones.length > 0) {
+      apiFilters.city = filters.zones[0]; // Use first zone
+    } else if (filters.areas && filters.areas.length > 0) {
+      apiFilters.city = filters.areas[0]; // Use first area
+    } else if (filters.communities && filters.communities.length > 0) {
+      apiFilters.city = filters.communities[0]; // Use first community
+    }
+    
+    // PRICE RANGE
+    const minPrice = parsePrice(filters.minPrice);
+    const maxPrice = parsePrice(filters.maxPrice);
+    if (minPrice) apiFilters.minPrice = minPrice;
+    if (maxPrice) apiFilters.maxPrice = maxPrice;
+    
+    // BEDROOMS & BATHROOMS
+    const bedrooms = parseNumber(filters.minBeds);
+    const bathrooms = parseNumber(filters.minBaths);
+    if (bedrooms) apiFilters.bedrooms = bedrooms;
+    if (bathrooms) apiFilters.bathrooms = bathrooms;
+    
+    // PROPERTY TYPE (send first selected type)
+    if (filters.propertyTypes && filters.propertyTypes.length > 0) {
+      apiFilters.propertyType = filters.propertyTypes[0];
+    }
+    
+    // STATUS
+    if (filters.status && filters.status !== "Active") {
+      apiFilters.status = filters.status;
+    }
+    
+    // SQUARE FEET
+    const minSqft = parseNumber(filters.minSqft);
+    if (minSqft) apiFilters.minSqft = minSqft;
+    
+    // YEAR BUILT
+    const yearBuilt = parseNumber(filters.yearBuilt);
+    if (yearBuilt) apiFilters.yearBuilt = yearBuilt;
+    
+    console.log('🎯 [Domino] Sending filters to API:', apiFilters);
+    console.log(`📊 [Domino] Expected: FlexMLS will return only listings matching these filters`);
     
     loadProperties(apiFilters);
   };
