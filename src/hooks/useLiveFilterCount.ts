@@ -31,14 +31,17 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    // Clear previous timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
+    // Cancel previous request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
+    // Check cache first
     const cacheKey = getCacheKey(filters);
     const cached = countCache.get(cacheKey);
     
@@ -50,6 +53,7 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
       return;
     }
 
+    // 🎯 DEBOUNCE: Wait 2 seconds after user stops selecting (increased from 500ms)
     timeoutRef.current = setTimeout(() => {
       fetchFilterCount();
     }, 2000);
@@ -63,14 +67,14 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
       }
     };
   }, [
-    filters.zones,
-    filters.areas,
-    filters.communities,
+    JSON.stringify(filters.zones || []),
+    JSON.stringify(filters.areas || []),
+    JSON.stringify(filters.communities || []),
     filters.minPrice,
     filters.maxPrice,
     filters.minBeds,
     filters.minBaths,
-    filters.propertyTypes,
+    JSON.stringify(filters.propertyTypes || []),
     filters.status
   ]);
 
@@ -89,12 +93,14 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
   };
 
   const fetchFilterCount = async () => {
+    // Create new abort controller
     abortControllerRef.current = new AbortController();
     
     setLoading(true);
     setEstimated(false);
 
     try {
+      // Build query parameters
       const params = new URLSearchParams();
       
       if (filters.zones && filters.zones.length > 0) {
@@ -130,6 +136,7 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
         setCount(resultCount);
         setEstimated(isEstimated);
         
+        // 💾 CACHE THE RESULT
         const cacheKey = getCacheKey(filters);
         countCache.set(cacheKey, {
           count: resultCount,
@@ -152,6 +159,7 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
     }
   };
 
+  // Helper: Parse price strings
   const parsePrice = (priceStr: string): number => {
     if (!priceStr || priceStr === "No Preference") return 0;
     const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
@@ -160,6 +168,7 @@ export function useLiveFilterCount(filters: FilterState): FilterCountResult {
     return priceStr.includes('Million') ? num * 1000000 : num;
   };
 
+  // Helper: Parse number strings
   const parseNumber = (str: string): number => {
     if (!str || str === "Any" || str === "No Preference") return 0;
     const parsed = parseInt(str.replace('+', ''));
