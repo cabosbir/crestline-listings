@@ -327,9 +327,10 @@ const BobLandingPage = () => {
         }
         
         // 🔥 FIX 1: Fetch ALL listings (no status filter)
-        console.log('🔍 My Listings - Fetching ALL listings (no filters)...');
-        const mlsData = await fetchListings();  // NO FILTERS - get Active, Pending, Withdrawn
-        
+        console.log('🔍 My Listings - Fetching from Cabo San Lucas...');
+        const mlsData = await fetchListings({
+        city: 'Cabo San Lucas'
+      });
         console.log('🔍 My Listings - Total API results:', mlsData.length);
         console.log('🔍 Looking for MLS numbers:', myListingMLSNumbers);
         
