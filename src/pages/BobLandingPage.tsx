@@ -8,6 +8,8 @@ import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDow
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
+// ==================== START: HELPER FUNCTIONS ====================
+
 const getWhatsAppNumber = (phone) => {
   return phone.replace(/[^0-9]/g, '');
 };
@@ -49,6 +51,10 @@ const getShuffledListings = (listings, cacheKey) => {
   return shuffled;
 };
 
+// ==================== END: HELPER FUNCTIONS ====================
+
+// ==================== START: AGENT DATA ====================
+
 const agent = {
   id: 1,
   slug: "bob",
@@ -64,6 +70,10 @@ const agent = {
   certifications: ["MLS Member"],
   languages: ["English"],
 };
+
+// ==================== END: AGENT DATA ====================
+
+// ==================== START: LISTINGS DATA ====================
 
 const originalMyListings = [
   {
@@ -128,6 +138,10 @@ const originalMyListings = [
   },
 ];
 
+// ==================== END: LISTINGS DATA ====================
+
+// ==================== START: TESTIMONIALS DATA ====================
+
 const testimonials = [
   {
     name: "Gregory & Patricia Hamilton",
@@ -146,6 +160,10 @@ const testimonials = [
   }
 ];
 
+// ==================== END: TESTIMONIALS DATA ====================
+
+// ==================== START: MAIN COMPONENT ====================
+
 const BobLandingPage = () => {
   const { toast } = useToast();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -155,6 +173,7 @@ const BobLandingPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
+  // ==================== START: LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
       if (showMyListings) return;
@@ -207,11 +226,15 @@ const BobLandingPage = () => {
 
     loadFeaturedListings();
   }, [showMyListings, toast]);
+  // ==================== END: LOAD FEATURED LISTINGS ====================
 
+  // ==================== START: RESET PAGE ON TAB SWITCH ====================
   useEffect(() => {
     setCurrentPage(1);
   }, [showMyListings]);
+  // ==================== END: RESET PAGE ON TAB SWITCH ====================
 
+  // ==================== START: PAGINATION LOGIC ====================
   const allListings = showMyListings ? originalMyListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
@@ -222,11 +245,13 @@ const BobLandingPage = () => {
     setCurrentPage(page);
     document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+  // ==================== END: PAGINATION LOGIC ====================
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
+      {/* ==================== START: WHATSAPP FLOATING BUTTON ==================== */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -241,7 +266,9 @@ const BobLandingPage = () => {
         </span>
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
+      {/* ==================== END: WHATSAPP FLOATING BUTTON ==================== */}
 
+      {/* ==================== START: HERO SECTION ==================== */}
       <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
@@ -306,7 +333,9 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
+      {/* ==================== END: HERO SECTION ==================== */}
 
+      {/* ==================== START: ABOUT SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -348,7 +377,9 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
+      {/* ==================== END: ABOUT SECTION ==================== */}
 
+      {/* ==================== START: LISTINGS SECTION ==================== */}
       <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -399,6 +430,7 @@ const BobLandingPage = () => {
                 </div>
               )}
 
+              {/* ==================== START: PAGINATION ==================== */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 my-8">
                   <Button
@@ -431,6 +463,7 @@ const BobLandingPage = () => {
                   </Button>
                 </div>
               )}
+              {/* ==================== END: PAGINATION ==================== */}
             </>
           )}
 
@@ -443,7 +476,9 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
+      {/* ==================== END: LISTINGS SECTION ==================== */}
 
+      {/* ==================== START: TESTIMONIALS SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
@@ -463,7 +498,9 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
+      {/* ==================== END: TESTIMONIALS SECTION ==================== */}
 
+      {/* ==================== START: CONTACT SECTION ==================== */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -557,6 +594,7 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
+      {/* ==================== END: CONTACT SECTION ==================== */}
 
       <Footer />
     </div>
@@ -564,3 +602,4 @@ const BobLandingPage = () => {
 };
 
 export default BobLandingPage;
+// ==================== END: MAIN COMPONENT ====================
