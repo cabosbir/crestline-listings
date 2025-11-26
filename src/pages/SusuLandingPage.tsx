@@ -59,7 +59,7 @@ const agent = {
   name: "Susu Vieira",
   title: "Luxury Real Estate",
   specialization: "Staging and Design",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762637795/WhatsApp_Image_2025-11-08_at_2.18.56_PM_1_t5xufd.jpg",
+  image: "/susu-vieira.jpg",
   phone: "+1 (808) 226-6120",
   phoneSecondary: "+52 (612) 120-5289",
   email: "Susu@BIRCabo.com",

@@ -59,7 +59,7 @@ const agent = {
   name: "David Scott Piper",
   title: "International Real Estate Specialist",
   specialization: "Resort & Second-Home Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
+  image: "/david-scott-piper.jpg",
   phone: "+52 624 317 0297",
   email: "David@bircabo.com",
   yearsExperience: 25,

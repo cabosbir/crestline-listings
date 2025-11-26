@@ -54,28 +54,28 @@ const Index = () => {
       slug: "don",
       name: "Don Weis",
       title: "Founder & Broker",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg",
+      image: "/don-weis.jpg",
     },
     {
       id: 1,
       slug: "bob",
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
+      image: "/bob-van-patten.jpg",
     },
     {
       id: 3,
       slug: "alfonso",
       name: "Alfonso Puente",
       title: "Sales Manager & Commercial Real Estate Expert",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
+      image: "/alfonso-puente.jpg.png",
     },
     {
       id: 8,
       slug: "david",
       name: "David Scott Piper",
       title: "Real Estate Advisor",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
+      image: "/david-scott-piper.jpg",
     },
   ];
 

@@ -59,7 +59,7 @@ const agent = {
   name: "Hector Mendoza",
   title: "Investment Property Advisor",
   specialization: "Investment & Portfolio",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761582971/a-meticulously-crafted-portrait-photogra_mYQPdq9WQSWo-pvakiW_Yw_xsfP9GCST6CP-VnQtn3QSA_sybk55.jpg",
+  image: "/hector-mendoza.jpg",
   phone: "+52 624 211 4879",
   email: "Hector@BIRCabo.com",
   yearsExperience: 2,

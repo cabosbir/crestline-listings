@@ -59,7 +59,7 @@ const agent = {
   name: "Marisol Tort",
   title: "Real Estate Advisor",
   specialization: "Luxury Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761668403/WhatsApp_Image_2025-10-27_at_9.24.29_PM_uajiar.jpg",
+  image: "/marisol-tort.jpg",
   phone: "+52 624 264 3896",
   email: "mtortricardi@gmail.com",
   yearsExperience: 12,

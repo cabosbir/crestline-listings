@@ -26,25 +26,25 @@ const About = () => {
       id: 12,
       name: "Don Weis",
       title: "Founder & Broker",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg",
+      image: "/don-weis.jpg",
     },
     {
       id: 1,
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
+      image: "/bob-van-patten.jpg",
     },
     {
       id: 3,
       name: "Alfonso Puente",
       title: "Sales Manager & Commercial Real Estate Expert",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761580623/WhatsApp_Image_2025-10-27_at_8.55.37_AM_uytmga.jpg",
+      image: "/alfonso-puente.jpg.png",
     },
     {
       id: 8,
       name: "David Scott Piper",
       title: "Real Estate Advisor",
-      image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761614075/WhatsApp_Image_2025-10-27_at_6.09.43_PM_neaig7.jpg",
+      image: "/david-scott-piper.jpg",
     },
   ];
 
@@ -349,7 +349,7 @@ const About = () => {
                 className="block h-full group"
               >
                 <img 
-                  src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761585102/work-photo-2025-10-27-1761585093635_tsub0p.png" 
+                  src="/storefron.jpeg" 
                   alt="Baja International Realty storefront - Click for directions" 
                   className="w-full h-full object-cover rounded-2xl shadow-elegant group-hover:opacity-90 transition-opacity cursor-pointer"
                 />
@@ -562,7 +562,7 @@ const About = () => {
           <div className="founder-quote max-w-4xl mx-auto text-center">
             <div className="founder-image mb-6">
               <img 
-                src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761932929/WhatsApp_Image_2025-10-30_at_10.26.08_AM_cvcznx.jpg"
+                src="/don-weis.jpg"
                 alt="Don Weis - Founder & Broker"
                 className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-accent shadow-lg"
               />

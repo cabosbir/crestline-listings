@@ -59,7 +59,7 @@ const agent = {
   name: "Erika Aispuro",
   title: "Luxury Property Specialist",
   specialization: "Oceanfront Estates",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761528481/a-captivating-portrait-photograph-of-a-w_0i-UNv-eRnmu4VfpJsjInw_16HhuJljQfipqcXBRpW7Yw_mu9rbs.jpg",
+  image: "/erika-aispuro.jpg",
   phone: "+52 624 109 7909",
   email: "Eaispuro80@gmail.com",
   yearsExperience: 8,

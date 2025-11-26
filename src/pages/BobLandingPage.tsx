@@ -59,7 +59,7 @@ const agent = {
   name: "Bob Van Patten",
   title: "Senior Real Estate Advisor",
   specialization: "High Yield Investment Properties",
-  image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761524592/work-photo-2025-10-27-1761524048537_jnodyu.png",
+  image: "/bob-van-patten.jpg",
   phone: "+52 624 127 6012",
   email: "robertvanpatten2@gmail.com",
   yearsExperience: 9,
