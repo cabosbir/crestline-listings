@@ -75,7 +75,7 @@ const PropertiesMap = () => {
       <section className="pt-32 pb-6 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-4">
-            <Button variant="ghost" onClick={() => navigate('/properties')}>
+            <Button variant="ghost" onClick={() => navigate('/search')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to List View
             </Button>
@@ -85,7 +85,7 @@ const PropertiesMap = () => {
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Open in FlexMLS
               </Button>
-              <Button variant="default" onClick={() => navigate('/properties')}>
+              <Button variant="default" onClick={() => navigate('/search')}>
                 <List className="w-4 h-4 mr-2" />
                 List View
               </Button>
@@ -115,7 +115,7 @@ const PropertiesMap = () => {
               <p className="text-muted-foreground mb-6">
                 No properties with location data match your filters.
               </p>
-              <Button onClick={() => navigate('/properties')}>View All Properties</Button>
+              <Button onClick={() => navigate('/search')}>View All Properties</Button>
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 gap-6">

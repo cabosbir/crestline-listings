@@ -18,7 +18,7 @@ const Hero = () => {
   const subtitleRef = useRef(null);
 
   const handleSearchClick = () => {
-    navigate('/properties');
+    navigate('/search');
   };
 
   useEffect(() => {

@@ -18,7 +18,7 @@ const Navbar = () => {
   ];
 
   const propertyLinks = [
-    { name: "View All Properties", href: "/properties" },
+    { name: "View All Properties", href: "/search" },
   ];
 
   return (
