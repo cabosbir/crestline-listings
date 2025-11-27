@@ -1,4 +1,4 @@
-// src/pages/AdvancedSearch.tsx - Full-page filter experience with live map
+// src/pages/AdvancedSearch.tsx - Full-page filter experience with live map and search bar
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -29,6 +29,10 @@ interface FilterState {
 const AdvancedSearch = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  
+  // Search functionality
+  const [searchQuery, setSearchQuery] = useState('');
+  
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: ["Condos", "Houses", "Land"],
     status: "Active",
@@ -122,6 +126,18 @@ const AdvancedSearch = () => {
   const bedsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
   const bathsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
 
+  // Filter function for search
+  const matchesSearch = (text: string) => {
+    if (!searchQuery) return true;
+    return text.toLowerCase().includes(searchQuery.toLowerCase());
+  };
+
+  // Filtered lists based on search
+  const filteredZones = zones.filter(matchesSearch);
+  const filteredAreas = areas.filter(matchesSearch);
+  const filteredCommunities = communities.filter(matchesSearch);
+  const filteredSubdivisions = subdivisions.filter(matchesSearch);
+
   // Live preview: Fetch properties when filters change
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -201,9 +217,9 @@ const AdvancedSearch = () => {
       areas: [],
       communities: [],
       subdivisions: [],
-    sellerFinancing: false,
-    primaryView: false,
-    currentPrice: false,
+      sellerFinancing: false,
+      primaryView: false,
+      currentPrice: false,
       minPrice: "$50,000",
       maxPrice: "$3 Million",
       minBeds: "1+",
@@ -211,6 +227,7 @@ const AdvancedSearch = () => {
     });
     setPreviewProperties([]);
     setTotalCount(0);
+    setSearchQuery('');
   };
 
   const togglePropertyType = (type: string) => {
@@ -300,6 +317,34 @@ const AdvancedSearch = () => {
       <div className="pt-32 flex h-screen">
         {/* Left Sidebar - Filters */}
         <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-6 h-[calc(100vh-8rem)]">
+          
+          {/* Global Search Bar */}
+          <div className="sticky top-0 bg-card z-10 pb-4 -mt-2">
+            <div className="relative">
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search locations (e.g., Quivira, Pedregal)..."
+                className="w-full pl-10 pr-10"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Showing locations matching "{searchQuery}"
+              </p>
+            )}
+          </div>
+
           {/* Property Types */}
           <div>
             <Label className="text-lg font-bold mb-3 block">Property Type</Label>
@@ -337,7 +382,7 @@ const AdvancedSearch = () => {
               Zone ({filters.zones.length} selected)
             </Label>
             <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
-              {zones.map(zone => (
+              {filteredZones.map(zone => (
                 <div key={zone} className="flex items-center gap-2">
                   <Checkbox
                     id={`zone-${zone}`}
@@ -347,6 +392,9 @@ const AdvancedSearch = () => {
                   <Label htmlFor={`zone-${zone}`} className="cursor-pointer text-sm">{zone}</Label>
                 </div>
               ))}
+              {filteredZones.length === 0 && searchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No zones match "{searchQuery}"</p>
+              )}
             </div>
           </div>
 
@@ -356,7 +404,7 @@ const AdvancedSearch = () => {
               Area ({filters.areas.length} selected)
             </Label>
             <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
-              {areas.map(area => (
+              {filteredAreas.map(area => (
                 <div key={area} className="flex items-center gap-2">
                   <Checkbox
                     id={`area-${area}`}
@@ -366,6 +414,9 @@ const AdvancedSearch = () => {
                   <Label htmlFor={`area-${area}`} className="cursor-pointer text-sm">{area}</Label>
                 </div>
               ))}
+              {filteredAreas.length === 0 && searchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No areas match "{searchQuery}"</p>
+              )}
             </div>
           </div>
 
@@ -375,7 +426,7 @@ const AdvancedSearch = () => {
               Community ({filters.communities.length} selected)
             </Label>
             <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
-              {communities.map(community => (
+              {filteredCommunities.map(community => (
                 <div key={community} className="flex items-center gap-2">
                   <Checkbox
                     id={`community-${community}`}
@@ -385,6 +436,9 @@ const AdvancedSearch = () => {
                   <Label htmlFor={`community-${community}`} className="cursor-pointer text-sm">{community}</Label>
                 </div>
               ))}
+              {filteredCommunities.length === 0 && searchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No communities match "{searchQuery}"</p>
+              )}
             </div>
           </div>
 
@@ -394,7 +448,7 @@ const AdvancedSearch = () => {
               Subdivision ({filters.subdivisions.length} selected)
             </Label>
             <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
-              {subdivisions.map(subdivision => (
+              {filteredSubdivisions.map(subdivision => (
                 <div key={subdivision} className="flex items-center gap-2">
                   <Checkbox
                     id={`subdivision-${subdivision}`}
@@ -404,6 +458,9 @@ const AdvancedSearch = () => {
                   <Label htmlFor={`subdivision-${subdivision}`} className="cursor-pointer text-sm">{subdivision}</Label>
                 </div>
               ))}
+              {filteredSubdivisions.length === 0 && searchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No subdivisions match "{searchQuery}"</p>
+              )}
             </div>
           </div>
 

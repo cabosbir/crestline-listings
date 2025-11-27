@@ -60,13 +60,19 @@ export default async function handler(
       }
     }
 
-    // AREAS
+    // AREAS - Use contains() for flexible matching
     if (areas && typeof areas === 'string') {
       const areaList = areas.split(',').map(a => a.trim());
-      if (areaList.length === 1) {
-        filters.push(`MLSAreaMajor eq '${areaList[0].replace(/'/g, "''")}'`);
+      // Extract just the area name (remove "CSL-", "CC-", "EC-" etc. prefixes)
+      const cleanedAreas = areaList.map(a => {
+        // Remove prefixes like "CSL-", "CC-", "EC-" and use just the area name
+        return a.replace(/^[A-Z]+-/, '');
+      });
+      
+      if (cleanedAreas.length === 1) {
+        filters.push(`contains(MLSAreaMajor, '${cleanedAreas[0].replace(/'/g, "''")}')`);
       } else {
-        const areaFilters = areaList.map(a => `MLSAreaMajor eq '${a.replace(/'/g, "''")}'`);
+        const areaFilters = cleanedAreas.map(a => `contains(MLSAreaMajor, '${a.replace(/'/g, "''")}')`);
         filters.push(`(${areaFilters.join(' or ')})`);
       }
     }
