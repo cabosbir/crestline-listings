@@ -24,8 +24,6 @@ const Properties = () => {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list'); // NEW: View mode toggle
   const [filtersOpen, setFiltersOpen] = useState(true); // NEW: Auto-open filters
   const ITEMS_PER_PAGE = 9;
-  
-  const FLEXMLS_IFRAME_URL = "https://link.flexmls.com/u67gqp77eml,12";
 
   // Fetch real MLS total count
   useEffect(() => {
@@ -206,20 +204,6 @@ const Properties = () => {
               </div>
             )}
           </div>
-
-          {/* FlexMLS Link */}
-          {properties.length > 0 && (
-            <div className="mt-4">
-              <Button
-                variant="outline"
-                onClick={() => window.open(FLEXMLS_IFRAME_URL, '_blank')}
-                className="gap-2"
-              >
-                <ExternalLink className="w-4 h-4" />
-                View in FlexMLS (Full MLS Access)
-              </Button>
-            </div>
-          )}
         </div>
       </section>
 
