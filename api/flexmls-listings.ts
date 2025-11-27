@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - FETCH ALL RESULTS WITH MLS SEARCH SUPPORT
+// api/flexmls-listings.ts - FIXED WITH SINGULAR PARAMETERS
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -25,9 +25,9 @@ export default async function handler(
   try {
     const { 
       city,
-      areas,
-      communities,
-      subdivisions,
+      area,        // FIXED: Changed from 'areas' to 'area'
+      community,   // FIXED: Changed from 'communities' to 'community'
+      subdivision, // FIXED: Changed from 'subdivisions' to 'subdivision'
       minPrice, 
       maxPrice, 
       bedrooms,
@@ -36,14 +36,14 @@ export default async function handler(
       status,
       minSqft,
       yearBuilt,
-      search, // NEW: MLS search parameter
+      search,
       limit
     } = req.query;
 
     const maxResults = limit && typeof limit === 'string' ? parseInt(limit) : undefined;
 
     console.log('🔍 [API] Filters:', {
-      city, areas, communities, subdivisions, minPrice, maxPrice, 
+      city, area, community, subdivision, minPrice, maxPrice, 
       bedrooms, bathrooms, propertyTypes, status, search, limit: maxResults
     });
 
@@ -55,7 +55,6 @@ export default async function handler(
       const searchTerm = search.trim();
       console.log('🔎 [MLS SEARCH]:', searchTerm);
       
-      // Search in: Address, City, MLSAreaMajor, SubdivisionName, ListingId, PublicRemarks
       const searchFilters = [
         `contains(UnparsedAddress, '${searchTerm.replace(/'/g, "''")}')`,
         `contains(City, '${searchTerm.replace(/'/g, "''")}')`,
@@ -79,12 +78,11 @@ export default async function handler(
       }
     }
 
-    // AREAS - Use contains() for flexible matching (FIXED)
-    if (areas && typeof areas === 'string') {
-      const areaList = areas.split(',').map(a => a.trim());
+    // AREAS - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    if (area && typeof area === 'string') {
+      const areaList = area.split(',').map(a => a.trim());
       
       if (areaList.length === 1) {
-        // Try both exact match and contains for single area
         filters.push(`(MLSAreaMajor eq '${areaList[0].replace(/'/g, "''")}' or contains(MLSAreaMajor, '${areaList[0].replace(/'/g, "''")}'))`);
       } else {
         const areaFilters = areaList.map(a => 
@@ -94,9 +92,9 @@ export default async function handler(
       }
     }
 
-    // COMMUNITIES - Use contains() for flexible matching
-    if (communities && typeof communities === 'string') {
-      const communityList = communities.split(',').map(c => c.trim());
+    // COMMUNITIES - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    if (community && typeof community === 'string') {
+      const communityList = community.split(',').map(c => c.trim());
       if (communityList.length === 1) {
         filters.push(`contains(SubdivisionName, '${communityList[0].replace(/'/g, "''")}')`);
       } else {
@@ -105,9 +103,9 @@ export default async function handler(
       }
     }
 
-    // SUBDIVISIONS - Use contains() for flexible matching
-    if (subdivisions && typeof subdivisions === 'string') {
-      const subdivisionList = subdivisions.split(',').map(s => s.trim());
+    // SUBDIVISIONS - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    if (subdivision && typeof subdivision === 'string') {
+      const subdivisionList = subdivision.split(',').map(s => s.trim());
       if (subdivisionList.length === 1) {
         filters.push(`contains(SubdivisionName, '${subdivisionList[0].replace(/'/g, "''")}')`);
       } else {
