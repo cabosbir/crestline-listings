@@ -342,7 +342,7 @@ const AdvancedSearch = () => {
       {/* Main Content */}
       <div className="pt-32 flex h-screen">
         {/* Left Sidebar - Filters */}
-        <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-4">
+        <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-4 h-[calc(100vh-8rem)]">
           
           {/* Property Types - Collapsible */}
           <div className="border-b border-border pb-4">
