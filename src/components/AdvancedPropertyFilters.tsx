@@ -14,7 +14,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { useLiveFilterCount } from "@/hooks/useLiveFilterCount";
 
 interface FilterState {
   searchQuery: string;
@@ -76,9 +75,6 @@ const AdvancedPropertyFilters = ({
     primaryView: false,
     currentPrice: false,
   });
-
-  // 🔥 NEW: Live filter count hook
-  const { count: liveCount, loading: countLoading, estimated } = useLiveFilterCount(filters);
 
   const propertyTypes = [
     "Condos",
@@ -520,49 +516,12 @@ const AdvancedPropertyFilters = ({
                     </span> luxury properties in Baja California Sur
                   </div>
                   
-                  {/* 🔥 LIVE PREVIEW COUNT */}
-                  {(filters.zones.length > 0 || 
-                    filters.areas.length > 0 || 
-                    filters.communities.length > 0 || 
-                    filters.propertyTypes.length !== 3) && (
-                    <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
-                      {countLoading ? (
-                        <>
-                          <div className="animate-spin h-4 w-4 border-2 border-purple-600 border-t-transparent rounded-full"></div>
-                          <span className="text-sm text-gray-600">Calculating matches...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-lg">🔍</span>
-                          <div className="flex-1">
-                            <div className="font-semibold text-purple-700">
-                              <span className="text-2xl">{liveCount.toLocaleString()}</span> properties match
-                            </div>
-                            <div className="text-xs text-purple-600">
-                              {estimated ? '(estimated - click Search for exact count)' : 'Live preview'}
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )}
-                  
                   {/* After Search - Show Results */}
                   {resultCount > 0 && (
                     <div className="p-2 bg-green-50 rounded border border-green-200">
                       <span className="text-sm text-green-700 font-semibold">
                         ✅ Showing {resultCount.toLocaleString()} properties
                       </span>
-                    </div>
-                  )}
-                  
-                  {/* No filters selected yet */}
-                  {filters.zones.length === 0 && 
-                   filters.areas.length === 0 && 
-                   filters.communities.length === 0 && 
-                   filters.propertyTypes.length === 3 && (
-                    <div className="text-sm text-gray-500 italic">
-                      💡 Select filters below to see live count preview
                     </div>
                   )}
                 </div>
