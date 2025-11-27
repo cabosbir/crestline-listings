@@ -16,6 +16,7 @@ interface FilterState {
   zones: string[];
   areas: string[];
   communities: string[];
+  subdivisions: string[];
   minPrice: string;
   maxPrice: string;
   minBeds: string;
@@ -31,6 +32,7 @@ const AdvancedSearch = () => {
     zones: [],
     areas: [],
     communities: [],
+    subdivisions: [],
     minPrice: "$50,000",
     maxPrice: "$3 Million",
     minBeds: "1+",
@@ -41,11 +43,12 @@ const AdvancedSearch = () => {
   const [loading, setLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
 
-  // 🔥 NEW: Load filters from URL on mount (handles back button, bookmarks, direct links)
+  // Load filters from URL on mount (handles back button, bookmarks, direct links)
   useEffect(() => {
     const urlZones = searchParams.get('zones');
     const urlAreas = searchParams.get('areas');
     const urlCommunities = searchParams.get('communities');
+    const urlSubdivisions = searchParams.get('subdivisions');
     const urlMinPrice = searchParams.get('minPrice');
     const urlMaxPrice = searchParams.get('maxPrice');
     const urlBeds = searchParams.get('beds');
@@ -53,12 +56,13 @@ const AdvancedSearch = () => {
     const urlPropertyTypes = searchParams.get('propertyTypes');
     const urlStatus = searchParams.get('status');
 
-    if (urlZones || urlAreas || urlCommunities) {
+    if (urlZones || urlAreas || urlCommunities || urlSubdivisions) {
       setFilters(prev => ({
         ...prev,
         zones: urlZones ? urlZones.split(',') : [],
         areas: urlAreas ? urlAreas.split(',') : [],
         communities: urlCommunities ? urlCommunities.split(',') : [],
+        subdivisions: urlSubdivisions ? urlSubdivisions.split(',') : [],
         minPrice: urlMinPrice || prev.minPrice,
         maxPrice: urlMaxPrice || prev.maxPrice,
         minBeds: urlBeds || prev.minBeds,
@@ -91,6 +95,17 @@ const AdvancedSearch = () => {
     "Pedregal", "Querencia", "San Jose Corridor", "Ventanas"
   ];
 
+  const subdivisions = [
+    "Abasolo", "Alba Residences", "Altamar", "Aqua Viva", "Auberge Residences",
+    "Cabo Bello", "Cabo del Sol", "Cabo Real", "Capella Pedregal", "Casa del Mar",
+    "Chileno Bay", "Club Campestre", "Copala", "Costa Palmas", "Diamante",
+    "El Dorado", "El Encanto", "El Pedregal", "El Tezal", "Esperanza",
+    "Fonatur", "Four Seasons", "Fundadores", "Hacienda", "La Laguna",
+    "Las Ventanas", "Montage", "One&Only Palmilla", "Palmilla", "Pedregal",
+    "Puerto Los Cabos", "Querencia", "Quivira", "Rancho San Lucas", "San Jose Corridor",
+    "Santa Maria", "St. Regis", "Ventanas al Paraiso", "Villas del Mar", "Waldorf Astoria"
+  ];
+
   const priceOptions = [
     "No Preference", "$50,000", "$100,000", "$200,000", "$300,000", "$400,000",
     "$500,000", "$600,000", "$700,000", "$800,000", "$900,000", "$1 Million",
@@ -104,13 +119,14 @@ const AdvancedSearch = () => {
   // Live preview: Fetch properties when filters change
   useEffect(() => {
     const debounce = setTimeout(() => {
-      if (filters.zones.length > 0 || filters.areas.length > 0 || filters.communities.length > 0) {
+      if (filters.zones.length > 0 || filters.areas.length > 0 || 
+          filters.communities.length > 0 || filters.subdivisions.length > 0) {
         fetchPreview();
       } else {
         setPreviewProperties([]);
         setTotalCount(0);
       }
-    }, 1000); // 1 second debounce
+    }, 1000);
 
     return () => clearTimeout(debounce);
   }, [filters]);
@@ -120,21 +136,10 @@ const AdvancedSearch = () => {
     try {
       const apiFilters: any = {};
       
-      // Map zones to City field (FlexMLS uses City for zones)
-      if (filters.zones.length > 0) {
-        apiFilters.city = filters.zones; // Multiple cities as array
-      }
-      
-      // Map areas to MLSAreaMajor field
-      if (filters.areas.length > 0) {
-        apiFilters.areas = filters.areas;
-      }
-      
-      // Communities
-      if (filters.communities.length > 0) {
-        apiFilters.communities = filters.communities;
-      }
-      
+      if (filters.zones.length > 0) apiFilters.city = filters.zones;
+      if (filters.areas.length > 0) apiFilters.areas = filters.areas;
+      if (filters.communities.length > 0) apiFilters.communities = filters.communities;
+      if (filters.subdivisions.length > 0) apiFilters.subdivisions = filters.subdivisions;
       if (filters.minPrice !== "No Preference") apiFilters.minPrice = parsePrice(filters.minPrice);
       if (filters.maxPrice !== "No Preference") apiFilters.maxPrice = parsePrice(filters.maxPrice);
       if (filters.minBeds !== "Any") apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
@@ -167,11 +172,11 @@ const AdvancedSearch = () => {
   };
 
   const handleSearch = () => {
-    // Navigate to properties page with filter state
     const params = new URLSearchParams();
     if (filters.zones.length > 0) params.append('zones', filters.zones.join(','));
     if (filters.areas.length > 0) params.append('areas', filters.areas.join(','));
     if (filters.communities.length > 0) params.append('communities', filters.communities.join(','));
+    if (filters.subdivisions.length > 0) params.append('subdivisions', filters.subdivisions.join(','));
     if (filters.minPrice !== "No Preference") params.append('minPrice', filters.minPrice);
     if (filters.maxPrice !== "No Preference") params.append('maxPrice', filters.maxPrice);
     if (filters.minBeds !== "Any") params.append('beds', filters.minBeds);
@@ -189,6 +194,7 @@ const AdvancedSearch = () => {
       zones: [],
       areas: [],
       communities: [],
+      subdivisions: [],
       minPrice: "$50,000",
       maxPrice: "$3 Million",
       minBeds: "1+",
@@ -231,6 +237,15 @@ const AdvancedSearch = () => {
       communities: prev.communities.includes(community)
         ? prev.communities.filter(c => c !== community)
         : [...prev.communities, community]
+    }));
+  };
+
+  const toggleSubdivision = (subdivision: string) => {
+    setFilters(prev => ({
+      ...prev,
+      subdivisions: prev.subdivisions.includes(subdivision)
+        ? prev.subdivisions.filter(s => s !== subdivision)
+        : [...prev.subdivisions, subdivision]
     }));
   };
 
@@ -364,6 +379,25 @@ const AdvancedSearch = () => {
             </div>
           </div>
 
+          {/* Subdivisions */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">
+              Subdivision ({filters.subdivisions.length} selected)
+            </Label>
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+              {subdivisions.map(subdivision => (
+                <div key={subdivision} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`subdivision-${subdivision}`}
+                    checked={filters.subdivisions.includes(subdivision)}
+                    onCheckedChange={() => toggleSubdivision(subdivision)}
+                  />
+                  <Label htmlFor={`subdivision-${subdivision}`} className="cursor-pointer text-sm">{subdivision}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Price Range */}
           <div>
             <Label className="text-lg font-bold mb-3 block">Price Range</Label>
@@ -450,7 +484,7 @@ const AdvancedSearch = () => {
                 <div className="text-6xl mb-4">🗺️</div>
                 <h2 className="text-2xl font-bold mb-2">Select Filters to Preview</h2>
                 <p className="text-muted-foreground">
-                  Choose zones, areas, or communities from the left sidebar to see properties on the map
+                  Choose zones, areas, communities, or subdivisions from the left sidebar to see properties on the map
                 </p>
               </div>
             </div>
@@ -462,4 +496,3 @@ const AdvancedSearch = () => {
 };
 
 export default AdvancedSearch;
-// Force rebuild Wed Nov 26 20:47:26 MST 2025
