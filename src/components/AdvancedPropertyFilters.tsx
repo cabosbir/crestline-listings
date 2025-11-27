@@ -38,18 +38,33 @@ interface FilterState {
 interface AdvancedPropertyFiltersProps {
   onApplyFilters: (filters: FilterState, searchQuery?: string) => void;
   onReset: () => void;
-  resultCount?: number; // 🔥 NEW: Dynamic count from API
-  totalCount?: number;  // 🔥 NEW: Total available in database
+  resultCount?: number;
+  totalCount?: number;
+  isOpen?: boolean; // NEW: Controlled open state
+  onOpenChange?: (open: boolean) => void; // NEW: Callback when open state changes
 }
 
 const AdvancedPropertyFilters = ({ 
   onApplyFilters, 
   onReset,
-  resultCount = 0,     // 🔥 NEW: Default 0
-  totalCount = 4528    // 🔥 NEW: Default total
+  resultCount = 0,
+  totalCount = 4528,
+  isOpen: controlledIsOpen,
+  onOpenChange
 }: AdvancedPropertyFiltersProps) => {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  
+  // Use controlled state if provided, otherwise use internal state
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const setIsOpen = (open: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(open);
+    } else {
+      setInternalIsOpen(open);
+    }
+  };
+  
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
   const [showAllZones, setShowAllZones] = useState(false);
   const [showAllAreas, setShowAllAreas] = useState(false);
