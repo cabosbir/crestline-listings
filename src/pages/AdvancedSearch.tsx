@@ -84,7 +84,7 @@ const AdvancedSearch = () => {
   
   const zones = [
     "Cabo Corridor", "Cabo San Lucas", "Comondu", "East Cape", "La Paz",
-    "Loreto", "Los Barriles", "Mulege", "Pescadero", "San Jose del Cabo",
+    "Loreto", "Mulege", "Pescadero", "San Jose del Cabo",
     "Todos Santos"
   ];
 
