@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - FETCH ALL RESULTS WITH OPTIONAL LIMIT
+// api/flexmls-listings.ts - FETCH ALL RESULTS WITH MLS SEARCH SUPPORT
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -36,18 +36,37 @@ export default async function handler(
       status,
       minSqft,
       yearBuilt,
-      limit // NEW: Optional limit parameter
+      search, // NEW: MLS search parameter
+      limit
     } = req.query;
 
     const maxResults = limit && typeof limit === 'string' ? parseInt(limit) : undefined;
 
     console.log('🔍 [API] Filters:', {
       city, areas, communities, subdivisions, minPrice, maxPrice, 
-      bedrooms, bathrooms, propertyTypes, status, limit: maxResults
+      bedrooms, bathrooms, propertyTypes, status, search, limit: maxResults
     });
 
     // BUILD RESO $filter QUERY
     const filters: string[] = [];
+
+    // MLS SEARCH - Search across multiple fields
+    if (search && typeof search === 'string' && search.trim() !== '') {
+      const searchTerm = search.trim();
+      console.log('🔎 [MLS SEARCH]:', searchTerm);
+      
+      // Search in: Address, City, MLSAreaMajor, SubdivisionName, ListingId, PublicRemarks
+      const searchFilters = [
+        `contains(UnparsedAddress, '${searchTerm.replace(/'/g, "''")}')`,
+        `contains(City, '${searchTerm.replace(/'/g, "''")}')`,
+        `contains(MLSAreaMajor, '${searchTerm.replace(/'/g, "''")}')`,
+        `contains(SubdivisionName, '${searchTerm.replace(/'/g, "''")}')`,
+        `contains(ListingId, '${searchTerm.replace(/'/g, "''")}')`,
+        `contains(PublicRemarks, '${searchTerm.replace(/'/g, "''")}')`
+      ];
+      
+      filters.push(`(${searchFilters.join(' or ')})`);
+    }
 
     // LOCATION - City/Zone
     if (city && typeof city === 'string') {
@@ -60,24 +79,22 @@ export default async function handler(
       }
     }
 
-    // AREAS - Use contains() for flexible matching
+    // AREAS - Use contains() for flexible matching (FIXED)
     if (areas && typeof areas === 'string') {
       const areaList = areas.split(',').map(a => a.trim());
-      // Extract just the area name (remove "CSL-", "CC-", "EC-" etc. prefixes)
-      const cleanedAreas = areaList.map(a => {
-        // Remove prefixes like "CSL-", "CC-", "EC-" and use just the area name
-        return a.replace(/^[A-Z]+-/, '');
-      });
       
-      if (cleanedAreas.length === 1) {
-        filters.push(`contains(MLSAreaMajor, '${cleanedAreas[0].replace(/'/g, "''")}')`);
+      if (areaList.length === 1) {
+        // Try both exact match and contains for single area
+        filters.push(`(MLSAreaMajor eq '${areaList[0].replace(/'/g, "''")}' or contains(MLSAreaMajor, '${areaList[0].replace(/'/g, "''")}'))`);
       } else {
-        const areaFilters = cleanedAreas.map(a => `contains(MLSAreaMajor, '${a.replace(/'/g, "''")}')`);
+        const areaFilters = areaList.map(a => 
+          `(MLSAreaMajor eq '${a.replace(/'/g, "''")}' or contains(MLSAreaMajor, '${a.replace(/'/g, "''")}'))`
+        );
         filters.push(`(${areaFilters.join(' or ')})`);
       }
     }
 
-    // COMMUNITIES
+    // COMMUNITIES - Use contains() for flexible matching
     if (communities && typeof communities === 'string') {
       const communityList = communities.split(',').map(c => c.trim());
       if (communityList.length === 1) {
@@ -88,7 +105,7 @@ export default async function handler(
       }
     }
 
-    // SUBDIVISIONS
+    // SUBDIVISIONS - Use contains() for flexible matching
     if (subdivisions && typeof subdivisions === 'string') {
       const subdivisionList = subdivisions.split(',').map(s => s.trim());
       if (subdivisionList.length === 1) {
@@ -119,7 +136,7 @@ export default async function handler(
       if (!isNaN(baths)) filters.push(`BathroomsFull ge ${baths}`);
     }
 
-    // PROPERTY TYPES - USE ACTUAL FLEXMLS VALUES
+    // PROPERTY TYPES
     if (propertyTypes && typeof propertyTypes === 'string') {
       const types = propertyTypes.split(',').map(t => t.trim());
       if (types.length > 0) {
