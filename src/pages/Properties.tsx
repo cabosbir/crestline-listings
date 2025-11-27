@@ -307,7 +307,13 @@ const Properties = () => {
                     </button>
                     
                     <button 
-                      onClick={() => document.querySelector('[class*="Advanced Filters"]')?.click()}
+                      onClick={() => {
+                        const filterButton = document.querySelector('button[variant="outline"]') as HTMLButtonElement;
+                        const advancedFiltersButton = Array.from(document.querySelectorAll('button')).find(btn => 
+                          btn.textContent?.includes('Advanced Filters')
+                        ) as HTMLButtonElement;
+                        advancedFiltersButton?.click();
+                      }}
                       className="p-6 bg-purple-50 rounded-lg border border-purple-200 hover:bg-purple-100 hover:border-purple-300 transition-all cursor-pointer text-left"
                     >
                       <div className="text-4xl mb-3">🎯</div>
