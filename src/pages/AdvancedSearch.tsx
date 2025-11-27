@@ -1,21 +1,27 @@
 // AdvancedSearch_ULTIMATE.tsx - Maximum Intelligence with Field Mapping + Auto-Fallback
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, DollarSign, Bed, Bath, Home, Search, X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import Map from '../components/Map';
-import PropertyCard from '../components/PropertyCard';
+// AdvancedSearch_ULTIMATE.tsx - Maximum Intelligence with Field Mapping + Auto-Fallback
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import LeafletPropertyMap from "@/components/LeafletPropertyMap";
+import PropertyCard from "@/components/PropertyCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, X, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { 
   getAIFieldMapping, 
   getFieldMapping, 
   saveFieldMapping,
   type FieldMapping as AIFieldMapping,
   type FilterMapping 
-} from '../services/groqFilterIntelligence_SMART';
+} from "@/services/groqFilterIntelligence_SMART";
 import { 
   searchWithFallback, 
   searchListings,
   type FallbackResult 
-} from '../services/flexMlsService_FALLBACK';
+} from "@/services/flexMlsService_FALLBACK";
+import { convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
 interface SearchNotification {
   type: 'success' | 'info' | 'warning';
@@ -45,6 +51,7 @@ const AdvancedSearch: React.FC = () => {
 
   // Results
   const [properties, setProperties] = useState<any[]>([]);
+  const [convertedProperties, setConvertedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState<SearchNotification | null>(null);
 
@@ -111,6 +118,7 @@ const AdvancedSearch: React.FC = () => {
       if (locationFilters.length === 0) {
         const results = await searchListings(baseFilters);
         setProperties(results);
+        setConvertedProperties(results.map(convertMLSToPropertyCard));
         setNotification({
           type: 'success',
           message: `Found ${results.length} properties`
@@ -154,6 +162,7 @@ const AdvancedSearch: React.FC = () => {
       
       if (results.length > 0) {
         setProperties(results);
+        setConvertedProperties(results.map(convertMLSToPropertyCard));
         setNotification({
           type: 'success',
           message: `Found ${results.length} properties in ${location.value}`
@@ -185,6 +194,7 @@ const AdvancedSearch: React.FC = () => {
       
       if (results.length > 0) {
         setProperties(results);
+        setConvertedProperties(results.map(convertMLSToPropertyCard));
         saveFieldMapping(location.value, {
           field: aiMapping.suggestedField,
           value: aiMapping.value,
@@ -212,12 +222,14 @@ const AdvancedSearch: React.FC = () => {
 
     if (fallbackResult.success) {
       setProperties(fallbackResult.results);
+      setConvertedProperties(fallbackResult.results.map(convertMLSToPropertyCard));
       setNotification({
         type: 'success',
         message: `Found ${fallbackResult.count} properties (searched as ${fallbackResult.workingField})`
       });
     } else {
       setProperties([]);
+      setConvertedProperties([]);
       setNotification({
         type: 'warning',
         message: `No properties found for "${location.value}". Tried: ${fallbackResult.attemptedFields.map(a => a.field).join(', ')}`
@@ -259,6 +271,7 @@ const AdvancedSearch: React.FC = () => {
     }
 
     setProperties(allResults);
+    setConvertedProperties(allResults.map(convertMLSToPropertyCard));
     setNotification({
       type: 'success',
       message: `Found ${allResults.length} properties across ${locations.length} locations`
@@ -301,6 +314,7 @@ const AdvancedSearch: React.FC = () => {
                 setSelectedSubdivisions([]);
                 setMlsSearch('');
                 setProperties([]);
+                setConvertedProperties([]);
                 setNotification(null);
               }}
               className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
@@ -567,10 +581,10 @@ const AdvancedSearch: React.FC = () => {
             </div>
           ) : (
             <>
-              <Map properties={properties} />
+              <LeafletPropertyMap properties={convertedProperties} />
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {properties.map(property => (
-                  <PropertyCard key={property.ListingId} property={property} />
+                {convertedProperties.map(property => (
+                  <PropertyCard key={property.id} property={property} />
                 ))}
               </div>
             </>
