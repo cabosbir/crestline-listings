@@ -17,6 +17,9 @@ interface FilterState {
   areas: string[];
   communities: string[];
   subdivisions: string[];
+  sellerFinancing: boolean;
+  primaryView: boolean;
+  currentPrice: boolean;
   minPrice: string;
   maxPrice: string;
   minBeds: string;
@@ -33,6 +36,9 @@ const AdvancedSearch = () => {
     areas: [],
     communities: [],
     subdivisions: [],
+    sellerFinancing: false,
+    primaryView: false,
+    currentPrice: false,
     minPrice: "$50,000",
     maxPrice: "$3 Million",
     minBeds: "1+",
@@ -195,6 +201,9 @@ const AdvancedSearch = () => {
       areas: [],
       communities: [],
       subdivisions: [],
+    sellerFinancing: false,
+    primaryView: false,
+    currentPrice: false,
       minPrice: "$50,000",
       maxPrice: "$3 Million",
       minBeds: "1+",
@@ -395,6 +404,37 @@ const AdvancedSearch = () => {
                   <Label htmlFor={`subdivision-${subdivision}`} className="cursor-pointer text-sm">{subdivision}</Label>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Additional Filters */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">Additional Options</Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="seller-financing"
+                  checked={filters.sellerFinancing || false}
+                  onCheckedChange={(checked) => setFilters({ ...filters, sellerFinancing: checked as boolean })}
+                />
+                <Label htmlFor="seller-financing" className="cursor-pointer">Seller Financing Offered?</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="primary-view"
+                  checked={filters.primaryView || false}
+                  onCheckedChange={(checked) => setFilters({ ...filters, primaryView: checked as boolean })}
+                />
+                <Label htmlFor="primary-view" className="cursor-pointer">Primary View</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="current-price"
+                  checked={filters.currentPrice || false}
+                  onCheckedChange={(checked) => setFilters({ ...filters, currentPrice: checked as boolean })}
+                />
+                <Label htmlFor="current-price" className="cursor-pointer">Current Price</Label>
+              </div>
             </div>
           </div>
 
