@@ -1,6 +1,4 @@
 // src/pages/PropertyDetail.tsx - SUPER-POWERED VERSION 🚀
-// Features: Intelligent search, multiple fallbacks, robust error handling, SEO optimized
-
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
@@ -247,22 +245,10 @@ const PropertyDetail = () => {
     }
   };
 
-  // 🎯 SMART NAVIGATION BACK
+  // 🎯 SMART NAVIGATION BACK - Preserves search filters
   const handleBackToProperties = () => {
-    sessionStorage.setItem('returningFromProperty', 'true');
-    
-    const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
-    if (savedState) {
-      try {
-        const state = JSON.parse(savedState);
-        navigate(state.url);
-        return;
-      } catch (e) {
-        console.error('Error parsing browse state:', e);
-      }
-    }
-    
-    navigate('/properties');
+    // Use browser history to go back, preserving all filters
+    navigate(-1);
   };
 
   // 🎯 SHARE FUNCTIONALITY
@@ -303,7 +289,7 @@ const PropertyDetail = () => {
         <Footer />
       </div>
     );
-  }
+  };
 
   // 🎯 ERROR STATE
   if (!property) {
