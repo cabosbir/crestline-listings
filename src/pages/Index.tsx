@@ -108,7 +108,7 @@ const Index = () => {
           ) : featuredProperties.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground mb-4">No properties available at the moment.</p>
-              <Link to="/properties">
+              <Link to="/search">
                 <Button variant="outline">View All Properties</Button>
               </Link>
             </div>
@@ -121,7 +121,7 @@ const Index = () => {
               </div>
 
               <div className="text-center">
-                <Link to="/properties">
+                <Link to="/search">
                   <Button variant="luxury" size="lg">
                     View All Properties <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
