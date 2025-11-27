@@ -28,6 +28,7 @@ import SusuLandingPage from "./pages/SusuLandingPage";
 import MarketReport from "./pages/MarketReport";
 import NewClientForm from "./pages/NewClientForm";
 import SellerEvaluationForm from "./pages/SellerEvaluationForm";
+import FilterTrainingDashboard from "./pages/FilterTrainingDashboard"; // 🧠 NEW: AI Filter Training
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,9 @@ const App = () => (
           
           {/* Market Report Page */}
           <Route path="/market-report" element={<MarketReport />} />
+          
+          {/* Admin: Filter Training Dashboard - 🧠 NEW */}
+          <Route path="/admin/filter-training" element={<FilterTrainingDashboard />} />
           
           {/* New Client Forms - All URL patterns supported */}
           <Route path="/new-client" element={<NewClientForm />} />

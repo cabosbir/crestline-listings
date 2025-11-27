@@ -1,4 +1,4 @@
-// src/services/flexMlsService.ts - UPDATED WITH ALL FILTER SUPPORT
+// src/services/flexMlsService.ts - WITH PRODUCTION API FALLBACK FOR LOCAL DEV
 
 export interface MLSProperty {
   ListingKey: string;
@@ -58,15 +58,15 @@ export async function fetchListings(params?: {
     }
     if (params?.areas) {
       const areasStr = Array.isArray(params.areas) ? params.areas.join(',') : params.areas;
-      queryParams.append('areas', areasStr);
+      queryParams.append('area', areasStr); // FIXED: Changed to singular
     }
     if (params?.communities) {
       const communitiesStr = Array.isArray(params.communities) ? params.communities.join(',') : params.communities;
-      queryParams.append('communities', communitiesStr);
+      queryParams.append('community', communitiesStr); // FIXED: Changed to singular
     }
     if (params?.subdivisions) {
       const subdivisionsStr = Array.isArray(params.subdivisions) ? params.subdivisions.join(',') : params.subdivisions;
-      queryParams.append('subdivisions', subdivisionsStr);
+      queryParams.append('subdivision', subdivisionsStr); // FIXED: Changed to singular
     }
     if (params?.propertyTypes) {
       const typesStr = Array.isArray(params.propertyTypes) ? params.propertyTypes.join(',') : params.propertyTypes;
@@ -82,7 +82,9 @@ export async function fetchListings(params?: {
     if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     
-    const url = `/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    // FIXED: Use production API in development (Vite doesn't support /api routes locally)
+    const apiBase = import.meta.env.DEV ? 'https://bircabo.com' : '';
+    const url = `${apiBase}/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
     console.log('📡 Fetching listings from:', url);
     const response = await fetch(url);
@@ -125,7 +127,9 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
 
     console.log('🔍 Searching for property by ListingKey:', trimmedKey);
     
-    const url = `/api/flexmls-listings`;
+    // FIXED: Use production API in development
+    const apiBase = import.meta.env.DEV ? 'https://bircabo.com' : '';
+    const url = `${apiBase}/api/flexmls-listings`;
     
     console.log('📡 Fetching all listings from:', url);
     const response = await fetch(url);

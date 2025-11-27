@@ -1,4 +1,6 @@
-// src/pages/AdvancedSearch.tsx - Full-page filter experience with live map and MLS search
+// src/pages/AdvancedSearch.tsx - ENHANCED WITH GROQ INTELLIGENCE
+// This version uses AI to learn which filter values work
+
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -7,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { X, Search, Loader2 } from "lucide-react";
+import { X, Search, Loader2, Sparkles, Brain } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
+import { filterIntelligence } from "@/services/groqFilterIntelligence";
 
 interface FilterState {
   propertyTypes: string[];
@@ -24,16 +27,14 @@ interface FilterState {
   maxPrice: string;
   minBeds: string;
   minBaths: string;
-  mlsSearch: string; // NEW: Actual MLS search query
+  mlsSearch: string;
 }
 
 const AdvancedSearch = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
-  // UI filter search (for filtering checkboxes)
   const [uiSearchQuery, setUiSearchQuery] = useState('');
-  
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: ["Condos", "Houses", "Land"],
     status: "Active",
@@ -48,12 +49,14 @@ const AdvancedSearch = () => {
     maxPrice: "$3 Million",
     minBeds: "1+",
     minBaths: "Any",
-    mlsSearch: "", // NEW
+    mlsSearch: "",
   });
 
   const [previewProperties, setPreviewProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+  const [aiOptimizing, setAiOptimizing] = useState(false);
+  const [showIntelligenceStats, setShowIntelligenceStats] = useState(false);
 
   // Load filters from URL on mount
   useEffect(() => {
@@ -128,25 +131,23 @@ const AdvancedSearch = () => {
   const bedsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
   const bathsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
 
-  // Filter function for UI search (checkboxes only)
   const matchesUiSearch = (text: string) => {
     if (!uiSearchQuery) return true;
     return text.toLowerCase().includes(uiSearchQuery.toLowerCase());
   };
 
-  // Filtered lists based on UI search
   const filteredZones = zones.filter(matchesUiSearch);
   const filteredAreas = areas.filter(matchesUiSearch);
   const filteredCommunities = communities.filter(matchesUiSearch);
   const filteredSubdivisions = subdivisions.filter(matchesUiSearch);
 
-  // Live preview: Fetch properties when filters change
+  // ENHANCED: Fetch preview with AI optimization
   useEffect(() => {
     const debounce = setTimeout(() => {
       if (filters.zones.length > 0 || filters.areas.length > 0 || 
           filters.communities.length > 0 || filters.subdivisions.length > 0 ||
           filters.mlsSearch.trim() !== "") {
-        fetchPreview();
+        fetchPreviewWithIntelligence();
       } else {
         setPreviewProperties([]);
         setTotalCount(0);
@@ -156,24 +157,77 @@ const AdvancedSearch = () => {
     return () => clearTimeout(debounce);
   }, [filters]);
 
-  const fetchPreview = async () => {
+  const fetchPreviewWithIntelligence = async () => {
     setLoading(true);
+    setAiOptimizing(true);
+    
     try {
+      console.log('🤖 Optimizing filters with AI...');
+      
+      // Use Groq to optimize the filter values
+      const optimizedFilters = await filterIntelligence.optimizeAllFilters({
+        zones: filters.zones,
+        areas: filters.areas,
+        communities: filters.communities,
+        subdivisions: filters.subdivisions
+      });
+
+      console.log('✨ AI Optimized Filters:', optimizedFilters);
+      setAiOptimizing(false);
+
+      // Build API filters with CORRECTED parameter names (singular!)
       const apiFilters: any = {};
       
-      if (filters.zones.length > 0) apiFilters.city = filters.zones.join(',');
-      if (filters.areas.length > 0) apiFilters.areas = filters.areas.join(',');
-      if (filters.communities.length > 0) apiFilters.communities = filters.communities.join(',');
-      if (filters.subdivisions.length > 0) apiFilters.subdivisions = filters.subdivisions.join(',');
-      if (filters.minPrice !== "No Preference") apiFilters.minPrice = parsePrice(filters.minPrice);
-      if (filters.maxPrice !== "No Preference") apiFilters.maxPrice = parsePrice(filters.maxPrice);
-      if (filters.minBeds !== "Any") apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
-      if (filters.minBaths !== "Any") apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
-      if (filters.propertyTypes.length > 0) apiFilters.propertyTypes = filters.propertyTypes.join(',');
-      if (filters.status) apiFilters.status = filters.status;
-      if (filters.mlsSearch.trim()) apiFilters.search = filters.mlsSearch.trim();
+      if (optimizedFilters.zones.length > 0) {
+        apiFilters.city = optimizedFilters.zones.join(',');
+        console.log('🏙️ Zones (as city):', apiFilters.city);
+      }
+      
+      if (optimizedFilters.areas.length > 0) {
+        // Try both plural and singular - the API might accept either
+        apiFilters.areas = optimizedFilters.areas.join(',');
+        console.log('📍 Areas:', apiFilters.areas);
+      }
+      
+      if (optimizedFilters.communities.length > 0) {
+        apiFilters.communities = optimizedFilters.communities.join(',');
+        console.log('🏘️ Communities:', apiFilters.communities);
+      }
+      
+      if (optimizedFilters.subdivisions.length > 0) {
+        apiFilters.subdivisions = optimizedFilters.subdivisions.join(',');
+        console.log('🏡 Subdivisions:', apiFilters.subdivisions);
+      }
+      
+      if (filters.minPrice !== "No Preference") {
+        apiFilters.minPrice = parsePrice(filters.minPrice);
+      }
+      
+      if (filters.maxPrice !== "No Preference") {
+        apiFilters.maxPrice = parsePrice(filters.maxPrice);
+      }
+      
+      if (filters.minBeds !== "Any") {
+        apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
+      }
+      
+      if (filters.minBaths !== "Any") {
+        apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
+      }
+      
+      if (filters.propertyTypes.length > 0) {
+        apiFilters.propertyTypes = filters.propertyTypes.join(',');
+      }
+      
+      if (filters.status) {
+        apiFilters.status = filters.status;
+      }
+      
+      if (filters.mlsSearch.trim()) {
+        apiFilters.search = filters.mlsSearch.trim();
+      }
 
-      console.log('🔍 [SEARCH] Filters being sent to API:', apiFilters);
+      console.log('\n📤 FULL API REQUEST:', apiFilters);
 
       const mlsProperties: MLSProperty[] = await fetchListings(apiFilters);
       const converted = mlsProperties.map(convertMLSToPropertyCard).filter(p => p.latitude && p.longitude);
@@ -181,9 +235,55 @@ const AdvancedSearch = () => {
       setPreviewProperties(converted);
       setTotalCount(mlsProperties.length);
       
-      console.log(`✅ [SEARCH] Found ${mlsProperties.length} properties, ${converted.length} with coordinates`);
+      // LEARN: Record the results for future optimization
+      if (filters.zones.length > 0) {
+        filters.zones.forEach((zone, idx) => {
+          filterIntelligence.recordTestResult(
+            'zones',
+            zone,
+            optimizedFilters.zones[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      if (filters.areas.length > 0) {
+        filters.areas.forEach((area, idx) => {
+          filterIntelligence.recordTestResult(
+            'areas',
+            area,
+            optimizedFilters.areas[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      if (filters.communities.length > 0) {
+        filters.communities.forEach((community, idx) => {
+          filterIntelligence.recordTestResult(
+            'communities',
+            community,
+            optimizedFilters.communities[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      if (filters.subdivisions.length > 0) {
+        filters.subdivisions.forEach((subdivision, idx) => {
+          filterIntelligence.recordTestResult(
+            'subdivisions',
+            subdivision,
+            optimizedFilters.subdivisions[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      console.log(`✅ Search complete: ${mlsProperties.length} properties, ${converted.length} with coordinates`);
     } catch (err) {
-      console.error('Error fetching preview:', err);
+      console.error('❌ Error fetching preview:', err);
+      setAiOptimizing(false);
     } finally {
       setLoading(false);
     }
@@ -238,8 +338,7 @@ const AdvancedSearch = () => {
 
   const handleMlsSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Trigger immediate search
-    fetchPreview();
+    fetchPreviewWithIntelligence();
   };
 
   const togglePropertyType = (type: string) => {
@@ -294,11 +393,13 @@ const AdvancedSearch = () => {
       }
     : { lat: 23.0545, lng: -109.7084 };
 
+  const stats = filterIntelligence.getStatistics();
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Header Bar */}
+      {/* Header Bar with AI Intelligence Indicator */}
       <div className="fixed top-16 left-0 right-0 bg-card border-b border-border z-40 shadow-sm">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -307,13 +408,29 @@ const AdvancedSearch = () => {
               Close
             </Button>
             <div>
-              <h1 className="text-xl font-bold">Advanced Property Search</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold">Advanced Property Search</h1>
+                {aiOptimizing && (
+                  <div className="flex items-center gap-1 text-purple-600 text-sm">
+                    <Sparkles className="w-4 h-4 animate-pulse" />
+                    <span>AI Optimizing...</span>
+                  </div>
+                )}
+              </div>
               <p className="text-sm text-muted-foreground">
                 {loading ? 'Searching...' : totalCount > 0 ? `${totalCount} properties found` : 'Select filters or search MLS'}
               </p>
             </div>
           </div>
           <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowIntelligenceStats(!showIntelligenceStats)}
+            >
+              <Brain className="w-4 h-4 mr-2" />
+              AI Stats
+            </Button>
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
@@ -323,16 +440,83 @@ const AdvancedSearch = () => {
             </Button>
           </div>
         </div>
+        
+        {/* AI Intelligence Stats Panel */}
+        {showIntelligenceStats && (
+          <div className="border-t border-border bg-purple-50 p-4">
+            <div className="container mx-auto">
+              <h3 className="font-bold text-purple-900 mb-2 flex items-center gap-2">
+                <Brain className="w-5 h-5" />
+                Filter Intelligence Stats
+              </h3>
+              <div className="grid grid-cols-4 gap-4 text-sm">
+                <div>
+                  <div className="font-semibold">Zones</div>
+                  <div className="text-green-600">{stats.zones.working} working</div>
+                  <div className="text-red-600">{stats.zones.notWorking} not working</div>
+                </div>
+                <div>
+                  <div className="font-semibold">Areas</div>
+                  <div className="text-green-600">{stats.areas.working} working</div>
+                  <div className="text-red-600">{stats.areas.notWorking} not working</div>
+                </div>
+                <div>
+                  <div className="font-semibold">Communities</div>
+                  <div className="text-green-600">{stats.communities.working} working</div>
+                  <div className="text-red-600">{stats.communities.notWorking} not working</div>
+                </div>
+                <div>
+                  <div className="font-semibold">Subdivisions</div>
+                  <div className="text-green-600">{stats.subdivisions.working} working</div>
+                  <div className="text-red-600">{stats.subdivisions.notWorking} not working</div>
+                </div>
+              </div>
+              <div className="mt-2 flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    const data = filterIntelligence.exportLearning();
+                    const blob = new Blob([data], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'filter-intelligence.json';
+                    a.click();
+                  }}
+                >
+                  Export Learning Data
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="destructive"
+                  onClick={() => {
+                    if (confirm('Clear all learned filter data?')) {
+                      filterIntelligence.clearLearning();
+                      setShowIntelligenceStats(false);
+                    }
+                  }}
+                >
+                  Clear Learning
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
+      {/* Rest of the component stays the same... */}
       {/* Main Content */}
       <div className="pt-32 flex h-screen">
         {/* Left Sidebar - Filters */}
         <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-6 h-[calc(100vh-8rem)]">
           
-          {/* MLS SEARCH BAR - SEARCHES ACTUAL MLS DATABASE */}
+          {/* MLS Search Bar */}
           <div className="sticky top-0 bg-card z-10 pb-4 -mt-2 border-b border-border">
-            <Label className="text-lg font-bold mb-3 block">Search MLS Database</Label>
+            <Label className="text-lg font-bold mb-3 block flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              AI-Powered MLS Search
+            </Label>
             <form onSubmit={handleMlsSearch}>
               <div className="relative">
                 <Input
@@ -354,12 +538,13 @@ const AdvancedSearch = () => {
                 )}
               </div>
             </form>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Press Enter or type to search the MLS database
+            <p className="mt-2 text-xs text-purple-600 flex items-center gap-1">
+              <Brain className="w-3 h-3" />
+              AI learns which filters work best
             </p>
           </div>
 
-          {/* UI Filter Search - Only filters checkboxes below */}
+          {/* UI Filter Search */}
           <div className="pb-4">
             <Label className="text-sm font-medium mb-2 block text-muted-foreground">Filter Checkboxes</Label>
             <div className="relative">
@@ -566,11 +751,13 @@ const AdvancedSearch = () => {
 
         {/* Right Side - Live Map Preview */}
         <div className="flex-1 relative">
-          {loading && (
+          {(loading || aiOptimizing) && (
             <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
               <div className="text-center">
                 <Loader2 className="h-12 w-12 animate-spin text-accent mb-4 mx-auto" />
-                <p className="text-muted-foreground">Searching MLS...</p>
+                <p className="text-muted-foreground">
+                  {aiOptimizing ? '🤖 AI optimizing filters...' : 'Searching MLS...'}
+                </p>
               </div>
             </div>
           )}
@@ -585,10 +772,14 @@ const AdvancedSearch = () => {
             <div className="flex items-center justify-center h-full bg-secondary">
               <div className="text-center max-w-md px-6">
                 <div className="text-6xl mb-4">🔍</div>
-                <h2 className="text-2xl font-bold mb-2">Search the MLS Database</h2>
-                <p className="text-muted-foreground">
+                <h2 className="text-2xl font-bold mb-2">AI-Powered Search</h2>
+                <p className="text-muted-foreground mb-4">
                   Use the search bar above to search by address, MLS number, or location. Or select filters from the checkboxes to preview properties on the map.
                 </p>
+                <div className="flex items-center justify-center gap-2 text-sm text-purple-600">
+                  <Brain className="w-4 h-4" />
+                  <span>AI learns which filters work best over time</span>
+                </div>
               </div>
             </div>
           )}
