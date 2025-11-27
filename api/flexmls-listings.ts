@@ -113,23 +113,14 @@ export default async function handler(
       if (!isNaN(baths)) filters.push(`BathroomsFull ge ${baths}`);
     }
 
-    // PROPERTY TYPES
+    // PROPERTY TYPES - USE ACTUAL FLEXMLS VALUES
     if (propertyTypes && typeof propertyTypes === 'string') {
       const types = propertyTypes.split(',').map(t => t.trim());
-      const typeMap: Record<string, string> = {
-        'Condos': 'Residential',
-        'Houses': 'Residential', 
-        'Land': 'Land',
-        'Commercial': 'Commercial',
-        'Fractional': 'Residential',
-        'MultiFamily': 'Residential'
-      };
-      const resoTypes = [...new Set(types.map(t => typeMap[t]).filter(Boolean))];
-      if (resoTypes.length > 0) {
-        if (resoTypes.length === 1) {
-          filters.push(`PropertyType eq '${resoTypes[0]}'`);
+      if (types.length > 0) {
+        if (types.length === 1) {
+          filters.push(`PropertyType eq '${types[0]}'`);
         } else {
-          const typeFilters = resoTypes.map(t => `PropertyType eq '${t}'`);
+          const typeFilters = types.map(t => `PropertyType eq '${t}'`);
           filters.push(`(${typeFilters.join(' or ')})`);
         }
       }
