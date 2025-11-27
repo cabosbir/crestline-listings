@@ -1,579 +1,694 @@
-// AdvancedSearch_ULTIMATE.tsx - Maximum Intelligence with Field Mapping + Auto-Fallback
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, DollarSign, Bed, Bath, Home, Search, X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import Map from '../components/Map';
-import PropertyCard from '../components/PropertyCard';
-import { 
-  getAIFieldMapping, 
-  getFieldMapping, 
-  saveFieldMapping,
-  type FieldMapping as AIFieldMapping,
-  type FilterMapping 
-} from '../services/groqFilterIntelligence_SMART';
-import { 
-  searchWithFallback, 
-  searchListings,
-  type FallbackResult 
-} from '../services/flexMlsService_FALLBACK';
+// src/pages/AdvancedSearch.tsx - ENHANCED WITH INTELLIGENT FILTER OPTIMIZATION
+// Smart filter optimization works silently in the background
 
-interface SearchNotification {
-  type: 'success' | 'info' | 'warning';
-  message: string;
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Navbar from "@/components/Navbar";
+import LeafletPropertyMap from "@/components/LeafletPropertyMap";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { X, Search, Loader2, Sparkles, Brain } from "lucide-react";
+import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
+import { filterIntelligence } from "@/services/groqFilterIntelligence";
+
+interface FilterState {
+  propertyTypes: string[];
+  status: string;
+  zones: string[];
+  areas: string[];
+  communities: string[];
+  subdivisions: string[];
+  sellerFinancing: boolean;
+  primaryView: boolean;
+  currentPrice: boolean;
+  minPrice: string;
+  maxPrice: string;
+  minBeds: string;
+  minBaths: string;
+  mlsSearch: string;
 }
 
-const AdvancedSearch: React.FC = () => {
+const AdvancedSearch = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // Search state
-  const [mlsSearch, setMlsSearch] = useState('');
-  const [selectedPropertyTypes, setSelectedPropertyTypes] = useState<string[]>(['Condos', 'Houses', 'Land']);
-  const [status, setStatus] = useState('Active');
+  const [searchParams] = useSearchParams();
   
-  // Location filters
-  const [selectedZones, setSelectedZones] = useState<string[]>([]);
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-  const [selectedCommunities, setSelectedCommunities] = useState<string[]>([]);
-  const [selectedSubdivisions, setSelectedSubdivisions] = useState<string[]>([]);
+  const [uiSearchQuery, setUiSearchQuery] = useState('');
+  const [filters, setFilters] = useState<FilterState>({
+    propertyTypes: ["Condos", "Houses", "Land"],
+    status: "Active",
+    zones: [],
+    areas: [],
+    communities: [],
+    subdivisions: [],
+    sellerFinancing: false,
+    primaryView: false,
+    currentPrice: false,
+    minPrice: "$50,000",
+    maxPrice: "$3 Million",
+    minBeds: "1+",
+    minBaths: "Any",
+    mlsSearch: "",
+  });
 
-  // Price & details
-  const [minPrice, setMinPrice] = useState(50000);
-  const [maxPrice, setMaxPrice] = useState(3000000);
-  const [minBeds, setMinBeds] = useState(1);
-  const [minBaths, setMinBaths] = useState(1);
-
-  // Results
-  const [properties, setProperties] = useState<any[]>([]);
+  const [previewProperties, setPreviewProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState<SearchNotification | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [aiOptimizing, setAiOptimizing] = useState(false);
+  const [showIntelligenceStats, setShowIntelligenceStats] = useState(false);
 
-  // Filter checkboxes search
-  const [filterSearch, setFilterSearch] = useState('');
+  // Load filters from URL on mount
+  useEffect(() => {
+    const urlZones = searchParams.get('zones');
+    const urlAreas = searchParams.get('areas');
+    const urlCommunities = searchParams.get('communities');
+    const urlSubdivisions = searchParams.get('subdivisions');
+    const urlMinPrice = searchParams.get('minPrice');
+    const urlMaxPrice = searchParams.get('maxPrice');
+    const urlBeds = searchParams.get('beds');
+    const urlBaths = searchParams.get('baths');
+    const urlPropertyTypes = searchParams.get('propertyTypes');
+    const urlStatus = searchParams.get('status');
+    const urlMlsSearch = searchParams.get('search');
 
-  // ============================================================================
-  // FILTER DATA
-  // ============================================================================
+    if (urlZones || urlAreas || urlCommunities || urlSubdivisions || urlMlsSearch) {
+      setFilters(prev => ({
+        ...prev,
+        zones: urlZones ? urlZones.split(',') : [],
+        areas: urlAreas ? urlAreas.split(',') : [],
+        communities: urlCommunities ? urlCommunities.split(',') : [],
+        subdivisions: urlSubdivisions ? urlSubdivisions.split(',') : [],
+        minPrice: urlMinPrice || prev.minPrice,
+        maxPrice: urlMaxPrice || prev.maxPrice,
+        minBeds: urlBeds || prev.minBeds,
+        minBaths: urlBaths || prev.minBaths,
+        propertyTypes: urlPropertyTypes ? urlPropertyTypes.split(',') : prev.propertyTypes,
+        status: urlStatus || prev.status,
+        mlsSearch: urlMlsSearch || "",
+      }));
+    }
+  }, []);
 
+  const propertyTypes = ["Condos", "Houses", "Land", "Commercial", "Fractional", "MultiFamily"];
+  
   const zones = [
-    'Cabo Corridor', 'Cabo San Lucas', 'Comondu', 'East Cape', 
-    'La Paz', 'Loreto', 'Mulege', 'Pescadero', 'San Jose del Cabo', 'Todos Santos'
+    "Cabo Corridor", "Cabo San Lucas", "Comondu", "East Cape", "La Paz",
+    "Loreto", "Mulege", "Pescadero", "San Jose del Cabo", "Todos Santos"
   ];
 
   const areas = [
-    'Corridor', 'Diamante', 'Punta Ballena', 'Quivira', 'San Jose Corridor',
-    'Beach & Marina', 'Cabo Bello', 'Downtown', 'El Tezal', 'North', 'Pedregal',
-    'East Cape North', 'East Cape South', 'La Paz', 'Loreto',
-    'San Jose Downtown', 'San Jose North', 'Todos Santos', 'Todos Santos South'
+    "Corridor", "Diamante", "Punta Ballena", "Quivira", "San Jose Corridor",
+    "Beach & Marina", "Cabo Bello", "Downtown", "El Tezal", "North",
+    "Pedregal", "East Cape North", "East Cape South", "La Paz", "Loreto",
+    "San Jose Downtown", "San Jose North", "Todos Santos", "Todos Santos South"
   ];
 
   const communities = [
-    'Cabo Bello/Santa Carmela', 'Cabo Del Sol', 'Chileno Bay/Montage',
-    'El Tezal-East', 'Misiones', 'BuenVista/LosBarilles', 'Palmilla',
-    'Pedregal', 'Querencia', 'San Jose Corridor', 'Ventanas'
+    "Cabo Bello/Santa Carmela", "Cabo Del Sol", "Chileno Bay/Montage", 
+    "El Tezal-East", "Misiones", "BuenVista/LosBarilles", "Palmilla", 
+    "Pedregal", "Querencia", "San Jose Corridor", "Ventanas"
   ];
 
   const subdivisions = [
-    'Abasolo', 'Alba Residences', 'Altamar', 'Aqua Viva', 'Auberge Residences',
-    'Cabo Bello', 'Cabo del Sol', 'Cabo Real', 'Capella Pedregal', 'Casa del Mar',
-    'Chileno Bay', 'Club Campestre', 'Copala', 'Costa Palmas', 'Diamante'
+    "Abasolo", "Alba Residences", "Altamar", "Aqua Viva", "Auberge Residences",
+    "Cabo Bello", "Cabo del Sol", "Cabo Real", "Capella Pedregal", "Casa del Mar",
+    "Chileno Bay", "Club Campestre", "Copala", "Costa Palmas", "Diamante",
+    "El Dorado", "El Encanto", "El Pedregal", "El Tezal", "Esperanza",
+    "Fonatur", "Four Seasons", "Fundadores", "Hacienda", "La Laguna",
+    "Las Ventanas", "Montage", "One&Only Palmilla", "Palmilla", "Pedregal",
+    "Puerto Los Cabos", "Querencia", "Quivira", "Rancho San Lucas", "San Jose Corridor",
+    "Santa Maria", "St. Regis", "Ventanas al Paraiso", "Villas del Mar", "Waldorf Astoria"
   ];
 
-  // ============================================================================
-  // INTELLIGENT SEARCH FUNCTION
-  // ============================================================================
+  const priceOptions = [
+    "No Preference", "$50,000", "$100,000", "$200,000", "$300,000", "$400,000",
+    "$500,000", "$600,000", "$700,000", "$800,000", "$900,000", "$1 Million",
+    "$1.5 Million", "$2 Million", "$2.5 Million", "$3 Million", "$4 Million",
+    "$5 Million", "$7.5 Million", "$10 Million"
+  ];
 
-  const handleSearch = async () => {
-    setLoading(true);
-    setNotification(null);
+  const bedsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
+  const bathsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
 
-    try {
-      // Build base filters
-      const baseFilters = {
-        minPrice,
-        maxPrice,
-        bedrooms: minBeds,
-        bathrooms: minBaths,
-        propertyTypes: selectedPropertyTypes,
-        status,
-        search: mlsSearch || undefined,
-      };
+  const matchesUiSearch = (text: string) => {
+    if (!uiSearchQuery) return true;
+    return text.toLowerCase().includes(uiSearchQuery.toLowerCase());
+  };
 
-      // Handle single-selection location filters with intelligence
-      const locationFilters = [
-        ...selectedZones.map(z => ({ value: z, field: 'zone' as const })),
-        ...selectedAreas.map(a => ({ value: a, field: 'area' as const })),
-        ...selectedCommunities.map(c => ({ value: c, field: 'community' as const })),
-        ...selectedSubdivisions.map(s => ({ value: s, field: 'subdivision' as const })),
-      ];
+  const filteredZones = zones.filter(matchesUiSearch);
+  const filteredAreas = areas.filter(matchesUiSearch);
+  const filteredCommunities = communities.filter(matchesUiSearch);
+  const filteredSubdivisions = subdivisions.filter(matchesUiSearch);
 
-      // If no location filters, do simple search
-      if (locationFilters.length === 0) {
-        const results = await searchListings(baseFilters);
-        setProperties(results);
-        setNotification({
-          type: 'success',
-          message: `Found ${results.length} properties`
-        });
-        setLoading(false);
-        return;
-      }
-
-      // INTELLIGENT MULTI-FILTER SEARCH
-      if (locationFilters.length === 1) {
-        // Single location filter - use full intelligence
-        await handleSingleLocationSearch(locationFilters[0], baseFilters);
+  // ENHANCED: Fetch preview with AI optimization
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      if (filters.zones.length > 0 || filters.areas.length > 0 || 
+          filters.communities.length > 0 || filters.subdivisions.length > 0 ||
+          filters.mlsSearch.trim() !== "") {
+        fetchPreviewWithIntelligence();
       } else {
-        // Multiple location filters - combine with OR logic
-        await handleMultipleLocationSearch(locationFilters, baseFilters);
+        setPreviewProperties([]);
+        setTotalCount(0);
       }
-    } catch (error) {
-      console.error('Search error:', error);
-      setNotification({
-        type: 'warning',
-        message: 'Search failed. Please try again.'
+    }, 1000);
+
+    return () => clearTimeout(debounce);
+  }, [filters]);
+
+  const fetchPreviewWithIntelligence = async () => {
+    setLoading(true);
+    setAiOptimizing(true);
+    
+    try {
+      console.log('🤖 Optimizing filters with AI...');
+      
+      // Use Groq to optimize the filter values
+      const optimizedFilters = await filterIntelligence.optimizeAllFilters({
+        zones: filters.zones,
+        areas: filters.areas,
+        communities: filters.communities,
+        subdivisions: filters.subdivisions
       });
+
+      console.log('✨ AI Optimized Filters:', optimizedFilters);
+      setAiOptimizing(false);
+
+      // Build API filters with CORRECTED parameter names (singular!)
+      const apiFilters: any = {};
+      
+      if (optimizedFilters.zones.length > 0) {
+        apiFilters.city = optimizedFilters.zones.join(',');
+        console.log('🏙️ Zones (as city):', apiFilters.city);
+      }
+      
+      if (optimizedFilters.areas.length > 0) {
+        // Try both plural and singular - the API might accept either
+        apiFilters.areas = optimizedFilters.areas.join(',');
+        console.log('📍 Areas:', apiFilters.areas);
+      }
+      
+      if (optimizedFilters.communities.length > 0) {
+        apiFilters.communities = optimizedFilters.communities.join(',');
+        console.log('🏘️ Communities:', apiFilters.communities);
+      }
+      
+      if (optimizedFilters.subdivisions.length > 0) {
+        apiFilters.subdivisions = optimizedFilters.subdivisions.join(',');
+        console.log('🏡 Subdivisions:', apiFilters.subdivisions);
+      }
+      
+      if (filters.minPrice !== "No Preference") {
+        apiFilters.minPrice = parsePrice(filters.minPrice);
+      }
+      
+      if (filters.maxPrice !== "No Preference") {
+        apiFilters.maxPrice = parsePrice(filters.maxPrice);
+      }
+      
+      if (filters.minBeds !== "Any") {
+        apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
+      }
+      
+      if (filters.minBaths !== "Any") {
+        apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
+      }
+      
+      if (filters.propertyTypes.length > 0) {
+        apiFilters.propertyTypes = filters.propertyTypes.join(',');
+      }
+      
+      if (filters.status) {
+        apiFilters.status = filters.status;
+      }
+      
+      if (filters.mlsSearch.trim()) {
+        apiFilters.search = filters.mlsSearch.trim();
+      }
+
+      console.log('\n📤 FULL API REQUEST:', apiFilters);
+
+      const mlsProperties: MLSProperty[] = await fetchListings(apiFilters);
+      const converted = mlsProperties.map(convertMLSToPropertyCard).filter(p => p.latitude && p.longitude);
+      
+      setPreviewProperties(converted);
+      setTotalCount(mlsProperties.length);
+      
+      // LEARN: Record the results for future optimization
+      if (filters.zones.length > 0) {
+        filters.zones.forEach((zone, idx) => {
+          filterIntelligence.recordTestResult(
+            'zones',
+            zone,
+            optimizedFilters.zones[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      if (filters.areas.length > 0) {
+        filters.areas.forEach((area, idx) => {
+          filterIntelligence.recordTestResult(
+            'areas',
+            area,
+            optimizedFilters.areas[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      if (filters.communities.length > 0) {
+        filters.communities.forEach((community, idx) => {
+          filterIntelligence.recordTestResult(
+            'communities',
+            community,
+            optimizedFilters.communities[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      if (filters.subdivisions.length > 0) {
+        filters.subdivisions.forEach((subdivision, idx) => {
+          filterIntelligence.recordTestResult(
+            'subdivisions',
+            subdivision,
+            optimizedFilters.subdivisions[idx],
+            mlsProperties.length
+          );
+        });
+      }
+      
+      console.log(`✅ Search complete: ${mlsProperties.length} properties, ${converted.length} with coordinates`);
+    } catch (err) {
+      console.error('❌ Error fetching preview:', err);
+      setAiOptimizing(false);
     } finally {
       setLoading(false);
     }
   };
 
-  // Single location search with full AI + fallback
-  const handleSingleLocationSearch = async (
-    location: { value: string; field: 'zone' | 'area' | 'community' | 'subdivision' },
-    baseFilters: any
-  ) => {
-    console.log(`\n🧠 INTELLIGENT SEARCH for: "${location.value}" (${location.field})`);
-
-    // STEP 1: Check for stored field mapping
-    const storedMapping = getFieldMapping(location.value);
-    if (storedMapping) {
-      console.log(`💡 Using stored mapping:`, storedMapping);
-      const filters = buildFiltersFromMapping(storedMapping, baseFilters);
-      const results = await searchListings(filters);
-      
-      if (results.length > 0) {
-        setProperties(results);
-        setNotification({
-          type: 'success',
-          message: `Found ${results.length} properties in ${location.value}`
-        });
-        return;
-      }
-    }
-
-    // STEP 2: Ask Groq for field mapping
-    console.log(`🤖 Asking Groq for field mapping...`);
-    const aiMapping = await getAIFieldMapping(location.value, location.field);
-    
-    if (aiMapping.suggestedField !== location.field && aiMapping.confidence > 70) {
-      console.log(`✨ Groq suggests using ${aiMapping.suggestedField} instead of ${location.field}`);
-      
-      // Try Groq's suggestion
-      const filters = {
-        ...baseFilters,
-        ...(aiMapping.suggestedField === 'zone' && { city: aiMapping.value }),
-        ...(aiMapping.suggestedField === 'area' && { 
-          area: aiMapping.value,
-          ...(aiMapping.parentZone && { city: aiMapping.parentZone })
-        }),
-        ...(aiMapping.suggestedField === 'community' && { community: aiMapping.value }),
-        ...(aiMapping.suggestedField === 'subdivision' && { subdivision: aiMapping.value }),
-      };
-
-      const results = await searchListings(filters);
-      
-      if (results.length > 0) {
-        setProperties(results);
-        saveFieldMapping(location.value, {
-          field: aiMapping.suggestedField,
-          value: aiMapping.value,
-          parentZone: aiMapping.parentZone,
-        });
-        setNotification({
-          type: 'info',
-          message: `Found ${results.length} properties (searched as ${aiMapping.suggestedField})`
-        });
-        return;
-      }
-    }
-
-    // STEP 3: Auto-fallback search
-    console.log(`🔄 Starting auto-fallback search...`);
-    const filters = {
-      ...baseFilters,
-      ...(location.field === 'zone' && { city: location.value }),
-      ...(location.field === 'area' && { area: location.value }),
-      ...(location.field === 'community' && { community: location.value }),
-      ...(location.field === 'subdivision' && { subdivision: location.value }),
-    };
-
-    const fallbackResult = await searchWithFallback(filters, location.value, location.field);
-
-    if (fallbackResult.success) {
-      setProperties(fallbackResult.results);
-      setNotification({
-        type: 'success',
-        message: `Found ${fallbackResult.count} properties (searched as ${fallbackResult.workingField})`
-      });
-    } else {
-      setProperties([]);
-      setNotification({
-        type: 'warning',
-        message: `No properties found for "${location.value}". Tried: ${fallbackResult.attemptedFields.map(a => a.field).join(', ')}`
-      });
-    }
+  const parsePrice = (priceStr: string | undefined): number | undefined => {
+    if (!priceStr || priceStr === "No Preference") return undefined;
+    const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
+    const num = parseFloat(cleaned);
+    if (isNaN(num)) return undefined;
+    return priceStr.includes('Million') ? num * 1000000 : num;
   };
 
-  // Multiple location search - combine results
-  const handleMultipleLocationSearch = async (
-    locations: Array<{ value: string; field: 'zone' | 'area' | 'community' | 'subdivision' }>,
-    baseFilters: any
-  ) => {
-    console.log(`\n🔄 Searching ${locations.length} locations...`);
-    
-    const allResults: any[] = [];
-    const seen = new Set<string>();
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (filters.zones.length > 0) params.append('zones', filters.zones.join(','));
+    if (filters.areas.length > 0) params.append('areas', filters.areas.join(','));
+    if (filters.communities.length > 0) params.append('communities', filters.communities.join(','));
+    if (filters.subdivisions.length > 0) params.append('subdivisions', filters.subdivisions.join(','));
+    if (filters.minPrice !== "No Preference") params.append('minPrice', filters.minPrice);
+    if (filters.maxPrice !== "No Preference") params.append('maxPrice', filters.maxPrice);
+    if (filters.minBeds !== "Any") params.append('beds', filters.minBeds);
+    if (filters.minBaths !== "Any") params.append('baths', filters.minBaths);
+    if (filters.propertyTypes.length > 0) params.append('propertyTypes', filters.propertyTypes.join(','));
+    if (filters.status) params.append('status', filters.status);
+    if (filters.mlsSearch.trim()) params.append('search', filters.mlsSearch.trim());
 
-    for (const location of locations) {
-      const storedMapping = getFieldMapping(location.value);
-      const filters = storedMapping
-        ? buildFiltersFromMapping(storedMapping, baseFilters)
-        : {
-            ...baseFilters,
-            ...(location.field === 'zone' && { city: location.value }),
-            ...(location.field === 'area' && { area: location.value }),
-            ...(location.field === 'community' && { community: location.value }),
-            ...(location.field === 'subdivision' && { subdivision: location.value }),
-          };
+    navigate(`/properties?${params.toString()}`);
+  };
 
-      const results = await searchListings(filters);
-      
-      // Deduplicate by ListingId
-      for (const result of results) {
-        if (!seen.has(result.ListingId)) {
-          seen.add(result.ListingId);
-          allResults.push(result);
-        }
-      }
-    }
-
-    setProperties(allResults);
-    setNotification({
-      type: 'success',
-      message: `Found ${allResults.length} properties across ${locations.length} locations`
+  const handleReset = () => {
+    setFilters({
+      propertyTypes: ["Condos", "Houses", "Land"],
+      status: "Active",
+      zones: [],
+      areas: [],
+      communities: [],
+      subdivisions: [],
+      sellerFinancing: false,
+      primaryView: false,
+      currentPrice: false,
+      minPrice: "$50,000",
+      maxPrice: "$3 Million",
+      minBeds: "1+",
+      minBaths: "Any",
+      mlsSearch: "",
     });
+    setPreviewProperties([]);
+    setTotalCount(0);
+    setUiSearchQuery('');
   };
 
-  // Build filters from stored mapping
-  const buildFiltersFromMapping = (mapping: FilterMapping, baseFilters: any) => {
-    return {
-      ...baseFilters,
-      ...(mapping.field === 'zone' && { city: mapping.value }),
-      ...(mapping.field === 'area' && { 
-        area: mapping.value,
-        ...(mapping.parentZone && { city: mapping.parentZone })
-      }),
-      ...(mapping.field === 'community' && { community: mapping.value }),
-      ...(mapping.field === 'subdivision' && { subdivision: mapping.value }),
-    };
+  const handleMlsSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchPreviewWithIntelligence();
   };
 
-  // ============================================================================
-  // RENDER
-  // ============================================================================
+  const togglePropertyType = (type: string) => {
+    setFilters(prev => ({
+      ...prev,
+      propertyTypes: prev.propertyTypes.includes(type)
+        ? prev.propertyTypes.filter(t => t !== type)
+        : [...prev.propertyTypes, type]
+    }));
+  };
+
+  const toggleZone = (zone: string) => {
+    setFilters(prev => ({
+      ...prev,
+      zones: prev.zones.includes(zone)
+        ? prev.zones.filter(z => z !== zone)
+        : [...prev.zones, zone]
+    }));
+  };
+
+  const toggleArea = (area: string) => {
+    setFilters(prev => ({
+      ...prev,
+      areas: prev.areas.includes(area)
+        ? prev.areas.filter(a => a !== area)
+        : [...prev.areas, area]
+    }));
+  };
+
+  const toggleCommunity = (community: string) => {
+    setFilters(prev => ({
+      ...prev,
+      communities: prev.communities.includes(community)
+        ? prev.communities.filter(c => c !== community)
+        : [...prev.communities, community]
+    }));
+  };
+
+  const toggleSubdivision = (subdivision: string) => {
+    setFilters(prev => ({
+      ...prev,
+      subdivisions: prev.subdivisions.includes(subdivision)
+        ? prev.subdivisions.filter(s => s !== subdivision)
+        : [...prev.subdivisions, subdivision]
+    }));
+  };
+
+  const mapCenter = previewProperties.length > 0
+    ? {
+        lat: previewProperties.reduce((sum, p) => sum + p.latitude, 0) / previewProperties.length,
+        lng: previewProperties.reduce((sum, p) => sum + p.longitude, 0) / previewProperties.length
+      }
+    : { lat: 23.0545, lng: -109.7084 };
+
+  const stats = filterIntelligence.getStatistics();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Advanced Search</h1>
-            <p className="text-sm text-gray-600">Select filters or search MLS</p>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+
+      {/* Header Bar with AI Intelligence Indicator */}
+      <div className="fixed top-16 left-0 right-0 bg-card border-b border-border z-40 shadow-sm">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/properties')}>
+              <X className="w-4 h-4 mr-2" />
+              Close
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold">Advanced Property Search</h1>
+              <p className="text-sm text-muted-foreground">
+                {loading ? 'Searching...' : totalCount > 0 ? `${totalCount} properties found` : 'Select filters or search MLS'}
+              </p>
+            </div>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => {
-                setSelectedZones([]);
-                setSelectedAreas([]);
-                setSelectedCommunities([]);
-                setSelectedSubdivisions([]);
-                setMlsSearch('');
-                setProperties([]);
-                setNotification(null);
-              }}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
-            >
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleReset}>
               Reset
-            </button>
-            <button
-              onClick={handleSearch}
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Searching...
-                </>
-              ) : (
-                <>
-                  <Search className="w-4 h-4" />
-                  View {properties.length} Results
-                </>
-              )}
-            </button>
+            </Button>
+            <Button onClick={handleSearch} disabled={totalCount === 0}>
+              <Search className="w-4 h-4 mr-2" />
+              View {totalCount} Results
+            </Button>
           </div>
         </div>
-
-        {/* Notification */}
-        {notification && (
-          <div className={`max-w-7xl mx-auto px-4 pb-4`}>
-            <div className={`p-3 rounded-lg flex items-center gap-2 ${
-              notification.type === 'success' ? 'bg-green-50 text-green-800' :
-              notification.type === 'info' ? 'bg-blue-50 text-blue-800' :
-              'bg-yellow-50 text-yellow-800'
-            }`}>
-              {notification.type === 'success' && <CheckCircle2 className="w-5 h-5" />}
-              {notification.type === 'warning' && <AlertCircle className="w-5 h-5" />}
-              <span className="text-sm font-medium">{notification.message}</span>
-            </div>
-          </div>
-        )}
       </div>
 
-      <div className="max-w-7xl mx-auto p-4 flex gap-6">
-        {/* Filters Sidebar */}
-        <div className="w-80 bg-white rounded-lg shadow-sm p-6 h-fit sticky top-24">
-          {/* MLS Search */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Search MLS Database
-            </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                value={mlsSearch}
-                onChange={(e) => setMlsSearch(e.target.value)}
-                placeholder="Search by address, MLS#, location..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+      {/* Main Content */}
+      <div className="pt-32 flex h-screen">
+        {/* Left Sidebar - Filters */}
+        <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-6 h-[calc(100vh-8rem)]">
+          
+          {/* MLS Search Bar */}
+          <div className="sticky top-0 bg-card z-10 pb-4 -mt-2 border-b border-border">
+            <Label className="text-lg font-bold mb-3 block">Search MLS Database</Label>
+            <form onSubmit={handleMlsSearch}>
+              <div className="relative">
+                <Input
+                  type="text"
+                  value={filters.mlsSearch}
+                  onChange={(e) => setFilters(prev => ({ ...prev, mlsSearch: e.target.value }))}
+                  placeholder="Search by address, MLS#, location..."
+                  className="w-full pl-10 pr-10"
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                {filters.mlsSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setFilters(prev => ({ ...prev, mlsSearch: '' }))}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </form>
           </div>
 
-          {/* Filter Search */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Filter Checkboxes
-            </label>
-            <input
-              type="text"
-              value={filterSearch}
-              onChange={(e) => setFilterSearch(e.target.value)}
-              placeholder="Filter zones, areas, communities..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
+          {/* UI Filter Search */}
+          <div className="pb-4">
+            <Label className="text-sm font-medium mb-2 block text-muted-foreground">Filter Checkboxes</Label>
+            <div className="relative">
+              <Input
+                type="text"
+                value={uiSearchQuery}
+                onChange={(e) => setUiSearchQuery(e.target.value)}
+                placeholder="Filter zones, areas, communities..."
+                className="w-full pl-10 pr-10 text-sm"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {uiSearchQuery && (
+                <button
+                  onClick={() => setUiSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Property Types */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">Property Type</label>
-            {['Condos', 'Houses', 'Land', 'Commercial', 'Fractional', 'MultiFamily'].map(type => (
-              <label key={type} className="flex items-center mb-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedPropertyTypes.includes(type)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedPropertyTypes([...selectedPropertyTypes, type]);
-                    } else {
-                      setSelectedPropertyTypes(selectedPropertyTypes.filter(t => t !== type));
-                    }
-                  }}
-                  className="w-4 h-4 text-blue-600 rounded"
-                />
-                <span className="ml-2 text-sm text-gray-700">{type}</span>
-              </label>
-            ))}
-          </div>
-
-          {/* Zone */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Zone ({selectedZones.length} selected)
-            </label>
-            <div className="max-h-40 overflow-y-auto">
-              {zones.filter(z => z.toLowerCase().includes(filterSearch.toLowerCase())).map(zone => (
-                <label key={zone} className="flex items-center mb-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedZones.includes(zone)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedZones([...selectedZones, zone]);
-                      } else {
-                        setSelectedZones(selectedZones.filter(z => z !== zone));
-                      }
-                    }}
-                    className="w-4 h-4 text-blue-600 rounded"
+          <div>
+            <Label className="text-lg font-bold mb-3 block">Property Type</Label>
+            <div className="space-y-2">
+              {propertyTypes.map(type => (
+                <div key={type} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`type-${type}`}
+                    checked={filters.propertyTypes.includes(type)}
+                    onCheckedChange={() => togglePropertyType(type)}
                   />
-                  <span className="ml-2 text-sm text-gray-700">{zone}</span>
-                </label>
+                  <Label htmlFor={`type-${type}`} className="cursor-pointer">{type}</Label>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Area */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Area ({selectedAreas.length} selected)
-            </label>
-            <div className="max-h-40 overflow-y-auto">
-              {areas.filter(a => a.toLowerCase().includes(filterSearch.toLowerCase())).map(area => (
-                <label key={area} className="flex items-center mb-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedAreas.includes(area)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedAreas([...selectedAreas, area]);
-                      } else {
-                        setSelectedAreas(selectedAreas.filter(a => a !== area));
-                      }
-                    }}
-                    className="w-4 h-4 text-blue-600 rounded"
+          {/* Status */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">Status</Label>
+            <select
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              className="w-full border border-border rounded px-3 py-2"
+            >
+              <option>Active</option>
+              <option>Pending</option>
+              <option>Closed</option>
+            </select>
+          </div>
+
+          {/* Zones */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">
+              Zone ({filters.zones.length} selected)
+            </Label>
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+              {filteredZones.map(zone => (
+                <div key={zone} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`zone-${zone}`}
+                    checked={filters.zones.includes(zone)}
+                    onCheckedChange={() => toggleZone(zone)}
                   />
-                  <span className="ml-2 text-sm text-gray-700">{area}</span>
-                </label>
+                  <Label htmlFor={`zone-${zone}`} className="cursor-pointer text-sm">{zone}</Label>
+                </div>
               ))}
+              {filteredZones.length === 0 && uiSearchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No zones match "{uiSearchQuery}"</p>
+              )}
             </div>
           </div>
 
-          {/* Community */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Community ({selectedCommunities.length} selected)
-            </label>
-            <div className="max-h-40 overflow-y-auto">
-              {communities.filter(c => c.toLowerCase().includes(filterSearch.toLowerCase())).map(community => (
-                <label key={community} className="flex items-center mb-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedCommunities.includes(community)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedCommunities([...selectedCommunities, community]);
-                      } else {
-                        setSelectedCommunities(selectedCommunities.filter(c => c !== community));
-                      }
-                    }}
-                    className="w-4 h-4 text-blue-600 rounded"
+          {/* Areas */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">
+              Area ({filters.areas.length} selected)
+            </Label>
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+              {filteredAreas.map(area => (
+                <div key={area} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`area-${area}`}
+                    checked={filters.areas.includes(area)}
+                    onCheckedChange={() => toggleArea(area)}
                   />
-                  <span className="ml-2 text-sm text-gray-700">{community}</span>
-                </label>
+                  <Label htmlFor={`area-${area}`} className="cursor-pointer text-sm">{area}</Label>
+                </div>
               ))}
+              {filteredAreas.length === 0 && uiSearchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No areas match "{uiSearchQuery}"</p>
+              )}
             </div>
           </div>
 
-          {/* Subdivision */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Subdivision ({selectedSubdivisions.length} selected)
-            </label>
-            <div className="max-h-40 overflow-y-auto">
-              {subdivisions.filter(s => s.toLowerCase().includes(filterSearch.toLowerCase())).map(subdivision => (
-                <label key={subdivision} className="flex items-center mb-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedSubdivisions.includes(subdivision)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedSubdivisions([...selectedSubdivisions, subdivision]);
-                      } else {
-                        setSelectedSubdivisions(selectedSubdivisions.filter(s => s !== subdivision));
-                      }
-                    }}
-                    className="w-4 h-4 text-blue-600 rounded"
+          {/* Communities */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">
+              Community ({filters.communities.length} selected)
+            </Label>
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+              {filteredCommunities.map(community => (
+                <div key={community} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`community-${community}`}
+                    checked={filters.communities.includes(community)}
+                    onCheckedChange={() => toggleCommunity(community)}
                   />
-                  <span className="ml-2 text-sm text-gray-700">{subdivision}</span>
-                </label>
+                  <Label htmlFor={`community-${community}`} className="cursor-pointer text-sm">{community}</Label>
+                </div>
               ))}
+              {filteredCommunities.length === 0 && uiSearchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No communities match "{uiSearchQuery}"</p>
+              )}
+            </div>
+          </div>
+
+          {/* Subdivisions */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">
+              Subdivision ({filters.subdivisions.length} selected)
+            </Label>
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+              {filteredSubdivisions.map(subdivision => (
+                <div key={subdivision} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`subdivision-${subdivision}`}
+                    checked={filters.subdivisions.includes(subdivision)}
+                    onCheckedChange={() => toggleSubdivision(subdivision)}
+                  />
+                  <Label htmlFor={`subdivision-${subdivision}`} className="cursor-pointer text-sm">{subdivision}</Label>
+                </div>
+              ))}
+              {filteredSubdivisions.length === 0 && uiSearchQuery && (
+                <p className="text-sm text-muted-foreground italic py-2">No subdivisions match "{uiSearchQuery}"</p>
+              )}
             </div>
           </div>
 
           {/* Price Range */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Price Range</label>
-            <div className="grid grid-cols-2 gap-2">
-              <select
-                value={minPrice}
-                onChange={(e) => setMinPrice(Number(e.target.value))}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value={50000}>$50,000</option>
-                <option value={100000}>$100,000</option>
-                <option value={200000}>$200,000</option>
-                <option value={500000}>$500,000</option>
-              </select>
-              <select
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value={1000000}>$1 Million</option>
-                <option value={2000000}>$2 Million</option>
-                <option value={3000000}>$3 Million</option>
-                <option value={5000000}>$5 Million</option>
-              </select>
+          <div>
+            <Label className="text-lg font-bold mb-3 block">Price Range</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">Min Price</Label>
+                <select
+                  value={filters.minPrice}
+                  onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                >
+                  {priceOptions.map(price => (
+                    <option key={price} value={price}>{price}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">Max Price</Label>
+                <select
+                  value={filters.maxPrice}
+                  onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                >
+                  {priceOptions.map(price => (
+                    <option key={price} value={price}>{price}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* Bedrooms & Bathrooms */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Min Beds</label>
-              <select
-                value={minBeds}
-                onChange={(e) => setMinBeds(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              >
-                {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}+</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Min Baths</label>
-              <select
-                value={minBaths}
-                onChange={(e) => setMinBaths(Number(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              >
-                {[1, 2, 3, 4].map(n => <option key={n} value={n}>{n}+</option>)}
-              </select>
+          {/* Beds & Baths */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">Bedrooms & Bathrooms</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">Min Beds</Label>
+                <select
+                  value={filters.minBeds}
+                  onChange={(e) => setFilters({ ...filters, minBeds: e.target.value })}
+                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                >
+                  {bedsOptions.map(beds => (
+                    <option key={beds} value={beds}>{beds}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">Min Baths</Label>
+                <select
+                  value={filters.minBaths}
+                  onChange={(e) => setFilters({ ...filters, minBaths: e.target.value })}
+                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                >
+                  {bathsOptions.map(baths => (
+                    <option key={baths} value={baths}>{baths}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Map & Results */}
-        <div className="flex-1">
-          {properties.length === 0 && !loading ? (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-              <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Advanced Search</h3>
-              <p className="text-gray-600">
-                Use the search bar above to search by address, MLS number, or location. Or select filters from the checkboxes to preview properties on the map.
-              </p>
-            </div>
-          ) : (
-            <>
-              <Map properties={properties} />
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {properties.map(property => (
-                  <PropertyCard key={property.ListingId} property={property} />
-                ))}
+        {/* Right Side - Live Map Preview */}
+        <div className="flex-1 relative">
+          {(loading || aiOptimizing) && (
+            <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
+              <div className="text-center">
+                <Loader2 className="h-12 w-12 animate-spin text-accent mb-4 mx-auto" />
+                <p className="text-muted-foreground">Searching MLS...</p>
               </div>
-            </>
+            </div>
+          )}
+          
+          {previewProperties.length > 0 ? (
+            <LeafletPropertyMap
+              properties={previewProperties}
+              center={mapCenter}
+              zoom={11}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full bg-secondary">
+              <div className="text-center max-w-md px-6">
+                <div className="text-6xl mb-4">🔍</div>
+                <h2 className="text-2xl font-bold mb-2">Advanced Search</h2>
+                <p className="text-muted-foreground mb-4">
+                  Use the search bar above to search by address, MLS number, or location. Or select filters from the checkboxes to preview properties on the map.
+                </p>
+              </div>
+            </div>
           )}
         </div>
       </div>
