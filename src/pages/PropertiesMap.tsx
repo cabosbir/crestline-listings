@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
+import InteractivePropertyMap from "@/components/InteractivePropertyMap";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, List, Loader2, MapPin, Bed, Bath, ExternalLink } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
@@ -58,33 +59,8 @@ const PropertiesMap = () => {
 
   const center = getMapCenter();
 
-  // Build Google Maps URL with property pins (limit to 50 for performance)
-  const buildMapUrlWithPins = () => {
-    const mapProperties = properties.slice(0, 50);
-    
-    // Create markers for Google Maps Static API
-    const markersParam = mapProperties
-      .map((p, i) => {
-        const label = String.fromCharCode(65 + (i % 26)); // A-Z labels
-        return `markers=color:red%7Clabel:${i + 1}%7C${p.latitude},${p.longitude}`;
-      })
-      .join('&');
-    
-    // Use Google Static Maps with markers
-    const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap';
-    const params = `?center=${center.lat},${center.lng}&zoom=11&size=640x640&${markersParam}`;
-    
-    return `${baseUrl}${params}`;
-  };
-
-  // Build embed URL with center point
-  const buildEmbedMapUrl = () => {
-    return `https://maps.google.com/maps?q=${center.lat},${center.lng}&t=&z=11&ie=UTF8&iwloc=&output=embed`;
-  };
-
   // Open FlexMLS with all properties on map
   const openFlexMLSMap = () => {
-    // Build search with current filters to show in FlexMLS
     const params = new URLSearchParams();
     if (searchParams.get('city')) params.append('Location', searchParams.get('city')!);
     
@@ -116,9 +92,9 @@ const PropertiesMap = () => {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Map View</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Interactive Map View</h1>
           <p className="text-xl text-muted-foreground">
-            {loading ? 'Loading properties...' : `Showing ${Math.min(properties.length, 50)} of ${properties.length} properties on map`}
+            {loading ? 'Loading properties...' : `Showing ${properties.length} properties • Click any pin to view details`}
           </p>
         </div>
       </section>
@@ -143,49 +119,32 @@ const PropertiesMap = () => {
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 gap-6">
+              {/* INTERACTIVE MAP */}
               <div className="lg:col-span-2">
                 <div className="sticky top-4">
-                  <div className="bg-secondary rounded-xl overflow-hidden border border-border shadow-lg">
-                    {/* Google Maps Embed */}
-                    <iframe
-                      src={buildEmbedMapUrl()}
-                      className="w-full h-[600px] border-0"
-                      title="Properties Map"
-                      allowFullScreen
-                      loading="lazy"
-                    />
-                    
-                    {/* Map Overlay with Property Markers */}
-                    <div className="relative">
-                      <div className="absolute inset-0 pointer-events-none">
-                        {/* This would need a proper mapping library for clickable pins */}
-                      </div>
+                  <InteractivePropertyMap 
+                    properties={properties}
+                    center={center}
+                    zoom={11}
+                  />
+                  
+                  <div className="mt-4 p-4 bg-card rounded-xl border border-border">
+                    <div className="text-sm font-semibold mb-2">
+                      📍 {properties.length} properties with location data
                     </div>
-
-                    <div className="p-4 bg-card">
-                      <div className="text-sm font-semibold mb-2">
-                        📍 Showing {Math.min(properties.length, 50)} properties with location data
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Properties are numbered in the sidebar. Click any property card to view full details.
-                      </p>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={openFlexMLSMap}
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        View Interactive Map in FlexMLS (with clickable pins)
-                      </Button>
-                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      • Click any red pin to view property details<br/>
+                      • Hover over pins to see quick info<br/>
+                      • Properties are numbered matching the sidebar
+                    </p>
                   </div>
                 </div>
               </div>
 
+              {/* PROPERTY LIST SIDEBAR */}
               <div className="lg:col-span-1">
-                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                  {properties.slice(0, 50).map((property, index) => (
+                <div className="space-y-4 max-h-[680px] overflow-y-auto pr-2">
+                  {properties.map((property, index) => (
                     <div
                       key={property.id}
                       className={`bg-card border-2 rounded-xl p-4 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
@@ -195,7 +154,7 @@ const PropertiesMap = () => {
                       }`}
                       onClick={() => {
                         setSelectedProperty(property);
-                        navigate(`/property/${property.id}`);
+                        navigate(`/property/${property.mlsNumber || property.id}`);
                       }}
                       onMouseEnter={() => setHoveredProperty(property)}
                       onMouseLeave={() => setHoveredProperty(null)}
@@ -241,31 +200,13 @@ const PropertiesMap = () => {
                         className="w-full" 
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/property/${property.id}`);
+                          navigate(`/property/${property.mlsNumber || property.id}`);
                         }}
                       >
                         View Details
                       </Button>
                     </div>
                   ))}
-                  
-                  {properties.length > 50 && (
-                    <div className="bg-accent/10 border border-accent rounded-xl p-4 text-center">
-                      <p className="text-sm font-semibold mb-2">
-                        Showing first 50 of {properties.length} properties
-                      </p>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Add more filters to narrow your search
-                      </p>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => navigate('/properties')}
-                      >
-                        Back to Filters
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
