@@ -35,9 +35,11 @@ const Properties = () => {
     fetchTotalCount();
   }, []);
 
-  // Handle URL parameters for direct MLS/address search
+  // Handle URL parameters for searches and filters
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    
+    // Check for direct search (MLS number, address, text search)
     const mlsNumberParam = params.get('mlsNumber');
     const addressParam = params.get('address');
     const searchParam = params.get('search');
@@ -46,9 +48,47 @@ const Properties = () => {
       const searchQuery = mlsNumberParam || addressParam || searchParam || "";
       setActiveSearchQuery(searchQuery);
       performUniversalSearch(searchQuery);
-      setFiltersOpen(false); // Close filters when showing search results
+      setFiltersOpen(false);
+      return;
+    }
+    
+    // 🔥 NEW: Check for filter params from AdvancedSearch
+    const zonesParam = params.get('zones');
+    const areasParam = params.get('areas');
+    const communitiesParam = params.get('communities');
+    const minPriceParam = params.get('minPrice');
+    const maxPriceParam = params.get('maxPrice');
+    const bedsParam = params.get('beds');
+    const bathsParam = params.get('baths');
+    const propertyTypesParam = params.get('propertyTypes');
+    const statusParam = params.get('status');
+    
+    if (zonesParam || areasParam || communitiesParam) {
+      // Build filters object from URL params
+      const apiFilters: any = {};
+      
+      if (zonesParam) apiFilters.city = zonesParam.split(',');
+      if (areasParam) apiFilters.areas = areasParam.split(',');
+      if (communitiesParam) apiFilters.communities = communitiesParam.split(',');
+      if (minPriceParam) apiFilters.minPrice = parsePrice(minPriceParam);
+      if (maxPriceParam) apiFilters.maxPrice = parsePrice(maxPriceParam);
+      if (bedsParam) apiFilters.bedrooms = parseInt(bedsParam.replace('+', ''));
+      if (bathsParam) apiFilters.bathrooms = parseInt(bathsParam.replace('+', ''));
+      if (propertyTypesParam) apiFilters.propertyTypes = propertyTypesParam.split(',');
+      if (statusParam) apiFilters.status = statusParam;
+      
+      console.log('🔍 [PROPERTIES] Loading from AdvancedSearch filters:', apiFilters);
+      loadProperties(apiFilters);
     }
   }, [location.search]);
+
+  const parsePrice = (priceStr: string): number => {
+    if (!priceStr || priceStr === "No Preference") return 0;
+    const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
+    const num = parseFloat(cleaned);
+    if (isNaN(num)) return 0;
+    return priceStr.includes('Million') ? num * 1000000 : num;
+  };
 
   const loadProperties = async (filters?: any) => {
     setLoading(true);
@@ -128,8 +168,18 @@ const Properties = () => {
     setActiveSearchQuery("");
     setCurrentPage(1);
     setError(null);
-    setFiltersOpen(true); // Re-open filters on reset
+    setFiltersOpen(true);
     navigate('/properties');
+  };
+
+  // 🔥 NEW: Check if user came from AdvancedSearch
+  const cameFromAdvancedSearch = () => {
+    const params = new URLSearchParams(location.search);
+    return params.has('zones') || params.has('areas') || params.has('communities');
+  };
+
+  const goBackToFilters = () => {
+    navigate(`/search${location.search}`); // Preserve filters in URL
   };
 
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
@@ -252,12 +302,22 @@ const Properties = () => {
                     <p className="text-muted-foreground">
                       Showing {propertiesWithCoords.length} of {properties.length} properties on map
                     </p>
-                    <Button 
-                      variant="outline" 
-                      onClick={handleReset}
-                    >
-                      Clear Search
-                    </Button>
+                    <div className="flex gap-2">
+                      {cameFromAdvancedSearch() && (
+                        <Button 
+                          variant="outline" 
+                          onClick={goBackToFilters}
+                        >
+                          ← Back to Filters
+                        </Button>
+                      )}
+                      <Button 
+                        variant="outline" 
+                        onClick={handleReset}
+                      >
+                        Clear Search
+                      </Button>
+                    </div>
                   </div>
 
                   {propertiesWithCoords.length === 0 ? (
@@ -314,12 +374,22 @@ const Properties = () => {
                     <p className="text-muted-foreground">
                       Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, properties.length)} of {properties.length} properties
                     </p>
-                    <Button 
-                      variant="outline" 
-                      onClick={handleReset}
-                    >
-                      Clear Search
-                    </Button>
+                    <div className="flex gap-2">
+                      {cameFromAdvancedSearch() && (
+                        <Button 
+                          variant="outline" 
+                          onClick={goBackToFilters}
+                        >
+                          ← Back to Filters
+                        </Button>
+                      )}
+                      <Button 
+                        variant="outline" 
+                        onClick={handleReset}
+                      >
+                        Clear Search
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">

@@ -1,6 +1,6 @@
 // src/pages/AdvancedSearch.tsx - Full-page filter experience with live map
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import LeafletPropertyMap from "@/components/LeafletPropertyMap";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ interface FilterState {
 
 const AdvancedSearch = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: ["Condos", "Houses", "Land"],
     status: "Active",
@@ -39,6 +40,34 @@ const AdvancedSearch = () => {
   const [previewProperties, setPreviewProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+
+  // 🔥 NEW: Load filters from URL on mount (handles back button, bookmarks, direct links)
+  useEffect(() => {
+    const urlZones = searchParams.get('zones');
+    const urlAreas = searchParams.get('areas');
+    const urlCommunities = searchParams.get('communities');
+    const urlMinPrice = searchParams.get('minPrice');
+    const urlMaxPrice = searchParams.get('maxPrice');
+    const urlBeds = searchParams.get('beds');
+    const urlBaths = searchParams.get('baths');
+    const urlPropertyTypes = searchParams.get('propertyTypes');
+    const urlStatus = searchParams.get('status');
+
+    if (urlZones || urlAreas || urlCommunities) {
+      setFilters(prev => ({
+        ...prev,
+        zones: urlZones ? urlZones.split(',') : [],
+        areas: urlAreas ? urlAreas.split(',') : [],
+        communities: urlCommunities ? urlCommunities.split(',') : [],
+        minPrice: urlMinPrice || prev.minPrice,
+        maxPrice: urlMaxPrice || prev.maxPrice,
+        minBeds: urlBeds || prev.minBeds,
+        minBaths: urlBaths || prev.minBaths,
+        propertyTypes: urlPropertyTypes ? urlPropertyTypes.split(',') : prev.propertyTypes,
+        status: urlStatus || prev.status,
+      }));
+    }
+  }, []);
 
   // Property data
   const propertyTypes = ["Condos", "Houses", "Land", "Commercial", "Fractional", "MultiFamily"];
@@ -91,9 +120,21 @@ const AdvancedSearch = () => {
     try {
       const apiFilters: any = {};
       
-      if (filters.zones.length > 0) apiFilters.zones = filters.zones;
-      if (filters.areas.length > 0) apiFilters.areas = filters.areas;
-      if (filters.communities.length > 0) apiFilters.communities = filters.communities;
+      // Map zones to City field (FlexMLS uses City for zones)
+      if (filters.zones.length > 0) {
+        apiFilters.city = filters.zones; // Multiple cities as array
+      }
+      
+      // Map areas to MLSAreaMajor field
+      if (filters.areas.length > 0) {
+        apiFilters.areas = filters.areas;
+      }
+      
+      // Communities
+      if (filters.communities.length > 0) {
+        apiFilters.communities = filters.communities;
+      }
+      
       if (filters.minPrice !== "No Preference") apiFilters.minPrice = parsePrice(filters.minPrice);
       if (filters.maxPrice !== "No Preference") apiFilters.maxPrice = parsePrice(filters.maxPrice);
       if (filters.minBeds !== "Any") apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
@@ -101,11 +142,15 @@ const AdvancedSearch = () => {
       if (filters.propertyTypes.length > 0) apiFilters.propertyTypes = filters.propertyTypes;
       if (filters.status) apiFilters.status = filters.status;
 
+      console.log('🔍 [SEARCH] Filters being sent to API:', apiFilters);
+
       const mlsProperties: MLSProperty[] = await fetchListings(apiFilters);
       const converted = mlsProperties.map(convertMLSToPropertyCard).filter(p => p.latitude && p.longitude);
       
       setPreviewProperties(converted);
       setTotalCount(mlsProperties.length);
+      
+      console.log(`✅ [SEARCH] Found ${mlsProperties.length} properties, ${converted.length} with coordinates`);
     } catch (err) {
       console.error('Error fetching preview:', err);
     } finally {
