@@ -1,5 +1,5 @@
-// src/pages/AdvancedSearch.tsx - ENHANCED WITH GROQ INTELLIGENCE
-// This version uses AI to learn which filter values work
+// src/pages/AdvancedSearch.tsx - ENHANCED WITH INTELLIGENT FILTER OPTIMIZATION
+// Smart filter optimization works silently in the background
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -408,29 +408,13 @@ const AdvancedSearch = () => {
               Close
             </Button>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold">Advanced Property Search</h1>
-                {aiOptimizing && (
-                  <div className="flex items-center gap-1 text-purple-600 text-sm">
-                    <Sparkles className="w-4 h-4 animate-pulse" />
-                    <span>AI Optimizing...</span>
-                  </div>
-                )}
-              </div>
+              <h1 className="text-xl font-bold">Advanced Property Search</h1>
               <p className="text-sm text-muted-foreground">
                 {loading ? 'Searching...' : totalCount > 0 ? `${totalCount} properties found` : 'Select filters or search MLS'}
               </p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowIntelligenceStats(!showIntelligenceStats)}
-            >
-              <Brain className="w-4 h-4 mr-2" />
-              AI Stats
-            </Button>
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
@@ -440,72 +424,8 @@ const AdvancedSearch = () => {
             </Button>
           </div>
         </div>
-        
-        {/* AI Intelligence Stats Panel */}
-        {showIntelligenceStats && (
-          <div className="border-t border-border bg-purple-50 p-4">
-            <div className="container mx-auto">
-              <h3 className="font-bold text-purple-900 mb-2 flex items-center gap-2">
-                <Brain className="w-5 h-5" />
-                Filter Intelligence Stats
-              </h3>
-              <div className="grid grid-cols-4 gap-4 text-sm">
-                <div>
-                  <div className="font-semibold">Zones</div>
-                  <div className="text-green-600">{stats.zones.working} working</div>
-                  <div className="text-red-600">{stats.zones.notWorking} not working</div>
-                </div>
-                <div>
-                  <div className="font-semibold">Areas</div>
-                  <div className="text-green-600">{stats.areas.working} working</div>
-                  <div className="text-red-600">{stats.areas.notWorking} not working</div>
-                </div>
-                <div>
-                  <div className="font-semibold">Communities</div>
-                  <div className="text-green-600">{stats.communities.working} working</div>
-                  <div className="text-red-600">{stats.communities.notWorking} not working</div>
-                </div>
-                <div>
-                  <div className="font-semibold">Subdivisions</div>
-                  <div className="text-green-600">{stats.subdivisions.working} working</div>
-                  <div className="text-red-600">{stats.subdivisions.notWorking} not working</div>
-                </div>
-              </div>
-              <div className="mt-2 flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => {
-                    const data = filterIntelligence.exportLearning();
-                    const blob = new Blob([data], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'filter-intelligence.json';
-                    a.click();
-                  }}
-                >
-                  Export Learning Data
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="destructive"
-                  onClick={() => {
-                    if (confirm('Clear all learned filter data?')) {
-                      filterIntelligence.clearLearning();
-                      setShowIntelligenceStats(false);
-                    }
-                  }}
-                >
-                  Clear Learning
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Rest of the component stays the same... */}
       {/* Main Content */}
       <div className="pt-32 flex h-screen">
         {/* Left Sidebar - Filters */}
@@ -513,10 +433,7 @@ const AdvancedSearch = () => {
           
           {/* MLS Search Bar */}
           <div className="sticky top-0 bg-card z-10 pb-4 -mt-2 border-b border-border">
-            <Label className="text-lg font-bold mb-3 block flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-purple-600" />
-              AI-Powered MLS Search
-            </Label>
+            <Label className="text-lg font-bold mb-3 block">Search MLS Database</Label>
             <form onSubmit={handleMlsSearch}>
               <div className="relative">
                 <Input
@@ -538,10 +455,6 @@ const AdvancedSearch = () => {
                 )}
               </div>
             </form>
-            <p className="mt-2 text-xs text-purple-600 flex items-center gap-1">
-              <Brain className="w-3 h-3" />
-              AI learns which filters work best
-            </p>
           </div>
 
           {/* UI Filter Search */}
@@ -755,9 +668,7 @@ const AdvancedSearch = () => {
             <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
               <div className="text-center">
                 <Loader2 className="h-12 w-12 animate-spin text-accent mb-4 mx-auto" />
-                <p className="text-muted-foreground">
-                  {aiOptimizing ? '🤖 AI optimizing filters...' : 'Searching MLS...'}
-                </p>
+                <p className="text-muted-foreground">Searching MLS...</p>
               </div>
             </div>
           )}
@@ -772,14 +683,10 @@ const AdvancedSearch = () => {
             <div className="flex items-center justify-center h-full bg-secondary">
               <div className="text-center max-w-md px-6">
                 <div className="text-6xl mb-4">🔍</div>
-                <h2 className="text-2xl font-bold mb-2">AI-Powered Search</h2>
+                <h2 className="text-2xl font-bold mb-2">Advanced Search</h2>
                 <p className="text-muted-foreground mb-4">
                   Use the search bar above to search by address, MLS number, or location. Or select filters from the checkboxes to preview properties on the map.
                 </p>
-                <div className="flex items-center justify-center gap-2 text-sm text-purple-600">
-                  <Brain className="w-4 h-4" />
-                  <span>AI learns which filters work best over time</span>
-                </div>
               </div>
             </div>
           )}
