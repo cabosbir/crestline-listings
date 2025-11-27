@@ -275,7 +275,7 @@ const AdvancedSearch = () => {
       {/* Main Content */}
       <div className="pt-32 flex h-screen">
         {/* Left Sidebar - Filters */}
-        <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-6">
+        <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-6 h-[calc(100vh-8rem)]">
           {/* Property Types */}
           <div>
             <Label className="text-lg font-bold mb-3 block">Property Type</Label>
