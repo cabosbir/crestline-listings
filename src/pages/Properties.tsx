@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -12,6 +12,7 @@ import { searchProperties, getFlexMLSTotalCount } from "@/services/intelligentSe
 
 const Properties = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [properties, setProperties] = useState<any[]>([]);
   const [allProperties, setAllProperties] = useState<MLSProperty[]>([]);
   const [loading, setLoading] = useState(false);
