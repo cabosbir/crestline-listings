@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
-import InteractivePropertyMap from "@/components/InteractivePropertyMap";
+import LeafletPropertyMap from "@/components/LeafletPropertyMap";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, List, Loader2, MapPin, Bed, Bath, ExternalLink } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
@@ -119,10 +119,10 @@ const PropertiesMap = () => {
             </div>
           ) : (
             <div className="grid lg:grid-cols-3 gap-6">
-              {/* INTERACTIVE MAP */}
+              {/* FREE LEAFLET MAP - NO API KEY! */}
               <div className="lg:col-span-2">
                 <div className="sticky top-4">
-                  <InteractivePropertyMap 
+                  <LeafletPropertyMap 
                     properties={properties}
                     center={center}
                     zoom={11}
