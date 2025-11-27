@@ -7,7 +7,7 @@ import PropertyCard from "@/components/PropertyCard";
 import LeafletPropertyMap from "@/components/LeafletPropertyMap";
 import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Loader2, ChevronLeft, ChevronRight, Map, Grid } from "lucide-react";
+import { ExternalLink, Loader2, ChevronLeft, ChevronRight, Map, Grid, SlidersHorizontal } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 import { searchProperties, getFlexMLSTotalCount } from "@/services/intelligentSearch";
 
@@ -166,18 +166,16 @@ const Properties = () => {
             San Jose del Cabo, Todos Santos, East Cape, and La Paz
           </p>
 
-          {/* Advanced Filters - Now inline with view toggle */}
+          {/* Advanced Filters Button */}
           <div className="flex gap-4 items-start">
-            <div className="flex-1">
-              <AdvancedPropertyFilters 
-                onApplyFilters={handleApplyFilters}
-                onReset={handleReset}
-                resultCount={properties.length}
-                totalCount={totalCount}
-                isOpen={filtersOpen}
-                onOpenChange={setFiltersOpen}
-              />
-            </div>
+            <Button
+              size="lg"
+              onClick={() => navigate('/search')}
+              className="gap-2"
+            >
+              <SlidersHorizontal className="w-5 h-5" />
+              Advanced Filters
+            </Button>
 
             {/* View Mode Toggle - Only show when results exist */}
             {properties.length > 0 && (
