@@ -294,29 +294,38 @@ const Properties = () => {
                   </div>
                   
                   <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
-                    <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                    <button 
+                      onClick={() => document.querySelector('input[placeholder*="MLS"]')?.focus()}
+                      className="p-6 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-all cursor-pointer text-left"
+                    >
                       <div className="text-4xl mb-3">🔍</div>
                       <h3 className="font-semibold text-blue-900 mb-2">Quick Search</h3>
                       <p className="text-sm text-blue-700">
                         Search by MLS number, address, or property type in the search bar above
                       </p>
-                    </div>
+                    </button>
                     
-                    <div className="p-6 bg-purple-50 rounded-lg border border-purple-200">
+                    <button 
+                      onClick={() => document.querySelector('[class*="Advanced Filters"]')?.click()}
+                      className="p-6 bg-purple-50 rounded-lg border border-purple-200 hover:bg-purple-100 hover:border-purple-300 transition-all cursor-pointer text-left"
+                    >
                       <div className="text-4xl mb-3">🎯</div>
                       <h3 className="font-semibold text-purple-900 mb-2">Advanced Filters</h3>
                       <p className="text-sm text-purple-700">
                         Use the Advanced Filters button to search by location, price, beds, and more
                       </p>
-                    </div>
+                    </button>
                     
-                    <div className="p-6 bg-green-50 rounded-lg border border-green-200">
+                    <button 
+                      onClick={() => navigate('/properties/map')}
+                      className="p-6 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 hover:border-green-300 transition-all cursor-pointer text-left"
+                    >
                       <div className="text-4xl mb-3">🗺️</div>
                       <h3 className="font-semibold text-green-900 mb-2">Map Search</h3>
                       <p className="text-sm text-green-700">
                         Browse properties visually with our interactive map search feature
                       </p>
-                    </div>
+                    </button>
                   </div>
                   
                   <p className="text-sm text-gray-500 mb-4">
