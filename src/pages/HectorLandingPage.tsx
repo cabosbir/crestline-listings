@@ -153,7 +153,7 @@ const HectorLandingPage = () => {
           return;
         }
         
-        const mlsData = await fetchListings({
+        const mlsData = await fetchListings({ limit: 50,
           city: 'Cabo San Lucas',
         });
         

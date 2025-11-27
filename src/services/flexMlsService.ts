@@ -95,6 +95,7 @@ const propertyCache: Map<string, MLSProperty> = new Map();
 */
 
 export async function fetchListings(params?: {
+  limit?: number;
   city?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -109,6 +110,7 @@ export async function fetchListings(params?: {
     if (params?.maxPrice) queryParams.append('maxPrice', params.maxPrice.toString());
     if (params?.bedrooms) queryParams.append('bedrooms', params.bedrooms.toString());
     if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
     
     const url = `/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     

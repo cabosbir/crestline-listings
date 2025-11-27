@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - FETCH ALL RESULTS WITH PAGINATION
+// api/flexmls-listings.ts - FETCH ALL RESULTS WITH OPTIONAL LIMIT
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -35,11 +35,15 @@ export default async function handler(
       propertyTypes,
       status,
       minSqft,
-      yearBuilt
+      yearBuilt,
+      limit // NEW: Optional limit parameter
     } = req.query;
 
+    const maxResults = limit && typeof limit === 'string' ? parseInt(limit) : undefined;
+
     console.log('🔍 [API] Filters:', {
-      city, areas, communities, subdivisions, minPrice, maxPrice, bedrooms, bathrooms, propertyTypes, status
+      city, areas, communities, subdivisions, minPrice, maxPrice, 
+      bedrooms, bathrooms, propertyTypes, status, limit: maxResults
     });
 
     // BUILD RESO $filter QUERY
@@ -150,17 +154,20 @@ export default async function handler(
     const filterString = filters.join(' and ');
     console.log('🎯 [Filter]:', filterString);
 
-    // FETCH ALL RESULTS WITH PAGINATION
-    const listings = await fetchAllResults(filterString);
+    // FETCH RESULTS (with optional limit)
+    const listings = maxResults 
+      ? await fetchLimitedResults(filterString, maxResults)
+      : await fetchAllResults(filterString);
 
-    console.log(`✅ [Result] ${listings.length} listings`);
+    console.log(`✅ [Result] ${listings.length} listings${maxResults ? ` (limited to ${maxResults})` : ''}`);
 
     return res.status(200).json({
       success: true,
       results: listings,
       count: listings.length,
       total: listings.length,
-      filters: filterString
+      filters: filterString,
+      limited: !!maxResults
     });
 
   } catch (error) {
@@ -173,16 +180,66 @@ export default async function handler(
   }
 }
 
-// FETCH ALL RESULTS WITH PAGINATION
+// FETCH LIMITED RESULTS (for landing pages)
+async function fetchLimitedResults(filterString: string, limit: number): Promise<any[]> {
+  const url = new URL(`${RESO_API_BASE}/Property`);
+  
+  if (filterString) {
+    url.searchParams.append('$filter', filterString);
+  }
+  
+  url.searchParams.append('$top', limit.toString());
+  url.searchParams.append('$skip', '0');
+  url.searchParams.append('$expand', 'Media');
+  url.searchParams.append('$orderby', 'ModificationTimestamp desc');
+
+  console.log(`📡 [Limited Fetch] Getting up to ${limit} listings...`);
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
+        'Accept': 'application/json',
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        console.log(`⚠️ [Rate Limited]`);
+        return [];
+      }
+      throw new Error(`API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const results = data.value || [];
+    
+    console.log(`✅ [Success] Got ${results.length} listings`);
+    
+    return results;
+  } catch (error) {
+    console.error(`❌ [Fetch Failed]:`, error);
+    return [];
+  }
+}
+
+// FETCH ALL RESULTS WITH PAGINATION (for search)
 async function fetchAllResults(filterString: string): Promise<any[]> {
   let allResults: any[] = [];
   let skip = 0;
-  const top = 200; // Fetch 200 per page
+  const top = 200;
   let hasMore = true;
 
   console.log(`📡 [Pagination] Starting to fetch all results...`);
 
-  while (hasMore && skip < 5000) { // Safety limit: max 5000 results (25 pages)
+  while (hasMore && skip < 5000) {
     const url = new URL(`${RESO_API_BASE}/Property`);
     
     if (filterString) {
@@ -224,7 +281,6 @@ async function fetchAllResults(filterString: string): Promise<any[]> {
       
       allResults = [...allResults, ...results];
       
-      // If we got less than 200, we've reached the end
       if (results.length < top) {
         hasMore = false;
         console.log(`🎉 [Complete] Fetched all ${allResults.length} results`);
@@ -234,7 +290,7 @@ async function fetchAllResults(filterString: string): Promise<any[]> {
       
     } catch (error) {
       console.error(`❌ [Fetch Failed at skip ${skip}]:`, error);
-      hasMore = false; // Stop on error
+      hasMore = false;
     }
   }
 

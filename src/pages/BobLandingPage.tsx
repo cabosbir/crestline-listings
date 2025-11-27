@@ -269,7 +269,7 @@ const BobLandingPage = () => {
         
         console.log('🔄 Loading Featured Listings from API...');
         
-        const mlsData = await fetchListings({
+        const mlsData = await fetchListings({ limit: 50,
           city: 'Cabo San Lucas',
         });
         
@@ -328,7 +328,7 @@ const BobLandingPage = () => {
         
         // 🔥 FIX 1: Fetch ALL listings (no status filter)
         console.log('🔍 My Listings - Fetching from Cabo San Lucas...');
-        const mlsData = await fetchListings({
+        const mlsData = await fetchListings({ limit: 50,
         city: 'Cabo San Lucas'
       });
         console.log('🔍 My Listings - Total API results:', mlsData.length);

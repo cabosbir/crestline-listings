@@ -24,7 +24,7 @@ const Index = () => {
         console.log('📡 Loading featured properties from API...');
         
         // Fetch properties with no filters to get latest listings
-        const mlsProperties: MLSProperty[] = await fetchListings();
+        const mlsProperties: MLSProperty[] = await fetchListings({ limit: 50 });
         console.log('✅ Received properties:', mlsProperties.length);
         
         // Convert to PropertyCard format
