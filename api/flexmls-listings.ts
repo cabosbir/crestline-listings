@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - FAST RESPONSE (Returns first 200 immediately)
+// api/flexmls-listings.ts - FETCH ALL RESULTS WITH PAGINATION
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -10,7 +10,7 @@ export default async function handler(
 ) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1800'); // 10 min cache
+  res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1800');
   
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
@@ -25,28 +25,68 @@ export default async function handler(
   try {
     const { 
       city,
+      areas,
+      communities,
+      subdivisions,
       minPrice, 
       maxPrice, 
       bedrooms,
       bathrooms,
-      propertyType,
+      propertyTypes,
       status,
       minSqft,
       yearBuilt
     } = req.query;
 
-    console.log('🔍 [Fast Response] Filters:', {
-      city, minPrice, maxPrice, bedrooms, bathrooms, propertyType, status
+    console.log('🔍 [API] Filters:', {
+      city, areas, communities, subdivisions, minPrice, maxPrice, bedrooms, bathrooms, propertyTypes, status
     });
 
-    // ========================================
     // BUILD RESO $filter QUERY
-    // ========================================
     const filters: string[] = [];
 
-    // LOCATION
+    // LOCATION - City/Zone
     if (city && typeof city === 'string') {
-      filters.push(`City eq '${city.replace(/'/g, "''")}'`);
+      const cities = city.split(',').map(c => c.trim());
+      if (cities.length === 1) {
+        filters.push(`City eq '${cities[0].replace(/'/g, "''")}'`);
+      } else {
+        const cityFilters = cities.map(c => `City eq '${c.replace(/'/g, "''")}'`);
+        filters.push(`(${cityFilters.join(' or ')})`);
+      }
+    }
+
+    // AREAS
+    if (areas && typeof areas === 'string') {
+      const areaList = areas.split(',').map(a => a.trim());
+      if (areaList.length === 1) {
+        filters.push(`MLSAreaMajor eq '${areaList[0].replace(/'/g, "''")}'`);
+      } else {
+        const areaFilters = areaList.map(a => `MLSAreaMajor eq '${a.replace(/'/g, "''")}'`);
+        filters.push(`(${areaFilters.join(' or ')})`);
+      }
+    }
+
+    // COMMUNITIES
+    if (communities && typeof communities === 'string') {
+      const communityList = communities.split(',').map(c => c.trim());
+      if (communityList.length === 1) {
+        filters.push(`contains(SubdivisionName, '${communityList[0].replace(/'/g, "''")}')`);
+      } else {
+        const communityFilters = communityList.map(c => `contains(SubdivisionName, '${c.replace(/'/g, "''")}')`);
+        filters.push(`(${communityFilters.join(' or ')})`);
+      }
+    }
+
+    // SUBDIVISIONS
+    if (subdivisions && typeof subdivisions === 'string') {
+      const subdivisionList = subdivisions.split(',').map(s => s.trim());
+      if (subdivisionList.length === 1) {
+        filters.push(`contains(SubdivisionName, '${subdivisionList[0].replace(/'/g, "''")}')`);
+      } else {
+        const subdivisionFilters = subdivisionList.map(s => `contains(SubdivisionName, '${s.replace(/'/g, "''")}')`);
+        filters.push(`(${subdivisionFilters.join(' or ')})`);
+      }
     }
 
     // PRICE
@@ -54,7 +94,6 @@ export default async function handler(
       const min = parseFloat(minPrice);
       if (!isNaN(min)) filters.push(`ListPrice ge ${min}`);
     }
-
     if (maxPrice && typeof maxPrice === 'string') {
       const max = parseFloat(maxPrice);
       if (!isNaN(max)) filters.push(`ListPrice le ${max}`);
@@ -65,14 +104,14 @@ export default async function handler(
       const beds = parseInt(bedrooms);
       if (!isNaN(beds)) filters.push(`BedroomsTotal ge ${beds}`);
     }
-
     if (bathrooms && typeof bathrooms === 'string') {
       const baths = parseInt(bathrooms);
       if (!isNaN(baths)) filters.push(`BathroomsFull ge ${baths}`);
     }
 
-    // PROPERTY TYPE
-    if (propertyType && typeof propertyType === 'string') {
+    // PROPERTY TYPES
+    if (propertyTypes && typeof propertyTypes === 'string') {
+      const types = propertyTypes.split(',').map(t => t.trim());
       const typeMap: Record<string, string> = {
         'Condos': 'Residential',
         'Houses': 'Residential', 
@@ -81,8 +120,15 @@ export default async function handler(
         'Fractional': 'Residential',
         'MultiFamily': 'Residential'
       };
-      const resoType = typeMap[propertyType];
-      if (resoType) filters.push(`PropertyType eq '${resoType}'`);
+      const resoTypes = [...new Set(types.map(t => typeMap[t]).filter(Boolean))];
+      if (resoTypes.length > 0) {
+        if (resoTypes.length === 1) {
+          filters.push(`PropertyType eq '${resoTypes[0]}'`);
+        } else {
+          const typeFilters = resoTypes.map(t => `PropertyType eq '${t}'`);
+          filters.push(`(${typeFilters.join(' or ')})`);
+        }
+      }
     }
 
     // STATUS (default Active)
@@ -104,10 +150,8 @@ export default async function handler(
     const filterString = filters.join(' and ');
     console.log('🎯 [Filter]:', filterString);
 
-    // ========================================
-    // FETCH ONLY FIRST 200 (FAST!)
-    // ========================================
-    const listings = await fetchFirst200(filterString);
+    // FETCH ALL RESULTS WITH PAGINATION
+    const listings = await fetchAllResults(filterString);
 
     console.log(`✅ [Result] ${listings.length} listings`);
 
@@ -116,8 +160,7 @@ export default async function handler(
       results: listings,
       count: listings.length,
       total: listings.length,
-      filters: filterString,
-      note: listings.length === 200 ? 'Showing first 200 results. Apply more filters to narrow search.' : undefined
+      filters: filterString
     });
 
   } catch (error) {
@@ -130,63 +173,70 @@ export default async function handler(
   }
 }
 
-// ========================================
-// FETCH FIRST 200 ONLY (FAST!)
-// ========================================
-async function fetchFirst200(filterString: string): Promise<any[]> {
-  const url = new URL(`${RESO_API_BASE}/Property`);
-  
-  // Add filters
-  if (filterString) {
-    url.searchParams.append('$filter', filterString);
-  }
-  
-  // ONLY FETCH 200 (one request!)
-  url.searchParams.append('$top', '200');
-  url.searchParams.append('$skip', '0');
-  url.searchParams.append('$expand', 'Media');
-  url.searchParams.append('$orderby', 'ModificationTimestamp desc');
+// FETCH ALL RESULTS WITH PAGINATION
+async function fetchAllResults(filterString: string): Promise<any[]> {
+  let allResults: any[] = [];
+  let skip = 0;
+  const top = 200; // Fetch 200 per page
+  let hasMore = true;
 
-  console.log(`📡 [Fast Fetch] Getting first 200 listings...`);
+  console.log(`📡 [Pagination] Starting to fetch all results...`);
 
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+  while (hasMore && skip < 5000) { // Safety limit: max 5000 results (25 pages)
+    const url = new URL(`${RESO_API_BASE}/Property`);
+    
+    if (filterString) {
+      url.searchParams.append('$filter', filterString);
+    }
+    
+    url.searchParams.append('$top', top.toString());
+    url.searchParams.append('$skip', skip.toString());
+    url.searchParams.append('$expand', 'Media');
+    url.searchParams.append('$orderby', 'ModificationTimestamp desc');
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
-        'Accept': 'application/json',
-      },
-      signal: controller.signal
-    });
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    clearTimeout(timeoutId);
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${FLEXMLS_API_KEY}`,
+          'Accept': 'application/json',
+        },
+        signal: controller.signal
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`❌ [API Error]:`, response.status, errorText.substring(0, 200));
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          console.log(`⚠️ [Rate Limited] Stopping at ${allResults.length} results`);
+          break;
+        }
+        throw new Error(`API returned ${response.status}`);
+      }
+
+      const data = await response.json();
+      const results = data.value || [];
       
-      // On 429, return empty array (better than crashing)
-      if (response.status === 429) {
-        console.log(`⚠️ [Rate Limited] Returning empty results`);
-        return [];
+      console.log(`✅ [Page ${Math.floor(skip / top) + 1}] Got ${results.length} listings (total: ${allResults.length + results.length})`);
+      
+      allResults = [...allResults, ...results];
+      
+      // If we got less than 200, we've reached the end
+      if (results.length < top) {
+        hasMore = false;
+        console.log(`🎉 [Complete] Fetched all ${allResults.length} results`);
+      } else {
+        skip += top;
       }
       
-      throw new Error(`API returned ${response.status}`);
+    } catch (error) {
+      console.error(`❌ [Fetch Failed at skip ${skip}]:`, error);
+      hasMore = false; // Stop on error
     }
-
-    const data = await response.json();
-    const results = data.value || [];
-    
-    console.log(`✅ [Success] Got ${results.length} listings`);
-    
-    return results;
-  } catch (error) {
-    console.error(`❌ [Fetch Failed]:`, error);
-    
-    // Return empty array instead of throwing (graceful degradation)
-    return [];
   }
+
+  return allResults;
 }
