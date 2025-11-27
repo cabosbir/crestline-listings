@@ -194,7 +194,10 @@ const Properties = () => {
                 <Button
                   variant={viewMode === 'map' ? 'default' : 'ghost'}
                   size="sm"
-                  onClick={() => setViewMode('map')}
+                  onClick={() => {
+                    setViewMode('map');
+                    setFiltersOpen(true); // Open filters when switching to map view
+                  }}
                   className="gap-2"
                   disabled={propertiesWithCoords.length === 0}
                 >
