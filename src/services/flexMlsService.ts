@@ -1,4 +1,4 @@
-// src/services/flexMlsService.ts - UPDATED WITH PAGINATION NOTES
+// src/services/flexMlsService.ts - UPDATED WITH ALL FILTER SUPPORT
 
 export interface MLSProperty {
   ListingKey: string;
@@ -33,84 +33,54 @@ export interface MLSProperty {
   }>;
 }
 
-// In-memory cache for properties
 const propertyCache: Map<string, MLSProperty> = new Map();
 
-/*
-  ⚠️ IMPORTANT: YOUR BACKEND API NEEDS TO FETCH ALL LISTINGS
-  
-  The issue: Your FlexMLS has 4,541 listings but your API only returns 50.
-  
-  SOLUTION: Your backend /api/flexmls-listings endpoint needs to:
-  
-  1. Implement pagination loops to fetch ALL pages from FlexMLS API
-  2. FlexMLS API typically returns 25-50 results per page
-  3. You need to loop until you get all ~4,500 listings
-  
-  Example backend implementation (Node.js/Express):
-  
-  ```javascript
-  async function fetchAllListings() {
-    let allListings = [];
-    let page = 1;
-    let hasMore = true;
-    
-    while (hasMore) {
-      const response = await fetch(`https://sparkapi.flexmls.com/v1/listings?_limit=200&_page=${page}`, {
-        headers: {
-          'X-SparkApi-User-Agent': 'YourApp',
-          'Authorization': 'OAuth YOUR_ACCESS_TOKEN'
-        }
-      });
-      
-      const data = await response.json();
-      
-      if (data.D && data.D.Results) {
-        allListings = [...allListings, ...data.D.Results];
-        
-        // Check if there are more pages
-        if (data.D.Results.length < 200) {
-          hasMore = false; // Last page
-        } else {
-          page++;
-        }
-      } else {
-        hasMore = false;
-      }
-    }
-    
-    return allListings; // Should return ~4,500 listings
-  }
-  ```
-  
-  ALTERNATIVE: Use FlexMLS pagination metadata
-  - FlexMLS returns pagination info in the response
-  - Look for: D.Pagination.TotalRows, D.Pagination.TotalPages
-  - Loop until you've fetched all pages
-  
-  PERFORMANCE TIP:
-  - Cache all listings in memory or Redis
-  - Refresh every 15-30 minutes
-  - This prevents hitting the API on every user search
-*/
-
 export async function fetchListings(params?: {
-  limit?: number;
-  city?: string;
+  city?: string | string[];
+  areas?: string | string[];
+  communities?: string | string[];
+  subdivisions?: string | string[];
+  propertyTypes?: string | string[];
+  status?: string;
   minPrice?: number;
   maxPrice?: number;
   bedrooms?: number;
   bathrooms?: number;
+  limit?: number;
 }): Promise<MLSProperty[]> {
   try {
     const queryParams = new URLSearchParams();
     
-    if (params?.city) queryParams.append('city', params.city);
+    // Handle arrays and strings for ALL location filters
+    if (params?.city) {
+      const cities = Array.isArray(params.city) ? params.city.join(',') : params.city;
+      queryParams.append('city', cities);
+    }
+    if (params?.areas) {
+      const areasStr = Array.isArray(params.areas) ? params.areas.join(',') : params.areas;
+      queryParams.append('areas', areasStr);
+    }
+    if (params?.communities) {
+      const communitiesStr = Array.isArray(params.communities) ? params.communities.join(',') : params.communities;
+      queryParams.append('communities', communitiesStr);
+    }
+    if (params?.subdivisions) {
+      const subdivisionsStr = Array.isArray(params.subdivisions) ? params.subdivisions.join(',') : params.subdivisions;
+      queryParams.append('subdivisions', subdivisionsStr);
+    }
+    if (params?.propertyTypes) {
+      const typesStr = Array.isArray(params.propertyTypes) ? params.propertyTypes.join(',') : params.propertyTypes;
+      queryParams.append('propertyTypes', typesStr);
+    }
+    if (params?.status) {
+      queryParams.append('status', params.status);
+    }
+    
     if (params?.minPrice) queryParams.append('minPrice', params.minPrice.toString());
     if (params?.maxPrice) queryParams.append('maxPrice', params.maxPrice.toString());
     if (params?.bedrooms) queryParams.append('bedrooms', params.bedrooms.toString());
     if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
-    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
     
     const url = `/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
@@ -124,9 +94,8 @@ export async function fetchListings(params?: {
     }
     
     console.log('✅ Fetched listings:', data.results?.length || 0);
-    console.log('📊 Total in MLS:', data.total || 'Unknown'); // Your API should return total count
+    console.log('📊 Total in MLS:', data.total || 'Unknown');
     
-    // Cache the properties for later retrieval
     if (data.results && Array.isArray(data.results)) {
       data.results.forEach((prop: MLSProperty) => {
         propertyCache.set(prop.ListingKey, prop);
@@ -149,7 +118,6 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
 
     const trimmedKey = listingKey.trim();
     
-    // First, check if we have it cached from listings
     if (propertyCache.has(trimmedKey)) {
       console.log('✅ Found property in cache:', trimmedKey);
       return propertyCache.get(trimmedKey) || null;
@@ -157,7 +125,6 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
 
     console.log('🔍 Searching for property by ListingKey:', trimmedKey);
     
-    // Fetch listings without filters to get all properties
     const url = `/api/flexmls-listings`;
     
     console.log('📡 Fetching all listings from:', url);
@@ -171,7 +138,6 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
 
     console.log('✅ Fetched listings:', data.results?.length || 0);
     
-    // Find the property by ListingKey
     const property = data.results.find((p: MLSProperty) => p.ListingKey === trimmedKey);
     
     if (!property) {
@@ -185,7 +151,6 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
       Baths: property.BathroomsFull
     });
     
-    // Cache it
     propertyCache.set(trimmedKey, property);
     
     return property;
