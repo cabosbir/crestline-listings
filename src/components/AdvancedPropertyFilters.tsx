@@ -653,19 +653,77 @@ const AdvancedPropertyFilters = ({
 
                 {/* Subdivision */}
                 <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Checkbox 
-                      id="subdivision-checkbox" 
-                      checked={filters.subdivisions.length > 0}
-                      onCheckedChange={(checked) => {
-                        if (!checked) selectNone('subdivisions');
-                      }}
-                    />
-                    <Label htmlFor="subdivision-checkbox" className="font-bold">Subdivision</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Checkbox 
+                        id="subdivision-checkbox" 
+                        checked={filters.subdivisions.length > 0}
+                        onCheckedChange={(checked) => {
+                          if (!checked) selectNone('subdivisions');
+                        }}
+                      />
+                      <Label htmlFor="subdivision-checkbox" className="font-bold">Subdivision</Label>
+                    </div>
+                    <button 
+                      onClick={() => setShowAllSubdivisions(false)}
+                      className="text-blue-600 hover:underline text-xl"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <select
+                    multiple
+                    value={filters.subdivisions}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      setFilters({ ...filters, subdivisions: selected });
+                    }}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                    size={10}
+                  >
+                    {getDisplayedItems(subdivisions, showAllSubdivisions, 10).map((subdivision) => (
+                      <option key={subdivision} value={subdivision}>
+                        {subdivision}
+                      </option>
+                    ))}
+                  </select>
+                  {!showAllSubdivisions && subdivisions.length > 10 && (
+                    <button 
+                      onClick={() => setShowAllSubdivisions(true)}
+                      className="text-blue-600 hover:underline text-sm mt-1"
+                    >
+                      See All...
+                    </button>
+                  )}
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => selectAll('subdivisions', subdivisions)}
+                      className="flex-1 text-blue-600 border-blue-300"
+                    >
+                      SELECT ALL
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => selectNone('subdivisions')}
+                      className="flex-1 text-blue-600 border-blue-300"
+                    >
+                      SELECT NONE
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowAllSubdivisions(false)}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      FINISHED
+                    </Button>
                   </div>
                 </div>
 
-                {/* Additional Checkboxes */}
+                {/* Special Filter Checkboxes - BELOW SUBDIVISION */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Checkbox 
