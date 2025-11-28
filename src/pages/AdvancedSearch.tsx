@@ -245,7 +245,12 @@ const AdvancedSearch = () => {
                           hasPriceFilter || hasBedsFilter || hasBathsFilter || hasSpecialFilters;
       
       if (hasAnyFilter) {
-        console.log('🔄 Filter changed - fetching preview...');
+        console.log('🔄 Filter changed - fetching preview...', {
+          zones: filters.zones,
+          areas: filters.areas,
+          communities: filters.communities,
+          subdivisions: filters.subdivisions
+        });
         fetchPreviewWithIntelligence();
       } else {
         console.log('🔄 No filters active - clearing preview');
@@ -256,7 +261,7 @@ const AdvancedSearch = () => {
 
     return () => clearTimeout(debounce);
   }, [
-    // ✅ ALL filter dependencies to trigger on ANY change
+    // ✅ ALL filter dependencies - triggers on EVERY change
     filters.zones,
     filters.areas, 
     filters.communities,
@@ -278,89 +283,82 @@ const AdvancedSearch = () => {
     setAiOptimizing(true);
     
     try {
-      console.log('🧠 Using MLS translator system...');
-      
-      // ✅ VALIDATE FILTERS FIRST - Check if they match MLS values
-      const validation = validateMLSFilters({
-        zones: filters.zones,
-        areas: filters.areas,
-        communities: filters.communities
-      });
-      
-      if (validation.warnings.length > 0) {
-        console.warn('⚠️ Filter validation warnings:', validation.warnings);
-      }
-      
-      console.log('✅ Translated filters:', validation.translations);
-      
-      // ✅ BUILD MLS API FILTER STRING - Uses exact MLS field names
-      const mlsFilter = buildMLSAPIFilter({
+      console.log('🧠 Starting search with filters:', {
         zones: filters.zones,
         areas: filters.areas,
         communities: filters.communities,
-        subdivisions: filters.subdivisions
+        subdivisions: filters.subdivisions,
+        search: filters.mlsSearch
       });
       
-      console.log('🎯 MLS API Filter:', mlsFilter);
-      
-      setAiOptimizing(false);
-
       // Build complete API filters
       const apiFilters: any = {};
       
-      // ✅ Use translated location filters (exact MLS values)
-      if (mlsFilter) {
-        // Parse the MLS filter to extract individual field filters
-        if (filters.zones.length > 0) {
-          apiFilters.city = filters.zones.join(',');
-        }
-        if (filters.areas.length > 0) {
-          apiFilters.area = filters.areas.join(',');
-        }
-        if (filters.communities.length > 0 || filters.subdivisions.length > 0) {
-          apiFilters.community = [...filters.communities, ...filters.subdivisions].join(',');
-        }
+      // ✅ Location filters - Use exact values
+      if (filters.zones.length > 0) {
+        apiFilters.city = filters.zones.join(',');
+        console.log('  📍 City filter:', apiFilters.city);
+      }
+      if (filters.areas.length > 0) {
+        apiFilters.area = filters.areas.join(',');
+        console.log('  📍 Area filter:', apiFilters.area);
+      }
+      if (filters.communities.length > 0 || filters.subdivisions.length > 0) {
+        apiFilters.community = [...filters.communities, ...filters.subdivisions].join(',');
+        console.log('  📍 Community filter:', apiFilters.community);
       }
       
       if (filters.minPrice !== "No Preference" && filters.minPrice !== "$50,000") {
         apiFilters.minPrice = parsePrice(filters.minPrice);
+        console.log('  💰 Min price:', apiFilters.minPrice);
       }
       
       if (filters.maxPrice !== "No Preference" && filters.maxPrice !== "$3 Million") {
         apiFilters.maxPrice = parsePrice(filters.maxPrice);
+        console.log('  💰 Max price:', apiFilters.maxPrice);
       }
       
       if (filters.minBeds !== "Any" && filters.minBeds !== "1+") {
         apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
+        console.log('  🛏️ Min beds:', apiFilters.bedrooms);
       }
       
       if (filters.minBaths !== "Any") {
         apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
+        console.log('  🚿 Min baths:', apiFilters.bathrooms);
       }
       
       if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < 3) {
         apiFilters.propertyTypes = filters.propertyTypes.join(',');
+        console.log('  🏠 Property types:', apiFilters.propertyTypes);
       }
       
       if (filters.status && filters.status !== "Active") {
         apiFilters.status = filters.status;
+        console.log('  📊 Status:', apiFilters.status);
       }
       
       if (filters.mlsSearch.trim()) {
         apiFilters.search = filters.mlsSearch.trim();
+        console.log('  🔍 Search term:', apiFilters.search);
       }
 
       if (filters.sellerFinancing) {
         apiFilters.sellerFinancing = true;
+        console.log('  💵 Seller financing: Yes');
       }
       
       if (filters.primaryView) {
         apiFilters.primaryView = true;
+        console.log('  👁️ Primary view: Yes');
       }
       
       if (filters.currentPrice) {
         apiFilters.currentPrice = true;
+        console.log('  💲 Current price: Yes');
       }
+      
+      setAiOptimizing(false);
 
       console.log('\n📤 FULL API REQUEST:', apiFilters);
 
@@ -370,7 +368,11 @@ const AdvancedSearch = () => {
       setPreviewProperties(converted);
       setTotalCount(mlsProperties.length);
       
-      console.log(`✅ Search complete: ${mlsProperties.length} properties, ${converted.length} with coordinates`);
+      console.log(`✅ Search complete: ${mlsProperties.length} total properties, ${converted.length} with coordinates for map`);
+      
+      if (mlsProperties.length === 0) {
+        console.warn('⚠️ Zero results! Check if filter values match MLS API exactly');
+      }
     } catch (err) {
       console.error('❌ Error fetching preview:', err);
       setAiOptimizing(false);
