@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { X, Search, Loader2, Sparkles, Brain } from "lucide-react";
+import { X, Search, Loader2 } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
-import { filterIntelligence } from "@/services/groqFilterIntelligence";
+import { getSmartMappings, buildAPIFilters } from "@/services/groqIntelligence";
 import { 
   propertyTypes, 
   zones, 
@@ -66,7 +66,6 @@ const AdvancedSearch = () => {
   const [loading, setLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [aiOptimizing, setAiOptimizing] = useState(false);
-  const [showIntelligenceStats, setShowIntelligenceStats] = useState(false);
 
   // Load filters from URL on mount
   useEffect(() => {
@@ -134,42 +133,25 @@ const AdvancedSearch = () => {
     setAiOptimizing(true);
     
     try {
-      console.log('🤖 Optimizing filters with AI...');
+      console.log('🧠 Using smart mapping system...');
       
-      // Use Groq to optimize the filter values
-      const optimizedFilters = await filterIntelligence.optimizeAllFilters({
+      // Use NEW smart mapping system
+      const mappings = await getSmartMappings({
         zones: filters.zones,
         areas: filters.areas,
         communities: filters.communities,
         subdivisions: filters.subdivisions
       });
 
-      console.log('✨ AI Optimized Filters:', optimizedFilters);
+      console.log('✨ Smart mappings complete:', mappings);
+      
+      // Build API filters with corrected fields
+      const locationFilters = buildAPIFilters(mappings);
+      
       setAiOptimizing(false);
 
-      // Build API filters with CORRECTED parameter names (singular!)
-      const apiFilters: any = {};
-      
-      if (optimizedFilters.zones.length > 0) {
-        apiFilters.city = optimizedFilters.zones.join(',');
-        console.log('🏙️ Zones (as city):', apiFilters.city);
-      }
-      
-      if (optimizedFilters.areas.length > 0) {
-        // Try both plural and singular - the API might accept either
-        apiFilters.areas = optimizedFilters.areas.join(',');
-        console.log('📍 Areas:', apiFilters.areas);
-      }
-      
-      if (optimizedFilters.communities.length > 0) {
-        apiFilters.communities = optimizedFilters.communities.join(',');
-        console.log('🏘️ Communities:', apiFilters.communities);
-      }
-      
-      if (optimizedFilters.subdivisions.length > 0) {
-        apiFilters.subdivisions = optimizedFilters.subdivisions.join(',');
-        console.log('🏡 Subdivisions:', apiFilters.subdivisions);
-      }
+      // Build complete API filters
+      const apiFilters: any = { ...locationFilters };
       
       if (filters.minPrice !== "No Preference") {
         apiFilters.minPrice = parsePrice(filters.minPrice);
@@ -206,51 +188,6 @@ const AdvancedSearch = () => {
       
       setPreviewProperties(converted);
       setTotalCount(mlsProperties.length);
-      
-      // LEARN: Record the results for future optimization
-      if (filters.zones.length > 0) {
-        filters.zones.forEach((zone, idx) => {
-          filterIntelligence.recordTestResult(
-            'zones',
-            zone,
-            optimizedFilters.zones[idx],
-            mlsProperties.length
-          );
-        });
-      }
-      
-      if (filters.areas.length > 0) {
-        filters.areas.forEach((area, idx) => {
-          filterIntelligence.recordTestResult(
-            'areas',
-            area,
-            optimizedFilters.areas[idx],
-            mlsProperties.length
-          );
-        });
-      }
-      
-      if (filters.communities.length > 0) {
-        filters.communities.forEach((community, idx) => {
-          filterIntelligence.recordTestResult(
-            'communities',
-            community,
-            optimizedFilters.communities[idx],
-            mlsProperties.length
-          );
-        });
-      }
-      
-      if (filters.subdivisions.length > 0) {
-        filters.subdivisions.forEach((subdivision, idx) => {
-          filterIntelligence.recordTestResult(
-            'subdivisions',
-            subdivision,
-            optimizedFilters.subdivisions[idx],
-            mlsProperties.length
-          );
-        });
-      }
       
       console.log(`✅ Search complete: ${mlsProperties.length} properties, ${converted.length} with coordinates`);
     } catch (err) {
@@ -364,8 +301,6 @@ const AdvancedSearch = () => {
         lng: previewProperties.reduce((sum, p) => sum + p.longitude, 0) / previewProperties.length
       }
     : { lat: 23.0545, lng: -109.7084 };
-
-  const stats = filterIntelligence.getStatistics();
 
   return (
     <div className="min-h-screen bg-background">
