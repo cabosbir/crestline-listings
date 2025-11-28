@@ -385,14 +385,14 @@ export const USER_TO_MLS_MAPPINGS = {
 // Helper function to check if a value exists in MLS
 export function findInMLS(searchTerm: string): {
   found: boolean;
-  field?: 'zone' | 'area' | 'community' | 'subdivision';
+  field?: 'city' | 'zone' | 'area' | 'community' | 'subdivision';
   exactMatch?: string;
   suggestions?: string[];
 } {
   const search = searchTerm.toLowerCase().trim();
 
-  // NEW — check cities first
-  const cityMatch = MLS_REFERENCE.zones.find(c => c.toLowerCase() === search);
+  // Check cities
+  const cityMatch = MLS_REFERENCE.cities?.find(c => c.toLowerCase() === search);
   if (cityMatch) {
     return { found: true, field: 'city', exactMatch: cityMatch };
   }
@@ -421,20 +421,11 @@ export function findInMLS(searchTerm: string): {
     return { found: true, field: 'subdivision', exactMatch: subdivisionMatch };
   }
 
-  // Not found - provide suggestions
+  // Not found — build suggestions (only declared once!)
   const suggestions: string[] = [];
-  
-  [...MLS_REFERENCE.zones, ...MLS_REFERENCE.areas, ...MLS_REFERENCE.communities, ...MLS_REFERENCE.subdivisions]
-    .forEach(value => {
-      if (value.toLowerCase().includes(search) || search.includes(value.toLowerCase())) {
-        suggestions.push(value);
-      }
-    });
-
-    const suggestions: string[] = [];
 
   [
-    ...MLS_REFERENCE.cities,
+    ...(MLS_REFERENCE.cities ?? []),
     ...MLS_REFERENCE.zones,
     ...MLS_REFERENCE.areas,
     ...MLS_REFERENCE.communities,
