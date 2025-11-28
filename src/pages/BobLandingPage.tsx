@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
@@ -27,19 +27,18 @@ const agent = {
 };
 
 // ==================== LISTINGS CONFIGURATION ====================
-// 🎯 MY LISTINGS - Add MLS numbers here (supports up to 9 listings)
-const myListingMLSNumbers = [
-  "25-4668",  // Marina Cabo Plaza - $279,000 (Active)
-  "25-5288",  // Terrasol Av Solmar 164 - $429,000 (Active)
-  // ⭐ ADD MORE LISTINGS BELOW (up to 7 more for 9 total):
-  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
-  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
-  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
-  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
-  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
-  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
-  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
-];
+// ⭐ AUTOMATIC LISTING DETECTION - No manual MLS numbers needed!
+// The system automatically fetches all active listings for this agent
+
+// Agent identifiers for API matching
+const agentIdentifiers = {
+  name: "Bob Van Patten",
+  email: "robertvanpatten2@gmail.com",
+  phone: "+52 624 127 6012",
+  // Add other identifiers that might be in the MLS system:
+  mlsId: null, // Will be discovered automatically
+  licenseNumber: null, // Will be discovered automatically
+};
 
 // Fallback data if API fails (will be replaced by API data)
 const fallbackListings = [
@@ -144,6 +143,7 @@ const BobLandingPage = () => {
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [listingsSearchQuery, setListingsSearchQuery] = useState(""); // ⭐ NEW: Search state
 
   // ==================== SAVE/RESTORE STATE ====================
   useEffect(() => {
@@ -256,9 +256,9 @@ const BobLandingPage = () => {
       setIsLoadingMyListings(true);
       
       try {
-        // ⭐ Cache version - increment this number when MLS numbers change to force refresh
-        const CACHE_VERSION = 2; // Changed from 1 to 2 (now only 2 listings)
-        const cacheKey = `${agent.slug}-my-listings-api-data-v${CACHE_VERSION}`;
+        // ⭐ AUTOMATIC AGENT DETECTION - Cache version
+        const CACHE_VERSION = 4; // v4: Automatic agent-based fetching
+        const cacheKey = `${agent.slug}-my-listings-auto-v${CACHE_VERSION}`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -269,58 +269,74 @@ const BobLandingPage = () => {
         // Check cache first
         if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
           const cachedData = JSON.parse(cached);
-          console.log(`✅ Using cached listings (v${CACHE_VERSION}):`, cachedData.length);
+          console.log(`✅ Using cached auto-detected listings (v${CACHE_VERSION}):`, cachedData.length);
           setMyListings(cachedData);
           setIsLoadingMyListings(false);
           return;
         }
         
-        console.log('🔍 My Listings - Fetching from Cabo San Lucas...');
-        console.log('🎯 Looking for these MLS numbers:', myListingMLSNumbers);
+        console.log('🤖 AUTO-DETECTING listings for:', agent.name);
+        console.log('🔍 Searching by agent identifiers:', agentIdentifiers);
+        
+        // Fetch ALL listings from Cabo San Lucas (we'll filter by agent)
         const mlsData = await fetchListings({ 
-          limit: 100,
+          limit: 500,
           city: 'Cabo San Lucas'
         });
-        console.log('🔍 My Listings - Total API results:', mlsData.length);
         
-        // Filter and sort by MLS numbers (maintains exact order)
-        const orderedListings: any[] = [];
-        const notFoundMLS: string[] = [];
+        console.log('🔍 Total API results:', mlsData.length);
+        console.log('🎯 Filtering for agent:', agent.name);
         
-        myListingMLSNumbers.forEach((mlsNumber, index) => {
-          const mlsWithoutDash = mlsNumber.replace('-', '');
+        // ⭐ AUTOMATIC FILTERING - Find listings by this agent
+        // Check multiple possible agent field names
+        const agentListings = mlsData.filter(listing => {
+          // Try different field name variations
+          const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
+          const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
+          const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
+          const listOfficeName = listing.ListOfficeName || '';
           
-          const listing = mlsData.find(item => 
-            item.ListingId === mlsNumber ||
-            item.ListingId === mlsWithoutDash ||
-            item.MlsNumber === mlsNumber ||
-            item.mlsNumber === mlsNumber ||
-            item.ListingKey === mlsNumber ||
-            item.ListingKeyNumeric === mlsNumber
-          );
+          // Match by name (case-insensitive, partial match)
+          const nameMatch = listAgentName.toLowerCase().includes('van patten') || 
+                           listAgentName.toLowerCase().includes('bob');
           
-          if (!listing) {
-            console.warn(`⚠️ MLS ${mlsNumber} NOT FOUND in API results (position ${index + 1})`);
-            notFoundMLS.push(mlsNumber);
-          } else {
-            console.log(`✅ Found MLS ${mlsNumber}:`, {
-              address: listing.UnparsedAddress || listing.address,
-              city: listing.City,
-              status: listing.StandardStatus,
-              listingId: listing.ListingId
-            });
-            orderedListings.push(convertMLSToPropertyCard(listing));
-          }
+          // Match by email
+          const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
+          
+          // Match by phone (remove formatting)
+          const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
+          const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
+          
+          // Return true if ANY identifier matches
+          return nameMatch || emailMatch || phoneMatch;
         });
         
-        if (notFoundMLS.length > 0) {
-          console.error('❌ Missing MLS numbers:', notFoundMLS);
-          console.log('💡 These listings may have been removed from FlexMLS');
+        console.log(`✅ Auto-detected ${agentListings.length} listings for ${agent.name}`);
+        
+        if (agentListings.length > 0) {
+          console.log('📋 Found listings:', agentListings.map(l => ({
+            mls: l.ListingId,
+            address: l.UnparsedAddress,
+            price: l.ListPrice,
+            agent: l.ListAgentFullName || l.ListAgentName
+          })));
+        } else {
+          console.warn('⚠️ No listings found - checking agent field names...');
+          // Log a sample to see what agent fields are available
+          if (mlsData.length > 0) {
+            const sample = mlsData[0];
+            const agentFields = Object.keys(sample).filter(key => 
+              /agent|broker|office|member/i.test(key)
+            );
+            console.log('📋 Available agent fields in MLS:', agentFields);
+          }
         }
         
-        console.log(`✅ Successfully matched ${orderedListings.length} out of ${myListingMLSNumbers.length} listings`);
+        // Convert to PropertyCard format
+        const convertedListings = agentListings.map(convertMLSToPropertyCard);
         
-        const finalListings = orderedListings.length > 0 ? orderedListings : fallbackListings;
+        // Use fallback if no listings found
+        const finalListings = convertedListings.length > 0 ? convertedListings : fallbackListings;
         
         // Cache the results
         try {
@@ -332,7 +348,7 @@ const BobLandingPage = () => {
         
         setMyListings(finalListings);
       } catch (error) {
-        console.error('Failed to load my listings from API:', error);
+        console.error('Failed to auto-detect listings:', error);
         setMyListings(fallbackListings);
       } finally {
         setIsLoadingMyListings(false);
@@ -348,7 +364,21 @@ const BobLandingPage = () => {
   }, [showMyListings]);
 
   // ==================== PAGINATION ====================
-  const allListings = showMyListings ? myListings : featuredListings;
+  // ⭐ Filter listings by search query
+  const filteredListings = showMyListings ? myListings : featuredListings;
+  const searchFilteredListings = listingsSearchQuery.trim()
+    ? filteredListings.filter(listing => {
+        const query = listingsSearchQuery.toLowerCase();
+        return (
+          listing.title?.toLowerCase().includes(query) ||
+          listing.location?.toLowerCase().includes(query) ||
+          listing.mlsNumber?.toLowerCase().includes(query) ||
+          listing.price?.toLowerCase().includes(query)
+        );
+      })
+    : filteredListings;
+
+  const allListings = searchFilteredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
@@ -550,7 +580,7 @@ const BobLandingPage = () => {
                 variant={showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(true)}
               >
-                My Listings ({myListingMLSNumbers.length})
+                My Listings {!isLoadingMyListings && `(${myListings.length})`}
               </Button>
               <Button
                 variant={!showMyListings ? "luxury" : "outline"}
