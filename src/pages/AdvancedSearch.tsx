@@ -181,6 +181,19 @@ const AdvancedSearch = () => {
         apiFilters.search = filters.mlsSearch.trim();
       }
 
+      // Add special filters
+      if (filters.sellerFinancing) {
+        apiFilters.sellerFinancing = true;
+      }
+      
+      if (filters.primaryView) {
+        apiFilters.primaryView = true;
+      }
+      
+      if (filters.currentPrice) {
+        apiFilters.currentPrice = true;
+      }
+
       console.log('\n📤 FULL API REQUEST:', apiFilters);
 
       const mlsProperties: MLSProperty[] = await fetchListings(apiFilters);
@@ -503,6 +516,43 @@ const AdvancedSearch = () => {
               {filteredSubdivisions.length === 0 && uiSearchQuery && (
                 <p className="text-sm text-muted-foreground italic py-2">No subdivisions match "{uiSearchQuery}"</p>
               )}
+            </div>
+          </div>
+
+          {/* Special Filter Checkboxes */}
+          <div>
+            <Label className="text-lg font-bold mb-3 block">Special Filters</Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="seller-financing"
+                  checked={filters.sellerFinancing}
+                  onCheckedChange={(checked) => setFilters({ ...filters, sellerFinancing: checked as boolean })}
+                />
+                <Label htmlFor="seller-financing" className="cursor-pointer text-sm">
+                  Seller Financing Offered?
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="primary-view"
+                  checked={filters.primaryView}
+                  onCheckedChange={(checked) => setFilters({ ...filters, primaryView: checked as boolean })}
+                />
+                <Label htmlFor="primary-view" className="cursor-pointer text-sm">
+                  Primary View
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="current-price"
+                  checked={filters.currentPrice}
+                  onCheckedChange={(checked) => setFilters({ ...filters, currentPrice: checked as boolean })}
+                />
+                <Label htmlFor="current-price" className="cursor-pointer text-sm">
+                  Current Price
+                </Label>
+              </div>
             </div>
           </div>
 
