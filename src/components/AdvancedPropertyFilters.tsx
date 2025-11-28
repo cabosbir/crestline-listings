@@ -1,4 +1,4 @@
-// src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version WITH SMART MAPPING
+// src/components/AdvancedPropertyFilters.tsx - WITH ZONE → AREA CASCADING FILTERS
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -58,8 +58,8 @@ interface AdvancedPropertyFiltersProps {
   onReset: () => void;
   resultCount?: number;
   totalCount?: number;
-  isOpen?: boolean; // NEW: Controlled open state
-  onOpenChange?: (open: boolean) => void; // NEW: Callback when open state changes
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const AdvancedPropertyFilters = ({ 
@@ -73,7 +73,6 @@ const AdvancedPropertyFilters = ({
   const navigate = useNavigate();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   
-  // Use controlled state if provided, otherwise use internal state
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
   const setIsOpen = (open: boolean) => {
     if (onOpenChange) {
@@ -109,20 +108,36 @@ const AdvancedPropertyFilters = ({
     currentPrice: false,
   });
 
-  // Local options  
+  // ✅ ZONE → AREA MAPPING (just like FlexMLS!)
+  const zoneToAreaMap: Record<string, string[]> = {
+    "Cabo San Lucas": ["CSL Cor-Inland", "CSL-Centro", "CSL-Corr. Oceanside", "CSL-Beach & Marina", "CSL-North"],
+    "San Jose del Cabo": ["SJD Corr-Inland", "SJD Corr-Oceanside", "SJD-Centro", "SJD-Beachside", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
+    "East Cape": ["East Cape North", "East Cape South", "La Ribera", "Los Barriles", "BuenaVista/Rancho Leonero", "BuenVsta/LosBarilles", "ElCardonal/N of Bariles", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta", "Bay of Dreams", "Costa Palmas"],
+    "La Paz": ["La Paz City", "LaPaz Beach", "El Centenario", "El Sargento", "La Ventana", "Los Planes"],
+    "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
+    "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
+    "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside", "SJD Corr-Inland", "SJD Corr-Oceanside"],
+  };
+
   const sqftOptions = ["No Preference", "500+", "1000+", "1500+", "2000+", "2500+", "3000+", "4000+", "5000+"];
   const yearBuiltOptions = ["No Preference", "2024+", "2023+", "2020+", "2015+", "2010+", "2000+"];
+
+  // ✅ Filter areas based on selected zones
+  const getAvailableAreas = () => {
+    if (filters.zones.length === 0) {
+      return areas; // Show all if no zones selected
+    }
+    
+    const zonesAreas = filters.zones.flatMap(zone => zoneToAreaMap[zone] || []);
+    return areas.filter(area => zonesAreas.includes(area));
+  };
 
   const handleMLSSearch = () => {
     const searchTerm = filters.mlsNumber.trim() || filters.searchQuery.trim();
     if (searchTerm) {
       console.log('🔍 [UNIVERSAL SEARCH] Searching for:', searchTerm);
-      
-      // Navigate to properties page with search parameter
       navigate(`/properties?search=${encodeURIComponent(searchTerm)}`);
       setIsOpen(false);
-      
-      // Also trigger the search through onApplyFilters
       onApplyFilters(filters, searchTerm);
     }
   };
@@ -133,11 +148,24 @@ const AdvancedPropertyFilters = ({
       ? currentArray.filter(item => item !== value)
       : [...currentArray, value];
     
-    setFilters({ ...filters, [key]: newArray });
+    // ✅ If toggling zones, auto-clear invalid areas
+    if (key === 'zones') {
+      const allowedAreas = newArray.flatMap(z => zoneToAreaMap[z] || []);
+      const validAreas = filters.areas.filter(area => allowedAreas.includes(area));
+      setFilters({ ...filters, zones: newArray, areas: validAreas });
+    } else {
+      setFilters({ ...filters, [key]: newArray });
+    }
   };
 
   const selectAll = (key: keyof FilterState, options: string[]) => {
-    setFilters({ ...filters, [key]: options });
+    // If selecting all areas, only select available areas based on zones
+    if (key === 'areas') {
+      const availableAreas = getAvailableAreas();
+      setFilters({ ...filters, areas: availableAreas });
+    } else {
+      setFilters({ ...filters, [key]: options });
+    }
   };
 
   const selectNone = (key: keyof FilterState) => {
@@ -145,7 +173,6 @@ const AdvancedPropertyFilters = ({
   };
 
   const handleSearch = async () => {
-    // Priority 1: If there's a search query (MLS, address, etc.), use universal search
     const searchTerm = filters.mlsNumber.trim() || filters.searchQuery.trim();
     if (searchTerm) {
       console.log('🎯 [UNIVERSAL SEARCH] Using search for:', searchTerm);
@@ -153,10 +180,8 @@ const AdvancedPropertyFilters = ({
       return;
     }
     
-    // Priority 2: Apply advanced filters with SMART MAPPING
     console.log('🎯 [FILTER SEARCH] Using advanced filters with smart mapping...');
     
-    // SMART MAPPING: Fix field mismatches (e.g., "Todos Santos" as zone → community)
     if (filters.zones.length > 0 || filters.areas.length > 0 || 
         filters.communities.length > 0 || filters.subdivisions.length > 0) {
       
@@ -168,20 +193,16 @@ const AdvancedPropertyFilters = ({
         subdivisions: filters.subdivisions
       });
       
-      // Build correct API filters from mappings
       const locationFilters = buildAPIFilters(mappings);
       
-      // Create enhanced filters with corrected location fields
       const enhancedFilters = {
         ...filters,
-        // Replace original location filters with smart-mapped ones
         smartLocationFilters: locationFilters
       };
       
       console.log('✅ Smart mapping complete! Applying filters...');
       onApplyFilters(enhancedFilters);
     } else {
-      // No location filters, use regular filters
       onApplyFilters(filters);
     }
     
@@ -234,7 +255,6 @@ const AdvancedPropertyFilters = ({
     return showAll ? items : items.slice(0, limit);
   };
 
-  // Helper functions for Map Search button
   const parsePrice = (priceStr: string | undefined) => {
     if (!priceStr || priceStr === "No Preference" || priceStr === "") return undefined;
     const cleaned = priceStr.replace(/[$,Million]/g, '').trim();
@@ -248,6 +268,8 @@ const AdvancedPropertyFilters = ({
     const parsed = parseInt(str.replace('+', ''));
     return isNaN(parsed) ? undefined : parsed;
   };
+
+  const availableAreas = getAvailableAreas();
 
   return (
     <div className="w-full">
@@ -287,7 +309,6 @@ const AdvancedPropertyFilters = ({
           variant="outline" 
           className="px-6"
           onClick={() => {
-            // Build URL with current filters
             const params = new URLSearchParams();
             if (filters.zones.length > 0) params.append('city', filters.zones[0]);
             else if (filters.areas.length > 0) params.append('city', filters.areas[0]);
@@ -334,14 +355,12 @@ const AdvancedPropertyFilters = ({
               <SheetTitle className="text-2xl">Advanced Property Search</SheetTitle>
               <SheetDescription>
                 <div className="space-y-2">
-                  {/* Total Database Count */}
                   <div className="text-base">
                     Search across <span className="text-xl font-bold text-blue-600">
                       {totalCount.toLocaleString()}
                     </span> luxury properties in Baja California Sur
                   </div>
                   
-                  {/* After Search - Show Results */}
                   {resultCount > 0 && (
                     <div className="p-2 bg-green-50 rounded border border-green-200">
                       <span className="text-sm text-green-700 font-semibold">
@@ -466,7 +485,10 @@ const AdvancedPropertyFilters = ({
                         id="zone-checkbox" 
                         checked={filters.zones.length > 0}
                         onCheckedChange={(checked) => {
-                          if (!checked) selectNone('zones');
+                          if (!checked) {
+                            selectNone('zones');
+                            selectNone('areas'); // ✅ Clear areas too
+                          }
                         }}
                       />
                       <Label htmlFor="zone-checkbox" className="font-bold">Zone</Label>
@@ -483,7 +505,12 @@ const AdvancedPropertyFilters = ({
                     value={filters.zones}
                     onChange={(e) => {
                       const selected = Array.from(e.target.selectedOptions, option => option.value);
-                      setFilters({ ...filters, zones: selected });
+                      
+                      // ✅ Auto-clear invalid areas when zones change
+                      const allowedAreas = selected.flatMap(z => zoneToAreaMap[z] || []);
+                      const validAreas = filters.areas.filter(area => allowedAreas.includes(area));
+                      
+                      setFilters({ ...filters, zones: selected, areas: validAreas });
                     }}
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                     size={showAllZones ? 10 : 10}
@@ -504,7 +531,7 @@ const AdvancedPropertyFilters = ({
                   )}
                 </div>
 
-                {/* Area */}
+                {/* Area - ✅ NOW FILTERED BY ZONE! */}
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -524,6 +551,14 @@ const AdvancedPropertyFilters = ({
                       ×
                     </button>
                   </div>
+                  
+                  {/* ✅ Show helper text when zones are selected */}
+                  {filters.zones.length > 0 && (
+                    <p className="text-xs text-blue-600 mb-2">
+                      ✓ Showing areas for: {filters.zones.join(", ")}
+                    </p>
+                  )}
+                  
                   <select
                     multiple
                     value={filters.areas}
@@ -534,13 +569,21 @@ const AdvancedPropertyFilters = ({
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                     size={10}
                   >
-                    {getDisplayedItems(areas, showAllAreas, 10).map((area) => (
+                    {getDisplayedItems(availableAreas, showAllAreas, 10).map((area) => (
                       <option key={area} value={area}>
                         {area}
                       </option>
                     ))}
                   </select>
-                  {!showAllAreas && areas.length > 10 && (
+                  
+                  {/* ✅ Updated messages */}
+                  {availableAreas.length === 0 && filters.zones.length > 0 && (
+                    <p className="text-sm text-amber-600 mt-1">
+                      No areas available for selected zone(s)
+                    </p>
+                  )}
+                  
+                  {!showAllAreas && availableAreas.length > 10 && (
                     <button 
                       onClick={() => setShowAllAreas(true)}
                       className="text-blue-600 hover:underline text-sm mt-1"
@@ -552,8 +595,9 @@ const AdvancedPropertyFilters = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => selectAll('areas', areas)}
+                      onClick={() => selectAll('areas', availableAreas)}
                       className="flex-1 text-blue-600 border-blue-300"
+                      disabled={availableAreas.length === 0}
                     >
                       SELECT ALL
                     </Button>
@@ -723,7 +767,7 @@ const AdvancedPropertyFilters = ({
                   </div>
                 </div>
 
-                {/* Special Filter Checkboxes - BELOW SUBDIVISION */}
+                {/* Special Filter Checkboxes */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Checkbox 
@@ -757,7 +801,6 @@ const AdvancedPropertyFilters = ({
                   </div>
                 </div>
 
-                {/* Add a Field Button */}
                 <Button variant="default" className="mt-4 bg-blue-600 hover:bg-blue-700">
                   Add a Field
                 </Button>

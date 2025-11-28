@@ -96,13 +96,39 @@ const AdvancedSearch = () => {
     }
   }, []);
 
+  // ✅ ZONE → AREA MAPPING (just like FlexMLS!)
+  const zoneToAreaMap: Record<string, string[]> = {
+    "Cabo San Lucas": ["CSL Cor-Inland", "CSL-Centro", "CSL-Corr. Oceanside", "CSL-Beach & Marina", "CSL-North"],
+    "San Jose del Cabo": ["SJD Corr-Inland", "SJD Corr-Oceanside", "SJD-Centro", "SJD-Beachside", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
+    "East Cape": ["East Cape North", "East Cape South", "La Ribera", "Los Barriles", "BuenaVista/Rancho Leonero", "BuenVsta/LosBarilles", "ElCardonal/N of Bariles", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta", "Bay of Dreams", "Costa Palmas"],
+    "La Paz": ["La Paz City", "LaPaz Beach", "El Centenario", "El Sargento", "La Ventana", "Los Planes"],
+    "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
+    "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
+    "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside", "SJD Corr-Inland", "SJD Corr-Oceanside"],
+  };
+
   const matchesUiSearch = (text: string) => {
     if (!uiSearchQuery) return true;
     return text.toLowerCase().includes(uiSearchQuery.toLowerCase());
   };
 
   const filteredZones = zones.filter(matchesUiSearch);
-  const filteredAreas = areas.filter(matchesUiSearch);
+  
+  // ✅ Filter areas based on selected zones (cascading filter)
+  const getFilteredAreas = () => {
+    let availableAreas = [...areas];
+    
+    // If zones are selected, only show areas that belong to those zones
+    if (filters.zones.length > 0) {
+      const zonesAreas = filters.zones.flatMap(zone => zoneToAreaMap[zone] || []);
+      availableAreas = areas.filter(area => zonesAreas.includes(area));
+    }
+    
+    // Then apply UI search filter
+    return availableAreas.filter(matchesUiSearch);
+  };
+  
+  const filteredAreas = getFilteredAreas();
   const filteredCommunities = communities.filter(matchesUiSearch);
   const filteredSubdivisions = subdivisions.filter(matchesUiSearch);
 
@@ -297,12 +323,24 @@ const AdvancedSearch = () => {
   };
 
   const toggleZone = (zone: string) => {
-    setFilters(prev => ({
-      ...prev,
-      zones: prev.zones.includes(zone)
+    setFilters(prev => {
+      const newZones = prev.zones.includes(zone)
         ? prev.zones.filter(z => z !== zone)
-        : [...prev.zones, zone]
-    }));
+        : [...prev.zones, zone];
+      
+      // ✅ Auto-clear areas that don't belong to selected zones
+      let validAreas = [...prev.areas];
+      if (newZones.length > 0) {
+        const allowedAreas = newZones.flatMap(z => zoneToAreaMap[z] || []);
+        validAreas = prev.areas.filter(area => allowedAreas.includes(area));
+      }
+      
+      return {
+        ...prev,
+        zones: newZones,
+        areas: validAreas
+      };
+    });
   };
 
   const toggleArea = (area: string) => {
@@ -486,19 +524,31 @@ const AdvancedSearch = () => {
             <Label className="text-lg font-bold mb-3 block">
               Area ({filters.areas.length} selected)
             </Label>
+            {filters.zones.length > 0 && (
+              <p className="text-xs text-blue-600 mb-2">
+                ✓ Showing areas for: {filters.zones.join(", ")}
+              </p>
+            )}
             <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
-              {filteredAreas.map(area => (
-                <div key={area} className="flex items-center gap-2">
-                  <Checkbox
-                    id={`area-${area}`}
-                    checked={filters.areas.includes(area)}
-                    onCheckedChange={() => toggleArea(area)}
-                  />
-                  <Label htmlFor={`area-${area}`} className="cursor-pointer text-sm">{area}</Label>
-                </div>
-              ))}
-              {filteredAreas.length === 0 && uiSearchQuery && (
-                <p className="text-sm text-muted-foreground italic py-2">No areas match "{uiSearchQuery}"</p>
+              {filteredAreas.length > 0 ? (
+                filteredAreas.map(area => (
+                  <div key={area} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`area-${area}`}
+                      checked={filters.areas.includes(area)}
+                      onCheckedChange={() => toggleArea(area)}
+                    />
+                    <Label htmlFor={`area-${area}`} className="cursor-pointer text-sm">{area}</Label>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground italic py-2">
+                  {filters.zones.length > 0 
+                    ? "No areas available for selected zone(s)" 
+                    : uiSearchQuery 
+                      ? `No areas match "${uiSearchQuery}"`
+                      : "Select a zone first to see areas"}
+                </p>
               )}
             </div>
           </div>
