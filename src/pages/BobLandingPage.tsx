@@ -55,6 +55,18 @@ const fallbackListings = [
     mlsNumber: "25-4668",
     link: "https://www.flexmls.com/share/D1Cgo/Marina-Cabo-Plaza-Paseo-de-la-Marina-103A-Cabo-San-Lucas-",
   },
+  {
+    id: 2,
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762121555/20240509024323100469000000-o_km5cq0.jpg",
+    price: "$429,000",
+    title: "Terrasol Av Solmar 164",
+    location: "Cabo San Lucas",
+    beds: 2,
+    baths: 2,
+    sqft: "1,200 sq ft",
+    mlsNumber: "25-5288",
+    link: "https://www.flexmls.com/share/",
+  },
 ];
 
 // ==================== TESTIMONIALS ====================
@@ -244,7 +256,9 @@ const BobLandingPage = () => {
       setIsLoadingMyListings(true);
       
       try {
-        const cacheKey = `${agent.slug}-my-listings-api-data`;
+        // ⭐ Cache version - increment this number when MLS numbers change to force refresh
+        const CACHE_VERSION = 2; // Changed from 1 to 2 (now only 2 listings)
+        const cacheKey = `${agent.slug}-my-listings-api-data-v${CACHE_VERSION}`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -255,18 +269,19 @@ const BobLandingPage = () => {
         // Check cache first
         if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
           const cachedData = JSON.parse(cached);
+          console.log(`✅ Using cached listings (v${CACHE_VERSION}):`, cachedData.length);
           setMyListings(cachedData);
           setIsLoadingMyListings(false);
           return;
         }
         
         console.log('🔍 My Listings - Fetching from Cabo San Lucas...');
+        console.log('🎯 Looking for these MLS numbers:', myListingMLSNumbers);
         const mlsData = await fetchListings({ 
           limit: 100,
           city: 'Cabo San Lucas'
         });
         console.log('🔍 My Listings - Total API results:', mlsData.length);
-        console.log('🔍 Looking for MLS numbers:', myListingMLSNumbers);
         
         // Filter and sort by MLS numbers (maintains exact order)
         const orderedListings: any[] = [];
