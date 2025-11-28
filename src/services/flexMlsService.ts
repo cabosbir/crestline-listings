@@ -1,4 +1,4 @@
-// src/services/flexMlsService.ts - UPDATED WITH SINGULAR API PARAMETERS
+// src/services/flexMlsService.ts - FIXED TO PASS SPECIAL FILTERS
 
 export interface MLSProperty {
   ListingKey: string;
@@ -47,8 +47,11 @@ export async function fetchListings(params?: {
   bedrooms?: number;
   bathrooms?: number;
   limit?: number;
-  search?: string; // NEW: For MLS number, address, or general search
-  listingId?: string; // NEW: For exact MLS number search
+  search?: string;
+  listingId?: string;
+  sellerFinancing?: boolean;  // 🆕 Added
+  primaryView?: boolean;      // 🆕 Added
+  currentPrice?: boolean;     // 🆕 Added
 }): Promise<MLSProperty[]> {
   try {
     const queryParams = new URLSearchParams();
@@ -68,15 +71,15 @@ export async function fetchListings(params?: {
     }
     if (params?.areas) {
       const areasStr = Array.isArray(params.areas) ? params.areas.join(',') : params.areas;
-      queryParams.append('area', areasStr); // FIXED: Changed to singular
+      queryParams.append('area', areasStr);
     }
     if (params?.communities) {
       const communitiesStr = Array.isArray(params.communities) ? params.communities.join(',') : params.communities;
-      queryParams.append('community', communitiesStr); // FIXED: Changed to singular
+      queryParams.append('community', communitiesStr);
     }
     if (params?.subdivisions) {
       const subdivisionsStr = Array.isArray(params.subdivisions) ? params.subdivisions.join(',') : params.subdivisions;
-      queryParams.append('subdivision', subdivisionsStr); // FIXED: Changed to singular
+      queryParams.append('subdivision', subdivisionsStr);
     }
     if (params?.propertyTypes) {
       const typesStr = Array.isArray(params.propertyTypes) ? params.propertyTypes.join(',') : params.propertyTypes;
@@ -91,6 +94,20 @@ export async function fetchListings(params?: {
     if (params?.bedrooms) queryParams.append('bedrooms', params.bedrooms.toString());
     if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
+    
+    // 🆕 SPECIAL FILTERS - THIS WAS MISSING!
+    if (params?.sellerFinancing) {
+      queryParams.append('sellerFinancing', 'true');
+      console.log('💵 Service: Adding seller financing filter');
+    }
+    if (params?.primaryView) {
+      queryParams.append('primaryView', 'true');
+      console.log('👁️ Service: Adding primary view filter');
+    }
+    if (params?.currentPrice) {
+      queryParams.append('currentPrice', 'true');
+      console.log('💲 Service: Adding current price filter');
+    }
     
     const url = `/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
