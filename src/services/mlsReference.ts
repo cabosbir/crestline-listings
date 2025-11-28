@@ -3,17 +3,72 @@
 
 export const MLS_REFERENCE = {
   zones: [
-    "Cabo Corridor",
-    "Cabo San Lucas",
-    "Comondu",
-    "East Cape",
-    "La Paz",
-    "Loreto",
-    "Mulege",
-    "Pacific",
-    "San Jose Corridor",
-    "San Jose del Cabo"
-  ],
+  // CABO SAN LUCAS
+  "CSL Cor-Inland",
+  "CSL-Centro",
+  "CSL-Corr. Oceanside",
+  "CSL-Beach & Marina",
+  "CSL-North",
+
+  // SAN JOSE DEL CABO / CORRIDOR
+  "SJD Corr-Inland",
+  "SJD Corr-Oceanside",
+  "SJD-Centro",
+  "SJD-Beachside",
+  "SJD-East",
+  "SJD-Inland/Golf",
+  "SJD-North",
+
+  // PACIFIC
+  "Pacific North",
+  "Pacific South",
+  "Pescadero/Cerritos",
+  "Migrino Area",
+
+  // LA PAZ
+  "La Paz City",
+  "LaPaz Beach",
+  "El Centenario",
+  "El Sargento",
+  "La Ventana",
+  "Los Planes",
+
+  // EAST CAPE – ACTUAL SUB-ZONES
+  "East Cape North",
+  "East Cape South",
+  "La Ribera",
+  "Los Barriles",
+  "BuenaVista/Rancho Leonero",
+  "BuenVsta/LosBarilles",
+  "ElCardonal/N of Bariles",
+  "Vinorama/Cabo Pulmo",
+  "Zacatitos/PtaPerfcta",
+  "Bay of Dreams",
+  "Costa Palmas",
+  "El Sargento",
+  "La Ventana",
+  "San Bartolo",
+
+  // LORETO
+  "Loreto",
+  "Loreto Bay",
+  "Nopolo",
+
+  // MULEGE REGION
+  "Mulege",
+  "Bahia Concepcion",
+  "San Juanico",
+  "Scorpion Bay",
+
+  // SAN JOSE DEL CABO ZONE
+  "San Jose del Cabo",
+
+  // CABO CORRIDOR
+  "Cabo Corridor",
+
+  // CABO SAN LUCAS
+  "Cabo San Lucas"
+],
 
   areas: [
     "Bay of Dreams",
@@ -202,6 +257,25 @@ export const MLS_REFERENCE = {
 
 // Common user-friendly names that need mapping
 export const USER_TO_MLS_MAPPINGS = {
+  // Zones can now map to BOTH zone and city
+  "east cape": {
+    mlsField: "zone",
+    mlsValue: "East Cape",
+    confidence: 100,
+    alternatives: [
+      { mlsField: "city", mlsValue: "East Cape", confidence: 100 }
+    ]
+  },
+
+  "cabo corridor": {
+    mlsField: "zone",
+    mlsValue: "Cabo Corridor",
+    confidence: 100,
+    alternatives: [
+      { mlsField: "city", mlsValue: "Cabo Corridor", confidence: 100 }
+    ]
+  },
+
   // User says "Todos Santos" → MLS has it in Communities
   "todos santos": {
     mlsField: "community",
@@ -317,6 +391,12 @@ export function findInMLS(searchTerm: string): {
 } {
   const search = searchTerm.toLowerCase().trim();
 
+  // NEW — check cities first
+  const cityMatch = MLS_REFERENCE.zones.find(c => c.toLowerCase() === search);
+  if (cityMatch) {
+    return { found: true, field: 'city', exactMatch: cityMatch };
+  }
+
   // Check zones
   const zoneMatch = MLS_REFERENCE.zones.find(z => z.toLowerCase() === search);
   if (zoneMatch) {
@@ -350,6 +430,20 @@ export function findInMLS(searchTerm: string): {
         suggestions.push(value);
       }
     });
+
+    const suggestions: string[] = [];
+
+  [
+    ...MLS_REFERENCE.cities,
+    ...MLS_REFERENCE.zones,
+    ...MLS_REFERENCE.areas,
+    ...MLS_REFERENCE.communities,
+    ...MLS_REFERENCE.subdivisions
+  ].forEach(val => {
+    if (val.toLowerCase().includes(search)) {
+      suggestions.push(val);
+    }
+  });
 
   return { found: false, suggestions: suggestions.slice(0, 5) };
 }
