@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -8,17 +8,18 @@ import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDow
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const getWhatsAppNumber = (phone) => {
+// ==================== HELPER FUNCTIONS ====================
+const getWhatsAppNumber = (phone: string) => {
   return phone.replace(/[^0-9]/g, '');
 };
 
-const getWhatsAppLink = (phone, agentName) => {
+const getWhatsAppLink = (phone: string, agentName: string) => {
   const number = getWhatsAppNumber(phone);
   const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
   return `https://wa.me/${number}?text=${message}`;
 };
 
-const getShuffledListings = (listings, cacheKey) => {
+const getShuffledListings = (listings: any[], cacheKey: string) => {
   const cacheTimeKey = `${cacheKey}-time`;
   
   if (typeof window === 'undefined') return listings;
@@ -49,6 +50,7 @@ const getShuffledListings = (listings, cacheKey) => {
   return shuffled;
 };
 
+// ==================== AGENT CONFIGURATION ====================
 const agent = {
   id: 3,
   slug: "alfonso",
@@ -60,12 +62,24 @@ const agent = {
   email: "alfonso@bircabo.com",
   yearsExperience: 18,
   propertiesSold: 890,
+  totalSales: "$200M+",
   bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
   certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
   languages: ["English", "Spanish"],
 };
 
-const originalMyListings = [
+// ==================== LISTINGS CONFIGURATION ====================
+// ⭐ AUTOMATIC LISTING DETECTION - No manual MLS numbers needed!
+const agentIdentifiers = {
+  name: "Alfonso Puente",
+  email: "alfonso@bircabo.com",
+  phone: "+52 664 188 8681",
+  mlsId: null,
+  licenseNumber: null,
+};
+
+// Fallback data if API fails
+const fallbackListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
@@ -74,36 +88,13 @@ const originalMyListings = [
     location: "Cabo San Lucas",
     beds: 4,
     baths: 2,
-    totalM2: "160",
+    sqft: "1,722 sq ft",
     mlsNumber: "25-4981",
-    link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
-  },
-  {
-    id: 2,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942441/20250321204529858183000000-o_ganlni.jpg",
-    price: "$499,000",
-    title: "La Vista LARGE PRIVATE YARD B101",
-    location: "Cabo San Lucas",
-    beds: 3,
-    baths: 3,
-    totalM2: "372.06",
-    mlsNumber: "25-1679",
-    link: "https://www.flexmls.com/share/D0rHM/La-Vista-LARGE-PRIVATE-YARD-B101-Cabo-Corridor-",
-  },
-  {
-    id: 3,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1761942708/20240426201812151546000000-o_zoqijd.jpg",
-    price: "$3,795,800",
-    title: "Casa Ducci Camino del Mar",
-    location: "Cabo San Lucas",
-    beds: 4,
-    baths: 4.5,
-    totalM2: "350.23",
-    mlsNumber: "24-1981",
-    link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
+    link: "https://www.flexmls.com/share/D2qrW/",
   },
 ];
 
+// ==================== TESTIMONIALS ====================
 const testimonials = [
   {
     name: "Jonathan & Rebecca Miller",
@@ -112,7 +103,7 @@ const testimonials = [
   },
   {
     name: "Marcus Davidson",
-    text: "Working with Alfonso was exceptional. His 18 years of experience and track record of 200+ closings speak for themselves. A true professional who delivers results!",
+    text: "Working with Alfonso was exceptional. His 18 years of experience and track record of 890+ closings speak for themselves. A true professional who delivers results!",
     rating: 5
   },
   {
@@ -122,15 +113,64 @@ const testimonials = [
   }
 ];
 
+// ==================== PAGINATION CONFIG ====================
+const ITEMS_PER_PAGE = 9;
+
+// ==================== MAIN COMPONENT ====================
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false);
+  const [myListings, setMyListings] = useState(fallbackListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+  const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 9;
 
+  // ==================== SAVE/RESTORE STATE ====================
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const browseState = {
+        url: window.location.pathname,
+        scrollPosition: window.scrollY,
+        activeTab: showMyListings ? 'my-listings' : 'featured',
+        currentPage: currentPage,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('propertyBrowseReturnUrl', JSON.stringify(browseState));
+    }
+  }, [showMyListings, currentPage]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (state.url === window.location.pathname && isRecent) {
+              setShowMyListings(state.activeTab === 'my-listings');
+              setCurrentPage(state.currentPage || 1);
+              setTimeout(() => {
+                window.scrollTo({
+                  top: state.scrollPosition || 0,
+                  behavior: 'smooth'
+                });
+              }, 100);
+            }
+          } catch (e) {
+            console.error('Error restoring browse state:', e);
+          }
+        }
+        sessionStorage.removeItem('returningFromProperty');
+      }
+    }
+  }, []);
+
+  // ==================== LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
       if (showMyListings) return;
@@ -153,9 +193,14 @@ const AlfonsoLandingPage = () => {
           return;
         }
         
-        const mlsData = await fetchListings({ limit: 50,
+        console.log('🔄 Loading Featured Listings from API...');
+        
+        const mlsData = await fetchListings({ 
+          limit: 50,
           city: 'Cabo San Lucas',
         });
+        
+        console.log('✅ Fetched featured listings:', mlsData.length);
         
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
         const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
@@ -175,7 +220,7 @@ const AlfonsoLandingPage = () => {
           description: "Showing available listings. Some listings may be loading.",
           variant: "default",
         });
-        setFeaturedListings(originalMyListings);
+        setFeaturedListings(fallbackListings);
       } finally {
         setIsLoadingFeatured(false);
       }
@@ -184,25 +229,162 @@ const AlfonsoLandingPage = () => {
     loadFeaturedListings();
   }, [showMyListings, toast]);
 
+  // ==================== LOAD MY LISTINGS (AUTOMATIC DETECTION) ====================
+  useEffect(() => {
+    const loadMyListings = async () => {
+      if (!showMyListings) return;
+      
+      setIsLoadingMyListings(true);
+      
+      try {
+        const CACHE_VERSION = 1;
+        const cacheKey = `${agent.slug}-my-listings-auto-v${CACHE_VERSION}`;
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          const cachedData = JSON.parse(cached);
+          console.log(`✅ Using cached auto-detected listings (v${CACHE_VERSION}):`, cachedData.length);
+          setMyListings(cachedData);
+          setIsLoadingMyListings(false);
+          return;
+        }
+        
+        console.log('🤖 AUTO-DETECTING listings for:', agent.name);
+        console.log('🔍 Searching by agent identifiers:', agentIdentifiers);
+        
+        const mlsData = await fetchListings({ 
+          limit: 500,
+          city: 'Cabo San Lucas'
+        });
+        
+        console.log('🔍 Total API results:', mlsData.length);
+        console.log('🎯 Filtering for agent:', agent.name);
+        
+        // ⭐ AUTO-FILTER by agent
+        const agentListings = mlsData.filter(listing => {
+          const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
+          const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
+          const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
+          
+          const nameMatch = listAgentName.toLowerCase().includes('puente') || 
+                           listAgentName.toLowerCase().includes('alfonso');
+          const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
+          const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
+          const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
+          
+          return nameMatch || emailMatch || phoneMatch;
+        });
+        
+        console.log(`✅ Auto-detected ${agentListings.length} listings for ${agent.name}`);
+        
+        if (agentListings.length > 0) {
+          console.log('📋 Found listings:', agentListings.map(l => ({
+            mls: l.ListingId,
+            address: l.UnparsedAddress,
+            price: l.ListPrice,
+            agent: l.ListAgentFullName || l.ListAgentName
+          })));
+        } else {
+          console.warn('⚠️ No listings found - checking agent field names...');
+          if (mlsData.length > 0) {
+            const sample = mlsData[0];
+            const agentFields = Object.keys(sample).filter(key => 
+              /agent|broker|office|member/i.test(key)
+            );
+            console.log('📋 Available agent fields in MLS:', agentFields);
+          }
+        }
+        
+        const convertedListings = agentListings.map(convertMLSToPropertyCard);
+        const finalListings = convertedListings.length > 0 ? convertedListings : fallbackListings;
+        
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(finalListings));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching my listings:', e);
+        }
+        
+        setMyListings(finalListings);
+      } catch (error) {
+        console.error('Failed to auto-detect listings:', error);
+        setMyListings(fallbackListings);
+      } finally {
+        setIsLoadingMyListings(false);
+      }
+    };
+
+    loadMyListings();
+  }, [showMyListings, toast]);
+
+  // ==================== RESET PAGE ON TAB SWITCH ====================
   useEffect(() => {
     setCurrentPage(1);
   }, [showMyListings]);
 
-  const allListings = showMyListings ? originalMyListings : featuredListings;
+  // ==================== PAGINATION ====================
+  const allListings = showMyListings ? myListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
   const displayedListings = allListings.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
     document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 7;
+    
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      
+      if (currentPage <= 3) {
+        pages.push(2, 3, 4);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push('ellipsis-start');
+        pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push('ellipsis-start');
+        pages.push(currentPage - 1, currentPage, currentPage + 1);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
   };
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
+      {/* Back to Team Button */}
+      <div className="container mx-auto px-4 pt-24">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/team')}
+          className="mb-4 hover:bg-secondary"
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back to Team
+        </Button>
+      </div>
+
+      {/* WhatsApp Button */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -218,7 +400,8 @@ const AlfonsoLandingPage = () => {
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
-      <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
+      {/* Hero Section */}
+      <section className="relative pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
         <div className="container mx-auto px-4 relative z-10">
@@ -283,6 +466,7 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
+      {/* About Section */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -325,6 +509,7 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
+      {/* Listings Section */}
       <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -345,7 +530,7 @@ const AlfonsoLandingPage = () => {
                 variant={showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(true)}
               >
-                My Listings ({originalMyListings.length})
+                My Listings {!isLoadingMyListings && `(${myListings.length})`}
               </Button>
               <Button
                 variant={!showMyListings ? "luxury" : "outline"}
@@ -356,10 +541,12 @@ const AlfonsoLandingPage = () => {
             </div>
           </div>
 
-          {isLoadingFeatured && !showMyListings ? (
+          {(isLoadingFeatured && !showMyListings) || (isLoadingMyListings && showMyListings) ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
-              <p className="text-lg text-muted-foreground">Loading featured properties from FlexMLS...</p>
+              <p className="text-lg text-muted-foreground">
+                {showMyListings ? 'Loading my listings from FlexMLS...' : 'Loading featured properties from FlexMLS...'}
+              </p>
             </div>
           ) : (
             <>
@@ -375,36 +562,58 @@ const AlfonsoLandingPage = () => {
                 </div>
               )}
 
+              {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 my-8">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
+                <div className="flex flex-col items-center gap-4 my-8">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
+                  </div>
                   
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <div className="flex items-center gap-2">
                     <Button
-                      key={page}
-                      variant={currentPage === page ? "luxury" : "outline"}
+                      variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(page)}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-10 px-3"
                     >
-                      {page}
+                      <ChevronLeft className="h-4 w-4" />
+                      <span className="ml-1 hidden sm:inline">Previous</span>
                     </Button>
-                  ))}
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                    
+                    {getPageNumbers().map((page, index) => {
+                      if (page === 'ellipsis-start' || page === 'ellipsis-end') {
+                        return (
+                          <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                            ...
+                          </span>
+                        );
+                      }
+                      
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "luxury" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page as number)}
+                          className="h-10 w-10 p-0"
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-10 px-3"
+                    >
+                      <span className="mr-1 hidden sm:inline">Next</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </>
@@ -420,6 +629,7 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
+      {/* Testimonials Section */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
@@ -440,6 +650,7 @@ const AlfonsoLandingPage = () => {
         </div>
       </section>
 
+      {/* Contact Section */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
