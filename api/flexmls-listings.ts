@@ -38,9 +38,13 @@ export default async function handler(
       yearBuilt,
       search,
       limit,
-      sellerFinancing,  // 🆕 Special filter
-      primaryView,      // 🆕 Special filter
-      currentPrice      // 🆕 Special filter
+      sellerFinancing,  // Special filter
+      primaryView,      // Special filter
+      currentPrice,     // Special filter
+      viewFieldName,    // 🆕 Dynamic field name from AI discovery
+      sellerFinancingFieldName,  // 🆕 Dynamic field name from AI discovery
+      currentPriceFieldName,     // 🆕 Dynamic field name from AI discovery
+      originalPriceFieldName     // 🆕 Dynamic field name from AI discovery
     } = req.query;
 
     const maxResults = limit && typeof limit === 'string' ? parseInt(limit) : undefined;
@@ -168,29 +172,37 @@ export default async function handler(
     }
 
     // 🆕 SPECIAL FILTERS WITH DYNAMIC FIELD DISCOVERY
-    // Note: Field names are discovered by Groq AI and may vary by MLS system
+    // Field names are discovered by Groq AI and passed from frontend
     
-    // Seller Financing - Check if property offers seller financing
+    // Seller Financing
     if (sellerFinancing && (sellerFinancing === 'true' || sellerFinancing === true)) {
-      // Try common field names (will be replaced by Groq discovery in production)
-      const possibleFields = ['SellerFinancingYN', 'SellerFinancing', 'FinancingOffered'];
-      // For now, use the most common one
-      filters.push(`SellerFinancingYN eq true`);
-      console.log('💵 [Special Filter] Seller Financing: Yes');
+      const fieldName = (sellerFinancingFieldName && typeof sellerFinancingFieldName === 'string') 
+        ? sellerFinancingFieldName 
+        : 'SellerFinancingYN';
+      filters.push(`${fieldName} eq true`);
+      console.log(`💵 [Special Filter] Seller Financing: Yes (using ${fieldName})`);
     }
 
-    // Primary View - Properties with ocean/water/bay views
+    // Primary View - Oceanfront properties
     if (primaryView && (primaryView === 'true' || primaryView === true)) {
-      // Groq AI will discover the actual field name (View, WaterfrontFeatures, etc.)
-      // For now, use the most common field name
-      filters.push(`contains(View, 'Ocean')`);
-      console.log('👁️ [Special Filter] Primary View (Ocean): Yes');
+      const fieldName = (viewFieldName && typeof viewFieldName === 'string') 
+        ? viewFieldName 
+        : 'View';
+      // Check for Ocean in the discovered field
+      filters.push(`contains(${fieldName}, 'Ocean')`);
+      console.log(`👁️ [Special Filter] Primary View (Ocean): Yes (using ${fieldName})`);
     }
 
-    // Current Price - Properties where ListPrice equals OriginalListPrice (no price reductions)
+    // Current Price - No price reductions
     if (currentPrice && (currentPrice === 'true' || currentPrice === true)) {
-      filters.push(`ListPrice eq OriginalListPrice`);
-      console.log('💲 [Special Filter] Current Price (no reductions): Yes');
+      const currentField = (currentPriceFieldName && typeof currentPriceFieldName === 'string') 
+        ? currentPriceFieldName 
+        : 'ListPrice';
+      const originalField = (originalPriceFieldName && typeof originalPriceFieldName === 'string') 
+        ? originalPriceFieldName 
+        : 'OriginalListPrice';
+      filters.push(`${currentField} eq ${originalField}`);
+      console.log(`💲 [Special Filter] Current Price: Yes (comparing ${currentField} eq ${originalField})`);
     }
 
     const filterString = filters.join(' and ');

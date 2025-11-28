@@ -49,9 +49,14 @@ export async function fetchListings(params?: {
   limit?: number;
   search?: string;
   listingId?: string;
-  sellerFinancing?: boolean;  // 🆕 Added
-  primaryView?: boolean;      // 🆕 Added
-  currentPrice?: boolean;     // 🆕 Added
+  sellerFinancing?: boolean;
+  primaryView?: boolean;
+  currentPrice?: boolean;
+  // 🆕 Dynamic field names from AI discovery
+  viewFieldName?: string;
+  sellerFinancingFieldName?: string;
+  currentPriceFieldName?: string;
+  originalPriceFieldName?: string;
 }): Promise<MLSProperty[]> {
   try {
     const queryParams = new URLSearchParams();
@@ -98,14 +103,28 @@ export async function fetchListings(params?: {
     // 🆕 SPECIAL FILTERS - THIS WAS MISSING!
     if (params?.sellerFinancing) {
       queryParams.append('sellerFinancing', 'true');
+      if (params.sellerFinancingFieldName) {
+        queryParams.append('sellerFinancingFieldName', params.sellerFinancingFieldName);
+      }
       console.log('💵 Service: Adding seller financing filter');
     }
     if (params?.primaryView) {
       queryParams.append('primaryView', 'true');
-      console.log('👁️ Service: Adding primary view filter');
+      if (params.viewFieldName) {
+        queryParams.append('viewFieldName', params.viewFieldName);
+        console.log(`👁️ Service: Adding primary view filter (field: ${params.viewFieldName})`);
+      } else {
+        console.log('👁️ Service: Adding primary view filter');
+      }
     }
     if (params?.currentPrice) {
       queryParams.append('currentPrice', 'true');
+      if (params.currentPriceFieldName) {
+        queryParams.append('currentPriceFieldName', params.currentPriceFieldName);
+      }
+      if (params.originalPriceFieldName) {
+        queryParams.append('originalPriceFieldName', params.originalPriceFieldName);
+      }
       console.log('💲 Service: Adding current price filter');
     }
     

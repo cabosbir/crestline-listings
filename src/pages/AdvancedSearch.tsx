@@ -376,6 +376,7 @@ const AdvancedSearch = () => {
         
         if (filters.sellerFinancing && fields.sellerFinancingField) {
           apiFilters.sellerFinancing = true;
+          apiFilters.sellerFinancingFieldName = fields.sellerFinancingField; // 🆕 Pass field name
           console.log(`  💵 Seller financing: Yes (using field: ${fields.sellerFinancingField})`);
         } else if (filters.sellerFinancing) {
           console.warn('  ⚠️ Seller financing requested but field not found in MLS');
@@ -383,6 +384,7 @@ const AdvancedSearch = () => {
         
         if (filters.primaryView && fields.viewField) {
           apiFilters.primaryView = true;
+          apiFilters.viewFieldName = fields.viewField; // 🆕 Pass field name
           console.log(`  👁️ Primary view: Yes (using field: ${fields.viewField})`);
         } else if (filters.primaryView) {
           console.warn('  ⚠️ Primary view requested but field not found in MLS');
@@ -390,6 +392,8 @@ const AdvancedSearch = () => {
         
         if (filters.currentPrice && fields.currentPriceField && fields.originalPriceField) {
           apiFilters.currentPrice = true;
+          apiFilters.currentPriceFieldName = fields.currentPriceField; // 🆕 Pass field name
+          apiFilters.originalPriceFieldName = fields.originalPriceField; // 🆕 Pass field name
           console.log(`  💲 Current price: Yes (comparing ${fields.currentPriceField} vs ${fields.originalPriceField})`);
         } else if (filters.currentPrice) {
           console.warn('  ⚠️ Current price requested but fields not found in MLS');
