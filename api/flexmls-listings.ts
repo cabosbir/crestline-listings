@@ -184,13 +184,14 @@ export default async function handler(
     }
 
     // Primary View - Oceanfront properties
+    // NOTE: This field exists in the data but FlexMLS API can't filter on it!
+    // We'll filter client-side instead to avoid breaking the entire query
     if (primaryView && (primaryView === 'true' || primaryView === true)) {
-      const fieldName = (viewFieldName && typeof viewFieldName === 'string') 
-        ? viewFieldName 
-        : 'View';
-      // Check for Ocean in the discovered field
-      filters.push(`contains(${fieldName}, 'Ocean')`);
-      console.log(`👁️ [Special Filter] Primary View (Ocean): Yes (using ${fieldName})`);
+      // const fieldName = (viewFieldName && typeof viewFieldName === 'string') 
+      //   ? viewFieldName 
+      //   : 'View';
+      // filters.push(`contains(${fieldName}, 'Ocean')`);
+      console.log(`👁️ [Special Filter] Primary View: WILL FILTER CLIENT-SIDE (API doesn't support filtering this field)`);
     }
 
     // Current Price - No price reductions
@@ -209,11 +210,32 @@ export default async function handler(
     console.log('🎯 [Filter]:', filterString);
 
     // FETCH RESULTS (with optional limit)
-    const listings = maxResults 
+    let listings = maxResults 
       ? await fetchLimitedResults(filterString, maxResults)
       : await fetchAllResults(filterString);
 
-    console.log(`✅ [Result] ${listings.length} listings${maxResults ? ` (limited to ${maxResults})` : ''}`);
+    console.log(`✅ [Result] ${listings.length} listings${maxResults ? ` (limited to ${maxResults})` : ''} BEFORE client-side filters`);
+
+    // 🆕 CLIENT-SIDE SPECIAL FILTERS (fields that API can't filter on)
+    
+    // Primary View - Filter for Ocean views
+    if (primaryView && (primaryView === 'true' || primaryView === true)) {
+      const viewFieldName = (req.query.viewFieldName && typeof req.query.viewFieldName === 'string')
+        ? req.query.viewFieldName
+        : 'General_sp_Description_co_Primary_sp_View';
+      
+      const beforeCount = listings.length;
+      listings = listings.filter(listing => {
+        const viewValue = listing[viewFieldName];
+        if (!viewValue) return false;
+        const hasOcean = viewValue.toLowerCase().includes('ocean');
+        return hasOcean;
+      });
+      
+      console.log(`🌊 [Client Filter] Primary View: ${beforeCount} → ${listings.length} (filtered ${beforeCount - listings.length} non-ocean properties)`);
+    }
+
+    console.log(`✅ [Final Result] ${listings.length} listings AFTER client-side filters`);
 
     return res.status(200).json({
       success: true,
