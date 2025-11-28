@@ -1,4 +1,4 @@
-// src/services/flexMlsService.ts - WITH PRODUCTION API FALLBACK FOR LOCAL DEV
+// src/services/flexMlsService.ts - UPDATED WITH SINGULAR API PARAMETERS
 
 export interface MLSProperty {
   ListingKey: string;
@@ -47,9 +47,19 @@ export async function fetchListings(params?: {
   bedrooms?: number;
   bathrooms?: number;
   limit?: number;
+  search?: string; // NEW: For MLS number, address, or general search
+  listingId?: string; // NEW: For exact MLS number search
 }): Promise<MLSProperty[]> {
   try {
     const queryParams = new URLSearchParams();
+    
+    // Handle search parameters FIRST (highest priority)
+    if (params?.search) {
+      queryParams.append('search', params.search);
+    }
+    if (params?.listingId) {
+      queryParams.append('listingId', params.listingId);
+    }
     
     // Handle arrays and strings for ALL location filters
     if (params?.city) {
@@ -82,9 +92,7 @@ export async function fetchListings(params?: {
     if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     
-    // FIXED: Use production API in development (Vite doesn't support /api routes locally)
-    const apiBase = import.meta.env.DEV ? 'https://bircabo.com' : '';
-    const url = `${apiBase}/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const url = `/api/flexmls-listings${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     
     console.log('📡 Fetching listings from:', url);
     const response = await fetch(url);
@@ -127,9 +135,7 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
 
     console.log('🔍 Searching for property by ListingKey:', trimmedKey);
     
-    // FIXED: Use production API in development
-    const apiBase = import.meta.env.DEV ? 'https://bircabo.com' : '';
-    const url = `${apiBase}/api/flexmls-listings`;
+    const url = `/api/flexmls-listings`;
     
     console.log('📡 Fetching all listings from:', url);
     const response = await fetch(url);
