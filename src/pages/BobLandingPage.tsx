@@ -377,6 +377,18 @@ const BobLandingPage = () => {
     <div className="min-h-screen">
       <Navbar />
 
+      {/* ==================== BACK TO TEAM BUTTON ==================== */}
+      <div className="container mx-auto px-4 pt-24">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/team')}
+          className="mb-4 hover:bg-secondary"
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back to Team
+        </Button>
+      </div>
+
       {/* ==================== WHATSAPP FLOATING BUTTON ==================== */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
@@ -394,7 +406,7 @@ const BobLandingPage = () => {
       </a>
 
       {/* ==================== HERO SECTION ==================== */}
-      <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
+      <section className="relative pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
         <div className="container mx-auto px-4 relative z-10">
