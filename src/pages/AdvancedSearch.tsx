@@ -1,5 +1,5 @@
-// src/pages/AdvancedSearch.tsx - ENHANCED WITH INTELLIGENT FILTER OPTIMIZATION
-// Smart filter optimization works silently in the background
+// src/pages/AdvancedSearch.tsx - FIXED WITH CORRECT FILTER IMPORTS
+// Now uses filterConstants.ts instead of hardcoded arrays
 
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -12,6 +12,16 @@ import { Input } from "@/components/ui/input";
 import { X, Search, Loader2, Sparkles, Brain } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 import { filterIntelligence } from "@/services/groqFilterIntelligence";
+import { 
+  propertyTypes, 
+  zones, 
+  areas, 
+  communities, 
+  subdivisions,
+  priceOptions,
+  bedsOptions,
+  bathsOptions
+} from "@/constants/filterConstants";
 
 interface FilterState {
   propertyTypes: string[];
@@ -90,46 +100,8 @@ const AdvancedSearch = () => {
     }
   }, []);
 
-  const propertyTypes = ["Condos", "Houses", "Land", "Commercial", "Fractional", "MultiFamily"];
-  
-  const zones = [
-    "Cabo Corridor", "Cabo San Lucas", "Comondu", "East Cape", "La Paz",
-    "Loreto", "Mulege", "Pescadero", "San Jose del Cabo", "Todos Santos"
-  ];
-
-  const areas = [
-    "Corridor", "Diamante", "Punta Ballena", "Quivira", "San Jose Corridor",
-    "Beach & Marina", "Cabo Bello", "Downtown", "El Tezal", "North",
-    "Pedregal", "East Cape North", "East Cape South", "La Paz", "Loreto",
-    "San Jose Downtown", "San Jose North", "Todos Santos", "Todos Santos South"
-  ];
-
-  const communities = [
-    "Cabo Bello/Santa Carmela", "Cabo Del Sol", "Chileno Bay/Montage", 
-    "El Tezal-East", "Misiones", "BuenVista/LosBarilles", "Palmilla", 
-    "Pedregal", "Querencia", "San Jose Corridor", "Ventanas"
-  ];
-
-  const subdivisions = [
-    "Abasolo", "Alba Residences", "Altamar", "Aqua Viva", "Auberge Residences",
-    "Cabo Bello", "Cabo del Sol", "Cabo Real", "Capella Pedregal", "Casa del Mar",
-    "Chileno Bay", "Club Campestre", "Copala", "Costa Palmas", "Diamante",
-    "El Dorado", "El Encanto", "El Pedregal", "El Tezal", "Esperanza",
-    "Fonatur", "Four Seasons", "Fundadores", "Hacienda", "La Laguna",
-    "Las Ventanas", "Montage", "One&Only Palmilla", "Palmilla", "Pedregal",
-    "Puerto Los Cabos", "Querencia", "Quivira", "Rancho San Lucas", "San Jose Corridor",
-    "Santa Maria", "St. Regis", "Ventanas al Paraiso", "Villas del Mar", "Waldorf Astoria"
-  ];
-
-  const priceOptions = [
-    "No Preference", "$50,000", "$100,000", "$200,000", "$300,000", "$400,000",
-    "$500,000", "$600,000", "$700,000", "$800,000", "$900,000", "$1 Million",
-    "$1.5 Million", "$2 Million", "$2.5 Million", "$3 Million", "$4 Million",
-    "$5 Million", "$7.5 Million", "$10 Million"
-  ];
-
-  const bedsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
-  const bathsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
+  // ✅ REMOVED: All hardcoded arrays - now imported from filterConstants.ts
+  // propertyTypes, zones, areas, communities, subdivisions, priceOptions, bedsOptions, bathsOptions
 
   const matchesUiSearch = (text: string) => {
     if (!uiSearchQuery) return true;
