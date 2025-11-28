@@ -1,4 +1,4 @@
-// src/components/AdvancedPropertyFilters.tsx - WITH ZONE → AREA CASCADING FILTERS
+// src/components/AdvancedPropertyFilters.tsx - WITH MLS TRANSLATOR
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,11 @@ import {
   bathsOptions
 } from "@/constants/filterConstants";
 import { getSmartMappings, buildAPIFilters } from "@/services/groqIntelligence";
+import { 
+  translateUserInputToMLS, 
+  buildMLSAPIFilter, 
+  validateMLSFilters 
+} from "@/services/mlsTranslator"; // 🆕 MLS Translator
 
 interface FilterState {
   searchQuery: string;
@@ -108,7 +113,7 @@ const AdvancedPropertyFilters = ({
     currentPrice: false,
   });
 
-  // ✅ ZONE → AREA MAPPING (just like FlexMLS!)
+  // ✅ COMPLETE CASCADING HIERARCHY MAPS
   const zoneToAreaMap: Record<string, string[]> = {
     "Cabo San Lucas": ["CSL Cor-Inland", "CSL-Centro", "CSL-Corr. Oceanside", "CSL-Beach & Marina", "CSL-North"],
     "San Jose del Cabo": ["SJD Corr-Inland", "SJD Corr-Oceanside", "SJD-Centro", "SJD-Beachside", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
@@ -119,17 +124,97 @@ const AdvancedPropertyFilters = ({
     "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside", "SJD Corr-Inland", "SJD Corr-Oceanside"],
   };
 
+  // Area → Community mapping
+  const areaToCommunityMap: Record<string, string[]> = {
+    "CSL-Beach & Marina": ["CSL Beach", "CSL Marina", "CSL Near Bch & Marina"],
+    "CSL-Centro": ["Centro", "Pedregal CSL"],
+    "CSL-North": ["CSL North-East 19", "CSL North-West 19", "El Tezal-East", "El Tezal-West", "El Tezal-OceanSide"],
+    "CSL Cor-Inland": ["Cabo del Sol-Inland", "Cabo Real-Inland", "Querencia-Inland"],
+    "CSL-Corr. Oceanside": ["Cabo Bello/Santa Carmela", "Cabo del Sol", "Cabo Real-Ocean Side", "Chileno Bay/Montage", "Diamante Cabo San Lucas", "Quivira", "Rancho San Lucas"],
+    "SJD Corr-Inland": ["El Tule-Inland", "Palmilla-Inland"],
+    "SJD Corr-Oceanside": ["Chileno Bay Club", "Costa Palmas", "El Tule-Ocean Side", "Palmilla-Ocean Side", "Puerto Los Cabos"],
+    "SJD-Centro": ["SJD Downtown", "Forjadores SJD"],
+    "SJD-Beachside": ["SJD-Beach", "Costa Azul Beach"],
+    "SJD-East": ["Ladera San José"],
+    "SJD-Inland/Golf": ["Fonatur Golf & Hills", "Puerto Los Cabos"],
+    "SJD-North": ["SJD North-E of 1", "SJD North-W of 1", "SJD above Hwy 1"],
+    "East Cape North": ["BuenaVista/Rancho Leonero", "ElCardonal/N of Bariles", "Los Barriles"],
+    "East Cape South": ["La Ribera", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta"],
+    "Bay of Dreams": ["Bay of Dreams", "BayOfDreams/Ventanas"],
+    "Costa Palmas": ["Costa Palmas"],
+    "Pacific North": ["Todos Santos", "Todos Santos North"],
+    "Pacific South": ["Pescadero/Cerritos"],
+    "La Paz City": ["Centro", "Club Campestre", "El Centenario"],
+    "LaPaz Beach": ["LaPaz Beach Community", "El Mogote"],
+  };
+
+  // Community → Subdivision mapping
+  const communityToSubdivisionMap: Record<string, string[]> = {
+    "Pedregal CSL": ["Pedregal"],
+    "Cabo Bello/Santa Carmela": ["Cabo Bello", "Santa Carmela"],
+    "Cabo del Sol": ["Cabo del Sol", "Cabo del Sol Viejo"],
+    "Cabo Real-Ocean Side": ["Cabo Real"],
+    "Chileno Bay/Montage": ["Chileno Bay", "Montage Los Cabos"],
+    "Diamante Cabo San Lucas": ["Diamante", "Dunes Cabo"],
+    "Quivira": ["Quivira", "Pueblo Bonito Sunset Beach"],
+    "Querencia-Ocean side": ["Querencia"],
+    "Querencia-Inland": ["Querencia"],
+    "Palmilla-Ocean Side": ["Palmilla", "One&Only Palmilla"],
+    "Palmilla-Inland": ["Palmilla"],
+    "Puerto Los Cabos": ["Puerto Los Cabos"],
+    "Costa Palmas": ["Costa Palmas", "Four Seasons Costa Palmas"],
+    "Rancho San Lucas": ["Rancho San Lucas", "Solmar"],
+    "El Tezal-East": ["Misiones"],
+    "Todos Santos": ["Todos Santos"],
+  };
+
   const sqftOptions = ["No Preference", "500+", "1000+", "1500+", "2000+", "2500+", "3000+", "4000+", "5000+"];
   const yearBuiltOptions = ["No Preference", "2024+", "2023+", "2020+", "2015+", "2010+", "2000+"];
 
   // ✅ Filter areas based on selected zones
   const getAvailableAreas = () => {
     if (filters.zones.length === 0) {
-      return areas; // Show all if no zones selected
+      return areas;
     }
-    
     const zonesAreas = filters.zones.flatMap(zone => zoneToAreaMap[zone] || []);
     return areas.filter(area => zonesAreas.includes(area));
+  };
+
+  // ✅ Filter communities based on selected zones AND areas
+  const getAvailableCommunities = () => {
+    let availableCommunities = [...communities];
+    
+    if (filters.areas.length > 0) {
+      const areasCommunities = filters.areas.flatMap(area => areaToCommunityMap[area] || []);
+      availableCommunities = communities.filter(comm => areasCommunities.includes(comm));
+    } else if (filters.zones.length > 0) {
+      const zonesAreas = filters.zones.flatMap(zone => zoneToAreaMap[zone] || []);
+      const areasCommunities = zonesAreas.flatMap(area => areaToCommunityMap[area] || []);
+      availableCommunities = communities.filter(comm => areasCommunities.includes(comm));
+    }
+    
+    return availableCommunities;
+  };
+
+  // ✅ Filter subdivisions based on selected communities/areas/zones
+  const getAvailableSubdivisions = () => {
+    let availableSubdivisions = [...subdivisions];
+    
+    if (filters.communities.length > 0) {
+      const communitiesSubdivisions = filters.communities.flatMap(comm => communityToSubdivisionMap[comm] || []);
+      availableSubdivisions = subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+    } else if (filters.areas.length > 0) {
+      const areasCommunities = filters.areas.flatMap(area => areaToCommunityMap[area] || []);
+      const communitiesSubdivisions = areasCommunities.flatMap(comm => communityToSubdivisionMap[comm] || []);
+      availableSubdivisions = subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+    } else if (filters.zones.length > 0) {
+      const zonesAreas = filters.zones.flatMap(zone => zoneToAreaMap[zone] || []);
+      const areasCommunities = zonesAreas.flatMap(area => areaToCommunityMap[area] || []);
+      const communitiesSubdivisions = areasCommunities.flatMap(comm => communityToSubdivisionMap[comm] || []);
+      availableSubdivisions = subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+    }
+    
+    return availableSubdivisions;
   };
 
   const handleMLSSearch = () => {
@@ -148,21 +233,47 @@ const AdvancedPropertyFilters = ({
       ? currentArray.filter(item => item !== value)
       : [...currentArray, value];
     
-    // ✅ If toggling zones, auto-clear invalid areas
+    // ✅ Cascading logic based on which filter changed
     if (key === 'zones') {
       const allowedAreas = newArray.flatMap(z => zoneToAreaMap[z] || []);
       const validAreas = filters.areas.filter(area => allowedAreas.includes(area));
-      setFilters({ ...filters, zones: newArray, areas: validAreas });
+      
+      const areasCommunities = (validAreas.length > 0 ? validAreas : allowedAreas).flatMap(a => areaToCommunityMap[a] || []);
+      const validCommunities = filters.communities.filter(comm => areasCommunities.includes(comm));
+      
+      const communitiesSubdivisions = validCommunities.flatMap(c => communityToSubdivisionMap[c] || []);
+      const validSubdivisions = filters.subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+      
+      setFilters({ ...filters, zones: newArray, areas: validAreas, communities: validCommunities, subdivisions: validSubdivisions });
+    } else if (key === 'areas') {
+      const areasCommunities = newArray.flatMap(a => areaToCommunityMap[a] || []);
+      const validCommunities = filters.communities.filter(comm => areasCommunities.includes(comm));
+      
+      const communitiesSubdivisions = validCommunities.flatMap(c => communityToSubdivisionMap[c] || []);
+      const validSubdivisions = filters.subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+      
+      setFilters({ ...filters, areas: newArray, communities: validCommunities, subdivisions: validSubdivisions });
+    } else if (key === 'communities') {
+      const communitiesSubdivisions = newArray.flatMap(c => communityToSubdivisionMap[c] || []);
+      const validSubdivisions = filters.subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+      
+      setFilters({ ...filters, communities: newArray, subdivisions: validSubdivisions });
     } else {
       setFilters({ ...filters, [key]: newArray });
     }
   };
 
   const selectAll = (key: keyof FilterState, options: string[]) => {
-    // If selecting all areas, only select available areas based on zones
+    // For areas, communities, subdivisions - only select available ones based on parent filters
     if (key === 'areas') {
       const availableAreas = getAvailableAreas();
       setFilters({ ...filters, areas: availableAreas });
+    } else if (key === 'communities') {
+      const availableCommunities = getAvailableCommunities();
+      setFilters({ ...filters, communities: availableCommunities });
+    } else if (key === 'subdivisions') {
+      const availableSubdivisions = getAvailableSubdivisions();
+      setFilters({ ...filters, subdivisions: availableSubdivisions });
     } else {
       setFilters({ ...filters, [key]: options });
     }
@@ -270,6 +381,8 @@ const AdvancedPropertyFilters = ({
   };
 
   const availableAreas = getAvailableAreas();
+  const availableCommunities = getAvailableCommunities();
+  const availableSubdivisions = getAvailableSubdivisions();
 
   return (
     <div className="w-full">
@@ -640,6 +753,14 @@ const AdvancedPropertyFilters = ({
                       ×
                     </button>
                   </div>
+                  
+                  {/* ✅ Show helper text when zones/areas are selected */}
+                  {(filters.zones.length > 0 || filters.areas.length > 0) && (
+                    <p className="text-xs text-blue-600 mb-2">
+                      ✓ Filtered by: {filters.areas.length > 0 ? filters.areas.join(", ") : filters.zones.join(", ")}
+                    </p>
+                  )}
+                  
                   <select
                     multiple
                     value={filters.communities}
@@ -650,13 +771,21 @@ const AdvancedPropertyFilters = ({
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                     size={10}
                   >
-                    {getDisplayedItems(communities, showAllCommunities, 10).map((community) => (
+                    {getDisplayedItems(availableCommunities, showAllCommunities, 10).map((community) => (
                       <option key={community} value={community}>
                         {community}
                       </option>
                     ))}
                   </select>
-                  {!showAllCommunities && communities.length > 10 && (
+                  
+                  {/* ✅ Updated empty state message */}
+                  {availableCommunities.length === 0 && (filters.zones.length > 0 || filters.areas.length > 0) && (
+                    <p className="text-sm text-amber-600 mt-1">
+                      No communities available for selected filters
+                    </p>
+                  )}
+                  
+                  {!showAllCommunities && availableCommunities.length > 10 && (
                     <button 
                       onClick={() => setShowAllCommunities(true)}
                       className="text-blue-600 hover:underline text-sm mt-1"
@@ -671,8 +800,9 @@ const AdvancedPropertyFilters = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => selectAll('communities', communities)}
+                      onClick={() => selectAll('communities', availableCommunities)}
                       className="flex-1 text-blue-600 border-blue-300"
+                      disabled={availableCommunities.length === 0}
                     >
                       SELECT ALL
                     </Button>
@@ -715,6 +845,20 @@ const AdvancedPropertyFilters = ({
                       ×
                     </button>
                   </div>
+                  
+                  {/* ✅ Show helper text when any parent filters are selected */}
+                  {(filters.zones.length > 0 || filters.areas.length > 0 || filters.communities.length > 0) && (
+                    <p className="text-xs text-blue-600 mb-2">
+                      ✓ Filtered by: {
+                        filters.communities.length > 0 
+                          ? filters.communities.join(", ") 
+                          : filters.areas.length > 0 
+                            ? filters.areas.join(", ")
+                            : filters.zones.join(", ")
+                      }
+                    </p>
+                  )}
+                  
                   <select
                     multiple
                     value={filters.subdivisions}
@@ -725,13 +869,21 @@ const AdvancedPropertyFilters = ({
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                     size={10}
                   >
-                    {getDisplayedItems(subdivisions, showAllSubdivisions, 10).map((subdivision) => (
+                    {getDisplayedItems(availableSubdivisions, showAllSubdivisions, 10).map((subdivision) => (
                       <option key={subdivision} value={subdivision}>
                         {subdivision}
                       </option>
                     ))}
                   </select>
-                  {!showAllSubdivisions && subdivisions.length > 10 && (
+                  
+                  {/* ✅ Updated empty state message */}
+                  {availableSubdivisions.length === 0 && (filters.communities.length > 0 || filters.areas.length > 0 || filters.zones.length > 0) && (
+                    <p className="text-sm text-amber-600 mt-1">
+                      No subdivisions available for selected filters
+                    </p>
+                  )}
+                  
+                  {!showAllSubdivisions && availableSubdivisions.length > 10 && (
                     <button 
                       onClick={() => setShowAllSubdivisions(true)}
                       className="text-blue-600 hover:underline text-sm mt-1"
@@ -743,8 +895,9 @@ const AdvancedPropertyFilters = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => selectAll('subdivisions', subdivisions)}
+                      onClick={() => selectAll('subdivisions', availableSubdivisions)}
                       className="flex-1 text-blue-600 border-blue-300"
+                      disabled={availableSubdivisions.length === 0}
                     >
                       SELECT ALL
                     </Button>

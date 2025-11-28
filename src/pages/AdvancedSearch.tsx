@@ -10,6 +10,11 @@ import { X, Search, Loader2 } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 import { getSmartMappings, buildAPIFilters } from "@/services/groqIntelligence";
 import { 
+  translateUserInputToMLS, 
+  buildMLSAPIFilter, 
+  validateMLSFilters 
+} from "@/services/mlsTranslator"; // 🆕 MLS Translator
+import { 
   propertyTypes, 
   zones, 
   areas, 
@@ -96,7 +101,7 @@ const AdvancedSearch = () => {
     }
   }, []);
 
-  // ✅ ZONE → AREA MAPPING (just like FlexMLS!)
+  // ✅ COMPLETE CASCADING HIERARCHY MAPS
   const zoneToAreaMap: Record<string, string[]> = {
     "Cabo San Lucas": ["CSL Cor-Inland", "CSL-Centro", "CSL-Corr. Oceanside", "CSL-Beach & Marina", "CSL-North"],
     "San Jose del Cabo": ["SJD Corr-Inland", "SJD Corr-Oceanside", "SJD-Centro", "SJD-Beachside", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
@@ -105,6 +110,50 @@ const AdvancedSearch = () => {
     "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
     "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
     "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside", "SJD Corr-Inland", "SJD Corr-Oceanside"],
+  };
+
+  // Area → Community mapping
+  const areaToCommunityMap: Record<string, string[]> = {
+    "CSL-Beach & Marina": ["CSL Beach", "CSL Marina", "CSL Near Bch & Marina"],
+    "CSL-Centro": ["Centro", "Pedregal CSL"],
+    "CSL-North": ["CSL North-East 19", "CSL North-West 19", "El Tezal-East", "El Tezal-West", "El Tezal-OceanSide"],
+    "CSL Cor-Inland": ["Cabo del Sol-Inland", "Cabo Real-Inland", "Querencia-Inland"],
+    "CSL-Corr. Oceanside": ["Cabo Bello/Santa Carmela", "Cabo del Sol", "Cabo Real-Ocean Side", "Chileno Bay/Montage", "Diamante Cabo San Lucas", "Quivira", "Rancho San Lucas"],
+    "SJD Corr-Inland": ["El Tule-Inland", "Palmilla-Inland"],
+    "SJD Corr-Oceanside": ["Chileno Bay Club", "Costa Palmas", "El Tule-Ocean Side", "Palmilla-Ocean Side", "Puerto Los Cabos"],
+    "SJD-Centro": ["SJD Downtown", "Forjadores SJD"],
+    "SJD-Beachside": ["SJD-Beach", "Costa Azul Beach"],
+    "SJD-East": ["Ladera San José"],
+    "SJD-Inland/Golf": ["Fonatur Golf & Hills", "Puerto Los Cabos"],
+    "SJD-North": ["SJD North-E of 1", "SJD North-W of 1", "SJD above Hwy 1"],
+    "East Cape North": ["BuenaVista/Rancho Leonero", "ElCardonal/N of Bariles", "Los Barriles"],
+    "East Cape South": ["La Ribera", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta"],
+    "Bay of Dreams": ["Bay of Dreams", "BayOfDreams/Ventanas"],
+    "Costa Palmas": ["Costa Palmas"],
+    "Pacific North": ["Todos Santos", "Todos Santos North"],
+    "Pacific South": ["Pescadero/Cerritos"],
+    "La Paz City": ["Centro", "Club Campestre", "El Centenario"],
+    "LaPaz Beach": ["LaPaz Beach Community", "El Mogote"],
+  };
+
+  // Community → Subdivision mapping
+  const communityToSubdivisionMap: Record<string, string[]> = {
+    "Pedregal CSL": ["Pedregal"],
+    "Cabo Bello/Santa Carmela": ["Cabo Bello", "Santa Carmela"],
+    "Cabo del Sol": ["Cabo del Sol", "Cabo del Sol Viejo"],
+    "Cabo Real-Ocean Side": ["Cabo Real"],
+    "Chileno Bay/Montage": ["Chileno Bay", "Montage Los Cabos"],
+    "Diamante Cabo San Lucas": ["Diamante", "Dunes Cabo"],
+    "Quivira": ["Quivira", "Pueblo Bonito Sunset Beach"],
+    "Querencia-Ocean side": ["Querencia"],
+    "Querencia-Inland": ["Querencia"],
+    "Palmilla-Ocean Side": ["Palmilla", "One&Only Palmilla"],
+    "Palmilla-Inland": ["Palmilla"],
+    "Puerto Los Cabos": ["Puerto Los Cabos"],
+    "Costa Palmas": ["Costa Palmas", "Four Seasons Costa Palmas"],
+    "Rancho San Lucas": ["Rancho San Lucas", "Solmar"],
+    "El Tezal-East": ["Misiones"],
+    "Todos Santos": ["Todos Santos"],
   };
 
   const matchesUiSearch = (text: string) => {
@@ -129,8 +178,55 @@ const AdvancedSearch = () => {
   };
   
   const filteredAreas = getFilteredAreas();
-  const filteredCommunities = communities.filter(matchesUiSearch);
-  const filteredSubdivisions = subdivisions.filter(matchesUiSearch);
+
+  // ✅ Filter communities based on selected zones AND areas
+  const getFilteredCommunities = () => {
+    let availableCommunities = [...communities];
+    
+    // If areas are selected, only show communities that belong to those areas
+    if (filters.areas.length > 0) {
+      const areasCommunities = filters.areas.flatMap(area => areaToCommunityMap[area] || []);
+      availableCommunities = communities.filter(comm => areasCommunities.includes(comm));
+    }
+    // If no areas but zones are selected, get communities through areas
+    else if (filters.zones.length > 0) {
+      const zonesAreas = filters.zones.flatMap(zone => zoneToAreaMap[zone] || []);
+      const areasCommunities = zonesAreas.flatMap(area => areaToCommunityMap[area] || []);
+      availableCommunities = communities.filter(comm => areasCommunities.includes(comm));
+    }
+    
+    return availableCommunities.filter(matchesUiSearch);
+  };
+  
+  const filteredCommunities = getFilteredCommunities();
+
+  // ✅ Filter subdivisions based on selected communities/areas/zones
+  const getFilteredSubdivisions = () => {
+    let availableSubdivisions = [...subdivisions];
+    
+    // If communities are selected, only show subdivisions that belong to those communities
+    if (filters.communities.length > 0) {
+      const communitiesSubdivisions = filters.communities.flatMap(comm => communityToSubdivisionMap[comm] || []);
+      availableSubdivisions = subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+    }
+    // If no communities but areas are selected, get subdivisions through communities
+    else if (filters.areas.length > 0) {
+      const areasCommunities = filters.areas.flatMap(area => areaToCommunityMap[area] || []);
+      const communitiesSubdivisions = areasCommunities.flatMap(comm => communityToSubdivisionMap[comm] || []);
+      availableSubdivisions = subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+    }
+    // If no areas but zones are selected, get subdivisions through areas → communities
+    else if (filters.zones.length > 0) {
+      const zonesAreas = filters.zones.flatMap(zone => zoneToAreaMap[zone] || []);
+      const areasCommunities = zonesAreas.flatMap(area => areaToCommunityMap[area] || []);
+      const communitiesSubdivisions = areasCommunities.flatMap(comm => communityToSubdivisionMap[comm] || []);
+      availableSubdivisions = subdivisions.filter(sub => communitiesSubdivisions.includes(sub));
+    }
+    
+    return availableSubdivisions.filter(matchesUiSearch);
+  };
+  
+  const filteredSubdivisions = getFilteredSubdivisions();
 
   // ✅ FIXED: Fetch preview whenever ANY filter changes
   useEffect(() => {
@@ -182,25 +278,49 @@ const AdvancedSearch = () => {
     setAiOptimizing(true);
     
     try {
-      console.log('🧠 Using smart mapping system...');
+      console.log('🧠 Using MLS translator system...');
       
-      // Use smart mapping system for location filters
-      const mappings = await getSmartMappings({
+      // ✅ VALIDATE FILTERS FIRST - Check if they match MLS values
+      const validation = validateMLSFilters({
+        zones: filters.zones,
+        areas: filters.areas,
+        communities: filters.communities
+      });
+      
+      if (validation.warnings.length > 0) {
+        console.warn('⚠️ Filter validation warnings:', validation.warnings);
+      }
+      
+      console.log('✅ Translated filters:', validation.translations);
+      
+      // ✅ BUILD MLS API FILTER STRING - Uses exact MLS field names
+      const mlsFilter = buildMLSAPIFilter({
         zones: filters.zones,
         areas: filters.areas,
         communities: filters.communities,
         subdivisions: filters.subdivisions
       });
-
-      console.log('✨ Smart mappings complete:', mappings);
       
-      // Build API filters with corrected fields
-      const locationFilters = buildAPIFilters(mappings);
+      console.log('🎯 MLS API Filter:', mlsFilter);
       
       setAiOptimizing(false);
 
       // Build complete API filters
-      const apiFilters: any = { ...locationFilters };
+      const apiFilters: any = {};
+      
+      // ✅ Use translated location filters (exact MLS values)
+      if (mlsFilter) {
+        // Parse the MLS filter to extract individual field filters
+        if (filters.zones.length > 0) {
+          apiFilters.city = filters.zones.join(',');
+        }
+        if (filters.areas.length > 0) {
+          apiFilters.area = filters.areas.join(',');
+        }
+        if (filters.communities.length > 0 || filters.subdivisions.length > 0) {
+          apiFilters.community = [...filters.communities, ...filters.subdivisions].join(',');
+        }
+      }
       
       if (filters.minPrice !== "No Preference" && filters.minPrice !== "$50,000") {
         apiFilters.minPrice = parsePrice(filters.minPrice);
@@ -218,7 +338,6 @@ const AdvancedSearch = () => {
         apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
       }
       
-      // Only add property types if not all 3 are selected
       if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < 3) {
         apiFilters.propertyTypes = filters.propertyTypes.join(',');
       }
@@ -231,7 +350,6 @@ const AdvancedSearch = () => {
         apiFilters.search = filters.mlsSearch.trim();
       }
 
-      // Add special filters
       if (filters.sellerFinancing) {
         apiFilters.sellerFinancing = true;
       }
@@ -334,31 +452,83 @@ const AdvancedSearch = () => {
         const allowedAreas = newZones.flatMap(z => zoneToAreaMap[z] || []);
         validAreas = prev.areas.filter(area => allowedAreas.includes(area));
       }
+
+      // ✅ Auto-clear communities that don't belong to valid areas
+      let validCommunities = [...prev.communities];
+      if (validAreas.length > 0) {
+        const allowedCommunities = validAreas.flatMap(a => areaToCommunityMap[a] || []);
+        validCommunities = prev.communities.filter(comm => allowedCommunities.includes(comm));
+      } else if (newZones.length > 0) {
+        const allowedAreas = newZones.flatMap(z => zoneToAreaMap[z] || []);
+        const allowedCommunities = allowedAreas.flatMap(a => areaToCommunityMap[a] || []);
+        validCommunities = prev.communities.filter(comm => allowedCommunities.includes(comm));
+      }
+
+      // ✅ Auto-clear subdivisions that don't belong to valid communities
+      let validSubdivisions = [...prev.subdivisions];
+      if (validCommunities.length > 0) {
+        const allowedSubdivisions = validCommunities.flatMap(c => communityToSubdivisionMap[c] || []);
+        validSubdivisions = prev.subdivisions.filter(sub => allowedSubdivisions.includes(sub));
+      }
       
       return {
         ...prev,
         zones: newZones,
-        areas: validAreas
+        areas: validAreas,
+        communities: validCommunities,
+        subdivisions: validSubdivisions
       };
     });
   };
 
   const toggleArea = (area: string) => {
-    setFilters(prev => ({
-      ...prev,
-      areas: prev.areas.includes(area)
+    setFilters(prev => {
+      const newAreas = prev.areas.includes(area)
         ? prev.areas.filter(a => a !== area)
-        : [...prev.areas, area]
-    }));
+        : [...prev.areas, area];
+      
+      // ✅ Auto-clear communities that don't belong to selected areas
+      let validCommunities = [...prev.communities];
+      if (newAreas.length > 0) {
+        const allowedCommunities = newAreas.flatMap(a => areaToCommunityMap[a] || []);
+        validCommunities = prev.communities.filter(comm => allowedCommunities.includes(comm));
+      }
+
+      // ✅ Auto-clear subdivisions that don't belong to valid communities
+      let validSubdivisions = [...prev.subdivisions];
+      if (validCommunities.length > 0) {
+        const allowedSubdivisions = validCommunities.flatMap(c => communityToSubdivisionMap[c] || []);
+        validSubdivisions = prev.subdivisions.filter(sub => allowedSubdivisions.includes(sub));
+      }
+      
+      return {
+        ...prev,
+        areas: newAreas,
+        communities: validCommunities,
+        subdivisions: validSubdivisions
+      };
+    });
   };
 
   const toggleCommunity = (community: string) => {
-    setFilters(prev => ({
-      ...prev,
-      communities: prev.communities.includes(community)
+    setFilters(prev => {
+      const newCommunities = prev.communities.includes(community)
         ? prev.communities.filter(c => c !== community)
-        : [...prev.communities, community]
-    }));
+        : [...prev.communities, community];
+      
+      // ✅ Auto-clear subdivisions that don't belong to selected communities
+      let validSubdivisions = [...prev.subdivisions];
+      if (newCommunities.length > 0) {
+        const allowedSubdivisions = newCommunities.flatMap(c => communityToSubdivisionMap[c] || []);
+        validSubdivisions = prev.subdivisions.filter(sub => allowedSubdivisions.includes(sub));
+      }
+      
+      return {
+        ...prev,
+        communities: newCommunities,
+        subdivisions: validSubdivisions
+      };
+    });
   };
 
   const toggleSubdivision = (subdivision: string) => {
@@ -558,19 +728,31 @@ const AdvancedSearch = () => {
             <Label className="text-lg font-bold mb-3 block">
               Community ({filters.communities.length} selected)
             </Label>
+            {(filters.zones.length > 0 || filters.areas.length > 0) && (
+              <p className="text-xs text-blue-600 mb-2">
+                ✓ Filtered by: {filters.areas.length > 0 ? filters.areas.join(", ") : filters.zones.join(", ")}
+              </p>
+            )}
             <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
-              {filteredCommunities.map(community => (
-                <div key={community} className="flex items-center gap-2">
-                  <Checkbox
-                    id={`community-${community}`}
-                    checked={filters.communities.includes(community)}
-                    onCheckedChange={() => toggleCommunity(community)}
-                  />
-                  <Label htmlFor={`community-${community}`} className="cursor-pointer text-sm">{community}</Label>
-                </div>
-              ))}
-              {filteredCommunities.length === 0 && uiSearchQuery && (
-                <p className="text-sm text-muted-foreground italic py-2">No communities match "{uiSearchQuery}"</p>
+              {filteredCommunities.length > 0 ? (
+                filteredCommunities.map(community => (
+                  <div key={community} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`community-${community}`}
+                      checked={filters.communities.includes(community)}
+                      onCheckedChange={() => toggleCommunity(community)}
+                    />
+                    <Label htmlFor={`community-${community}`} className="cursor-pointer text-sm">{community}</Label>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground italic py-2">
+                  {filters.areas.length > 0 || filters.zones.length > 0
+                    ? "No communities available for selected zone(s)/area(s)" 
+                    : uiSearchQuery 
+                      ? `No communities match "${uiSearchQuery}"`
+                      : "Select a zone or area to see communities"}
+                </p>
               )}
             </div>
           </div>
@@ -580,19 +762,37 @@ const AdvancedSearch = () => {
             <Label className="text-lg font-bold mb-3 block">
               Subdivision ({filters.subdivisions.length} selected)
             </Label>
+            {(filters.zones.length > 0 || filters.areas.length > 0 || filters.communities.length > 0) && (
+              <p className="text-xs text-blue-600 mb-2">
+                ✓ Filtered by: {
+                  filters.communities.length > 0 
+                    ? filters.communities.join(", ") 
+                    : filters.areas.length > 0 
+                      ? filters.areas.join(", ")
+                      : filters.zones.join(", ")
+                }
+              </p>
+            )}
             <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
-              {filteredSubdivisions.map(subdivision => (
-                <div key={subdivision} className="flex items-center gap-2">
-                  <Checkbox
-                    id={`subdivision-${subdivision}`}
-                    checked={filters.subdivisions.includes(subdivision)}
-                    onCheckedChange={() => toggleSubdivision(subdivision)}
-                  />
-                  <Label htmlFor={`subdivision-${subdivision}`} className="cursor-pointer text-sm">{subdivision}</Label>
-                </div>
-              ))}
-              {filteredSubdivisions.length === 0 && uiSearchQuery && (
-                <p className="text-sm text-muted-foreground italic py-2">No subdivisions match "{uiSearchQuery}"</p>
+              {filteredSubdivisions.length > 0 ? (
+                filteredSubdivisions.map(subdivision => (
+                  <div key={subdivision} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`subdivision-${subdivision}`}
+                      checked={filters.subdivisions.includes(subdivision)}
+                      onCheckedChange={() => toggleSubdivision(subdivision)}
+                    />
+                    <Label htmlFor={`subdivision-${subdivision}`} className="cursor-pointer text-sm">{subdivision}</Label>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground italic py-2">
+                  {filters.communities.length > 0 || filters.areas.length > 0 || filters.zones.length > 0
+                    ? "No subdivisions available for selected filters" 
+                    : uiSearchQuery 
+                      ? `No subdivisions match "${uiSearchQuery}"`
+                      : "Select zone/area/community to see subdivisions"}
+                </p>
               )}
             </div>
           </div>
