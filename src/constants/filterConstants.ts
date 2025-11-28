@@ -1,5 +1,5 @@
 // filterConstants.ts - REAL MLS Field Values (Aligned to FlexMLS API Fields)
-// Updated Nov 27, 2025
+// Updated Nov 28, 2025 - EXACT MLS NAMES
 
 // FLEXMLS PROPERTY TYPES
 export const propertyTypes = [
@@ -82,28 +82,33 @@ export const areas = [
   "South Shore"
 ];
 
-// COMMUNITIES → FlexMLS “Community”
+// COMMUNITIES → FlexMLS "Community" - EXACT MLS NAMES
 export const communities = [
   "Above Isla Coronado",
   "Agua Verde",
+  "B.Vista/Barilles-Gen",  // ✅ FIXED: Exact MLS name
   "Bahia Concepcion",
   "Bahía Asunción",
+  "Baja Martires",  // ✅ ADDED: From MLS
   "Bay of Dreams",
   "BayOfDreams/Ventanas",
   "Beach north",
   "Bellavista",
-  "BuenaVista/Rancho Leonero",
-  "BuenVsta/LosBarilles",
+  "Boca del Alamo",  // ✅ ADDED: From MLS
+  "Buena Vista",  // ✅ FIXED: Separated from Rancho Leonero
+  "Buenos Aires",  // ✅ ADDED: From MLS
   "Cabo Bello/Santa Carmela",
   "Cabo del Sol",
   "Cabo del Sol Viejo",
   "Cabo del Sol-Inland",
   "Cabo Real-Inland",
   "Cabo Real-Ocean Side",
+  "Candelilla",  // ✅ ADDED: From MLS
   "Centro",
   "Centro- Cabo San Lucas",
   "Centro- La Paz",
   "Centro- San Jose del Cabo",
+  "Centro-Los Barriles",  // ✅ ADDED: From MLS
   "CerroColorado-Inland",
   "Cerro Colorado-Ocean",
   "Chametla",
@@ -131,6 +136,7 @@ export const communities = [
   "Ejido Next South",
   "Ejidos/ Comondu",
   "El Aguajito",
+  "El Cardonal",  // ✅ FIXED: Was "ElCardonal/N of Bariles"
   "El Centenario",
   "El Comitan",
   "El Dorado",
@@ -146,7 +152,6 @@ export const communities = [
   "El Tezal-West",
   "El Tule-Inland",
   "El Tule-Ocean Side",
-  "ElCardonal/N of Bariles",
   "Elias Calles",
   "Ensenada Blanca",
   "Espiritu del Mar",
@@ -167,10 +172,12 @@ export const communities = [
   "LaPaz East",
   "LaPaz North Community",
   "LaPaz West",
+  "Las Tinas",  // ✅ ADDED: From MLS
   "Ligui",
   "Lopez Mateos",
   "Loreto",
   "Loreto Bay",
+  "Los Barriles",  // ✅ FIXED: Separated from Buena Vista
   "Los Planes",
   "Magisterial / Infonavit",
   "Maravilla",
@@ -185,18 +192,24 @@ export const communities = [
   "North Centro",
   "North Loreto Bay",
   "North Shore",
+  "Nrth of Barilles-Gen",  // ✅ ADDED: From MLS (note: Barilles not Barriles)
+  "Pallisades",  // ✅ ADDED: From MLS
   "Palmilla-Inland",
   "Palmilla-Ocean Side",
+  "Palo Blanco",  // ✅ ADDED: From MLS
   "Pedregal CSL",
   "Pedregal de La Paz",
   "Pescadero/Cerritos",
+  "Primo Palmas",  // ✅ ADDED: From MLS
   "Pto. Escondido",
   "Puerta Bugambilias",
   "Puerto Los Cabos",
   "Punta Ballena",
+  "Punta Pescadero",  // ✅ ADDED: From MLS
   "Querencia-Inland",
   "Querencia-Ocean side",
   "Quivira",
+  "Rancho Leonero",  // ✅ FIXED: Separated from Buena Vista
   "Rancho San Lucas",
   "Saddles/Sunset Bch Rd",
   "San Bartolo",
@@ -216,16 +229,19 @@ export const communities = [
   "SJD-Beach",
   "South",
   "South LaPaz Community",
+  "Spa Buena Vista",  // ✅ ADDED: From MLS
   "Todos Santos",
   "Todos Santos North",
   "Uptown/Border Rd",
   "Villas Gp. Development",
   "Vinorama/Cabo Pulmo",
+  "Vista Antigua",  // ✅ ADDED: From MLS
+  "Vista Las Brisas",  // ✅ ADDED: From MLS
   "Zacatitos/PtaPerfcta",
   "Zaragoza"
 ];
 
-// SUBDIVISIONS → FlexMLS “Subdivision”
+// SUBDIVISIONS → FlexMLS "Subdivision"
 export const subdivisions = [
   "Abasolo",
   "Alba Residences",
