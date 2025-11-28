@@ -67,9 +67,15 @@ const Properties = () => {
       // Build filters object from URL params
       const apiFilters: any = {};
       
-      if (zonesParam) apiFilters.city = zonesParam.split(',');
-      if (areasParam) apiFilters.areas = areasParam.split(',');
-      if (communitiesParam) apiFilters.communities = communitiesParam.split(',');
+      // Zone → City
+     if (zonesParam) apiFilters.city = zonesParam.split(',');
+
+     // Area → Area
+     if (areasParam) apiFilters.area = areasParam.split(',');
+
+      // Community → SubdivisionName
+      if (communitiesParam) apiFilters.subdivision = communitiesParam.split(',');
+
       if (minPriceParam) apiFilters.minPrice = parsePrice(minPriceParam);
       if (maxPriceParam) apiFilters.maxPrice = parsePrice(maxPriceParam);
       if (bedsParam) apiFilters.bedrooms = parseInt(bedsParam.replace('+', ''));
