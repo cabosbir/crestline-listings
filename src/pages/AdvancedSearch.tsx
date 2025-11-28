@@ -1,6 +1,3 @@
-// src/pages/AdvancedSearch.tsx - FIXED WITH CORRECT FILTER IMPORTS
-// Now uses filterConstants.ts instead of hardcoded arrays
-
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -99,9 +96,6 @@ const AdvancedSearch = () => {
     }
   }, []);
 
-  // ✅ REMOVED: All hardcoded arrays - now imported from filterConstants.ts
-  // propertyTypes, zones, areas, communities, subdivisions, priceOptions, bedsOptions, bathsOptions
-
   const matchesUiSearch = (text: string) => {
     if (!uiSearchQuery) return true;
     return text.toLowerCase().includes(uiSearchQuery.toLowerCase());
@@ -112,21 +106,50 @@ const AdvancedSearch = () => {
   const filteredCommunities = communities.filter(matchesUiSearch);
   const filteredSubdivisions = subdivisions.filter(matchesUiSearch);
 
-  // ENHANCED: Fetch preview with AI optimization
+  // ✅ FIXED: Fetch preview whenever ANY filter changes
   useEffect(() => {
     const debounce = setTimeout(() => {
-      if (filters.zones.length > 0 || filters.areas.length > 0 || 
-          filters.communities.length > 0 || filters.subdivisions.length > 0 ||
-          filters.mlsSearch.trim() !== "") {
+      // Check if ANY meaningful filters are set
+      const hasLocationFilters = filters.zones.length > 0 || filters.areas.length > 0 || 
+                                 filters.communities.length > 0 || filters.subdivisions.length > 0;
+      const hasSearch = filters.mlsSearch.trim() !== "";
+      const hasPropertyTypeFilter = filters.propertyTypes.length > 0 && filters.propertyTypes.length < 3;
+      const hasPriceFilter = filters.minPrice !== "$50,000" || filters.maxPrice !== "$3 Million";
+      const hasBedsFilter = filters.minBeds !== "1+";
+      const hasBathsFilter = filters.minBaths !== "Any";
+      const hasSpecialFilters = filters.sellerFinancing || filters.primaryView || filters.currentPrice;
+      
+      const hasAnyFilter = hasLocationFilters || hasSearch || hasPropertyTypeFilter || 
+                          hasPriceFilter || hasBedsFilter || hasBathsFilter || hasSpecialFilters;
+      
+      if (hasAnyFilter) {
+        console.log('🔄 Filter changed - fetching preview...');
         fetchPreviewWithIntelligence();
       } else {
+        console.log('🔄 No filters active - clearing preview');
         setPreviewProperties([]);
         setTotalCount(0);
       }
-    }, 1000);
+    }, 800); // Debounce 800ms to avoid too many API calls while typing/clicking
 
     return () => clearTimeout(debounce);
-  }, [filters]);
+  }, [
+    // ✅ ALL filter dependencies to trigger on ANY change
+    filters.zones,
+    filters.areas, 
+    filters.communities,
+    filters.subdivisions,
+    filters.mlsSearch,
+    filters.propertyTypes,
+    filters.minPrice,
+    filters.maxPrice,
+    filters.minBeds,
+    filters.minBaths,
+    filters.status,
+    filters.sellerFinancing,
+    filters.primaryView,
+    filters.currentPrice
+  ]);
 
   const fetchPreviewWithIntelligence = async () => {
     setLoading(true);
@@ -135,7 +158,7 @@ const AdvancedSearch = () => {
     try {
       console.log('🧠 Using smart mapping system...');
       
-      // Use NEW smart mapping system
+      // Use smart mapping system for location filters
       const mappings = await getSmartMappings({
         zones: filters.zones,
         areas: filters.areas,
@@ -153,15 +176,15 @@ const AdvancedSearch = () => {
       // Build complete API filters
       const apiFilters: any = { ...locationFilters };
       
-      if (filters.minPrice !== "No Preference") {
+      if (filters.minPrice !== "No Preference" && filters.minPrice !== "$50,000") {
         apiFilters.minPrice = parsePrice(filters.minPrice);
       }
       
-      if (filters.maxPrice !== "No Preference") {
+      if (filters.maxPrice !== "No Preference" && filters.maxPrice !== "$3 Million") {
         apiFilters.maxPrice = parsePrice(filters.maxPrice);
       }
       
-      if (filters.minBeds !== "Any") {
+      if (filters.minBeds !== "Any" && filters.minBeds !== "1+") {
         apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
       }
       
@@ -169,11 +192,12 @@ const AdvancedSearch = () => {
         apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
       }
       
-      if (filters.propertyTypes.length > 0) {
+      // Only add property types if not all 3 are selected
+      if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < 3) {
         apiFilters.propertyTypes = filters.propertyTypes.join(',');
       }
       
-      if (filters.status) {
+      if (filters.status && filters.status !== "Active") {
         apiFilters.status = filters.status;
       }
       
@@ -629,7 +653,9 @@ const AdvancedSearch = () => {
             <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
               <div className="text-center">
                 <Loader2 className="h-12 w-12 animate-spin text-accent mb-4 mx-auto" />
-                <p className="text-muted-foreground">Searching MLS...</p>
+                <p className="text-muted-foreground">
+                  {aiOptimizing ? 'Optimizing search with AI...' : 'Searching MLS...'}
+                </p>
               </div>
             </div>
           )}
@@ -647,6 +673,9 @@ const AdvancedSearch = () => {
                 <h2 className="text-2xl font-bold mb-2">Advanced Search</h2>
                 <p className="text-muted-foreground mb-4">
                   Use the search bar above to search by address, MLS number, or location. Or select filters from the checkboxes to preview properties on the map.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  The map updates automatically as you check/uncheck filters!
                 </p>
               </div>
             </div>
