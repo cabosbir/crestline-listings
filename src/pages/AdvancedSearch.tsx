@@ -310,18 +310,18 @@ const AdvancedSearch = () => {
       // Build complete API filters
       const apiFilters: any = {};
       
-      // ✅ Location filters - Use exact values
+      // ✅ Location filters - Use PLURAL to match flexMlsService.ts
       if (filters.zones.length > 0) {
         apiFilters.city = filters.zones.join(',');
         console.log('  📍 City filter:', apiFilters.city);
       }
       if (filters.areas.length > 0) {
-        apiFilters.area = filters.areas.join(',');
-        console.log('  📍 Area filter:', apiFilters.area);
+        apiFilters.areas = filters.areas.join(',');  // ✅ FIXED: Changed to 'areas' (plural)
+        console.log('  📍 Area filter:', apiFilters.areas);
       }
       if (filters.communities.length > 0 || filters.subdivisions.length > 0) {
-        apiFilters.community = [...filters.communities, ...filters.subdivisions].join(',');
-        console.log('  📍 Community filter:', apiFilters.community);
+        apiFilters.communities = [...filters.communities, ...filters.subdivisions].join(',');  // ✅ FIXED: Changed to 'communities' (plural)
+        console.log('  📍 Community filter:', apiFilters.communities);
       }
       
       if (filters.minPrice !== "No Preference" && filters.minPrice !== "$50,000") {
