@@ -14,7 +14,7 @@ interface AgentBioCardProps {
   yearsExperience?: number;
   onViewBio?: () => void;
   showStats?: boolean;
-  landingPageSlug?: string; // ⭐ NEW: Landing page slug (e.g., "bob", "susu")
+  landingPageSlug?: string; // ⭐ Landing page slug (e.g., "bob", "susu")
 }
 
 const AgentBioCard = ({ 
@@ -29,25 +29,19 @@ const AgentBioCard = ({
   yearsExperience,
   onViewBio,
   showStats = true,
-  landingPageSlug // ⭐ NEW: Landing page slug
+  landingPageSlug
 }: AgentBioCardProps) => {
   const navigate = useNavigate();
   
-  const handleViewBioClick = (e: any) => {
-    console.log('View Bio clicked for:', name);
-    if (onViewBio) {
-      onViewBio();
-    }
-  };
-
-  // ⭐ NEW: Handle Contact button click - route to landing page
-  const handleContactClick = (e: React.MouseEvent) => {
+  // ⭐ UPDATED: Single button handler - routes to landing page if available
+  const handleButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (landingPageSlug) {
+      // Route to landing page
       navigate(`/${landingPageSlug}`);
-    } else {
-      // Fallback to phone call if no landing page slug provided
-      window.location.href = `tel:${phone || phone2}`;
+    } else if (onViewBio) {
+      // Fallback to bio modal
+      onViewBio();
     }
   };
 
@@ -95,7 +89,7 @@ const AgentBioCard = ({
         )}
       </div>
       
-      {/* Hover Content - Contact & Buttons */}
+      {/* Hover Content - Contact & Button */}
       <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-all duration-300 z-50">
         <div className="bg-white rounded-xl p-5 shadow-2xl space-y-3 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 relative z-50">
           
@@ -135,20 +129,13 @@ const AgentBioCard = ({
             </div>
           )}
           
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-2">
+          {/* ⭐ UPDATED: Single Action Button */}
+          <div className="pt-2">
             <button
-              onClick={handleViewBioClick}
-              className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
+              onClick={handleButtonClick}
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
             >
-              View Full Bio
-            </button>
-            {/* ⭐ UPDATED: Contact button now routes to landing page */}
-            <button
-              onClick={handleContactClick}
-              className="flex-1 border border-gray-300 hover:bg-gray-100 font-medium py-2 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
-            >
-              Contact
+              {landingPageSlug ? 'View Profile' : 'View Full Bio'}
             </button>
           </div>
         </div>

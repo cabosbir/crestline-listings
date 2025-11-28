@@ -20,28 +20,32 @@ const About = () => {
   // Refs for counter animations
   const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Updated team members with IDs matching Team.tsx
+  // ⭐ UPDATED: Team members with landing page slugs
   const teamMembers = [
     {
       id: 12,
+      slug: "don",
       name: "Don Weis",
       title: "Founder & Broker",
       image: "/don-weis.jpg",
     },
     {
       id: 1,
+      slug: "bob",
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
       image: "/bob-van-patten.jpg",
     },
     {
       id: 3,
+      slug: "alfonso",
       name: "Alfonso Puente",
       title: "Sales Manager & Commercial Real Estate Expert",
       image: "/alfonso-puente.jpg",
     },
     {
       id: 8,
+      slug: "david",
       name: "David Scott Piper",
       title: "Real Estate Advisor",
       image: "/david-scott-piper.jpg",
@@ -95,6 +99,15 @@ const About = () => {
       milestoneKey: "industry-pioneer" as const,
     }
   ];
+
+  // ⭐ UPDATED: Navigate to landing page if slug exists, otherwise bio page
+  const handleTeamMemberClick = (member: typeof teamMembers[0]) => {
+    if (member.slug) {
+      navigate(`/${member.slug}`);
+    } else {
+      navigate(`/team/${member.id}`);
+    }
+  };
 
   useEffect(() => {
     // Hero Section - Fade in from bottom
@@ -467,7 +480,7 @@ const About = () => {
             {teamMembers.map((member) => (
               <div
                 key={member.id}
-                onClick={() => navigate(`/team/${member.id}`)}
+                onClick={() => handleTeamMemberClick(member)}
                 className="team-member-card group cursor-pointer"
               >
                 <div className="bg-background rounded-xl overflow-hidden border border-border hover:shadow-hover transition-smooth">
@@ -484,7 +497,7 @@ const About = () => {
                     </h3>
                     <p className="text-sm text-muted-foreground">{member.title}</p>
                     <div className="mt-4 text-accent text-sm font-semibold group-hover:underline">
-                      View Profile →
+                      {member.slug ? 'View Profile →' : 'View Bio →'}
                     </div>
                   </div>
                 </div>
