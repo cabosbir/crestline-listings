@@ -174,10 +174,11 @@ export default async function handler(
       console.log('💵 [Special Filter] Seller Financing: Yes');
     }
 
-    // Primary View - Properties with ocean/water/bay views
+    // Primary View - OCEANFRONT/BEACHFRONT properties only (coastal properties)
     if (primaryView && (primaryView === 'true' || primaryView === true)) {
-      filters.push(`(contains(View, 'Ocean') or contains(View, 'Water') or contains(View, 'Bay') or contains(View, 'Sea'))`);
-      console.log('👁️ [Special Filter] Primary View: Yes');
+      // More restrictive: Only Ocean views (excludes inland water like lakes/rivers)
+      filters.push(`contains(View, 'Ocean')`);
+      console.log('👁️ [Special Filter] Primary View (Ocean): Yes');
     }
 
     // Current Price - Properties where ListPrice equals OriginalListPrice (no price reductions)
