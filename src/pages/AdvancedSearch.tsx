@@ -230,6 +230,16 @@ const AdvancedSearch = () => {
 
   // ✅ FIXED: Fetch preview whenever ANY filter changes
   useEffect(() => {
+    console.log('🔥 useEffect FIRED! Current filters:', {
+      zones: filters.zones,
+      areas: filters.areas,
+      communities: filters.communities,
+      subdivisions: filters.subdivisions,
+      zonesLength: filters.zones.length,
+      areasLength: filters.areas.length,
+      communitiesLength: filters.communities.length
+    });
+    
     const debounce = setTimeout(() => {
       // Check if ANY meaningful filters are set
       const hasLocationFilters = filters.zones.length > 0 || filters.areas.length > 0 || 
@@ -243,6 +253,12 @@ const AdvancedSearch = () => {
       
       const hasAnyFilter = hasLocationFilters || hasSearch || hasPropertyTypeFilter || 
                           hasPriceFilter || hasBedsFilter || hasBathsFilter || hasSpecialFilters;
+      
+      console.log('🎯 Filter check:', {
+        hasLocationFilters,
+        hasAnyFilter,
+        willFetch: hasAnyFilter
+      });
       
       if (hasAnyFilter) {
         console.log('🔄 Filter changed - fetching preview...', {
