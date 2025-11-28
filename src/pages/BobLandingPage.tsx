@@ -8,19 +8,89 @@ import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDow
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-// ==================== START: HELPER FUNCTIONS ====================
+// ==================== AGENT CONFIGURATION ====================
+const agent = {
+  id: 1,
+  slug: "bob",
+  name: "Bob Van Patten",
+  title: "Senior Real Estate Advisor",
+  specialization: "High Yield Investment Properties",
+  image: "/bob-van-patten.jpg",
+  phone: "+52 624 127 6012",
+  email: "robertvanpatten2@gmail.com",
+  yearsExperience: 9,
+  propertiesSold: 85,
+  totalSales: "$35M+",
+  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
+  certifications: ["MLS Member"],
+  languages: ["English"],
+};
 
-const getWhatsAppNumber = (phone) => {
+// ==================== LISTINGS CONFIGURATION ====================
+// 🎯 MY LISTINGS - Add MLS numbers here (supports up to 9 listings)
+const myListingMLSNumbers = [
+  "25-4668",  // Marina Cabo Plaza - $279,000 (Active)
+  "25-5288",  // Terrasol Av Solmar 164 - $429,000 (Active)
+  "24-2073",  // Bahia del Tezal I 503B - $194,000 (Pending)
+  "24-2325",  // Bahia del Tezal I 605B - $289,000 (Withdrawn)
+  "24-804",   // Solaria E-102 - $625,000 (Withdrawn)
+  "25-4323",  // Lumaria C-414 - $749,000 (Withdrawn)
+  // ⭐ ADD MORE LISTINGS HERE (up to 3 more for 9 total):
+  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
+  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
+  // "XX-XXXX",  // Property Name - $XXX,XXX (Status)
+];
+
+// Fallback data if API fails (will be replaced by API data)
+const fallbackListings = [
+  {
+    id: 1,
+    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762121002/20251017233106344278000000-o_mkittq.jpg",
+    price: "$279,000",
+    title: "Marina Cabo Plaza",
+    location: "Paseo de la Marina, Cabo San Lucas",
+    beds: 0,
+    baths: 1,
+    sqft: "422 sq ft",
+    mlsNumber: "25-4668",
+    link: "https://www.flexmls.com/share/D1Cgo/Marina-Cabo-Plaza-Paseo-de-la-Marina-103A-Cabo-San-Lucas-",
+  },
+];
+
+// ==================== TESTIMONIALS ====================
+const testimonials = [
+  {
+    name: "Gregory & Patricia Hamilton",
+    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
+    rating: 5
+  },
+  {
+    name: "Charles Bennett",
+    text: "Working with Bob was outstanding. His transparency, precision, and strong negotiation skills made our investment process seamless. A true top producer!",
+    rating: 5
+  },
+  {
+    name: "Michelle & Daniel Rogers",
+    text: "Bob guided us through every stage with professionalism and trust. His understanding of Cabo's investment landscape is unmatched. Highly recommend!",
+    rating: 5
+  }
+];
+
+// ==================== PAGINATION CONFIG ====================
+const ITEMS_PER_PAGE = 9; // Show up to 9 listings per page (3x3 grid)
+
+// ==================== HELPER FUNCTIONS ====================
+const getWhatsAppNumber = (phone: string) => {
   return phone.replace(/[^0-9]/g, '');
 };
 
-const getWhatsAppLink = (phone, agentName) => {
+const getWhatsAppLink = (phone: string, agentName: string) => {
   const number = getWhatsAppNumber(phone);
   const message = encodeURIComponent(`Hi ${agentName}, I'm interested in Cabo real estate properties. Can you help me?`);
   return `https://wa.me/${number}?text=${message}`;
 };
 
-const getShuffledListings = (listings, cacheKey) => {
+const getShuffledListings = (listings: any[], cacheKey: string) => {
   const cacheTimeKey = `${cacheKey}-time`;
   
   if (typeof window === 'undefined') return listings;
@@ -51,145 +121,21 @@ const getShuffledListings = (listings, cacheKey) => {
   return shuffled;
 };
 
-// ==================== END: HELPER FUNCTIONS ====================
-
-// ==================== START: AGENT DATA ====================
-
-const agent = {
-  id: 1,
-  slug: "bob",
-  name: "Bob Van Patten",
-  title: "Senior Real Estate Advisor",
-  specialization: "High Yield Investment Properties",
-  image: "/bob-van-patten.jpg",
-  phone: "+52 624 127 6012",
-  email: "robertvanpatten2@gmail.com",
-  yearsExperience: 9,
-  propertiesSold: 85,
-  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
-  certifications: ["MLS Member"],
-  languages: ["English"],
-};
-
-// ==================== END: AGENT DATA ====================
-
-// ==================== START: LISTINGS DATA ====================
-
-// My Listings - MLS numbers to fetch from API (maintains this exact order)
-const myListingMLSNumbers = [
-  "25-4668",  // Marina Cabo Plaza - $279,000 (Active)
-  "25-5288",  // Terrasol Av Solmar 164 - $429,000 (Active - New Listing)
-  "24-2073",  // Bahia del Tezal I 503B - $194,000 (Pending)
-  "24-2325",  // Bahia del Tezal I 605B - $289,000 (Withdrawn)
-  "24-804",   // Solaria E-102 - $625,000 (Withdrawn)
-  "25-4323",  // Lumaria C-414 - $749,000 (Withdrawn)
-];
-
-// Fallback data if API fails
-const originalMyListings = [
-  {
-    id: 1,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762121002/20251017233106344278000000-o_mkittq.jpg",
-    price: "$279,000",
-    title: "Marina Cabo Plaza",
-    location: "Paseo de la Marina, Cabo San Lucas",
-    beds: 0,
-    baths: 1,
-    sqft: "422 sq ft",
-    mlsNumber: "25-4668",
-    link: "https://www.flexmls.com/share/D1Cgo/Marina-Cabo-Plaza-Paseo-de-la-Marina-103A-Cabo-San-Lucas-",
-  },
-  {
-    id: 2,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762121555/20240509024323100469000000-o_km5cq0.jpg",
-    price: "$289,000",
-    title: "Bahia del Tezal #605B",
-    location: "Cabo Corridor, BCS",
-    beds: 2,
-    baths: 2,
-    sqft: "986 sq ft",
-    mlsNumber: "24-2325",
-    link: "https://www.flexmls.com/share/D1Cl1/Bahia-del-Tezal-I-605B-Cabo-Corridor-",
-  },
-  {
-    id: 3,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762121628/20240220004726875249000000-o_vnrw0g.jpg",
-    price: "$389,000",
-    title: "Solaria E-102",
-    location: "Cabo Corridor",
-    beds: 2,
-    baths: 2,
-    sqft: "2,551 sq ft",
-    mlsNumber: "24-804",
-    link: "https://www.flexmls.com/share/D1Clv/Solaria-E-102-Cabo-Corridor-",
-  },
-  {
-    id: 4,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762121874/20240502181138791362000000-o_thhaws.jpg",
-    price: "$389,000",
-    title: "Solaria 2 Bed w/Pool, Bonus",
-    location: "Cabo Corridor",
-    beds: 2,
-    baths: 2,
-    sqft: "2,551 sq ft",
-    mlsNumber: "24-2165",
-    link: "https://www.flexmls.com/share/D1CpK/Solaria-2-Bed-w-Pool-Bonus-C-104-Cabo-Corridor-",
-  },
-  {
-    id: 5,
-    image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762122034/20230303214614152294000000-o_qmucg4.jpg",
-    price: "$995,000",
-    title: "Casa DE Los Suenos",
-    location: "Cabo Corridor BCS",
-    beds: 5,
-    baths: 5,
-    sqft: "0 sq ft",
-    mlsNumber: "23-3132",
-    link: "https://www.flexmls.com/share/D1Crp/Casa-DE-Los-Suenos-A-25-Fray-Junipero-Serra-Cabo-Corridor-",
-  },
-];
-
-// ==================== END: LISTINGS DATA ====================
-
-// ==================== START: TESTIMONIALS DATA ====================
-
-const testimonials = [
-  {
-    name: "Gregory & Patricia Hamilton",
-    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
-    rating: 5
-  },
-  {
-    name: "Charles Bennett",
-    text: "Working with Bob was outstanding. His transparency, precision, and strong negotiation skills made our investment process seamless. A true top producer!",
-    rating: 5
-  },
-  {
-    name: "Michelle & Daniel Rogers",
-    text: "Bob guided us through every stage with professionalism and trust. His understanding of Cabo's investment landscape is unmatched. Highly recommend!",
-    rating: 5
-  }
-];
-
-// ==================== END: TESTIMONIALS DATA ====================
-
-// ==================== START: MAIN COMPONENT ====================
-
+// ==================== MAIN COMPONENT ====================
 const BobLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false);
-  const [myListings, setMyListings] = useState(originalMyListings);
+  const [myListings, setMyListings] = useState(fallbackListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 6; // Agent pages show 6 properties per page
 
-  // ==================== START: SAVE CURRENT PAGE TO SESSION ====================
+  // ==================== SAVE/RESTORE STATE ====================
   useEffect(() => {
-    // Save this page as the return point for property detail pages with full state
+    // Save current state for property detail page returns
     if (typeof window !== 'undefined') {
       const browseState = {
         url: window.location.pathname,
@@ -202,9 +148,8 @@ const BobLandingPage = () => {
     }
   }, [showMyListings, currentPage]);
 
-  // ==================== START: RESTORE STATE ON LOAD ====================
   useEffect(() => {
-    // Check if we're returning from a property detail page
+    // Restore state when returning from property detail
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
@@ -212,18 +157,10 @@ const BobLandingPage = () => {
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
-            // Only restore if we're on the same page and it's recent (within 30 minutes)
             const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
             if (state.url === window.location.pathname && isRecent) {
-              // Restore tab
-              if (state.activeTab === 'my-listings') {
-                setShowMyListings(true);
-              } else {
-                setShowMyListings(false);
-              }
-              // Restore page
+              setShowMyListings(state.activeTab === 'my-listings');
               setCurrentPage(state.currentPage || 1);
-              // Restore scroll position after a brief delay
               setTimeout(() => {
                 window.scrollTo({
                   top: state.scrollPosition || 0,
@@ -235,18 +172,14 @@ const BobLandingPage = () => {
             console.error('Error restoring browse state:', e);
           }
         }
-        // Clear the returning flag
         sessionStorage.removeItem('returningFromProperty');
       }
     }
   }, []);
-  // ==================== END: RESTORE STATE ON LOAD ====================
-  // ==================== END: SAVE CURRENT PAGE TO SESSION ====================
 
-  // ==================== START: LOAD FEATURED LISTINGS ====================
+  // ==================== LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
-      // Only load when on Featured tab
       if (showMyListings) return;
       
       setIsLoadingFeatured(true);
@@ -269,11 +202,12 @@ const BobLandingPage = () => {
         
         console.log('🔄 Loading Featured Listings from API...');
         
-        const mlsData = await fetchListings({ limit: 50,
+        const mlsData = await fetchListings({ 
+          limit: 50,
           city: 'Cabo San Lucas',
         });
         
-        console.log('✅ Fetched listings for Featured:', mlsData.length);
+        console.log('✅ Fetched featured listings:', mlsData.length);
         
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
         const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
@@ -293,7 +227,7 @@ const BobLandingPage = () => {
           description: "Showing available listings. Some listings may be loading.",
           variant: "default",
         });
-        setFeaturedListings(originalMyListings);
+        setFeaturedListings(fallbackListings);
       } finally {
         setIsLoadingFeatured(false);
       }
@@ -301,8 +235,8 @@ const BobLandingPage = () => {
 
     loadFeaturedListings();
   }, [showMyListings, toast]);
-  // ==================== END: LOAD FEATURED LISTINGS ====================
-  // ==================== START: LOAD MY LISTINGS FROM API ====================
+
+  // ==================== LOAD MY LISTINGS ====================
   useEffect(() => {
     const loadMyListings = async () => {
       if (!showMyListings) return;
@@ -326,31 +260,24 @@ const BobLandingPage = () => {
           return;
         }
         
-        // 🔥 FIX 1: Fetch ALL listings (no status filter)
         console.log('🔍 My Listings - Fetching from Cabo San Lucas...');
-        const mlsData = await fetchListings({ limit: 50,
-        city: 'Cabo San Lucas'
-      });
+        const mlsData = await fetchListings({ 
+          limit: 100,
+          city: 'Cabo San Lucas'
+        });
         console.log('🔍 My Listings - Total API results:', mlsData.length);
         console.log('🔍 Looking for MLS numbers:', myListingMLSNumbers);
         
-        // Check what fields are available in the API response
-        if (mlsData.length > 0) {
-          console.log('📋 Sample listing fields:', Object.keys(mlsData[0]));
-          console.log('📋 Sample ListingId:', mlsData[0].ListingId);
-        }
-        
-        // Filter and sort by our MLS numbers (maintains exact order)
-        const orderedListings = [];
-        const notFoundMLS = [];
+        // Filter and sort by MLS numbers (maintains exact order)
+        const orderedListings: any[] = [];
+        const notFoundMLS: string[] = [];
         
         myListingMLSNumbers.forEach((mlsNumber, index) => {
-          // 🔥 FIX 2: Try MLS number with AND without dash
           const mlsWithoutDash = mlsNumber.replace('-', '');
           
           const listing = mlsData.find(item => 
-            item.ListingId === mlsNumber ||           // Try with dash: "25-4668"
-            item.ListingId === mlsWithoutDash ||      // Try without dash: "254668"
+            item.ListingId === mlsNumber ||
+            item.ListingId === mlsWithoutDash ||
             item.MlsNumber === mlsNumber ||
             item.mlsNumber === mlsNumber ||
             item.ListingKey === mlsNumber ||
@@ -374,17 +301,11 @@ const BobLandingPage = () => {
         if (notFoundMLS.length > 0) {
           console.error('❌ Missing MLS numbers:', notFoundMLS);
           console.log('💡 These listings may have been removed from FlexMLS');
-          toast({
-            title: "Some listings unavailable",
-            description: `${notFoundMLS.length} listing(s) not found. They may have been removed from FlexMLS.`,
-            variant: "default",
-          });
         }
         
         console.log(`✅ Successfully matched ${orderedListings.length} out of ${myListingMLSNumbers.length} listings`);
         
-        // Use fetched data if we got results, otherwise fallback
-        const finalListings = orderedListings.length > 0 ? orderedListings : originalMyListings;
+        const finalListings = orderedListings.length > 0 ? orderedListings : fallbackListings;
         
         // Cache the results
         try {
@@ -397,8 +318,7 @@ const BobLandingPage = () => {
         setMyListings(finalListings);
       } catch (error) {
         console.error('Failed to load my listings from API:', error);
-        // Fallback to static data
-        setMyListings(originalMyListings);
+        setMyListings(fallbackListings);
       } finally {
         setIsLoadingMyListings(false);
       }
@@ -406,53 +326,43 @@ const BobLandingPage = () => {
 
     loadMyListings();
   }, [showMyListings, toast]);
-  // ==================== END: LOAD MY LISTINGS FROM API ====================
 
-  // ==================== START: RESET PAGE ON TAB SWITCH ====================
+  // ==================== RESET PAGE ON TAB SWITCH ====================
   useEffect(() => {
     setCurrentPage(1);
   }, [showMyListings]);
-  // ==================== END: RESET PAGE ON TAB SWITCH ====================
 
-  // ==================== START: PAGINATION LOGIC ====================
-  // IMPORTANT: My Listings maintain exact order (no shuffling)
-  // Featured Listings get shuffled (handled in useEffect above)
+  // ==================== PAGINATION ====================
   const allListings = showMyListings ? myListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
   const displayedListings = allListings.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
     document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  // Smart pagination: show max 7 page numbers with ellipsis
   const getPageNumbers = () => {
-    const pages = [];
+    const pages: (number | string)[] = [];
     const maxVisible = 7;
     
     if (totalPages <= maxVisible) {
-      // Show all pages if total is small
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Always show first page
       pages.push(1);
       
       if (currentPage <= 3) {
-        // Near beginning: show 1,2,3,4,...,last
         pages.push(2, 3, 4);
         pages.push('ellipsis-end');
         pages.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
-        // Near end: show 1,...,last-3,last-2,last-1,last
         pages.push('ellipsis-start');
         pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
       } else {
-        // Middle: show 1,...,current-1,current,current+1,...,last
         pages.push('ellipsis-start');
         pages.push(currentPage - 1, currentPage, currentPage + 1);
         pages.push('ellipsis-end');
@@ -462,13 +372,12 @@ const BobLandingPage = () => {
     
     return pages;
   };
-  // ==================== END: PAGINATION LOGIC ====================
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      {/* ==================== START: WHATSAPP FLOATING BUTTON ==================== */}
+      {/* ==================== WHATSAPP FLOATING BUTTON ==================== */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -483,9 +392,8 @@ const BobLandingPage = () => {
         </span>
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
-      {/* ==================== END: WHATSAPP FLOATING BUTTON ==================== */}
 
-      {/* ==================== START: HERO SECTION ==================== */}
+      {/* ==================== HERO SECTION ==================== */}
       <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
@@ -550,9 +458,8 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== END: HERO SECTION ==================== */}
 
-      {/* ==================== START: ABOUT SECTION ==================== */}
+      {/* ==================== ABOUT SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -594,8 +501,8 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== END: ABOUT SECTION ==================== */}
-      {/* ==================== START: LISTINGS SECTION ==================== */}
+
+      {/* ==================== LISTINGS SECTION ==================== */}
       <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
@@ -648,15 +555,13 @@ const BobLandingPage = () => {
                 </div>
               )}
 
-              {/* ==================== START: PAGINATION ==================== */}
+              {/* ==================== PAGINATION ==================== */}
               {totalPages > 1 && (
                 <div className="flex flex-col items-center gap-4 my-8">
-                  {/* Page Info */}
                   <div className="text-sm text-muted-foreground">
                     Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
                   </div>
                   
-                  {/* Pagination Controls */}
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
@@ -683,7 +588,7 @@ const BobLandingPage = () => {
                           key={page}
                           variant={currentPage === page ? "luxury" : "outline"}
                           size="sm"
-                          onClick={() => handlePageChange(page)}
+                          onClick={() => handlePageChange(page as number)}
                           className="h-10 w-10 p-0"
                         >
                           {page}
@@ -704,7 +609,6 @@ const BobLandingPage = () => {
                   </div>
                 </div>
               )}
-              {/* ==================== END: PAGINATION ==================== */}
             </>
           )}
 
@@ -717,9 +621,8 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== END: LISTINGS SECTION ==================== */}
 
-      {/* ==================== START: TESTIMONIALS SECTION ==================== */}
+      {/* ==================== TESTIMONIALS SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
@@ -739,9 +642,8 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== END: TESTIMONIALS SECTION ==================== */}
 
-      {/* ==================== START: CONTACT SECTION ==================== */}
+      {/* ==================== CONTACT SECTION ==================== */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -835,7 +737,6 @@ const BobLandingPage = () => {
           </div>
         </div>
       </section>
-      {/* ==================== END: CONTACT SECTION ==================== */}
 
       <Footer />
     </div>
@@ -843,4 +744,3 @@ const BobLandingPage = () => {
 };
 
 export default BobLandingPage;
-// ==================== END: MAIN COMPONENT ====================
