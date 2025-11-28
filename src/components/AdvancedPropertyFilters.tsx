@@ -278,7 +278,7 @@ const AdvancedPropertyFilters = ({
         <Button 
           variant="default" 
           onClick={handleSearch}
-          className="px-8 bg-purple-700 hover:bg-purple-800"
+          className={`px-8 ${resultCount > 0 ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-700 hover:bg-purple-800'}`}
         >
           Search
         </Button>
@@ -370,7 +370,7 @@ const AdvancedPropertyFilters = ({
                     }}
                   />
                   <Button
-                    className="bg-purple-700 hover:bg-purple-800"
+                    className={resultCount > 0 ? "bg-green-600 hover:bg-green-700" : "bg-purple-700 hover:bg-purple-800"}
                     onClick={handleMLSSearch}
                     disabled={!filters.mlsNumber.trim() && !filters.searchQuery.trim()}
                   >
@@ -877,7 +877,7 @@ const AdvancedPropertyFilters = ({
               </Button>
               <Button 
                 onClick={handleSearch} 
-                className="flex-1 bg-purple-700 hover:bg-purple-800"
+                className={`flex-1 ${resultCount > 0 ? 'bg-green-600 hover:bg-green-700' : 'bg-purple-700 hover:bg-purple-800'}`}
               >
                 Search
               </Button>

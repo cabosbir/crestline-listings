@@ -338,7 +338,11 @@ const AdvancedSearch = () => {
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button onClick={handleSearch} disabled={totalCount === 0}>
+            <Button 
+              onClick={handleSearch} 
+              disabled={totalCount === 0}
+              className={totalCount > 0 ? "bg-green-600 hover:bg-green-700 text-white" : ""}
+            >
               <Search className="w-4 h-4 mr-2" />
               View {totalCount} Results
             </Button>
