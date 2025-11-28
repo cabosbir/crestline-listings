@@ -1,4 +1,4 @@
-// src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version WITH DYNAMIC COUNT
+// src/components/AdvancedPropertyFilters.tsx - Complete Fixed Version WITH SMART MAPPING
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import {
   bedsOptions,
   bathsOptions
 } from "@/constants/filterConstants";
+import { getSmartMappings, buildAPIFilters } from "@/services/groqIntelligence";
 
 interface FilterState {
   searchQuery: string;
@@ -44,6 +45,12 @@ interface FilterState {
   sellerFinancing: boolean;
   primaryView: boolean;
   currentPrice: boolean;
+  smartLocationFilters?: {
+    city?: string;
+    area?: string;
+    community?: string;
+    subdivision?: string;
+  };
 }
 
 interface AdvancedPropertyFiltersProps {
@@ -137,7 +144,7 @@ const AdvancedPropertyFilters = ({
     setFilters({ ...filters, [key]: [] });
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     // Priority 1: If there's a search query (MLS, address, etc.), use universal search
     const searchTerm = filters.mlsNumber.trim() || filters.searchQuery.trim();
     if (searchTerm) {
@@ -146,9 +153,38 @@ const AdvancedPropertyFilters = ({
       return;
     }
     
-    // Priority 2: Apply advanced filters
-    console.log('🎯 [FILTER SEARCH] Using advanced filters');
-    onApplyFilters(filters);
+    // Priority 2: Apply advanced filters with SMART MAPPING
+    console.log('🎯 [FILTER SEARCH] Using advanced filters with smart mapping...');
+    
+    // SMART MAPPING: Fix field mismatches (e.g., "Todos Santos" as zone → community)
+    if (filters.zones.length > 0 || filters.areas.length > 0 || 
+        filters.communities.length > 0 || filters.subdivisions.length > 0) {
+      
+      console.log('🧠 Getting smart mappings for location filters...');
+      const mappings = await getSmartMappings({
+        zones: filters.zones,
+        areas: filters.areas,
+        communities: filters.communities,
+        subdivisions: filters.subdivisions
+      });
+      
+      // Build correct API filters from mappings
+      const locationFilters = buildAPIFilters(mappings);
+      
+      // Create enhanced filters with corrected location fields
+      const enhancedFilters = {
+        ...filters,
+        // Replace original location filters with smart-mapped ones
+        smartLocationFilters: locationFilters
+      };
+      
+      console.log('✅ Smart mapping complete! Applying filters...');
+      onApplyFilters(enhancedFilters);
+    } else {
+      // No location filters, use regular filters
+      onApplyFilters(filters);
+    }
+    
     setIsOpen(false);
     
     let count = 0;
