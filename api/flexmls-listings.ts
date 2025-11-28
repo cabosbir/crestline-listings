@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - FIXED WITH SINGULAR PARAMETERS
+// api/flexmls-listings.ts - WITH SPECIAL FILTERS SUPPORT
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -25,9 +25,9 @@ export default async function handler(
   try {
     const { 
       city,
-      area,        // FIXED: Changed from 'areas' to 'area'
-      community,   // FIXED: Changed from 'communities' to 'community'
-      subdivision, // FIXED: Changed from 'subdivisions' to 'subdivision'
+      area,
+      community,
+      subdivision,
       minPrice, 
       maxPrice, 
       bedrooms,
@@ -37,14 +37,18 @@ export default async function handler(
       minSqft,
       yearBuilt,
       search,
-      limit
+      limit,
+      sellerFinancing,  // 🆕 Special filter
+      primaryView,      // 🆕 Special filter
+      currentPrice      // 🆕 Special filter
     } = req.query;
 
     const maxResults = limit && typeof limit === 'string' ? parseInt(limit) : undefined;
 
     console.log('🔍 [API] Filters:', {
       city, area, community, subdivision, minPrice, maxPrice, 
-      bedrooms, bathrooms, propertyTypes, status, search, limit: maxResults
+      bedrooms, bathrooms, propertyTypes, status, search, limit: maxResults,
+      sellerFinancing, primaryView, currentPrice  // 🆕 Log special filters
     });
 
     // BUILD RESO $filter QUERY
@@ -78,7 +82,7 @@ export default async function handler(
       }
     }
 
-    // AREAS - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    // AREAS - Use contains() for flexible matching
     if (area && typeof area === 'string') {
       const areaList = area.split(',').map(a => a.trim());
       
@@ -92,7 +96,7 @@ export default async function handler(
       }
     }
 
-    // COMMUNITIES - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    // COMMUNITIES - Use contains() for flexible matching
     if (community && typeof community === 'string') {
       const communityList = community.split(',').map(c => c.trim());
       if (communityList.length === 1) {
@@ -103,7 +107,7 @@ export default async function handler(
       }
     }
 
-    // SUBDIVISIONS - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    // SUBDIVISIONS - Use contains() for flexible matching
     if (subdivision && typeof subdivision === 'string') {
       const subdivisionList = subdivision.split(',').map(s => s.trim());
       if (subdivisionList.length === 1) {
@@ -161,6 +165,25 @@ export default async function handler(
     if (yearBuilt && typeof yearBuilt === 'string' && yearBuilt !== 'No Preference') {
       const year = parseInt(yearBuilt.replace('+', ''));
       if (!isNaN(year)) filters.push(`YearBuilt ge ${year}`);
+    }
+
+    // 🆕 SPECIAL FILTERS
+    // Seller Financing - Check if property offers seller financing
+    if (sellerFinancing && (sellerFinancing === 'true' || sellerFinancing === true)) {
+      filters.push(`SellerFinancingYN eq true`);
+      console.log('💵 [Special Filter] Seller Financing: Yes');
+    }
+
+    // Primary View - Properties with ocean/water/bay views
+    if (primaryView && (primaryView === 'true' || primaryView === true)) {
+      filters.push(`(contains(View, 'Ocean') or contains(View, 'Water') or contains(View, 'Bay') or contains(View, 'Sea'))`);
+      console.log('👁️ [Special Filter] Primary View: Yes');
+    }
+
+    // Current Price - Properties where ListPrice equals OriginalListPrice (no price reductions)
+    if (currentPrice && (currentPrice === 'true' || currentPrice === true)) {
+      filters.push(`ListPrice eq OriginalListPrice`);
+      console.log('💲 [Special Filter] Current Price (no reductions): Yes');
     }
 
     const filterString = filters.join(' and ');
