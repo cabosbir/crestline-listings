@@ -1,6 +1,7 @@
-// filterConstants.ts - REAL MLS Field Values (Updated Nov 27, 2025)
-// These match EXACTLY what's in FlexMLS
+// filterConstants.ts - REAL MLS Field Values (Aligned to FlexMLS API Fields)
+// Updated Nov 27, 2025
 
+// FLEXMLS PROPERTY TYPES
 export const propertyTypes = [
   "Condos",
   "Houses",
@@ -10,6 +11,7 @@ export const propertyTypes = [
   "MultiFamily"
 ];
 
+// FLEXMLS STATUS OPTIONS
 export const statusOptions = [
   "Active",
   "Pending",
@@ -19,7 +21,11 @@ export const statusOptions = [
   "Cancelled"
 ];
 
-// ZONES (City field) - EXACT 10 from FlexMLS
+// -------------------------------
+// FLEXMLS FIELDS (MUST MATCH EXACTLY)
+// -------------------------------
+
+// ZONES → FlexMLS uses "CITY"
 export const zones = [
   "Cabo Corridor",
   "Cabo San Lucas",
@@ -33,7 +39,7 @@ export const zones = [
   "San Jose del Cabo"
 ];
 
-// AREAS - Complete list from FlexMLS
+// AREAS → FlexMLS "Area"
 export const areas = [
   "Bay of Dreams",
   "Cd. Constitución",
@@ -76,7 +82,7 @@ export const areas = [
   "South Shore"
 ];
 
-// COMMUNITIES - Complete list from FlexMLS (135+)
+// COMMUNITIES → FlexMLS “Community”
 export const communities = [
   "Above Isla Coronado",
   "Agua Verde",
@@ -219,7 +225,7 @@ export const communities = [
   "Zaragoza"
 ];
 
-// SUBDIVISIONS - Top 50+ most common
+// SUBDIVISIONS → FlexMLS “Subdivision”
 export const subdivisions = [
   "Abasolo",
   "Alba Residences",
@@ -275,7 +281,7 @@ export const subdivisions = [
   "Waldorf Astoria Residences"
 ];
 
-// Price options
+// PRICE OPTIONS
 export const priceOptions = [
   "No Preference",
   "$50,000",

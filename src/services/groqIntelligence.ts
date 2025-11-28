@@ -261,54 +261,49 @@ export function buildAPIFilters(mappings: {
 } {
   const apiFilters: any = {};
 
-  // Group all mappings by their MLS field
-  const byField: Record<string, string[]> = {
-    zone: [],
-    area: [],
-    community: [],
-    subdivision: []
-  };
+  // Group all mappings by their MLS field (normalized)
+const byField: Record<string, string[]> = {
+  zone: [],
+  area: [],
+  subdivision: [] // <-- community + subdivision go here
+};
 
-  // Add zones
-  mappings.zones.forEach(m => {
-    byField[m.mlsField].push(m.mlsValue);
-  });
+// Add zones
+mappings.zones.forEach(m => {
+  byField[m.mlsField].push(m.mlsValue);
+});
 
-  // Add areas
-  mappings.areas.forEach(m => {
-    byField[m.mlsField].push(m.mlsValue);
-  });
+// Add areas
+mappings.areas.forEach(m => {
+  byField[m.mlsField].push(m.mlsValue);
+});
 
-  // Add communities
-  mappings.communities.forEach(m => {
-    byField[m.mlsField].push(m.mlsValue);
-  });
+// Add communities (map them into subdivision)
+mappings.communities.forEach(m => {
+  byField.subdivision.push(m.mlsValue);
+});
 
-  // Add subdivisions
-  mappings.subdivisions.forEach(m => {
-    byField[m.mlsField].push(m.mlsValue);
-  });
+// Add subdivisions
+mappings.subdivisions.forEach(m => {
+  byField.subdivision.push(m.mlsValue);
+});
 
-  // Build API parameters
-  if (byField.zone.length > 0) {
-    apiFilters.city = byField.zone.join(',');
-  }
+// Build API parameters
+if (byField.zone.length > 0) {
+  apiFilters.city = byField.zone.join(',');
+}
 
-  if (byField.area.length > 0) {
-    apiFilters.area = byField.area.join(',');
-  }
+if (byField.area.length > 0) {
+  apiFilters.area = byField.area.join(',');
+}
 
-  if (byField.community.length > 0) {
-    apiFilters.community = byField.community.join(',');
-  }
+if (byField.subdivision.length > 0) {
+  apiFilters.subdivision = byField.subdivision.join(',');
+}
 
-  if (byField.subdivision.length > 0) {
-    apiFilters.subdivision = byField.subdivision.join(',');
-  }
+console.log(`\n📋 Built API filters:`, apiFilters);
 
-  console.log(`\n📋 Built API filters:`, apiFilters);
-
-  return apiFilters;
+return apiFilters;
 }
 
 // Clear cache
