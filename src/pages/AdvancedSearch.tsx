@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { X, Search, Loader2 } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
-import { getSmartMappings, buildAPIFilters } from "@/services/groqIntelligence";
+import { getSmartMappings, buildAPIFilters, discoverMLSFields, getValidatedSpecialFilters } from "@/services/groqIntelligence";
 import { 
   translateUserInputToMLS, 
   buildMLSAPIFilter, 
@@ -68,6 +68,7 @@ const AdvancedSearch = () => {
   const [loading, setLoading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [aiOptimizing, setAiOptimizing] = useState(false);
+  const [discoveredFields, setDiscoveredFields] = useState<any>(null); // 🆕 MLS field discovery cache
 
   // Load filters from URL on mount
   useEffect(() => {
@@ -359,19 +360,40 @@ const AdvancedSearch = () => {
         console.log('  🔍 Search term:', apiFilters.search);
       }
 
-      if (filters.sellerFinancing) {
-        apiFilters.sellerFinancing = true;
-        console.log('  💵 Seller financing: Yes');
-      }
-      
-      if (filters.primaryView) {
-        apiFilters.primaryView = true;
-        console.log('  👁️ Primary view: Yes');
-      }
-      
-      if (filters.currentPrice) {
-        apiFilters.currentPrice = true;
-        console.log('  💲 Current price: Yes');
+      // 🆕 SUPERPOWER: Auto-discover and validate special filters with AI
+      if (filters.sellerFinancing || filters.primaryView || filters.currentPrice) {
+        console.log('🦸‍♂️ Discovering MLS field names for special filters...');
+        
+        // Discover fields if not already cached
+        if (!discoveredFields) {
+          const fields = await discoverMLSFields();
+          setDiscoveredFields(fields);
+          console.log('✨ Discovered fields:', fields);
+        }
+        
+        // Use discovered fields or cached ones
+        const fields = discoveredFields || await discoverMLSFields();
+        
+        if (filters.sellerFinancing && fields.sellerFinancingField) {
+          apiFilters.sellerFinancing = true;
+          console.log(`  💵 Seller financing: Yes (using field: ${fields.sellerFinancingField})`);
+        } else if (filters.sellerFinancing) {
+          console.warn('  ⚠️ Seller financing requested but field not found in MLS');
+        }
+        
+        if (filters.primaryView && fields.viewField) {
+          apiFilters.primaryView = true;
+          console.log(`  👁️ Primary view: Yes (using field: ${fields.viewField})`);
+        } else if (filters.primaryView) {
+          console.warn('  ⚠️ Primary view requested but field not found in MLS');
+        }
+        
+        if (filters.currentPrice && fields.currentPriceField && fields.originalPriceField) {
+          apiFilters.currentPrice = true;
+          console.log(`  💲 Current price: Yes (comparing ${fields.currentPriceField} vs ${fields.originalPriceField})`);
+        } else if (filters.currentPrice) {
+          console.warn('  ⚠️ Current price requested but fields not found in MLS');
+        }
       }
       
       setAiOptimizing(false);

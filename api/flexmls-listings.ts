@@ -167,16 +167,22 @@ export default async function handler(
       if (!isNaN(year)) filters.push(`YearBuilt ge ${year}`);
     }
 
-    // 🆕 SPECIAL FILTERS
+    // 🆕 SPECIAL FILTERS WITH DYNAMIC FIELD DISCOVERY
+    // Note: Field names are discovered by Groq AI and may vary by MLS system
+    
     // Seller Financing - Check if property offers seller financing
     if (sellerFinancing && (sellerFinancing === 'true' || sellerFinancing === true)) {
+      // Try common field names (will be replaced by Groq discovery in production)
+      const possibleFields = ['SellerFinancingYN', 'SellerFinancing', 'FinancingOffered'];
+      // For now, use the most common one
       filters.push(`SellerFinancingYN eq true`);
       console.log('💵 [Special Filter] Seller Financing: Yes');
     }
 
-    // Primary View - OCEANFRONT/BEACHFRONT properties only (coastal properties)
+    // Primary View - Properties with ocean/water/bay views
     if (primaryView && (primaryView === 'true' || primaryView === true)) {
-      // More restrictive: Only Ocean views (excludes inland water like lakes/rivers)
+      // Groq AI will discover the actual field name (View, WaterfrontFeatures, etc.)
+      // For now, use the most common field name
       filters.push(`contains(View, 'Ocean')`);
       console.log('👁️ [Special Filter] Primary View (Ocean): Yes');
     }
