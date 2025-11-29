@@ -157,6 +157,11 @@ const Properties = () => {
       
       console.log('🔍 [PROPERTIES] Loading from AdvancedSearch filters:', apiFilters);
       loadProperties(apiFilters);
+      
+      // Only reset to page 1 for new filter searches (not when returning)
+      if (!sessionStorage.getItem('returningFromProperty')) {
+        setCurrentPage(1);
+      }
     }
   }, [location.search]);
 
@@ -181,15 +186,9 @@ const Properties = () => {
       const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedProperties);
 
-      // ⭐ Only reset to page 1 on new searches, not when returning
-      const isReturning = sessionStorage.getItem("returningFromProperty") === 'true';
-      if (!isReturning) {
-        console.log('🔄 NEW SEARCH - Resetting to page 1');
-        setCurrentPage(1);
-      } else {
-        console.log('🔙 RETURNING FROM PROPERTY - Keeping current page');
-      }
-
+      // Don't reset page - let state restoration handle it
+      // Only reset if currentPage is still 1 (initial state)
+      
     } catch (err) {
       console.error('❌ Error loading properties:', err);
       setError('Failed to load properties. Please try again.');
@@ -226,7 +225,7 @@ const Properties = () => {
         setAllProperties(mlsProperties);
         const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
         setProperties(convertedProperties);
-        setCurrentPage(1);
+        // Don't reset page here either
       } else {
         setProperties([]);
         setError(`No properties found matching "${query}"`);
