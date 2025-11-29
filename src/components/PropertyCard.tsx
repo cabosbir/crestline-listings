@@ -44,13 +44,12 @@ const PropertyCard = ({
   const [imgError, setImgError] = useState(false);
 
   const handleViewDetails = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    console.log('🔍 View Details clicked:', { id, mlsNumber, link });
-    
-    // Navigate to detail page with the listing key/id
-    console.log('✅ Navigating to:', `/property/${id}`);
-    navigate(`/property/${id}`);
-  };
+  e?.stopPropagation();
+  console.log('🔍 View Details clicked:', { id, mlsNumber, link });
+
+  console.log('✅ Navigating to:', `/property/${mlsNumber ?? id}`);
+  navigate(`/property/${mlsNumber ?? id}`);
+};
 
   const handleNewClientForm = (e: React.MouseEvent) => {
     e.stopPropagation();
