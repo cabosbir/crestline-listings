@@ -5,9 +5,8 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import PropertyCard from "@/components/PropertyCard";
 import LeafletPropertyMap from "@/components/LeafletPropertyMap";
-import AdvancedPropertyFilters from "@/components/AdvancedPropertyFilters";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Loader2, ChevronLeft, ChevronRight, Map, Grid, SlidersHorizontal } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Map, Grid, SlidersHorizontal } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 import { searchProperties, getFlexMLSTotalCount } from "@/services/intelligentSearch";
 
@@ -21,9 +20,56 @@ const Properties = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeSearchQuery, setActiveSearchQuery] = useState<string>("");
   const [totalCount, setTotalCount] = useState(4528);
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list'); // NEW: View mode toggle
-  const [filtersOpen, setFiltersOpen] = useState(true); // NEW: Auto-open filters
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const ITEMS_PER_PAGE = 9;
+
+  // ⭐ SAVE STATE - Save page number and scroll position
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const browseState = {
+        url: window.location.pathname + window.location.search,
+        scrollPosition: window.scrollY,
+        currentPage: currentPage,
+        viewMode: viewMode,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('propertiesBrowseState', JSON.stringify(browseState));
+    }
+  }, [currentPage, viewMode]);
+
+  // ⭐ RESTORE STATE - Restore page and scroll when returning from property details
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('propertiesBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000; // 30 min
+            const urlMatches = state.url === (window.location.pathname + window.location.search);
+            
+            if (urlMatches && isRecent) {
+              console.log('🔄 Restoring browse state:', state);
+              setCurrentPage(state.currentPage || 1);
+              setViewMode(state.viewMode || 'list');
+              
+              // Restore scroll position after a short delay (let content load)
+              setTimeout(() => {
+                window.scrollTo({
+                  top: state.scrollPosition || 0,
+                  behavior: 'smooth'
+                });
+              }, 100);
+            }
+          } catch (e) {
+            console.error('Error restoring browse state:', e);
+          }
+        }
+        sessionStorage.removeItem('returningFromProperty');
+      }
+    }
+  }, []);
 
   // Fetch real MLS total count
   useEffect(() => {
@@ -48,14 +94,14 @@ const Properties = () => {
       const searchQuery = mlsNumberParam || addressParam || searchParam || "";
       setActiveSearchQuery(searchQuery);
       performUniversalSearch(searchQuery);
-      setFiltersOpen(false);
       return;
     }
     
-    // 🔥 NEW: Check for filter params from AdvancedSearch
+    // ⭐ Check for filter params from AdvancedSearch
     const zonesParam = params.get('zones');
     const areasParam = params.get('areas');
     const communitiesParam = params.get('communities');
+    const subdivisionsParam = params.get('subdivisions');
     const minPriceParam = params.get('minPrice');
     const maxPriceParam = params.get('maxPrice');
     const bedsParam = params.get('beds');
@@ -63,25 +109,33 @@ const Properties = () => {
     const propertyTypesParam = params.get('propertyTypes');
     const statusParam = params.get('status');
     
-    if (zonesParam || areasParam || communitiesParam) {
+    // ⭐ Special filters (FIXED)
+    const sellerFinancingParam = params.get('sellerFinancing');
+    const primaryViewParam = params.get('primaryView');
+    const currentPriceParam = params.get('currentPrice');
+    
+    if (zonesParam || areasParam || communitiesParam || subdivisionsParam) {
       // Build filters object from URL params
       const apiFilters: any = {};
       
-      // Zone → City
-     if (zonesParam) apiFilters.city = zonesParam.split(',');
-
-     // Area → Area
-     if (areasParam) apiFilters.area = areasParam.split(',');
-
-      // Community → SubdivisionName
+      // Location filters
+      if (zonesParam) apiFilters.city = zonesParam.split(',');
+      if (areasParam) apiFilters.area = areasParam.split(',');
       if (communitiesParam) apiFilters.subdivision = communitiesParam.split(',');
+      if (subdivisionsParam) apiFilters.subdivision = subdivisionsParam.split(',');
 
+      // Price & property filters
       if (minPriceParam) apiFilters.minPrice = parsePrice(minPriceParam);
       if (maxPriceParam) apiFilters.maxPrice = parsePrice(maxPriceParam);
       if (bedsParam) apiFilters.bedrooms = parseInt(bedsParam.replace('+', ''));
       if (bathsParam) apiFilters.bathrooms = parseInt(bathsParam.replace('+', ''));
       if (propertyTypesParam) apiFilters.propertyTypes = propertyTypesParam.split(',');
       if (statusParam) apiFilters.status = statusParam;
+      
+      // ⭐ Special filters (FIXED)
+      if (sellerFinancingParam === 'true') apiFilters.sellerFinancing = true;
+      if (primaryViewParam === 'true') apiFilters.primaryView = true;
+      if (currentPriceParam === 'true') apiFilters.currentPrice = true;
       
       console.log('🔍 [PROPERTIES] Loading from AdvancedSearch filters:', apiFilters);
       loadProperties(apiFilters);
@@ -109,7 +163,6 @@ const Properties = () => {
       const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedProperties);
       setCurrentPage(1);
-      setFiltersOpen(false); // Close filters after search
     } catch (err) {
       console.error('❌ Error loading properties:', err);
       setError('Failed to load properties. Please try again.');
@@ -160,32 +213,22 @@ const Properties = () => {
     }
   };
 
-  const handleApplyFilters = (filters: any, searchQuery?: string) => {
-    if (searchQuery && searchQuery.trim()) {
-      performUniversalSearch(searchQuery);
-    } else {
-      loadProperties(filters);
-    }
-  };
-
   const handleReset = () => {
     setProperties([]);
     setAllProperties([]);
     setActiveSearchQuery("");
     setCurrentPage(1);
     setError(null);
-    setFiltersOpen(true);
     navigate('/properties');
   };
 
-  // 🔥 NEW: Check if user came from AdvancedSearch
   const cameFromAdvancedSearch = () => {
     const params = new URLSearchParams(location.search);
-    return params.has('zones') || params.has('areas') || params.has('communities');
+    return params.has('zones') || params.has('areas') || params.has('communities') || params.has('subdivisions');
   };
 
   const goBackToFilters = () => {
-    navigate(`/search${location.search}`); // Preserve filters in URL
+    navigate(`/search${location.search}`);
   };
 
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
@@ -248,10 +291,7 @@ const Properties = () => {
                 <Button
                   variant={viewMode === 'map' ? 'default' : 'ghost'}
                   size="sm"
-                  onClick={() => {
-                    setViewMode('map');
-                    setFiltersOpen(true); // Open filters when switching to map view
-                  }}
+                  onClick={() => setViewMode('map')}
                   className="gap-2"
                   disabled={propertiesWithCoords.length === 0}
                 >
@@ -294,7 +334,7 @@ const Properties = () => {
                   <p><strong>Quick Tips:</strong></p>
                   <p>• Select a Zone (Cabo San Lucas, San Jose del Cabo, etc.)</p>
                   <p>• Set your price range and property preferences</p>
-                  <p>• Click "Search" to see results</p>
+                  <p>• Click "View Results" to see filtered properties</p>
                   <p>• Toggle between List and Map view once results load</p>
                 </div>
               </div>
@@ -349,7 +389,11 @@ const Properties = () => {
                           <div
                             key={property.id}
                             className="bg-card border-2 border-border rounded-xl p-4 cursor-pointer hover:shadow-lg transition-all"
-                            onClick={() => navigate(`/property/${property.mlsNumber || property.id}`)}
+                            onClick={() => {
+                              // ⭐ Mark that we're leaving to view a property
+                              sessionStorage.setItem('returningFromProperty', 'true');
+                              navigate(`/property/${property.mlsNumber || property.id}`);
+                            }}
                           >
                             <div className="flex items-start gap-3 mb-3">
                               <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
@@ -400,7 +444,15 @@ const Properties = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {currentItems.map((property) => (
-                      <PropertyCard key={property.id} {...property} />
+                      <div 
+                        key={property.id}
+                        onClick={() => {
+                          // ⭐ Mark that we're leaving to view a property
+                          sessionStorage.setItem('returningFromProperty', 'true');
+                        }}
+                      >
+                        <PropertyCard {...property} />
+                      </div>
                     ))}
                   </div>
 

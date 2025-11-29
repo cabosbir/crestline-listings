@@ -460,18 +460,30 @@ const AdvancedSearch = () => {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
+    
+    // Location filters
     if (filters.zones.length > 0) params.append('zones', filters.zones.join(','));
     if (filters.areas.length > 0) params.append('areas', filters.areas.join(','));
     if (filters.communities.length > 0) params.append('communities', filters.communities.join(','));
     if (filters.subdivisions.length > 0) params.append('subdivisions', filters.subdivisions.join(','));
+    
+    // Price & Property filters
     if (filters.minPrice !== "No Preference") params.append('minPrice', filters.minPrice);
     if (filters.maxPrice !== "No Preference") params.append('maxPrice', filters.maxPrice);
     if (filters.minBeds !== "Any") params.append('beds', filters.minBeds);
     if (filters.minBaths !== "Any") params.append('baths', filters.minBaths);
     if (filters.propertyTypes.length > 0) params.append('propertyTypes', filters.propertyTypes.join(','));
     if (filters.status) params.append('status', filters.status);
+    
+    // ⭐ Special filters (FIXED)
+    if (filters.sellerFinancing) params.append('sellerFinancing', 'true');
+    if (filters.primaryView) params.append('primaryView', 'true');
+    if (filters.currentPrice) params.append('currentPrice', 'true');
+    
+    // Search query
     if (filters.mlsSearch.trim()) params.append('search', filters.mlsSearch.trim());
 
+    console.log('🔍 [ADVANCED SEARCH] Navigating to /properties with params:', params.toString());
     navigate(`/properties?${params.toString()}`);
   };
 
