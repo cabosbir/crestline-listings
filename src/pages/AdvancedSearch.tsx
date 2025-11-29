@@ -467,13 +467,22 @@ const AdvancedSearch = () => {
     if (filters.communities.length > 0) params.append('communities', filters.communities.join(','));
     if (filters.subdivisions.length > 0) params.append('subdivisions', filters.subdivisions.join(','));
     
-    // Price & Property filters
-    if (filters.minPrice !== "No Preference") params.append('minPrice', filters.minPrice);
-    if (filters.maxPrice !== "No Preference") params.append('maxPrice', filters.maxPrice);
-    if (filters.minBeds !== "Any") params.append('beds', filters.minBeds);
-    if (filters.minBaths !== "Any") params.append('baths', filters.minBaths);
-    if (filters.propertyTypes.length > 0) params.append('propertyTypes', filters.propertyTypes.join(','));
-    if (filters.status) params.append('status', filters.status);
+    // Price & Property filters - ONLY if not default values
+    if (filters.minPrice && filters.minPrice !== "$50,000") params.append('minPrice', filters.minPrice);
+    if (filters.maxPrice && filters.maxPrice !== "$3 Million") params.append('maxPrice', filters.maxPrice);
+    if (filters.minBeds && filters.minBeds !== "1+") params.append('beds', filters.minBeds);
+    if (filters.minBaths && filters.minBaths !== "Any") params.append('baths', filters.minBaths);
+    
+    // Only send propertyTypes if not the default 3
+    const defaultTypes = ["Condos", "Houses", "Land"];
+    const hasNonDefaultTypes = filters.propertyTypes.length !== defaultTypes.length || 
+                               !filters.propertyTypes.every(t => defaultTypes.includes(t));
+    if (hasNonDefaultTypes) {
+      params.append('propertyTypes', filters.propertyTypes.join(','));
+    }
+    
+    // Only send status if not "Active"
+    if (filters.status && filters.status !== "Active") params.append('status', filters.status);
     
     // ⭐ Special filters - Properties will apply them client-side via flexMlsService
     if (filters.sellerFinancing) params.append('sellerFinancing', 'true');
