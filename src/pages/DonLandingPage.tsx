@@ -252,7 +252,7 @@ const DonLandingPage = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
-        const savedState = sessionStorage.getItem('donBrowseState');
+        const savedState = sessionStorage.getItem('DonWeisBrowseState');
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
@@ -271,7 +271,7 @@ const DonLandingPage = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
-        const savedState = sessionStorage.getItem('donBrowseState');
+        const savedState = sessionStorage.getItem('DonWeisBrowseState');
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
@@ -353,7 +353,7 @@ const DonLandingPage = () => {
       
       try {
         const CACHE_VERSION = 1;
-        const cacheKey = `don-my-listings-auto-v${CACHE_VERSION}`;
+        const cacheKey = `don weis-my-listings-auto-v${CACHE_VERSION}`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
