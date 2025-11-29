@@ -285,7 +285,7 @@ const MarisolLandingPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(getInitialTab());
   const [myListings, setMyListings] = useState(fallbackListings);
-  const [featuredListings, setFeaturedListings] = useState(premiumFeaturedListings);
+  const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(getInitialPage());
@@ -332,9 +332,46 @@ const MarisolLandingPage = () => {
     const loadFeaturedListings = async () => {
       if (showMyListings) return;
       
-      // Featured already loaded with premium listings
-      setFeaturedListings(premiumFeaturedListings);
-      setIsLoadingFeatured(false);
+      setIsLoadingFeatured(true);
+      
+      try {
+        const cacheKey = 'marisol-featured-api-data-v1';
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          const cachedData = JSON.parse(cached);
+          setFeaturedListings(cachedData);
+          setIsLoadingFeatured(false);
+          return;
+        }
+        
+        const mlsData = await fetchListings({ 
+          limit: 50,
+          city: 'Cabo San Lucas',
+        });
+        
+        const convertedListings = mlsData.map(convertMLSToPropertyCard);
+        const shuffled = getShuffledListings(convertedListings, 'marisol-featured-shuffle-v1');
+        
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching API data:', e);
+        }
+        
+        setFeaturedListings(shuffled);
+      } catch (error) {
+        console.error('Failed to load featured listings:', error);
+        setFeaturedListings(fallbackListings);
+      } finally {
+        setIsLoadingFeatured(false);
+      }
     };
 
     loadFeaturedListings();
@@ -599,7 +636,7 @@ const MarisolLandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
-              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Premium Listings'}
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {showMyListings ? 'My Listings' : 'Featured Listings'}
@@ -607,7 +644,7 @@ const MarisolLandingPage = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {showMyListings 
                 ? `Exclusive properties I'm currently representing in Cabo San Lucas`
-                : 'Explore premium luxury estates from Baja International Realty'}
+                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
             </p>
 
             <div className="flex justify-center gap-2 mb-8">
