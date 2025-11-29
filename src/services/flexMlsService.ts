@@ -151,37 +151,20 @@ export async function fetchListings(params?: {
       const viewField = params.viewFieldName || 'General_sp_Description_co_Primary_sp_View';
       console.log(`👁️ Filtering ${results.length} properties for Primary View (field: ${viewField})`);
       
-      // 🔍 DEBUG: Check first 3 properties to see actual values
-      console.log('🔍 Sample property values for Primary View field:');
-      const originalResults = [...results]; // Save original for debugging
-      results.slice(0, 3).forEach((prop: any, i: number) => {
-        console.log(`  Property ${i + 1}: ${viewField} =`, prop[viewField], `(type: ${typeof prop[viewField]})`);
-      });
-      
       const beforeCount = results.length;
       results = results.filter((property: any) => {
         const fieldValue = property[viewField];
-        // Check multiple possible "true" values
-        const hasView = fieldValue === true || 
-                       fieldValue === 'true' || 
-                       fieldValue === 'True' ||
-                       fieldValue === 'TRUE' ||
-                       fieldValue === 'Yes' ||
-                       fieldValue === 'YES' ||
-                       fieldValue === 'yes' ||
-                       fieldValue === 'Y' ||
-                       fieldValue === 1 ||
-                       fieldValue === '1';
+        // Primary View = has ANY view (not null/empty)
+        // Field contains values like: "Ocean", "Mountain", "Local", "Golf Course", etc.
+        const hasView = fieldValue !== null && 
+                       fieldValue !== undefined && 
+                       fieldValue !== '' &&
+                       fieldValue !== 'None' &&
+                       fieldValue !== 'N/A';
         return hasView;
       });
       
       console.log(`✅ Primary View filter: ${beforeCount} → ${results.length} properties`);
-      
-      if (results.length === 0 && beforeCount > 0) {
-        console.log('⚠️ No properties matched! Checking what values exist:');
-        const uniqueValues = new Set(originalResults.map((p: any) => p[viewField]));
-        console.log('  Unique values found:', Array.from(uniqueValues));
-      }
     }
     
     return results;
