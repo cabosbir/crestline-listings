@@ -216,24 +216,30 @@ const MarketReport = () => {
       </div>
 
       {/* Header - Mobile Friendly */}
-      <header className="bg-white shadow-sm sticky top-0 z-50 py-4">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-10 flex justify-between items-center">
-          <div className="flex items-center gap-3 md:gap-5">
-            <img 
-              src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762021536/Screenshot_2025-10-31_at_5.21.25_PM-removebg-preview_2_gndt9y.png" 
-              alt="BIR Logo" 
-              className="h-[45px] md:h-[60px] w-auto"
-            />
-            <div className="hidden md:block h-[50px] w-px bg-gray-200"></div>
-            <div className="hidden md:block font-serif text-lg font-semibold text-gray-900 leading-tight">
-              BAJA<br />REAL ESTATE
-            </div>
-          </div>
-          <a href="/" className="bg-gray-900 text-white px-4 md:px-6 py-2 md:py-2.5 rounded font-semibold text-xs md:text-sm tracking-wider hover:bg-gray-800 transition-colors">
-            HOME
-          </a>
-        </div>
-      </header>
+<header className="bg-white shadow-sm sticky top-0 z-50 py-4">
+  <div className="max-w-[1400px] mx-auto px-4 md:px-10 flex justify-between items-center">
+    <div className="flex items-center gap-3 md:gap-5">
+      <img 
+        src="/BIRLOGO.png"
+        alt="BIR Logo" 
+        className="h-[45px] md:h-[60px] w-auto"
+      />
+
+      <div className="hidden md:block h-[50px] w-px bg-gray-200"></div>
+
+      <div className="hidden md:block font-serif text-lg font-semibold text-gray-900 leading-tight">
+        BAJA<br />REAL ESTATE
+      </div>
+    </div>
+
+    <a 
+      href="/" 
+      className="bg-gray-900 text-white px-4 md:px-6 py-2 md:py-2.5 rounded font-semibold text-xs md:text-sm tracking-wider hover:bg-gray-800 transition-colors"
+    >
+      HOME
+    </a>
+  </div>
+</header>
 
       {/* Page Header - Mobile Friendly */}
       <div className="max-w-[1400px] mx-auto px-4 md:px-10 mt-8 md:mt-16 mb-6 md:mb-10">
