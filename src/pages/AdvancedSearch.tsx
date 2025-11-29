@@ -459,9 +459,22 @@ const AdvancedSearch = () => {
   };
 
   const handleSearch = () => {
+    // Generate unique cache key
+    const cacheKey = `advanced-search-${Date.now()}`;
+    
+    // Save current preview results to sessionStorage
+    if (previewProperties.length > 0) {
+      sessionStorage.setItem(cacheKey, JSON.stringify(previewProperties));
+      sessionStorage.setItem(`${cacheKey}-timestamp`, Date.now().toString());
+      console.log(`💾 Cached ${previewProperties.length} results with key: ${cacheKey}`);
+    }
+    
     const params = new URLSearchParams();
     
-    // Location filters
+    // Add cache key as first parameter
+    params.append('cacheKey', cacheKey);
+    
+    // Location filters (for display/back button)
     if (filters.zones.length > 0) params.append('zones', filters.zones.join(','));
     if (filters.areas.length > 0) params.append('areas', filters.areas.join(','));
     if (filters.communities.length > 0) params.append('communities', filters.communities.join(','));
@@ -475,7 +488,7 @@ const AdvancedSearch = () => {
     if (filters.propertyTypes.length > 0) params.append('propertyTypes', filters.propertyTypes.join(','));
     if (filters.status) params.append('status', filters.status);
     
-    // ⭐ Special filters (FIXED)
+    // ⭐ Special filters - passed in URL for Properties page to apply client-side
     if (filters.sellerFinancing) params.append('sellerFinancing', 'true');
     if (filters.primaryView) params.append('primaryView', 'true');
     if (filters.currentPrice) params.append('currentPrice', 'true');
