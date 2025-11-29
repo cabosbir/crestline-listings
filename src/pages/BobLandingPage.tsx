@@ -391,11 +391,6 @@ const BobLandingPage = () => {
     loadMyListings();
   }, [showMyListings, toast]);
 
-  // ==================== RESET PAGE ON TAB SWITCH ====================
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [showMyListings]);
-
   // ==================== PAGINATION ====================
   // ⭐ Filter listings by search query
   const filteredListings = showMyListings ? myListings : featuredListings;
