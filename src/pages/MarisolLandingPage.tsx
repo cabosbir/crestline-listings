@@ -418,7 +418,7 @@ const MarisolLandingPage = () => {
         
         // Fetch ALL listings from Cabo San Lucas (we'll filter by agent)
         const mlsData = await fetchListings({ 
-          limit: 500,
+          limit: 50,
           city: 'Cabo San Lucas'
         });
         
