@@ -280,7 +280,7 @@ const Properties = () => {
             Cabo San Lucas Properties
           </h1>
           <p className="text-xl text-muted-foreground mb-6">
-            Search {totalCount.toLocaleString()}+ luxury properties across Baja California Sur including Cabo San Lucas, 
+            Search {totalCount.toLocaleString()}+ Properties across Baja California Sur including Cabo San Lucas, 
             San Jose del Cabo, Todos Santos, East Cape, and La Paz
           </p>
 
@@ -405,32 +405,37 @@ const Properties = () => {
                       </div>
                       <div className="lg:col-span-1 max-h-[600px] overflow-y-auto space-y-4">
                         {propertiesWithCoords.map((property, index) => (
-                          <div
-                            key={property.id}
-                            className="bg-card border-2 border-border rounded-xl p-4 cursor-pointer hover:shadow-lg transition-all"
-                            onClick={() => {
-                              // ⭐ Mark that we're leaving to view a property
-                              sessionStorage.setItem('returningFromProperty', 'true');
-                              navigate(`/property/${property.mlsNumber || property.id}`);
-                            }}
-                          >
-                            <div className="flex items-start gap-3 mb-3">
-                              <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                                {index + 1}
-                              </div>
-                              <img
-                                src={property.image}
-                                alt={property.title}
-                                className="flex-1 h-32 object-cover rounded-lg"
-                                onError={(e) => {
-                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=200&fit=crop';
-                                }}
-                              />
-                            </div>
-                            <div className="text-xl font-bold text-accent mb-2">{property.price}</div>
-                            <div className="text-sm line-clamp-2 mb-2">{property.title}</div>
-                            <div className="text-xs text-muted-foreground">{property.location}</div>
-                          </div>
+                          <div 
+  key={property.id}
+  className="bg-card border-2 border-border rounded-xl p-4 cursor-pointer hover:shadow-lg transition-all"
+  onClick={() => {
+    // ⭐ Mark that we're leaving to view a property
+    sessionStorage.setItem('returningFromProperty', 'true');
+
+    // ⭐ INCLUDE THE PAGE NUMBER IN THE URL
+    navigate(`/property/${property.mlsNumber || property.id}?page=${currentPage}`);
+  }}
+>
+  <div className="flex items-start gap-3 mb-3">
+    <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+      {index + 1}
+    </div>
+    <img
+      src={property.image}
+      alt={property.title}
+      className="flex-1 h-32 object-cover rounded-lg"
+      onError={(e) => {
+        e.currentTarget.src =
+          'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=200&fit=crop';
+      }}
+    />
+  </div>
+
+  <div className="text-xl font-bold text-accent mb-2">{property.price}</div>
+  <div className="text-sm line-clamp-2 mb-2">{property.title}</div>
+  <div className="text-xs text-muted-foreground">{property.location}</div>
+</div>
+
                         ))}
                       </div>
                     </div>
