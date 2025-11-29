@@ -658,7 +658,7 @@ const MarisolLandingPage = () => {
                 variant={!showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(false)}
               >
-                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
+                Featured {featuredListings.length > 0 && `(${featuredListings.length})`}
               </Button>
             </div>
           </div>
