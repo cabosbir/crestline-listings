@@ -94,6 +94,109 @@ const fallbackListings = [
   },
 ];
 
+// Premium featured listings
+const premiumFeaturedListings = [
+  {
+    id: 1,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171689/20250903162058154584000000-o_1_dtusih.jpg",
+    price: "$29,900,000",
+    title: "La Montaña 7",
+    location: "San Jose Corridor",
+    beds: 6,
+    baths: 6,
+    sqft: "N/A",
+    mlsNumber: "25-1563",
+  },
+  {
+    id: 2,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171868/20241126184008646051000000-o_lv9fbu.jpg",
+    price: "$21,000,000",
+    title: "Espiritu del Mar, Casa Luna Escondida",
+    location: "San Jose Corridor",
+    beds: 10,
+    baths: 11,
+    sqft: "22,596 sq ft",
+    mlsNumber: "24-5344",
+  },
+  {
+    id: 3,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171913/20251030154706212946000000-o_erpyxt.jpg",
+    price: "$19,850,000",
+    title: "Casa R Caleta Palmilla, Beachfront",
+    location: "Caleta Palmilla",
+    beds: 7,
+    baths: 6,
+    sqft: "12,860 sq ft",
+    mlsNumber: "25-4826",
+  },
+  {
+    id: 4,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171969/20251010184556773187000000-o_hq2fyv.jpg",
+    price: "$17,900,000",
+    title: "Casita 11, Casa Amore",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 4,
+    sqft: "12,819 sq ft",
+    mlsNumber: "25-4958",
+  },
+  {
+    id: 5,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172032/20251010204002587235000000-o_xs4xu1.jpg",
+    price: "$15,900,000",
+    title: "Casita 10, Villa Laura",
+    location: "San Jose Corridor",
+    beds: 8,
+    baths: 8,
+    sqft: "10,874 sq ft",
+    mlsNumber: "25-4500",
+  },
+  {
+    id: 6,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172108/20250516213428349054000000-o_upkws3.jpg",
+    price: "$12,900,000",
+    title: "Hacienda 505",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 5,
+    sqft: "N/A",
+    mlsNumber: "25-2623",
+  },
+  {
+    id: 7,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172188/20251107153452735555000000-o_lnsjug.jpg",
+    price: "$11,900,000",
+    title: "Estate Villa 496",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 6,
+    sqft: "8,102 sq ft",
+    mlsNumber: "25-3280",
+  },
+  {
+    id: 8,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172532/20250520183535938188000000-o_hywmj2.jpg",
+    price: "$8,500,000",
+    title: "Casita 382",
+    location: "San Jose Corridor",
+    beds: 4,
+    baths: 4,
+    sqft: "5,724 sq ft",
+    mlsNumber: "25-2575",
+  },
+  {
+    id: 9,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172428/20251010043244963405000000-o_1_kexihr.jpg",
+    price: "$8,500,000",
+    title: "Casa Abejas",
+    location: "Palmilla",
+    beds: 7,
+    baths: 8,
+    sqft: "6,101 sq ft",
+    mlsNumber: "25-4970",
+  },
+];
+
 // ==================== TESTIMONIALS ====================
 const testimonials = [
   {
@@ -126,7 +229,7 @@ const AlfonsoLandingPage = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
-        const savedState = sessionStorage.getItem('alfonsoB rowseState');
+        const savedState = sessionStorage.getItem('alfonsoBrowseState');
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
@@ -163,8 +266,8 @@ const AlfonsoLandingPage = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(getInitialTab());
   const [myListings, setMyListings] = useState(fallbackListings);
-  const [featuredListings, setFeaturedListings] = useState([]);
-  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+  const [featuredListings, setFeaturedListings] = useState(premiumFeaturedListings);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(getInitialPage());
 
@@ -195,7 +298,7 @@ const AlfonsoLandingPage = () => {
               setTimeout(() => {
                 window.scrollTo({ top: state.scrollPosition || 0, behavior: 'smooth' });
                 sessionStorage.removeItem('returningFromProperty');
-              }, 100);
+              }, 500);
             }
           } catch (e) {
             console.error('Error restoring browse state:', e);
@@ -210,59 +313,13 @@ const AlfonsoLandingPage = () => {
     const loadFeaturedListings = async () => {
       if (showMyListings) return;
       
-      setIsLoadingFeatured(true);
-      
-      try {
-        const cacheKey = `${agent.slug}-featured-api-data`;
-        const cacheTimeKey = `${cacheKey}-time`;
-        const cached = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheTimeKey);
-        
-        const now = Date.now();
-        const threeHours = 3 * 60 * 60 * 1000;
-        
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-          const cachedData = JSON.parse(cached);
-          setFeaturedListings(cachedData);
-          setIsLoadingFeatured(false);
-          return;
-        }
-        
-        console.log('🔄 Loading Featured Listings from API...');
-        
-        const mlsData = await fetchListings({ 
-          limit: 50,
-          city: 'Cabo San Lucas',
-        });
-        
-        console.log('✅ Fetched featured listings:', mlsData.length);
-        
-        const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
-        
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
-          localStorage.setItem(cacheTimeKey, now.toString());
-        } catch (e) {
-          console.error('Error caching API data:', e);
-        }
-        
-        setFeaturedListings(shuffled);
-      } catch (error) {
-        console.error('Failed to load featured listings:', error);
-        toast({
-          title: "Notice",
-          description: "Showing available listings. Some listings may be loading.",
-          variant: "default",
-        });
-        setFeaturedListings(fallbackListings);
-      } finally {
-        setIsLoadingFeatured(false);
-      }
+      // Featured already loaded with premium listings
+      setFeaturedListings(premiumFeaturedListings);
+      setIsLoadingFeatured(false);
     };
 
     loadFeaturedListings();
-  }, [showMyListings, toast]);
+  }, [showMyListings]);
 
   // ==================== LOAD MY LISTINGS (AUTOMATIC DETECTION) ====================
   useEffect(() => {
@@ -544,7 +601,7 @@ const AlfonsoLandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
-              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Premium Listings'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {showMyListings ? 'My Listings' : 'Featured Listings'}
@@ -552,7 +609,7 @@ const AlfonsoLandingPage = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {showMyListings 
                 ? `Exclusive properties I'm currently representing in Cabo San Lucas`
-                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
+                : 'Explore premium luxury estates from Baja International Realty'}
             </p>
 
             <div className="flex justify-center gap-2 mb-8">
@@ -575,7 +632,7 @@ const AlfonsoLandingPage = () => {
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
               <p className="text-lg text-muted-foreground">
-                {showMyListings ? 'Loading my listings from FlexMLS...' : 'Loading featured properties from FlexMLS...'}
+                {showMyListings ? 'Auto-detecting agent listings...' : 'Loading featured properties...'}
               </p>
             </div>
           ) : (
