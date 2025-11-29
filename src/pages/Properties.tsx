@@ -124,13 +124,13 @@ const Properties = () => {
       
       // ⭐ FIXED: Community filter (was missing)
       if (communitiesParam) {
-        apiFilters.community = communitiesParam.split(',');
-        console.log('🏘️ Community filter:', apiFilters.community);
+        apiFilters.communities = communitiesParam.split(',');
+        console.log('🏘️ Communities filter:', apiFilters.communities);
       }
       
       if (subdivisionsParam) {
-        apiFilters.subdivision = subdivisionsParam.split(',');
-        console.log('🏘️ Subdivision filter:', apiFilters.subdivision);
+        apiFilters.subdivisions = subdivisionsParam.split(',');
+        console.log('🏘️ Subdivisions filter:', apiFilters.subdivisions);
       }
 
       // Price & property filters
