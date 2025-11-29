@@ -47,7 +47,7 @@ const Properties = () => {
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
-            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000; // 30 min
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
             const urlMatches = state.url === (window.location.pathname + window.location.search);
             
             if (urlMatches && isRecent) {
@@ -55,53 +55,13 @@ const Properties = () => {
               setCurrentPage(state.currentPage || 1);
               setViewMode(state.viewMode || 'list');
               
-              // Restore scroll position after content loads
               setTimeout(() => {
                 window.scrollTo({
                   top: state.scrollPosition || 0,
                   behavior: 'smooth'
                 });
-                // Clear flag and trigger loadProperties
                 sessionStorage.removeItem('returningFromProperty');
-                
-                // Manually trigger loadProperties with current filters
-                const params = new URLSearchParams(location.search);
-                const zonesParam = params.get('zones');
-                const areasParam = params.get('areas');
-                const communitiesParam = params.get('communities');
-                const subdivisionsParam = params.get('subdivisions');
-                
-                if (zonesParam || areasParam || communitiesParam || subdivisionsParam) {
-                  // Rebuild filters and load
-                  const apiFilters: any = {};
-                  if (zonesParam) apiFilters.city = zonesParam.split(',');
-                  if (areasParam) apiFilters.area = areasParam.split(',');
-                  if (communitiesParam) apiFilters.communities = communitiesParam.split(',');
-                  if (subdivisionsParam) apiFilters.subdivisions = subdivisionsParam.split(',');
-                  
-                  const minPriceParam = params.get('minPrice');
-                  const maxPriceParam = params.get('maxPrice');
-                  const bedsParam = params.get('beds');
-                  const bathsParam = params.get('baths');
-                  const propertyTypesParam = params.get('propertyTypes');
-                  const statusParam = params.get('status');
-                  const sellerFinancingParam = params.get('sellerFinancing');
-                  const primaryViewParam = params.get('primaryView');
-                  const currentPriceParam = params.get('currentPrice');
-                  
-                  if (minPriceParam) apiFilters.minPrice = parsePrice(minPriceParam);
-                  if (maxPriceParam) apiFilters.maxPrice = parsePrice(maxPriceParam);
-                  if (bedsParam) apiFilters.bedrooms = parseInt(bedsParam.replace('+', ''));
-                  if (bathsParam) apiFilters.bathrooms = parseInt(bathsParam.replace('+', ''));
-                  if (propertyTypesParam) apiFilters.propertyTypes = propertyTypesParam.split(',');
-                  if (statusParam) apiFilters.status = statusParam;
-                  if (sellerFinancingParam === 'true') apiFilters.sellerFinancing = true;
-                  if (primaryViewParam === 'true') apiFilters.primaryView = true;
-                  if (currentPriceParam === 'true') apiFilters.currentPrice = true;
-                  
-                  loadProperties(apiFilters);
-                }
-              }, 100);
+              }, 500);
             } else {
               sessionStorage.removeItem('returningFromProperty');
             }
@@ -114,7 +74,7 @@ const Properties = () => {
         }
       }
     }
-  }, []); // Run only once on mount
+  }, []);
 
   // Fetch real MLS total count
   useEffect(() => {
@@ -128,13 +88,6 @@ const Properties = () => {
 
   // Handle URL parameters for searches and filters
   useEffect(() => {
-    // Check if we're returning first
-    const isReturning = sessionStorage.getItem('returningFromProperty') === 'true';
-    if (isReturning) {
-      console.log('⏸️ Skipping loadProperties - waiting for state restoration');
-      return;
-    }
-
     const params = new URLSearchParams(location.search);
     
     // Check for direct search (MLS number, address, text search)
