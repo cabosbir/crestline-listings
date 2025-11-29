@@ -13,11 +13,35 @@ import { searchProperties, getFlexMLSTotalCount } from "@/services/intelligentSe
 const Properties = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // ⭐ Initialize from saved state if returning
+  const getInitialPage = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('propertiesBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent) {
+              console.log('🎯 Initializing with saved page:', state.currentPage);
+              return state.currentPage || 1;
+            }
+          } catch (e) {
+            console.error('Error reading saved page:', e);
+          }
+        }
+      }
+    }
+    return 1;
+  };
+  
   const [properties, setProperties] = useState<any[]>([]);
   const [allProperties, setAllProperties] = useState<MLSProperty[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
   const [activeSearchQuery, setActiveSearchQuery] = useState<string>("");
   const [totalCount, setTotalCount] = useState(4528);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');

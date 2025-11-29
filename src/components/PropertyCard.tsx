@@ -20,7 +20,7 @@ interface PropertyCardProps {
   latitude?: number;
   longitude?: number;
   link?: string;
-  currentPage?: number; // ⭐ FIX ADDED
+  currentPage?: number;
 }
 
 const PropertyCard = ({
@@ -35,7 +35,7 @@ const PropertyCard = ({
   image,
   propertyType,
   status,
-  currentPage = 1 // ⭐ FIX: default to 1
+  currentPage = 1
 }: PropertyCardProps) => {
 
   const navigate = useNavigate();
@@ -45,9 +45,10 @@ const PropertyCard = ({
   const handleViewDetails = (e?: React.MouseEvent) => {
     e?.stopPropagation();
 
-    const routeId = mlsNumber ?? id;
+    // ⭐ Set flag before navigating
+    sessionStorage.setItem('returningFromProperty', 'true');
 
-    // ⭐ FIX: now includes currentPage safely
+    const routeId = mlsNumber ?? id;
     navigate(`/property/${routeId}?page=${currentPage}`);
   };
 
@@ -87,7 +88,7 @@ const PropertyCard = ({
   return (
     <Card
       className="group overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer border-0"
-      onClick={handleViewDetails} // ⭐ FIX: removed invalid args
+      onClick={handleViewDetails}
     >
       <div className="relative overflow-hidden" style={{ height: "400px" }}>
         <img
