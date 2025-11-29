@@ -55,22 +55,66 @@ const Properties = () => {
               setCurrentPage(state.currentPage || 1);
               setViewMode(state.viewMode || 'list');
               
-              // Restore scroll position after a short delay (let content load)
+              // Restore scroll position after content loads
               setTimeout(() => {
                 window.scrollTo({
                   top: state.scrollPosition || 0,
                   behavior: 'smooth'
                 });
+                // Clear flag and trigger loadProperties
+                sessionStorage.removeItem('returningFromProperty');
+                
+                // Manually trigger loadProperties with current filters
+                const params = new URLSearchParams(location.search);
+                const zonesParam = params.get('zones');
+                const areasParam = params.get('areas');
+                const communitiesParam = params.get('communities');
+                const subdivisionsParam = params.get('subdivisions');
+                
+                if (zonesParam || areasParam || communitiesParam || subdivisionsParam) {
+                  // Rebuild filters and load
+                  const apiFilters: any = {};
+                  if (zonesParam) apiFilters.city = zonesParam.split(',');
+                  if (areasParam) apiFilters.area = areasParam.split(',');
+                  if (communitiesParam) apiFilters.communities = communitiesParam.split(',');
+                  if (subdivisionsParam) apiFilters.subdivisions = subdivisionsParam.split(',');
+                  
+                  const minPriceParam = params.get('minPrice');
+                  const maxPriceParam = params.get('maxPrice');
+                  const bedsParam = params.get('beds');
+                  const bathsParam = params.get('baths');
+                  const propertyTypesParam = params.get('propertyTypes');
+                  const statusParam = params.get('status');
+                  const sellerFinancingParam = params.get('sellerFinancing');
+                  const primaryViewParam = params.get('primaryView');
+                  const currentPriceParam = params.get('currentPrice');
+                  
+                  if (minPriceParam) apiFilters.minPrice = parsePrice(minPriceParam);
+                  if (maxPriceParam) apiFilters.maxPrice = parsePrice(maxPriceParam);
+                  if (bedsParam) apiFilters.bedrooms = parseInt(bedsParam.replace('+', ''));
+                  if (bathsParam) apiFilters.bathrooms = parseInt(bathsParam.replace('+', ''));
+                  if (propertyTypesParam) apiFilters.propertyTypes = propertyTypesParam.split(',');
+                  if (statusParam) apiFilters.status = statusParam;
+                  if (sellerFinancingParam === 'true') apiFilters.sellerFinancing = true;
+                  if (primaryViewParam === 'true') apiFilters.primaryView = true;
+                  if (currentPriceParam === 'true') apiFilters.currentPrice = true;
+                  
+                  loadProperties(apiFilters);
+                }
               }, 100);
+            } else {
+              sessionStorage.removeItem('returningFromProperty');
             }
           } catch (e) {
             console.error('Error restoring browse state:', e);
+            sessionStorage.removeItem('returningFromProperty');
           }
+        } else {
+          sessionStorage.removeItem('returningFromProperty');
         }
-        sessionStorage.removeItem('returningFromProperty');
       }
     }
-  }, []);
+  }, []); // Run only once on mount
 
   // Fetch real MLS total count
   useEffect(() => {
@@ -84,6 +128,13 @@ const Properties = () => {
 
   // Handle URL parameters for searches and filters
   useEffect(() => {
+    // Check if we're returning first
+    const isReturning = sessionStorage.getItem('returningFromProperty') === 'true';
+    if (isReturning) {
+      console.log('⏸️ Skipping loadProperties - waiting for state restoration');
+      return;
+    }
+
     const params = new URLSearchParams(location.search);
     
     // Check for direct search (MLS number, address, text search)
@@ -178,8 +229,12 @@ const Properties = () => {
       setProperties(convertedProperties);
 
       // ⭐ Only reset to page 1 on new searches, not when returning
-      if (!sessionStorage.getItem("returningFromProperty")) {
+      const isReturning = sessionStorage.getItem("returningFromProperty") === 'true';
+      if (!isReturning) {
+        console.log('🔄 NEW SEARCH - Resetting to page 1');
         setCurrentPage(1);
+      } else {
+        console.log('🔙 RETURNING FROM PROPERTY - Keeping current page');
       }
 
     } catch (err) {
