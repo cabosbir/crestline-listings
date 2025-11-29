@@ -332,24 +332,10 @@ const MarisolLandingPage = () => {
     const loadFeaturedListings = async () => {
       if (showMyListings) return;
       
-      // Featured already loaded with premium listings
-      setFeaturedListings(premiumFeaturedListings);
-      setIsLoadingFeatured(false);
-    };
-
-    loadFeaturedListings();
-  }, [showMyListings]);
-
-  // ==================== LOAD MY LISTINGS (AUTO DETECTION) ====================
-  useEffect(() => {
-    const loadMyListings = async () => {
-      if (!showMyListings) return;
-      
-      setIsLoadingMyListings(true);
+      setIsLoadingFeatured(true);
       
       try {
-        const CACHE_VERSION = 1;
-        const cacheKey = `marisol-my-listings-auto-v${CACHE_VERSION}`;
+        const cacheKey = `${agent.slug}-featured-api-data`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -359,6 +345,68 @@ const MarisolLandingPage = () => {
         
         if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
           const cachedData = JSON.parse(cached);
+          setFeaturedListings(cachedData);
+          setIsLoadingFeatured(false);
+          return;
+        }
+        
+        console.log('🔄 Loading Featured Listings from API...');
+        
+        const mlsData = await fetchListings({ 
+          limit: 50,
+          city: 'Cabo San Lucas',
+        });
+        
+        console.log('✅ Fetched featured listings:', mlsData.length);
+        
+        const convertedListings = mlsData.map(convertMLSToPropertyCard);
+        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
+        
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching API data:', e);
+        }
+        
+        setFeaturedListings(shuffled);
+      } catch (error) {
+        console.error('Failed to load featured listings:', error);
+        toast({
+          title: "Notice",
+          description: "Showing available listings. Some listings may be loading.",
+          variant: "default",
+        });
+        setFeaturedListings(fallbackListings);
+      } finally {
+        setIsLoadingFeatured(false);
+      }
+    };
+
+    loadFeaturedListings();
+  }, [showMyListings, toast]);
+
+  // ==================== LOAD MY LISTINGS ====================
+  useEffect(() => {
+    const loadMyListings = async () => {
+      if (!showMyListings) return;
+      
+      setIsLoadingMyListings(true);
+      
+      try {
+        // ⭐ AUTOMATIC AGENT DETECTION - Cache version
+        const CACHE_VERSION = 4; // v4: Automatic agent-based fetching
+        const cacheKey = `${agent.slug}-my-listings-auto-v${CACHE_VERSION}`;
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        // Check cache first
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          const cachedData = JSON.parse(cached);
           console.log(`✅ Using cached auto-detected listings (v${CACHE_VERSION}):`, cachedData.length);
           setMyListings(cachedData);
           setIsLoadingMyListings(false);
@@ -366,33 +414,69 @@ const MarisolLandingPage = () => {
         }
         
         console.log('🤖 AUTO-DETECTING listings for:', agent.name);
+        console.log('🔍 Searching by agent identifiers:', agentIdentifiers);
         
+        // Fetch ALL listings from Cabo San Lucas (we'll filter by agent)
         const mlsData = await fetchListings({ 
           limit: 500,
           city: 'Cabo San Lucas'
         });
         
         console.log('🔍 Total API results:', mlsData.length);
+        console.log('🎯 Filtering for agent:', agent.name);
         
+        // ⭐ AUTOMATIC FILTERING - Find listings by this agent
+        // Check multiple possible agent field names
         const agentListings = mlsData.filter(listing => {
+          // Try different field name variations
           const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
           const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
           const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
+          const listOfficeName = listing.ListOfficeName || '';
           
-          const nameMatch = listAgentName.toLowerCase().includes('tort') || 
-                           listAgentName.toLowerCase().includes('marisol');
+          // Match by name (case-insensitive, partial match)
+          const nameMatch = listAgentName.toLowerCase().includes('van patten') || 
+                           listAgentName.toLowerCase().includes('bob');
+          
+          // Match by email
           const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
+          
+          // Match by phone (remove formatting)
           const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
           
+          // Return true if ANY identifier matches
           return nameMatch || emailMatch || phoneMatch;
         });
         
         console.log(`✅ Auto-detected ${agentListings.length} listings for ${agent.name}`);
         
+        if (agentListings.length > 0) {
+          console.log('📋 Found listings:', agentListings.map(l => ({
+            mls: l.ListingId,
+            address: l.UnparsedAddress,
+            price: l.ListPrice,
+            agent: l.ListAgentFullName || l.ListAgentName
+          })));
+        } else {
+          console.warn('⚠️ No listings found - checking agent field names...');
+          // Log a sample to see what agent fields are available
+          if (mlsData.length > 0) {
+            const sample = mlsData[0];
+            const agentFields = Object.keys(sample).filter(key => 
+              /agent|broker|office|member/i.test(key)
+            );
+            console.log('📋 Available agent fields in MLS:', agentFields);
+          }
+        }
+        
+        // Convert to PropertyCard format
         const convertedListings = agentListings.map(convertMLSToPropertyCard);
+        
+        // Use fallback if no listings found
         const finalListings = convertedListings.length > 0 ? convertedListings : fallbackListings;
         
+        // Cache the results
         try {
           localStorage.setItem(cacheKey, JSON.stringify(finalListings));
           localStorage.setItem(cacheTimeKey, now.toString());
@@ -413,7 +497,21 @@ const MarisolLandingPage = () => {
   }, [showMyListings, toast]);
 
   // ==================== PAGINATION ====================
-  const allListings = showMyListings ? myListings : featuredListings;
+  // ⭐ Filter listings by search query
+  const filteredListings = showMyListings ? myListings : featuredListings;
+  const searchFilteredListings = listingsSearchQuery.trim()
+    ? filteredListings.filter(listing => {
+        const query = listingsSearchQuery.toLowerCase();
+        return (
+          listing.title?.toLowerCase().includes(query) ||
+          listing.location?.toLowerCase().includes(query) ||
+          listing.mlsNumber?.toLowerCase().includes(query) ||
+          listing.price?.toLowerCase().includes(query)
+        );
+      })
+    : filteredListings;
+
+  const allListings = searchFilteredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
