@@ -464,7 +464,12 @@ const AdvancedSearch = () => {
     
     // Save current preview results to sessionStorage
     if (previewProperties.length > 0) {
-      sessionStorage.setItem(cacheKey, JSON.stringify(previewProperties));
+      // Convert to PropertyCard format before caching
+      const convertedForCache = previewProperties.map(convertMLSToPropertyCard);
+      sessionStorage.setItem(cacheKey, JSON.stringify({
+        mlsProperties: previewProperties,
+        convertedProperties: convertedForCache
+      }));
       sessionStorage.setItem(`${cacheKey}-timestamp`, Date.now().toString());
       console.log(`💾 Cached ${previewProperties.length} results with key: ${cacheKey}`);
     }

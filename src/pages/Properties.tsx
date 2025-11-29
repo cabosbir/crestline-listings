@@ -98,11 +98,11 @@ const Properties = () => {
         if (age < maxAge) {
           try {
             const cached = JSON.parse(cachedData);
-            console.log(`✅ Loading ${cached.length} properties from cache (${cacheKey})`);
+            console.log(`✅ Loading ${cached.mlsProperties?.length || 0} properties from cache (${cacheKey})`);
             
-            setAllProperties(cached);
-            const convertedProperties = cached.map(convertMLSToPropertyCard);
-            setProperties(convertedProperties);
+            // Use pre-converted data from cache
+            setAllProperties(cached.mlsProperties || []);
+            setProperties(cached.convertedProperties || []);
             setCurrentPage(1);
             setLoading(false);
             return; // Don't fetch from API
