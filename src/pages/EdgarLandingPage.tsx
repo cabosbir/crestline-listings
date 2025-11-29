@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
+import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
 const getWhatsAppNumber = (phone: string) => {
   return phone.replace(/[^0-9]/g, '');
@@ -65,17 +65,7 @@ const agent = {
   languages: ["English", "Spanish"],
 };
 
-// ⭐ AUTOMATIC AGENT DETECTION
-const agentIdentifiers = {
-  name: "Edgar Pacheco",
-  email: "Edgar@bircabo.com",
-  phone: "+52 612 169 8328",
-  mlsId: null,
-  licenseNumber: null,
-};
-
-// Fallback listings if no MLS listings found
-const fallbackListings = [
+const originalMyListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
@@ -107,15 +97,14 @@ const fallbackListings = [
     title: "Casa Ducci Camino del Mar",
     location: "Cabo San Lucas",
     beds: 4,
-    baths: 4.5",
+    baths: 4.5,
     totalM2: "350.23",
     mlsNumber: "24-1981",
     link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
   },
 ];
 
-// Premium Featured Listings (defaults)
-const premiumFeaturedListings = [
+const fallbackFeaturedListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171689/20250903162058154584000000-o_1_dtusih.jpg",
@@ -246,167 +235,32 @@ const testimonials = [
 
 const EdgarLandingPage = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'my' | 'featured'>('featured'); // Default to Featured
-  const [myListings, setMyListings] = useState<any[]>([]);
-  const [featuredListings, setFeaturedListings] = useState<any[]>(premiumFeaturedListings); // Start with premium
-  const [isLoadingMyListings, setIsLoadingMyListings] = useState(true);
-  const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
+  const [showMyListings, setShowMyListings] = useState(false);
+  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
-  // ⭐ SAVE STATE
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const browseState = {
-        url: window.location.pathname + window.location.search,
-        scrollPosition: window.scrollY,
-        currentPage: currentPage,
-        activeTab: activeTab,
-        timestamp: Date.now()
-      };
-      sessionStorage.setItem('edgarBrowseState', JSON.stringify(browseState));
-    }
-  }, [currentPage, activeTab]);
-
-  // ⭐ RESTORE STATE
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const returning = sessionStorage.getItem('returningFromProperty');
-      if (returning === 'true') {
-        const savedState = sessionStorage.getItem('edgarBrowseState');
-        if (savedState) {
-          try {
-            const state = JSON.parse(savedState);
-            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
-            const urlMatches = state.url === (window.location.pathname + window.location.search);
-            
-            if (urlMatches && isRecent) {
-              console.log('🔄 Restoring browse state:', state);
-              setCurrentPage(state.currentPage || 1);
-              setActiveTab(state.activeTab || 'featured');
-              
-              setTimeout(() => {
-                window.scrollTo({
-                  top: state.scrollPosition || 0,
-                  behavior: 'smooth'
-                });
-              }, 100);
-            }
-          } catch (e) {
-            console.error('Error restoring browse state:', e);
-          }
-        }
-        sessionStorage.removeItem('returningFromProperty');
-      }
-    }
-  }, []);
-
-  // ⭐ AUTO-DETECT AGENT'S LISTINGS
-  useEffect(() => {
-    const loadMyListings = async () => {
-      setIsLoadingMyListings(true);
+    const loadFeaturedListings = async () => {
+      if (showMyListings) return;
       
-      try {
-        const cacheKey = 'edgar-my-listings-auto-v1';
-        const cacheTimeKey = `${cacheKey}-time`;
-        const cached = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheTimeKey);
-        
-        const now = Date.now();
-        const threeHours = 3 * 60 * 60 * 1000;
-        
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-          const cachedData = JSON.parse(cached);
-          setMyListings(cachedData);
-          setIsLoadingMyListings(false);
-          return;
-        }
-        
-        console.log('🤖 AUTO-DETECTING listings for:', agentIdentifiers.name);
-        
-        const mlsData = await fetchListings({ 
-          limit: 500,
-          city: 'Cabo San Lucas'
-        });
-        
-        const agentListings = mlsData.filter((property: any) => {
-          const nameFields = ['ListAgentFullName', 'ListAgentName', 'AgentName', 'CoListAgentFullName'];
-          const emailFields = ['ListAgentEmail', 'AgentEmail', 'ListOfficeEmail'];
-          const phoneFields = ['ListAgentPhone', 'AgentPhone', 'ListOfficePhone'];
-          
-          let matchesName = false;
-          let matchesEmail = false;
-          let matchesPhone = false;
-          
-          nameFields.forEach(field => {
-            if (property[field]) {
-              const fieldValue = String(property[field]).toLowerCase();
-              if (fieldValue.includes('pacheco') || fieldValue.includes('edgar')) {
-                matchesName = true;
-              }
-            }
-          });
-          
-          if (agentIdentifiers.email) {
-            emailFields.forEach(field => {
-              if (property[field] && String(property[field]).toLowerCase() === agentIdentifiers.email.toLowerCase()) {
-                matchesEmail = true;
-              }
-            });
-          }
-          
-          if (agentIdentifiers.phone) {
-            const cleanSearchPhone = agentIdentifiers.phone.replace(/[^0-9]/g, '');
-            phoneFields.forEach(field => {
-              if (property[field]) {
-                const cleanPropertyPhone = String(property[field]).replace(/[^0-9]/g, '');
-                if (cleanPropertyPhone === cleanSearchPhone) {
-                  matchesPhone = true;
-                }
-              }
-            });
-          }
-          
-          return matchesName || matchesEmail || matchesPhone;
-        });
-        
-        console.log(`✅ Auto-detected ${agentListings.length} listings for ${agentIdentifiers.name}`);
-        
-        if (agentListings.length > 0) {
-          const convertedListings = agentListings.map(convertMLSToPropertyCard);
-          
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify(convertedListings));
-            localStorage.setItem(cacheTimeKey, now.toString());
-          } catch (e) {
-            console.error('Error caching listings:', e);
-          }
-          
-          setMyListings(convertedListings);
-        } else {
-          console.log('⚠️ No listings found - using fallback listings');
-          setMyListings(fallbackListings);
-        }
-      } catch (error) {
-        console.error('Failed to load agent listings:', error);
-        setMyListings(fallbackListings);
-      } finally {
-        setIsLoadingMyListings(false);
-      }
+      setIsLoadingFeatured(true);
+      
+      // Temporarily show fallback listings directly
+      setFeaturedListings(fallbackFeaturedListings);
+      setIsLoadingFeatured(false);
     };
 
-    loadMyListings();
-  }, []);
+    loadFeaturedListings();
+  }, [showMyListings, toast]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab]);
+  }, [showMyListings]);
 
-  const allListings = activeTab === 'my' ? myListings : featuredListings;
-  const isLoading = activeTab === 'my' ? isLoadingMyListings : isLoadingFeatured;
+  const allListings = showMyListings ? originalMyListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
@@ -417,56 +271,9 @@ const EdgarLandingPage = () => {
     document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisible = 7;
-    
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(1);
-      
-      if (currentPage > 3) {
-        pages.push('...');
-      }
-      
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
-      
-      for (let i = start; i <= end; i++) {
-        if (i !== 1 && i !== totalPages) {
-          pages.push(i);
-        }
-      }
-      
-      if (currentPage < totalPages - 2) {
-        pages.push('...');
-      }
-      
-      pages.push(totalPages);
-    }
-    
-    return pages;
-  };
-
   return (
     <div className="min-h-screen">
       <Navbar />
-
-      {/* Back to Team Button */}
-      <div className="fixed top-20 left-4 z-40">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate('/team')}
-          className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
-        >
-          <ChevronLeft className="w-4 h-4 mr-1" />
-          Back to Team
-        </Button>
-      </div>
 
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
@@ -563,7 +370,7 @@ const EdgarLandingPage = () => {
                 <div className="space-y-1">
                   {agent.certifications.map((cert, index) => (
                     <div key={index} className="flex items-center justify-center gap-2">
-                      <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: '#102f74' }} />
+                      <CheckCircle className="h-4 w-4" style={{ color: '#102f74' }} />
                       <span className="text-sm text-muted-foreground">{cert}</span>
                     </div>
                   ))}
@@ -594,52 +401,43 @@ const EdgarLandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
-              {activeTab === 'my' ? `Featured by ${agent.name.split(' ')[0]}` : 'Premium Listings'}
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              {activeTab === 'my' ? 'My Listings' : 'Featured Listings'}
+              {showMyListings ? 'My Listings' : 'Featured Listings'}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              {activeTab === 'my' 
+              {showMyListings 
                 ? `Exclusive properties I'm currently representing in Cabo San Lucas`
-                : 'Explore premium luxury estates from Baja International Realty'}
+                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
             </p>
 
             <div className="flex justify-center gap-2 mb-8">
               <Button
-                variant={activeTab === 'my' ? "luxury" : "outline"}
-                onClick={() => setActiveTab('my')}
+                variant={showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(true)}
               >
-                My Listings {!isLoadingMyListings && `(${myListings.length})`}
+                My Listings ({originalMyListings.length})
               </Button>
               <Button
-                variant={activeTab === 'featured' ? "luxury" : "outline"}
-                onClick={() => setActiveTab('featured')}
+                variant={!showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(false)}
               >
-                Featured ({featuredListings.length})
+                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
               </Button>
             </div>
           </div>
 
-          {isLoading ? (
+          {isLoadingFeatured && !showMyListings ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
-              <p className="text-lg text-muted-foreground">
-                {activeTab === 'my' ? 'Auto-detecting agent listings...' : 'Loading featured properties...'}
-              </p>
+              <p className="text-lg text-muted-foreground">Loading featured properties from FlexMLS...</p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                {displayedListings.map((property, index) => (
-                  <div 
-                    key={property.id || index}
-                    onClick={() => {
-                      sessionStorage.setItem('returningFromProperty', 'true');
-                    }}
-                  >
-                    <PropertyCard {...property} />
-                  </div>
+                {displayedListings.map((property) => (
+                  <PropertyCard key={property.id} {...property} />
                 ))}
               </div>
 
@@ -660,21 +458,15 @@ const EdgarLandingPage = () => {
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   
-                  {getPageNumbers().map((page, index) => (
-                    page === '...' ? (
-                      <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
-                        ...
-                      </span>
-                    ) : (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "luxury" : "outline"}
-                        size="sm"
-                        onClick={() => handlePageChange(page as number)}
-                      >
-                        {page}
-                      </Button>
-                    )
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "luxury" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Button>
                   ))}
                   
                   <Button
@@ -687,10 +479,6 @@ const EdgarLandingPage = () => {
                   </Button>
                 </div>
               )}
-
-              <div className="text-center text-sm text-muted-foreground mb-4">
-                Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
-              </div>
             </>
           )}
 
