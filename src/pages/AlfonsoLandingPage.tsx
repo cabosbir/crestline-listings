@@ -120,13 +120,53 @@ const ITEMS_PER_PAGE = 9;
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // ⭐ Initialize from saved state if returning
+  const getInitialPage = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('alfonsoB rowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.currentPage || 1;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return 1;
+  };
+  
+  const getInitialTab = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('alfonsoBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.activeTab === 'my-listings';
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return false;
+  };
+  
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showMyListings, setShowMyListings] = useState(false);
+  const [showMyListings, setShowMyListings] = useState(getInitialTab());
   const [myListings, setMyListings] = useState(fallbackListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
 
   // ==================== SAVE/RESTORE STATE ====================
   useEffect(() => {
@@ -138,7 +178,7 @@ const AlfonsoLandingPage = () => {
         currentPage: currentPage,
         timestamp: Date.now()
       };
-      sessionStorage.setItem('propertyBrowseReturnUrl', JSON.stringify(browseState));
+      sessionStorage.setItem('alfonsoBrowseState', JSON.stringify(browseState));
     }
   }, [showMyListings, currentPage]);
 
@@ -146,26 +186,21 @@ const AlfonsoLandingPage = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
-        const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
+        const savedState = sessionStorage.getItem('alfonsoBrowseState');
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
             const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
             if (state.url === window.location.pathname && isRecent) {
-              setShowMyListings(state.activeTab === 'my-listings');
-              setCurrentPage(state.currentPage || 1);
               setTimeout(() => {
-                window.scrollTo({
-                  top: state.scrollPosition || 0,
-                  behavior: 'smooth'
-                });
+                window.scrollTo({ top: state.scrollPosition || 0, behavior: 'smooth' });
+                sessionStorage.removeItem('returningFromProperty');
               }, 100);
             }
           } catch (e) {
             console.error('Error restoring browse state:', e);
           }
         }
-        sessionStorage.removeItem('returningFromProperty');
       }
     }
   }, []);
@@ -321,11 +356,6 @@ const AlfonsoLandingPage = () => {
 
     loadMyListings();
   }, [showMyListings, toast]);
-
-  // ==================== RESET PAGE ON TAB SWITCH ====================
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [showMyListings]);
 
   // ==================== PAGINATION ====================
   const allListings = showMyListings ? myListings : featuredListings;
@@ -552,7 +582,7 @@ const AlfonsoLandingPage = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                 {displayedListings.map((property) => (
-                  <PropertyCard key={property.id} {...property} />
+                  <PropertyCard key={property.id} {...property} currentPage={currentPage} />
                 ))}
               </div>
 

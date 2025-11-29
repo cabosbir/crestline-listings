@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
+import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
+// ==================== HELPER FUNCTIONS ====================
 const getWhatsAppNumber = (phone: string) => {
   return phone.replace(/[^0-9]/g, '');
 };
@@ -49,6 +50,7 @@ const getShuffledListings = (listings: any[], cacheKey: string) => {
   return shuffled;
 };
 
+// ==================== AGENT CONFIGURATION ====================
 const agent = {
   id: 7,
   slug: "marisol",
@@ -65,7 +67,7 @@ const agent = {
   languages: ["English", "Spanish"],
 };
 
-// ⭐ AUTOMATIC AGENT DETECTION
+// ==================== LISTINGS CONFIGURATION ====================
 const agentIdentifiers = {
   name: "Marisol Tort",
   email: "mtortricardi@gmail.com",
@@ -74,7 +76,6 @@ const agentIdentifiers = {
   licenseNumber: null,
 };
 
-// Fallback listings if no MLS listings found
 const fallbackListings = [
   {
     id: 1,
@@ -84,9 +85,9 @@ const fallbackListings = [
     location: "Cabo San Lucas",
     beds: 4,
     baths: 2,
-    totalM2: "160",
+    sqft: "1,722 sq ft",
     mlsNumber: "25-4981",
-    link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
+    link: "https://www.flexmls.com/share/D2qrW/",
   },
   {
     id: 2,
@@ -96,9 +97,9 @@ const fallbackListings = [
     location: "CSL North-West 19, Cabo San Lucas",
     beds: 2,
     baths: 2,
-    totalM2: "130",
+    sqft: "1,399 sq ft",
     mlsNumber: "25-3933",
-    link: "https://www.flexmls.com/share/D30em/La-Colina-Town-Home-THTH2A-M1L1-Para-so-Escondido-V-a-de-Lerry-2A-Cabo-San-Lucas-",
+    link: "https://www.flexmls.com/share/D30em/",
   },
   {
     id: 3,
@@ -108,9 +109,112 @@ const fallbackListings = [
     location: "Cabo San Lucas",
     beds: 4,
     baths: 4.5,
-    totalM2: "350.23",
+    sqft: "3,770 sq ft",
     mlsNumber: "24-1981",
-    link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
+    link: "https://www.flexmls.com/share/D0rFY/",
+  },
+];
+
+// Premium featured listings
+const premiumFeaturedListings = [
+  {
+    id: 1,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171689/20250903162058154584000000-o_1_dtusih.jpg",
+    price: "$29,900,000",
+    title: "La Montaña 7",
+    location: "San Jose Corridor",
+    beds: 6,
+    baths: 6,
+    sqft: "N/A",
+    mlsNumber: "25-1563",
+  },
+  {
+    id: 2,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171868/20241126184008646051000000-o_lv9fbu.jpg",
+    price: "$21,000,000",
+    title: "Espiritu del Mar, Casa Luna Escondida",
+    location: "San Jose Corridor",
+    beds: 10,
+    baths: 11,
+    sqft: "22,596 sq ft",
+    mlsNumber: "24-5344",
+  },
+  {
+    id: 3,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171913/20251030154706212946000000-o_erpyxt.jpg",
+    price: "$19,850,000",
+    title: "Casa R Caleta Palmilla, Beachfront",
+    location: "Caleta Palmilla",
+    beds: 7,
+    baths: 6,
+    sqft: "12,860 sq ft",
+    mlsNumber: "25-4826",
+  },
+  {
+    id: 4,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171969/20251010184556773187000000-o_hq2fyv.jpg",
+    price: "$17,900,000",
+    title: "Casita 11, Casa Amore",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 4,
+    sqft: "12,819 sq ft",
+    mlsNumber: "25-4958",
+  },
+  {
+    id: 5,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172032/20251010204002587235000000-o_xs4xu1.jpg",
+    price: "$15,900,000",
+    title: "Casita 10, Villa Laura",
+    location: "San Jose Corridor",
+    beds: 8,
+    baths: 8,
+    sqft: "10,874 sq ft",
+    mlsNumber: "25-4500",
+  },
+  {
+    id: 6,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172108/20250516213428349054000000-o_upkws3.jpg",
+    price: "$12,900,000",
+    title: "Hacienda 505",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 5,
+    sqft: "N/A",
+    mlsNumber: "25-2623",
+  },
+  {
+    id: 7,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172188/20251107153452735555000000-o_lnsjug.jpg",
+    price: "$11,900,000",
+    title: "Estate Villa 496",
+    location: "San Jose Corridor",
+    beds: 5,
+    baths: 6,
+    sqft: "8,102 sq ft",
+    mlsNumber: "25-3280",
+  },
+  {
+    id: 8,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172532/20250520183535938188000000-o_hywmj2.jpg",
+    price: "$8,500,000",
+    title: "Casita 382",
+    location: "San Jose Corridor",
+    beds: 4,
+    baths: 4,
+    sqft: "5,724 sq ft",
+    mlsNumber: "25-2575",
+  },
+  {
+    id: 9,
+    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172428/20251010043244963405000000-o_1_kexihr.jpg",
+    price: "$8,500,000",
+    title: "Casa Abejas",
+    location: "Palmilla",
+    beds: 7,
+    baths: 8,
+    sqft: "6,101 sq ft",
+    mlsNumber: "25-4970",
   },
 ];
 
@@ -132,34 +236,74 @@ const testimonials = [
   }
 ];
 
+const ITEMS_PER_PAGE = 9;
+
+// ==================== MAIN COMPONENT ====================
 const MarisolLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
+  
+  // ⭐ Initialize from saved state if returning
+  const getInitialPage = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('marisolBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.currentPage || 1;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return 1;
+  };
+  
+  const getInitialTab = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('marisolBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.activeTab === 'my-listings';
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return true; // Default to "my listings" for Marisol
+  };
+  
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'my' | 'featured'>('my');
-  const [myListings, setMyListings] = useState<any[]>([]);
-  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
-  const [isLoadingMyListings, setIsLoadingMyListings] = useState(true);
+  const [showMyListings, setShowMyListings] = useState(getInitialTab());
+  const [myListings, setMyListings] = useState(fallbackListings);
+  const [featuredListings, setFeaturedListings] = useState(premiumFeaturedListings);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 9;
+  const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
 
-  // ⭐ SAVE STATE
+  // ==================== SAVE/RESTORE STATE ====================
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const browseState = {
-        url: window.location.pathname + window.location.search,
+        url: window.location.pathname,
         scrollPosition: window.scrollY,
+        activeTab: showMyListings ? 'my-listings' : 'featured',
         currentPage: currentPage,
-        activeTab: activeTab,
         timestamp: Date.now()
       };
       sessionStorage.setItem('marisolBrowseState', JSON.stringify(browseState));
     }
-  }, [currentPage, activeTab]);
+  }, [showMyListings, currentPage]);
 
-  // ⭐ RESTORE STATE
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
@@ -169,36 +313,43 @@ const MarisolLandingPage = () => {
           try {
             const state = JSON.parse(savedState);
             const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
-            const urlMatches = state.url === (window.location.pathname + window.location.search);
-            
-            if (urlMatches && isRecent) {
-              console.log('🔄 Restoring browse state:', state);
-              setCurrentPage(state.currentPage || 1);
-              setActiveTab(state.activeTab || 'my');
-              
+            if (state.url === window.location.pathname && isRecent) {
               setTimeout(() => {
-                window.scrollTo({
-                  top: state.scrollPosition || 0,
-                  behavior: 'smooth'
-                });
-              }, 100);
+                window.scrollTo({ top: state.scrollPosition || 0, behavior: 'smooth' });
+                sessionStorage.removeItem('returningFromProperty');
+              }, 500);
             }
           } catch (e) {
             console.error('Error restoring browse state:', e);
           }
         }
-        sessionStorage.removeItem('returningFromProperty');
       }
     }
   }, []);
 
-  // ⭐ AUTO-DETECT AGENT'S LISTINGS
+  // ==================== LOAD FEATURED LISTINGS ====================
+  useEffect(() => {
+    const loadFeaturedListings = async () => {
+      if (showMyListings) return;
+      
+      // Featured already loaded with premium listings
+      setFeaturedListings(premiumFeaturedListings);
+      setIsLoadingFeatured(false);
+    };
+
+    loadFeaturedListings();
+  }, [showMyListings]);
+
+  // ==================== LOAD MY LISTINGS (AUTO DETECTION) ====================
   useEffect(() => {
     const loadMyListings = async () => {
+      if (!showMyListings) return;
+      
       setIsLoadingMyListings(true);
       
       try {
-        const cacheKey = 'marisol-my-listings-auto-v1';
+        const CACHE_VERSION = 1;
+        const cacheKey = `marisol-my-listings-auto-v${CACHE_VERSION}`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -208,78 +359,50 @@ const MarisolLandingPage = () => {
         
         if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
           const cachedData = JSON.parse(cached);
+          console.log(`✅ Using cached auto-detected listings (v${CACHE_VERSION}):`, cachedData.length);
           setMyListings(cachedData);
           setIsLoadingMyListings(false);
           return;
         }
         
-        console.log('🤖 AUTO-DETECTING listings for:', agentIdentifiers.name);
+        console.log('🤖 AUTO-DETECTING listings for:', agent.name);
         
         const mlsData = await fetchListings({ 
           limit: 500,
           city: 'Cabo San Lucas'
         });
         
-        const agentListings = mlsData.filter((property: any) => {
-          const nameFields = ['ListAgentFullName', 'ListAgentName', 'AgentName', 'CoListAgentFullName'];
-          const emailFields = ['ListAgentEmail', 'AgentEmail', 'ListOfficeEmail'];
-          const phoneFields = ['ListAgentPhone', 'AgentPhone', 'ListOfficePhone'];
+        console.log('🔍 Total API results:', mlsData.length);
+        
+        const agentListings = mlsData.filter(listing => {
+          const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
+          const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
+          const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
           
-          let matchesName = false;
-          let matchesEmail = false;
-          let matchesPhone = false;
+          const nameMatch = listAgentName.toLowerCase().includes('tort') || 
+                           listAgentName.toLowerCase().includes('marisol');
+          const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
+          const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
+          const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
           
-          nameFields.forEach(field => {
-            if (property[field]) {
-              const fieldValue = String(property[field]).toLowerCase();
-              if (fieldValue.includes('tort') || fieldValue.includes('marisol')) {
-                matchesName = true;
-              }
-            }
-          });
-          
-          if (agentIdentifiers.email) {
-            emailFields.forEach(field => {
-              if (property[field] && String(property[field]).toLowerCase() === agentIdentifiers.email.toLowerCase()) {
-                matchesEmail = true;
-              }
-            });
-          }
-          
-          if (agentIdentifiers.phone) {
-            const cleanSearchPhone = agentIdentifiers.phone.replace(/[^0-9]/g, '');
-            phoneFields.forEach(field => {
-              if (property[field]) {
-                const cleanPropertyPhone = String(property[field]).replace(/[^0-9]/g, '');
-                if (cleanPropertyPhone === cleanSearchPhone) {
-                  matchesPhone = true;
-                }
-              }
-            });
-          }
-          
-          return matchesName || matchesEmail || matchesPhone;
+          return nameMatch || emailMatch || phoneMatch;
         });
         
-        console.log(`✅ Auto-detected ${agentListings.length} listings for ${agentIdentifiers.name}`);
+        console.log(`✅ Auto-detected ${agentListings.length} listings for ${agent.name}`);
         
-        if (agentListings.length > 0) {
-          const convertedListings = agentListings.map(convertMLSToPropertyCard);
-          
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify(convertedListings));
-            localStorage.setItem(cacheTimeKey, now.toString());
-          } catch (e) {
-            console.error('Error caching listings:', e);
-          }
-          
-          setMyListings(convertedListings);
-        } else {
-          console.log('⚠️ No listings found - using fallback listings');
-          setMyListings(fallbackListings);
+        const convertedListings = agentListings.map(convertMLSToPropertyCard);
+        const finalListings = convertedListings.length > 0 ? convertedListings : fallbackListings;
+        
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(finalListings));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching my listings:', e);
         }
+        
+        setMyListings(finalListings);
       } catch (error) {
-        console.error('Failed to load agent listings:', error);
+        console.error('Failed to auto-detect listings:', error);
         setMyListings(fallbackListings);
       } finally {
         setIsLoadingMyListings(false);
@@ -287,64 +410,10 @@ const MarisolLandingPage = () => {
     };
 
     loadMyListings();
-  }, []);
+  }, [showMyListings, toast]);
 
-  // Load featured listings
-  useEffect(() => {
-    const loadFeaturedListings = async () => {
-      if (activeTab !== 'featured' || featuredListings.length > 0) return;
-      
-      setIsLoadingFeatured(true);
-      
-      try {
-        const cacheKey = 'marisol-featured-api-data-v1';
-        const cacheTimeKey = `${cacheKey}-time`;
-        const cached = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheTimeKey);
-        
-        const now = Date.now();
-        const threeHours = 3 * 60 * 60 * 1000;
-        
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-          const cachedData = JSON.parse(cached);
-          setFeaturedListings(cachedData);
-          setIsLoadingFeatured(false);
-          return;
-        }
-        
-        const mlsData = await fetchListings({ 
-          limit: 50,
-          city: 'Cabo San Lucas',
-        });
-        
-        const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'marisol-featured-shuffle-v1');
-        
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
-          localStorage.setItem(cacheTimeKey, now.toString());
-        } catch (e) {
-          console.error('Error caching API data:', e);
-        }
-        
-        setFeaturedListings(shuffled);
-      } catch (error) {
-        console.error('Failed to load featured listings:', error);
-        setFeaturedListings(fallbackListings);
-      } finally {
-        setIsLoadingFeatured(false);
-      }
-    };
-
-    loadFeaturedListings();
-  }, [activeTab]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeTab]);
-
-  const allListings = activeTab === 'my' ? myListings : featuredListings;
-  const isLoading = activeTab === 'my' ? isLoadingMyListings : isLoadingFeatured;
+  // ==================== PAGINATION ====================
+  const allListings = showMyListings ? myListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
@@ -356,7 +425,7 @@ const MarisolLandingPage = () => {
   };
 
   const getPageNumbers = () => {
-    const pages = [];
+    const pages: (number | string)[] = [];
     const maxVisible = 7;
     
     if (totalPages <= maxVisible) {
@@ -366,24 +435,19 @@ const MarisolLandingPage = () => {
     } else {
       pages.push(1);
       
-      if (currentPage > 3) {
-        pages.push('...');
+      if (currentPage <= 3) {
+        pages.push(2, 3, 4);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push('ellipsis-start');
+        pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push('ellipsis-start');
+        pages.push(currentPage - 1, currentPage, currentPage + 1);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
       }
-      
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
-      
-      for (let i = start; i <= end; i++) {
-        if (i !== 1 && i !== totalPages) {
-          pages.push(i);
-        }
-      }
-      
-      if (currentPage < totalPages - 2) {
-        pages.push('...');
-      }
-      
-      pages.push(totalPages);
     }
     
     return pages;
@@ -393,19 +457,19 @@ const MarisolLandingPage = () => {
     <div className="min-h-screen">
       <Navbar />
 
-      {/* Back to Team Button */}
-      <div className="fixed top-20 left-4 z-40">
-        <Button
-          variant="outline"
-          size="sm"
+      {/* ==================== BACK TO TEAM BUTTON ==================== */}
+      <div className="container mx-auto px-4 pt-24">
+        <Button 
+          variant="ghost" 
           onClick={() => navigate('/team')}
-          className="bg-white/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all"
+          className="mb-4 hover:bg-secondary"
         >
-          <ChevronLeft className="w-4 h-4 mr-1" />
+          <ChevronLeft className="mr-2 h-4 w-4" />
           Back to Team
         </Button>
       </div>
 
+      {/* ==================== WHATSAPP FLOATING BUTTON ==================== */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -421,7 +485,8 @@ const MarisolLandingPage = () => {
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
-      <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
+      {/* ==================== HERO SECTION ==================== */}
+      <section className="relative pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
         <div className="container mx-auto px-4 relative z-10">
@@ -435,7 +500,7 @@ const MarisolLandingPage = () => {
             </div>
 
             <div className="order-1 lg:order-2 text-center lg:text-left">
-              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
+              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Real Estate Expert</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
                 {agent.name}
               </h1>
@@ -486,6 +551,7 @@ const MarisolLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== ABOUT SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -528,56 +594,50 @@ const MarisolLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== LISTINGS SECTION ==================== */}
       <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
-              {activeTab === 'my' ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Premium Listings'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              {activeTab === 'my' ? 'My Listings' : 'Featured Listings'}
+              {showMyListings ? 'My Listings' : 'Featured Listings'}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              {activeTab === 'my' 
+              {showMyListings 
                 ? `Exclusive properties I'm currently representing in Cabo San Lucas`
-                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
+                : 'Explore premium luxury estates from Baja International Realty'}
             </p>
 
             <div className="flex justify-center gap-2 mb-8">
               <Button
-                variant={activeTab === 'my' ? "luxury" : "outline"}
-                onClick={() => setActiveTab('my')}
+                variant={showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(true)}
               >
                 My Listings {!isLoadingMyListings && `(${myListings.length})`}
               </Button>
               <Button
-                variant={activeTab === 'featured' ? "luxury" : "outline"}
-                onClick={() => setActiveTab('featured')}
+                variant={!showMyListings ? "luxury" : "outline"}
+                onClick={() => setShowMyListings(false)}
               >
-                Featured {activeTab === 'featured' && !isLoadingFeatured && `(${featuredListings.length})`}
+                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
               </Button>
             </div>
           </div>
 
-          {isLoading ? (
+          {(isLoadingFeatured && !showMyListings) || (isLoadingMyListings && showMyListings) ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
               <p className="text-lg text-muted-foreground">
-                {activeTab === 'my' ? 'Auto-detecting agent listings...' : 'Loading featured properties...'}
+                {showMyListings ? 'Auto-detecting agent listings...' : 'Loading featured properties...'}
               </p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                {displayedListings.map((property, index) => (
-                  <div 
-                    key={property.id || index}
-                    onClick={() => {
-                      sessionStorage.setItem('returningFromProperty', 'true');
-                    }}
-                  >
-                    <PropertyCard {...property} />
-                  </div>
+                {displayedListings.map((property) => (
+                  <PropertyCard key={property.id} {...property} currentPage={currentPage} />
                 ))}
               </div>
 
@@ -587,48 +647,60 @@ const MarisolLandingPage = () => {
                 </div>
               )}
 
+              {/* ==================== PAGINATION ==================== */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 my-8">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
+                <div className="flex flex-col items-center gap-4 my-8">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
+                  </div>
                   
-                  {getPageNumbers().map((page, index) => (
-                    page === '...' ? (
-                      <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
-                        ...
-                      </span>
-                    ) : (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "luxury" : "outline"}
-                        size="sm"
-                        onClick={() => handlePageChange(page as number)}
-                      >
-                        {page}
-                      </Button>
-                    )
-                  ))}
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-10 px-3"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span className="ml-1 hidden sm:inline">Previous</span>
+                    </Button>
+                    
+                    {getPageNumbers().map((page, index) => {
+                      if (page === 'ellipsis-start' || page === 'ellipsis-end') {
+                        return (
+                          <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                            ...
+                          </span>
+                        );
+                      }
+                      
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "luxury" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page as number)}
+                          className="h-10 w-10 p-0"
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-10 px-3"
+                    >
+                      <span className="mr-1 hidden sm:inline">Next</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               )}
-
-              <div className="text-center text-sm text-muted-foreground mb-4">
-                Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
-              </div>
             </>
           )}
 
@@ -642,6 +714,7 @@ const MarisolLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== TESTIMONIALS SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
@@ -662,6 +735,7 @@ const MarisolLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== CONTACT SECTION ==================== */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">

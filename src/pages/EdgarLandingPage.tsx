@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -8,6 +8,7 @@ import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDow
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
+// ==================== HELPER FUNCTIONS ====================
 const getWhatsAppNumber = (phone: string) => {
   return phone.replace(/[^0-9]/g, '');
 };
@@ -49,6 +50,7 @@ const getShuffledListings = (listings: any[], cacheKey: string) => {
   return shuffled;
 };
 
+// ==================== AGENT CONFIGURATION ====================
 const agent = {
   id: 10,
   slug: "edgar",
@@ -60,12 +62,22 @@ const agent = {
   email: "Edgar@bircabo.com",
   yearsExperience: 1,
   propertiesSold: 4,
+  totalSales: "$1.5M+",
   bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage with analytical precision and real estate expertise. As a dedicated advisor at Baja International Realty, I combine data-driven market analysis with personalized service to help clients make informed investment decisions. My commitment to excellence and attention to detail ensures that every transaction is smooth, transparent, and aligned with your goals.",
   certifications: ["REALTOR®", "MLS Member"],
   languages: ["English", "Spanish"],
 };
 
-const originalMyListings = [
+// ==================== LISTINGS CONFIGURATION ====================
+const agentIdentifiers = {
+  name: "Edgar Pacheco",
+  email: "Edgar@bircabo.com",
+  phone: "+52 612 169 8328",
+  mlsId: null,
+  licenseNumber: null,
+};
+
+const fallbackListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762566328/20251107181410108190000000-o_ungrql.jpg",
@@ -74,9 +86,9 @@ const originalMyListings = [
     location: "Cabo San Lucas",
     beds: 4,
     baths: 2,
-    totalM2: "160",
+    sqft: "1,722 sq ft",
     mlsNumber: "25-4981",
-    link: "https://www.flexmls.com/share/D2qrW/-Two-in-One-Home-Fixer-Upper-numero-27-manzana-25-spr-mza-244-A-3-Cabo-San-Lucas-",
+    link: "https://www.flexmls.com/share/D2qrW/",
   },
   {
     id: 2,
@@ -86,9 +98,9 @@ const originalMyListings = [
     location: "CSL North-West 19, Cabo San Lucas",
     beds: 2,
     baths: 2,
-    totalM2: "130",
+    sqft: "1,399 sq ft",
     mlsNumber: "25-3933",
-    link: "https://www.flexmls.com/share/D30em/La-Colina-Town-Home-THTH2A-M1L1-Para-so-Escondido-V-a-de-Lerry-2A-Cabo-San-Lucas-",
+    link: "https://www.flexmls.com/share/D30em/",
   },
   {
     id: 3,
@@ -98,24 +110,24 @@ const originalMyListings = [
     location: "Cabo San Lucas",
     beds: 4,
     baths: 4.5,
-    totalM2: "350.23",
+    sqft: "3,770 sq ft",
     mlsNumber: "24-1981",
-    link: "https://www.flexmls.com/share/D0rFY/Casa-Ducci-Camino-del-Mar-Cabo-San-Lucas-",
+    link: "https://www.flexmls.com/share/D0rFY/",
   },
 ];
 
-const fallbackFeaturedListings = [
+// Premium featured listings
+const premiumFeaturedListings = [
   {
     id: 1,
     image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171689/20250903162058154584000000-o_1_dtusih.jpg",
     price: "$29,900,000",
-    title: "La Montaña 7, San Jose Corridor",
+    title: "La Montaña 7",
     location: "San Jose Corridor",
     beds: 6,
     baths: 6,
-    totalM2: "N/A",
+    sqft: "N/A",
     mlsNumber: "25-1563",
-    link: "https://www.flexmls.com/share/D4oNI/La-Monta-a-7-San-Jose-Corridor-",
   },
   {
     id: 2,
@@ -125,21 +137,19 @@ const fallbackFeaturedListings = [
     location: "San Jose Corridor",
     beds: 10,
     baths: 11,
-    totalM2: "22,596",
+    sqft: "22,596 sq ft",
     mlsNumber: "24-5344",
-    link: "https://www.flexmls.com/share/D4oOu/Casa-Luna-Escondida-Espiritu-del-Mar-San-Jose-Corridor-",
   },
   {
     id: 3,
     image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171913/20251030154706212946000000-o_erpyxt.jpg",
     price: "$19,850,000",
     title: "Casa R Caleta Palmilla, Beachfront",
-    location: "Caleta Palmilla, San Jose Corridor",
+    location: "Caleta Palmilla",
     beds: 7,
     baths: 6,
-    totalM2: "12,860.24",
+    sqft: "12,860 sq ft",
     mlsNumber: "25-4826",
-    link: "https://www.flexmls.com/share/D4oPV/Beachfront-Caleta-Palmilla-Casa-R-Caleta-Palmilla-Dr-San-Jose-Corridor-",
   },
   {
     id: 4,
@@ -149,9 +159,8 @@ const fallbackFeaturedListings = [
     location: "San Jose Corridor",
     beds: 5,
     baths: 4,
-    totalM2: "12,819.46",
+    sqft: "12,819 sq ft",
     mlsNumber: "25-4958",
-    link: "https://www.flexmls.com/share/D4oQE/Casa-Amore-Casita-11-San-Jose-Corridor-",
   },
   {
     id: 5,
@@ -161,9 +170,8 @@ const fallbackFeaturedListings = [
     location: "San Jose Corridor",
     beds: 8,
     baths: 8,
-    totalM2: "10,874.06",
+    sqft: "10,874 sq ft",
     mlsNumber: "25-4500",
-    link: "https://www.flexmls.com/share/D4oQy/Villa-Laura-Casita-10-San-Jose-Corridor-",
   },
   {
     id: 6,
@@ -173,45 +181,41 @@ const fallbackFeaturedListings = [
     location: "San Jose Corridor",
     beds: 5,
     baths: 5,
-    totalM2: "N/A",
+    sqft: "N/A",
     mlsNumber: "25-2623",
-    link: "https://www.flexmls.com/share/D4oSD/Hacienda-505-San-Jose-Corridor-",
   },
   {
     id: 7,
     image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172188/20251107153452735555000000-o_lnsjug.jpg",
     price: "$11,900,000",
-    title: "Villas del Mar, Estate Villa 496",
+    title: "Estate Villa 496",
     location: "San Jose Corridor",
     beds: 5,
     baths: 6,
-    totalM2: "8,102.28",
+    sqft: "8,102 sq ft",
     mlsNumber: "25-3280",
-    link: "https://www.flexmls.com/share/D4oTE/Estate-Villa-496-Villas-del-Mar-San-Jose-Corridor-",
   },
   {
     id: 8,
     image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172532/20250520183535938188000000-o_hywmj2.jpg",
     price: "$8,500,000",
-    title: "Villas del Mar, Casita 382",
+    title: "Casita 382",
     location: "San Jose Corridor",
     beds: 4,
     baths: 4,
-    totalM2: "5,724.32",
+    sqft: "5,724 sq ft",
     mlsNumber: "25-2575",
-    link: "https://www.flexmls.com/share/D4oU4/Casita-382-Villas-del-Mar-San-Jose-Corridor-",
   },
   {
     id: 9,
     image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172428/20251010043244963405000000-o_1_kexihr.jpg",
     price: "$8,500,000",
-    title: "131 Villas del Mar Palmilla, Casa Abejas",
-    location: "Palmilla, San Jose Corridor",
+    title: "Casa Abejas",
+    location: "Palmilla",
     beds: 7,
     baths: 8,
-    totalM2: "6,100.92",
+    sqft: "6,101 sq ft",
     mlsNumber: "25-4970",
-    link: "https://www.flexmls.com/share/D4oVK/Villa-Buena-Vista-Casita-38-Villas-del-Mar-San-Jose-Corridor-",
   },
 ];
 
@@ -233,34 +237,184 @@ const testimonials = [
   }
 ];
 
+const ITEMS_PER_PAGE = 9;
+
+// ==================== MAIN COMPONENT ====================
 const EdgarLandingPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  
+  // ⭐ Initialize from saved state if returning
+  const getInitialPage = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('edgarBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.currentPage || 1;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return 1;
+  };
+  
+  const getInitialTab = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('edgarBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.activeTab === 'my-listings';
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return false;
+  };
+  
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showMyListings, setShowMyListings] = useState(false);
-  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
-  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 9;
+  const [showMyListings, setShowMyListings] = useState(getInitialTab());
+  const [myListings, setMyListings] = useState(fallbackListings);
+  const [featuredListings, setFeaturedListings] = useState(premiumFeaturedListings);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
+  const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
 
+  // ==================== SAVE/RESTORE STATE ====================
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const browseState = {
+        url: window.location.pathname,
+        scrollPosition: window.scrollY,
+        activeTab: showMyListings ? 'my-listings' : 'featured',
+        currentPage: currentPage,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('edgarBrowseState', JSON.stringify(browseState));
+    }
+  }, [showMyListings, currentPage]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('edgarBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (state.url === window.location.pathname && isRecent) {
+              setTimeout(() => {
+                window.scrollTo({ top: state.scrollPosition || 0, behavior: 'smooth' });
+                sessionStorage.removeItem('returningFromProperty');
+              }, 100);
+            }
+          } catch (e) {
+            console.error('Error restoring browse state:', e);
+          }
+        }
+      }
+    }
+  }, []);
+
+  // ==================== LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
       if (showMyListings) return;
       
-      setIsLoadingFeatured(true);
-      
-      // Temporarily show fallback listings directly
-      setFeaturedListings(fallbackFeaturedListings);
+      // Featured already loaded with premium listings
+      setFeaturedListings(premiumFeaturedListings);
       setIsLoadingFeatured(false);
     };
 
     loadFeaturedListings();
-  }, [showMyListings, toast]);
-
-  useEffect(() => {
-    setCurrentPage(1);
   }, [showMyListings]);
 
-  const allListings = showMyListings ? originalMyListings : featuredListings;
+  // ==================== LOAD MY LISTINGS (AUTO DETECTION) ====================
+  useEffect(() => {
+    const loadMyListings = async () => {
+      if (!showMyListings) return;
+      
+      setIsLoadingMyListings(true);
+      
+      try {
+        const CACHE_VERSION = 1;
+        const cacheKey = `edgar-my-listings-auto-v${CACHE_VERSION}`;
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          const cachedData = JSON.parse(cached);
+          console.log(`✅ Using cached auto-detected listings (v${CACHE_VERSION}):`, cachedData.length);
+          setMyListings(cachedData);
+          setIsLoadingMyListings(false);
+          return;
+        }
+        
+        console.log('🤖 AUTO-DETECTING listings for:', agent.name);
+        
+        const mlsData = await fetchListings({ 
+          limit: 500,
+          city: 'Cabo San Lucas'
+        });
+        
+        console.log('🔍 Total API results:', mlsData.length);
+        
+        const agentListings = mlsData.filter(listing => {
+          const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
+          const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
+          const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
+          
+          const nameMatch = listAgentName.toLowerCase().includes('pacheco') || 
+                           listAgentName.toLowerCase().includes('edgar');
+          const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
+          const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
+          const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
+          
+          return nameMatch || emailMatch || phoneMatch;
+        });
+        
+        console.log(`✅ Auto-detected ${agentListings.length} listings for ${agent.name}`);
+        
+        const convertedListings = agentListings.map(convertMLSToPropertyCard);
+        const finalListings = convertedListings.length > 0 ? convertedListings : fallbackListings;
+        
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(finalListings));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching my listings:', e);
+        }
+        
+        setMyListings(finalListings);
+      } catch (error) {
+        console.error('Failed to auto-detect listings:', error);
+        setMyListings(fallbackListings);
+      } finally {
+        setIsLoadingMyListings(false);
+      }
+    };
+
+    loadMyListings();
+  }, [showMyListings, toast]);
+
+  // ==================== PAGINATION ====================
+  const allListings = showMyListings ? myListings : featuredListings;
   const totalPages = Math.ceil(allListings.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
@@ -271,10 +425,52 @@ const EdgarLandingPage = () => {
     document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 7;
+    
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      
+      if (currentPage <= 3) {
+        pages.push(2, 3, 4);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push('ellipsis-start');
+        pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push('ellipsis-start');
+        pages.push(currentPage - 1, currentPage, currentPage + 1);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
+
   return (
     <div className="min-h-screen">
       <Navbar />
 
+      {/* ==================== BACK TO TEAM BUTTON ==================== */}
+      <div className="container mx-auto px-4 pt-24">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/team')}
+          className="mb-4 hover:bg-secondary"
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back to Team
+        </Button>
+      </div>
+
+      {/* ==================== WHATSAPP FLOATING BUTTON ==================== */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -290,7 +486,8 @@ const EdgarLandingPage = () => {
         <span className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: '#25D366' }}></span>
       </a>
 
-      <section className="relative pt-24 pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
+      {/* ==================== HERO SECTION ==================== */}
+      <section className="relative pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
         
         <div className="container mx-auto px-4 relative z-10">
@@ -304,7 +501,7 @@ const EdgarLandingPage = () => {
             </div>
 
             <div className="order-1 lg:order-2 text-center lg:text-left">
-              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
+              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Real Estate Expert</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
                 {agent.name}
               </h1>
@@ -355,6 +552,7 @@ const EdgarLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== ABOUT SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -397,11 +595,12 @@ const EdgarLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== LISTINGS SECTION ==================== */}
       <section className="listings-section py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
-              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Office Listings'}
+              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Premium Listings'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {showMyListings ? 'My Listings' : 'Featured Listings'}
@@ -409,7 +608,7 @@ const EdgarLandingPage = () => {
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {showMyListings 
                 ? `Exclusive properties I'm currently representing in Cabo San Lucas`
-                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
+                : 'Explore premium luxury estates from Baja International Realty'}
             </p>
 
             <div className="flex justify-center gap-2 mb-8">
@@ -417,7 +616,7 @@ const EdgarLandingPage = () => {
                 variant={showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(true)}
               >
-                My Listings ({originalMyListings.length})
+                My Listings {!isLoadingMyListings && `(${myListings.length})`}
               </Button>
               <Button
                 variant={!showMyListings ? "luxury" : "outline"}
@@ -428,16 +627,18 @@ const EdgarLandingPage = () => {
             </div>
           </div>
 
-          {isLoadingFeatured && !showMyListings ? (
+          {(isLoadingFeatured && !showMyListings) || (isLoadingMyListings && showMyListings) ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
-              <p className="text-lg text-muted-foreground">Loading featured properties from FlexMLS...</p>
+              <p className="text-lg text-muted-foreground">
+                {showMyListings ? 'Loading my listings from FlexMLS...' : 'Loading featured properties...'}
+              </p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                 {displayedListings.map((property) => (
-                  <PropertyCard key={property.id} {...property} />
+                  <PropertyCard key={property.id} {...property} currentPage={currentPage} />
                 ))}
               </div>
 
@@ -447,36 +648,58 @@ const EdgarLandingPage = () => {
                 </div>
               )}
 
+              {/* ==================== PAGINATION ==================== */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 my-8">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
+                <div className="flex flex-col items-center gap-4 my-8">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
+                  </div>
                   
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <div className="flex items-center gap-2">
                     <Button
-                      key={page}
-                      variant={currentPage === page ? "luxury" : "outline"}
+                      variant="outline"
                       size="sm"
-                      onClick={() => handlePageChange(page)}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-10 px-3"
                     >
-                      {page}
+                      <ChevronLeft className="h-4 w-4" />
+                      <span className="ml-1 hidden sm:inline">Previous</span>
                     </Button>
-                  ))}
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                    
+                    {getPageNumbers().map((page, index) => {
+                      if (page === 'ellipsis-start' || page === 'ellipsis-end') {
+                        return (
+                          <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                            ...
+                          </span>
+                        );
+                      }
+                      
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "luxury" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page as number)}
+                          className="h-10 w-10 p-0"
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-10 px-3"
+                    >
+                      <span className="mr-1 hidden sm:inline">Next</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </>
@@ -492,6 +715,7 @@ const EdgarLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== TESTIMONIALS SECTION ==================== */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
@@ -512,6 +736,7 @@ const EdgarLandingPage = () => {
         </div>
       </section>
 
+      {/* ==================== CONTACT SECTION ==================== */}
       <section id="contact-form" className="py-20" style={{ backgroundColor: '#102f74', color: 'white' }}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
