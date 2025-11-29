@@ -32,7 +32,7 @@ const agent = {
 
 // Agent identifiers for API matching
 const agentIdentifiers = {
-  name: "Bob Van Patten",
+  name: "Robert Michael Van Patten",
   email: "robertvanpatten2@gmail.com",
   phone: "+52 624 127 6012",
   // Add other identifiers that might be in the MLS system:
@@ -225,8 +225,6 @@ const BobLandingPage = () => {
   // ==================== LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
-      if (showMyListings) return;
-      
       setIsLoadingFeatured(true);
       
       try {
@@ -279,7 +277,7 @@ const BobLandingPage = () => {
     };
 
     loadFeaturedListings();
-  }, [showMyListings, toast]);
+  }, []); // Load once on mount
 
   // ==================== LOAD MY LISTINGS ====================
   useEffect(() => {
@@ -320,18 +318,17 @@ const BobLandingPage = () => {
         console.log('🔍 Total API results:', mlsData.length);
         console.log('🎯 Filtering for agent:', agent.name);
         
-        // ⭐ AUTOMATIC FILTERING - Find listings by this agent
-        // Check multiple possible agent field names
+        // ⭐ AUTOMATIC FILTERING - Find listings by this agent ONLY (not office-wide)
         const agentListings = mlsData.filter(listing => {
-          // Try different field name variations
           const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
           const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
           const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
-          const listOfficeName = listing.ListOfficeName || '';
           
-          // Match by name (case-insensitive, partial match)
+          // Match by full legal name or variations
           const nameMatch = listAgentName.toLowerCase().includes('van patten') || 
-                           listAgentName.toLowerCase().includes('bob');
+                           listAgentName.toLowerCase().includes('robert michael van patten') ||
+                           listAgentName.toLowerCase().includes('robert van patten') ||
+                           (listAgentName.toLowerCase().includes('bob') && listAgentName.toLowerCase().includes('van patten'));
           
           // Match by email
           const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
@@ -340,7 +337,6 @@ const BobLandingPage = () => {
           const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
           
-          // Return true if ANY identifier matches
           return nameMatch || emailMatch || phoneMatch;
         });
         
@@ -608,13 +604,13 @@ const BobLandingPage = () => {
                 variant={showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(true)}
               >
-                My Listings {!isLoadingMyListings && `(${myListings.length})`}
+                My Listings ({myListings.length})
               </Button>
               <Button
                 variant={!showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(false)}
               >
-                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
+                Featured ({featuredListings.length})
               </Button>
             </div>
           </div>
@@ -623,7 +619,7 @@ const BobLandingPage = () => {
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
               <p className="text-lg text-muted-foreground">
-                {showMyListings ? 'Loading my listings from FlexMLS...' : 'Loading featured properties from FlexMLS...'}
+                {showMyListings ? 'Auto-detecting agent listings...' : 'Loading featured properties...'}
               </p>
             </div>
           ) : (

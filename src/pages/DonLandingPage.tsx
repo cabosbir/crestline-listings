@@ -427,9 +427,10 @@ const DonLandingPage = () => {
           const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
           
-          // Match Baja International Realty office
-          const officeMatch = listOfficeName.toLowerCase().includes('baja international') ||
-                             listOfficeName.toLowerCase().includes('bir');
+          // Match Baja International Realty office (must include "international" to avoid "House of Baja")
+          const officeMatch = (listOfficeName.toLowerCase().includes('baja') && 
+                              listOfficeName.toLowerCase().includes('international')) ||
+                             listOfficeName.toLowerCase().includes('baja international realty');
           
           return nameMatch || emailMatch || phoneMatch || officeMatch;
         });
