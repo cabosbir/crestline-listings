@@ -279,7 +279,7 @@ const MarisolLandingPage = () => {
         }
       }
     }
-    return true; // Default to "my listings" for Marisol
+    return false; // Default to "featured" for Marisol
   };
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -330,8 +330,6 @@ const MarisolLandingPage = () => {
   // ==================== LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
-      if (showMyListings) return;
-      
       setIsLoadingFeatured(true);
       
       try {
@@ -375,7 +373,7 @@ const MarisolLandingPage = () => {
     };
 
     loadFeaturedListings();
-  }, [showMyListings]);
+  }, []); // Load once on mount
 
   // ==================== LOAD MY LISTINGS (AUTO DETECTION) ====================
   useEffect(() => {
@@ -652,13 +650,13 @@ const MarisolLandingPage = () => {
                 variant={showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(true)}
               >
-                My Listings {!isLoadingMyListings && `(${myListings.length})`}
+                My Listings ({myListings.length})
               </Button>
               <Button
                 variant={!showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(false)}
               >
-                Featured {featuredListings.length > 0 && `(${featuredListings.length})`}
+                Featured ({featuredListings.length})
               </Button>
             </div>
           </div>
