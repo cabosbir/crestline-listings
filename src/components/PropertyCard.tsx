@@ -20,6 +20,7 @@ interface PropertyCardProps {
   latitude?: number;
   longitude?: number;
   link?: string;
+  currentPage?: number; // ⭐ FIX ADDED
 }
 
 const PropertyCard = ({
@@ -33,7 +34,8 @@ const PropertyCard = ({
   sqft,
   image,
   propertyType,
-  status
+  status,
+  currentPage = 1 // ⭐ FIX: default to 1
 }: PropertyCardProps) => {
 
   const navigate = useNavigate();
@@ -43,16 +45,10 @@ const PropertyCard = ({
   const handleViewDetails = (e?: React.MouseEvent) => {
     e?.stopPropagation();
 
-    console.log('🔍 View Details clicked:', {
-      id,
-      mlsNumber,
-      link
-    });
-
     const routeId = mlsNumber ?? id;
-    console.log('✅ Navigating to:', `/property/${routeId}`);
 
-    navigate(`/property/${mlsNumber}?page=${currentPage}`);
+    // ⭐ FIX: now includes currentPage safely
+    navigate(`/property/${routeId}?page=${currentPage}`);
   };
 
   const handleNewClientForm = (e: React.MouseEvent) => {
@@ -70,8 +66,6 @@ const PropertyCard = ({
   };
 
   const handleImageError = () => {
-    console.log('⚠️ Image failed to load, using fallback for:', mlsNumber);
-
     if (!imgError) {
       setImgError(true);
 
@@ -93,7 +87,7 @@ const PropertyCard = ({
   return (
     <Card
       className="group overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer border-0"
-      onClick={(e) => handleViewDetails(e, id, mlsNumber, link)}
+      onClick={handleViewDetails} // ⭐ FIX: removed invalid args
     >
       <div className="relative overflow-hidden" style={{ height: "400px" }}>
         <img
@@ -151,7 +145,7 @@ const PropertyCard = ({
             className="bg-white text-black hover:bg-gray-100 font-semibold px-8"
             onClick={(e) => {
               e.stopPropagation();
-              handleViewDetails(e, id, mlsNumber, link);
+              handleViewDetails(e);
             }}
           >
             View Details

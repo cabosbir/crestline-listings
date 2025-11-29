@@ -23,7 +23,7 @@ const Properties = () => {
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const ITEMS_PER_PAGE = 9;
 
-  // ⭐ SAVE STATE - Save page number and scroll position
+  // ⭐ SAVE STATE - Save page number, view mode, and scroll position
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const browseState = {
@@ -34,6 +34,7 @@ const Properties = () => {
         timestamp: Date.now()
       };
       sessionStorage.setItem('propertiesBrowseState', JSON.stringify(browseState));
+      console.log('💾 Saved browse state:', browseState);
     }
   }, [currentPage, viewMode]);
 
@@ -109,14 +110,14 @@ const Properties = () => {
     const propertyTypesParam = params.get('propertyTypes');
     const statusParam = params.get('status');
     
-    // ⭐ Special filters (FIXED)
+    // ⭐ Special filters
     const sellerFinancingParam = params.get('sellerFinancing');
     const primaryViewParam = params.get('primaryView');
     const currentPriceParam = params.get('currentPrice');
     console.log("DEBUG FILTER TYPES:", {
-  sellerFinancingParam,
-  type: typeof sellerFinancingParam,
-});
+      sellerFinancingParam,
+      type: typeof sellerFinancingParam,
+    });
     
     if (zonesParam || areasParam || communitiesParam || subdivisionsParam) {
       // Build filters object from URL params
@@ -126,7 +127,7 @@ const Properties = () => {
       if (zonesParam) apiFilters.city = zonesParam.split(',');
       if (areasParam) apiFilters.area = areasParam.split(',');
       
-      // ⭐ FIXED: Community filter (was missing)
+      // ⭐ Community filter
       if (communitiesParam) {
         apiFilters.communities = communitiesParam.split(',');
         console.log('🏘️ Communities filter:', apiFilters.communities);
@@ -164,31 +165,30 @@ const Properties = () => {
   };
 
   const loadProperties = async (filters?: any) => {
-  setLoading(true);
-  setError(null);
-  try {
-    console.log('🧠 Loading properties with filters:', filters);
-    const mlsProperties: MLSProperty[] = await fetchListings(filters);
-    console.log('👍 Received properties:', mlsProperties.length);
+    setLoading(true);
+    setError(null);
+    try {
+      console.log('🧠 Loading properties with filters:', filters);
+      const mlsProperties: MLSProperty[] = await fetchListings(filters);
+      console.log('👍 Received properties:', mlsProperties.length);
 
-    setAllProperties(mlsProperties);
+      setAllProperties(mlsProperties);
 
-    const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
-    setProperties(convertedProperties);
+      const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
+      setProperties(convertedProperties);
 
-    // ⭐ Only reset to page 1 on new searches, not when returning
-    if (!sessionStorage.getItem("returningFromProperty")) {
-      setCurrentPage(1);
+      // ⭐ Only reset to page 1 on new searches, not when returning
+      if (!sessionStorage.getItem("returningFromProperty")) {
+        setCurrentPage(1);
+      }
+
+    } catch (err) {
+      console.error('❌ Error loading properties:', err);
+      setError('Failed to load properties. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err) {
-    console.error('❌ Error loading properties:', err);
-    setError('Failed to load properties. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const performUniversalSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -406,36 +406,32 @@ const Properties = () => {
                       <div className="lg:col-span-1 max-h-[600px] overflow-y-auto space-y-4">
                         {propertiesWithCoords.map((property, index) => (
                           <div 
-  key={property.id}
-  className="bg-card border-2 border-border rounded-xl p-4 cursor-pointer hover:shadow-lg transition-all"
-  onClick={() => {
-    // ⭐ Mark that we're leaving to view a property
-    sessionStorage.setItem('returningFromProperty', 'true');
+                            key={property.id}
+                            className="bg-card border-2 border-border rounded-xl p-4 cursor-pointer hover:shadow-lg transition-all"
+                            onClick={() => {
+                              // ⭐ Mark that we're leaving to view a property
+                              sessionStorage.setItem('returningFromProperty', 'true');
+                              navigate(`/property/${property.mlsNumber || property.id}`);
+                            }}
+                          >
+                            <div className="flex items-start gap-3 mb-3">
+                              <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                                {index + 1}
+                              </div>
+                              <img
+                                src={property.image}
+                                alt={property.title}
+                                className="flex-1 h-32 object-cover rounded-lg"
+                                onError={(e) => {
+                                  e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=200&fit=crop';
+                                }}
+                              />
+                            </div>
 
-    // ⭐ INCLUDE THE PAGE NUMBER IN THE URL
-    navigate(`/property/${property.mlsNumber || property.id}?page=${currentPage}`);
-  }}
->
-  <div className="flex items-start gap-3 mb-3">
-    <div className="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-      {index + 1}
-    </div>
-    <img
-      src={property.image}
-      alt={property.title}
-      className="flex-1 h-32 object-cover rounded-lg"
-      onError={(e) => {
-        e.currentTarget.src =
-          'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=200&fit=crop';
-      }}
-    />
-  </div>
-
-  <div className="text-xl font-bold text-accent mb-2">{property.price}</div>
-  <div className="text-sm line-clamp-2 mb-2">{property.title}</div>
-  <div className="text-xs text-muted-foreground">{property.location}</div>
-</div>
-
+                            <div className="text-xl font-bold text-accent mb-2">{property.price}</div>
+                            <div className="text-sm line-clamp-2 mb-2">{property.title}</div>
+                            <div className="text-xs text-muted-foreground">{property.location}</div>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -448,6 +444,7 @@ const Properties = () => {
                     <p className="text-muted-foreground">
                       Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, properties.length)} of {properties.length} properties
                     </p>
+
                     <div className="flex gap-2">
                       {cameFromAdvancedSearch() && (
                         <Button 
@@ -457,6 +454,7 @@ const Properties = () => {
                           ← Back to Filters
                         </Button>
                       )}
+
                       <Button 
                         variant="outline" 
                         onClick={handleReset}
@@ -468,7 +466,7 @@ const Properties = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {currentItems.map((property) => (
-                      <div 
+                      <div
                         key={property.id}
                         onClick={() => {
                           // ⭐ Mark that we're leaving to view a property
@@ -490,9 +488,9 @@ const Properties = () => {
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </Button>
-                      
+
                       {Array.from({ length: totalPages }, (_, i) => i + 1)
-                        .filter(page => {
+                        .filter((page) => {
                           if (totalPages <= 7) return true;
                           if (page === 1 || page === totalPages) return true;
                           if (Math.abs(page - currentPage) <= 1) return true;
@@ -503,6 +501,7 @@ const Properties = () => {
                             {index > 0 && array[index - 1] !== page - 1 && (
                               <span className="text-muted-foreground">...</span>
                             )}
+
                             <Button
                               variant={currentPage === page ? "default" : "outline"}
                               size="sm"
@@ -512,7 +511,7 @@ const Properties = () => {
                             </Button>
                           </div>
                         ))}
-                      
+
                       <Button
                         variant="outline"
                         size="sm"
