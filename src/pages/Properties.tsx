@@ -164,25 +164,31 @@ const Properties = () => {
   };
 
   const loadProperties = async (filters?: any) => {
-    setLoading(true);
-    setError(null);
-    try {
-      console.log('📡 Loading properties with filters:', filters);
-      const mlsProperties: MLSProperty[] = await fetchListings(filters);
-      console.log('✅ Received properties:', mlsProperties.length);
-      
-      setAllProperties(mlsProperties);
-      
-      const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
-      setProperties(convertedProperties);
+  setLoading(true);
+  setError(null);
+  try {
+    console.log('🧠 Loading properties with filters:', filters);
+    const mlsProperties: MLSProperty[] = await fetchListings(filters);
+    console.log('👍 Received properties:', mlsProperties.length);
+
+    setAllProperties(mlsProperties);
+
+    const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
+    setProperties(convertedProperties);
+
+    // ⭐ Only reset to page 1 on new searches, not when returning
+    if (!sessionStorage.getItem("returningFromProperty")) {
       setCurrentPage(1);
-    } catch (err) {
-      console.error('❌ Error loading properties:', err);
-      setError('Failed to load properties. Please try again.');
-    } finally {
-      setLoading(false);
     }
-  };
+
+  } catch (err) {
+    console.error('❌ Error loading properties:', err);
+    setError('Failed to load properties. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const performUniversalSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
