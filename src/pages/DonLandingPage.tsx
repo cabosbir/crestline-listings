@@ -252,7 +252,7 @@ const DonLandingPage = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
-        const savedState = sessionStorage.getItem('DonWeisBrowseState');
+        const savedState = sessionStorage.getItem('donBrowseState');
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
@@ -271,7 +271,7 @@ const DonLandingPage = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
-        const savedState = sessionStorage.getItem('DonWeisBrowseState');
+        const savedState = sessionStorage.getItem('donBrowseState');
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
@@ -283,13 +283,13 @@ const DonLandingPage = () => {
         }
       }
     }
-    return true; // Default to "my listings" for Don
+    return false; // Default to "featured" for Don
   };
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(getInitialTab());
   const [myListings, setMyListings] = useState(fallbackListings);
-  const [featuredListings, setFeaturedListings] = useState(premiumFeaturedListings);
+  const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(getInitialPage());
@@ -334,15 +334,50 @@ const DonLandingPage = () => {
   // ==================== LOAD FEATURED LISTINGS ====================
   useEffect(() => {
     const loadFeaturedListings = async () => {
-      if (showMyListings) return;
+      setIsLoadingFeatured(true);
       
-      // Featured already loaded with premium listings
-      setFeaturedListings(premiumFeaturedListings);
-      setIsLoadingFeatured(false);
+      try {
+        const cacheKey = 'don-featured-api-data-v1';
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const threeHours = 3 * 60 * 60 * 1000;
+        
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
+          const cachedData = JSON.parse(cached);
+          setFeaturedListings(cachedData);
+          setIsLoadingFeatured(false);
+          return;
+        }
+        
+        const mlsData = await fetchListings({ 
+          limit: 50,
+          city: 'Cabo San Lucas',
+        });
+        
+        const convertedListings = mlsData.map(convertMLSToPropertyCard);
+        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v1');
+        
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
+          localStorage.setItem(cacheTimeKey, now.toString());
+        } catch (e) {
+          console.error('Error caching API data:', e);
+        }
+        
+        setFeaturedListings(shuffled);
+      } catch (error) {
+        console.error('Failed to load featured listings:', error);
+        setFeaturedListings(fallbackListings);
+      } finally {
+        setIsLoadingFeatured(false);
+      }
     };
 
     loadFeaturedListings();
-  }, [showMyListings]);
+  }, []); // Load once on mount
 
   // ==================== LOAD MY LISTINGS (AUTO DETECTION) ====================
   useEffect(() => {
@@ -353,7 +388,7 @@ const DonLandingPage = () => {
       
       try {
         const CACHE_VERSION = 1;
-        const cacheKey = `don weis-my-listings-auto-v${CACHE_VERSION}`;
+        const cacheKey = `don-my-listings-auto-v${CACHE_VERSION}`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -369,7 +404,7 @@ const DonLandingPage = () => {
           return;
         }
         
-        console.log('🤖 AUTO-DETECTING listings for:', agent.name);
+        console.log('🤖 AUTO-DETECTING listings for Baja International Realty');
         
         const mlsData = await fetchListings({ 
           limit: 500,
@@ -378,21 +413,28 @@ const DonLandingPage = () => {
         
         console.log('🔍 Total API results:', mlsData.length);
         
+        // Search for Don Weis OR Baja International Realty OR any BIR agent
         const agentListings = mlsData.filter(listing => {
           const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
           const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
           const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
+          const listOfficeName = listing.ListOfficeName || listing.OfficeName || '';
           
+          // Match Don Weis specifically
           const nameMatch = listAgentName.toLowerCase().includes('weis') || 
                            listAgentName.toLowerCase().includes('don');
           const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
           const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
           
-          return nameMatch || emailMatch || phoneMatch;
+          // Match Baja International Realty office
+          const officeMatch = listOfficeName.toLowerCase().includes('baja international') ||
+                             listOfficeName.toLowerCase().includes('bir');
+          
+          return nameMatch || emailMatch || phoneMatch || officeMatch;
         });
         
-        console.log(`✅ Auto-detected ${agentListings.length} listings for ${agent.name}`);
+        console.log(`✅ Auto-detected ${agentListings.length} listings for Baja International Realty`);
         
         const convertedListings = agentListings.map(convertMLSToPropertyCard);
         const finalListings = convertedListings.length > 0 ? convertedListings : fallbackListings;
@@ -607,15 +649,15 @@ const DonLandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
-              {showMyListings ? `Featured by ${agent.name.split(' ')[0]}` : 'Premium Listings'}
+              {showMyListings ? 'Baja International Realty Portfolio' : 'Office Listings'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               {showMyListings ? 'Landmark Properties' : 'Featured Listings'}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {showMyListings 
-                ? 'Exclusive development opportunities and premier estates in Cabo San Lucas'
-                : 'Explore premium luxury estates from Baja International Realty'}
+                ? 'Exclusive development opportunities and premier estates from Baja International Realty'
+                : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
             </p>
 
             <div className="flex justify-center gap-2 mb-8">
@@ -623,13 +665,13 @@ const DonLandingPage = () => {
                 variant={showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(true)}
               >
-                My Listings {!isLoadingMyListings && `(${myListings.length})`}
+                My Listings ({myListings.length})
               </Button>
               <Button
                 variant={!showMyListings ? "luxury" : "outline"}
                 onClick={() => setShowMyListings(false)}
               >
-                Featured {!isLoadingFeatured && `(${featuredListings.length})`}
+                Featured ({featuredListings.length})
               </Button>
             </div>
           </div>
