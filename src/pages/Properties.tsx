@@ -146,7 +146,11 @@ const Properties = () => {
           }
           sessionStorage.removeItem('returningFromProperty');
         } else {
-          setCurrentPage(1);
+          // New search - only reset if no saved state exists
+          const savedState = sessionStorage.getItem('propertiesBrowseState');
+          if (!savedState) {
+            setCurrentPage(1);
+          }
         }
       })();
     }
