@@ -473,7 +473,7 @@ const Properties = () => {
                           sessionStorage.setItem('returningFromProperty', 'true');
                         }}
                       >
-                        <PropertyCard {...property} />
+                        <PropertyCard {...property} currentPage={currentPage} />
                       </div>
                     ))}
                   </div>
