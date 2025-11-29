@@ -39,52 +39,62 @@ const PropertyCard = ({
   longitude,
   link,
 }: PropertyCardProps) => {
+  // ← FIXED: function now opens with "{"
+
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(image);
   const [imgError, setImgError] = useState(false);
 
-  const handleViewDetails = (e?: React.MouseEvent) => {
-  e?.stopPropagation();
-  console.log('🔍 View Details clicked:', { id, mlsNumber, link });
+  // ✅ Updated handleViewDetails
+  const handleViewDetails = (
+    e: React.MouseEvent,
+    id: string,
+    mlsNumber?: string,
+    link?: string
+  ) => {
+    e.stopPropagation();
 
-  console.log('✅ Navigating to:', `/property/${mlsNumber ?? id}`);
-  navigate(`/property/${mlsNumber ?? id}`);
-};
+    console.log("🔍 View Details clicked:", { id, mlsNumber, link });
+    console.log("✅ Navigating to:", `/property/${mlsNumber ?? id}`);
+
+    navigate(`/property/${mlsNumber ?? id}`);
+  };
 
   const handleNewClientForm = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate('/new-client', {
-      state: { 
+    navigate("/new-client", {
+      state: {
         propertyId: id,
-        mlsNumber: mlsNumber,
+        mlsNumber,
         propertyAddress: title,
         propertyPrice: price,
-        propertyType: propertyType
-      }
+        propertyType,
+      },
     });
   };
 
   const handleImageError = () => {
-    console.log('⚠️ Image failed to load, using fallback for:', mlsNumber);
+    console.log("⚠️ Image failed to load, using fallback for:", mlsNumber);
     if (!imgError) {
       setImgError(true);
       const fallbacks = [
-        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop'
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
       ];
       setImgSrc(fallbacks[Math.floor(Math.random() * fallbacks.length)]);
     }
   };
 
-  const formattedSqft = sqft && typeof sqft === 'string' 
-    ? sqft.replace(/sq ft/i, '').trim() 
-    : 'N/A';
+  const formattedSqft =
+    sqft && typeof sqft === "string"
+      ? sqft.replace(/sq ft/i, "").trim()
+      : "N/A";
 
   return (
-    <Card 
+    <Card
       className="group overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer border-0"
-      onClick={handleViewDetails}
+      onClick={(e) => handleViewDetails(e, id, mlsNumber, link)}
     >
       <div className="relative overflow-hidden" style={{ height: "400px" }}>
         <img
@@ -94,21 +104,17 @@ const PropertyCard = ({
           onError={handleImageError}
           loading="lazy"
         />
-        
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        
+
         <div className="absolute top-4 left-4">
           <span className="bg-purple-600 text-white px-4 py-1.5 rounded text-sm font-semibold shadow-lg">
             {status}
           </span>
         </div>
 
-        {/* 🔥 REMOVED: Mini-map hover box (was causing empty gray box) */}
-
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <div className="text-4xl font-bold mb-3">
-            {price}
-          </div>
+          <div className="text-4xl font-bold mb-3">{price}</div>
 
           <div className="flex items-center gap-4 mb-3 text-lg">
             <div className="flex items-center gap-1.5">
@@ -120,7 +126,7 @@ const PropertyCard = ({
               <Bath className="w-5 h-5" />
               <span className="font-semibold">{baths} Baths</span>
             </div>
-            {formattedSqft !== 'N/A' && (
+            {formattedSqft !== "N/A" && (
               <>
                 <span className="text-white/60">•</span>
                 <div className="flex items-center gap-1.5">
@@ -136,24 +142,23 @@ const PropertyCard = ({
             {title}
           </div>
 
-          <div className="text-sm text-white/80">
-            {propertyType}
-          </div>
+          <div className="text-sm text-white/80">{propertyType}</div>
         </div>
 
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
-          <Button 
+          <Button
             variant="default"
             size="lg"
             className="bg-white text-black hover:bg-gray-100 font-semibold px-8"
             onClick={(e) => {
               e.stopPropagation();
-              handleViewDetails(e);
+              handleViewDetails(e, id, mlsNumber, link);
             }}
           >
             View Details
           </Button>
-          <Button 
+
+          <Button
             variant="outline"
             size="lg"
             className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold px-6"
