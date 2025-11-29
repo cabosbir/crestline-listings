@@ -52,7 +52,7 @@ const PropertyCard = ({
     const routeId = mlsNumber ?? id;
     console.log('✅ Navigating to:', `/property/${routeId}`);
 
-    navigate(`/property/${routeId}`);
+    navigate(`/property/${mlsNumber || id}`);
   };
 
   const handleNewClientForm = (e: React.MouseEvent) => {
