@@ -25,71 +25,70 @@ interface PropertyCardProps {
 const PropertyCard = ({
   id,
   mlsNumber,
-  image,
-  price,
+  link,
   title,
-  location,
+  price,
   beds,
   baths,
   sqft,
-  description,
-  status = "Active",
-  propertyType = "Single Family Home",
-  latitude,
-  longitude,
-  link,
+  image,
+  propertyType,
+  status
 }: PropertyCardProps) => {
-  // ← FIXED: function now opens with "{"
 
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(image);
   const [imgError, setImgError] = useState(false);
 
-  // ✅ Updated handleViewDetails
-  const handleViewDetails = (
-    e: React.MouseEvent,
-    id: string,
-    mlsNumber?: string,
-    link?: string
-  ) => {
-    e.stopPropagation();
+  const handleViewDetails = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
 
-    console.log("🔍 View Details clicked:", { id, mlsNumber, link });
-    console.log("✅ Navigating to:", `/property/${mlsNumber ?? id}`);
+    console.log('🔍 View Details clicked:', {
+      id,
+      mlsNumber,
+      link
+    });
 
-    navigate(`/property/${mlsNumber ?? id}`);
+    const routeId = mlsNumber ?? id;
+    console.log('✅ Navigating to:', `/property/${routeId}`);
+
+    navigate(`/property/${routeId}`);
   };
 
   const handleNewClientForm = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate("/new-client", {
-      state: {
+
+    navigate('/new-client', {
+      state: { 
         propertyId: id,
         mlsNumber,
         propertyAddress: title,
         propertyPrice: price,
-        propertyType,
-      },
+        propertyType
+      }
     });
   };
 
   const handleImageError = () => {
-    console.log("⚠️ Image failed to load, using fallback for:", mlsNumber);
+    console.log('⚠️ Image failed to load, using fallback for:', mlsNumber);
+
     if (!imgError) {
       setImgError(true);
+
       const fallbacks = [
-        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop'
       ];
+
       setImgSrc(fallbacks[Math.floor(Math.random() * fallbacks.length)]);
     }
   };
 
   const formattedSqft =
-    sqft && typeof sqft === "string"
-      ? sqft.replace(/sq ft/i, "").trim()
-      : "N/A";
+    sqft && typeof sqft === 'string'
+      ? sqft.replace(/sq ft/i, '').trim()
+      : 'N/A';
 
   return (
     <Card
