@@ -192,6 +192,24 @@ const Properties = () => {
     setLoading(true);
     setError(null);
     try {
+      // ⭐ CACHE IMPLEMENTATION - Check cache first for faster loading
+      const cacheKey = `properties-filtered-${JSON.stringify(filters || {})}-v1`;
+      const cacheTimeKey = `${cacheKey}-time`;
+      const cached = localStorage.getItem(cacheKey);
+      const cachedTime = localStorage.getItem(cacheTimeKey);
+      
+      const now = Date.now();
+      const twentyFourHours = 24 * 60 * 60 * 1000; // Extended cache for better performance
+      
+      if (cached && cachedTime && (now - parseInt(cachedTime)) < twentyFourHours) {
+        console.log('✅ Using cached properties');
+        const cachedData = JSON.parse(cached);
+        setAllProperties(cachedData.allProperties);
+        setProperties(cachedData.convertedProperties);
+        setLoading(false);
+        return;
+      }
+      
       console.log('🧠 Loading properties with filters:', filters);
       const mlsProperties: MLSProperty[] = await fetchListings(filters);
       console.log('👍 Received properties:', mlsProperties.length);
@@ -200,6 +218,18 @@ const Properties = () => {
 
       const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
       setProperties(convertedProperties);
+      
+      // ⭐ Cache the results
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify({
+          allProperties: mlsProperties,
+          convertedProperties: convertedProperties
+        }));
+        localStorage.setItem(cacheTimeKey, now.toString());
+        console.log('💾 Cached properties for faster future loads');
+      } catch (e) {
+        console.error('Error caching properties:', e);
+      }
 
       // Don't reset page - let state restoration handle it
       // Only reset if currentPage is still 1 (initial state)
@@ -225,6 +255,25 @@ const Properties = () => {
     
     try {
       const query = searchQuery.trim();
+      
+      // ⭐ CACHE IMPLEMENTATION - Check cache first
+      const cacheKey = `search-${query}-v1`;
+      const cacheTimeKey = `${cacheKey}-time`;
+      const cached = localStorage.getItem(cacheKey);
+      const cachedTime = localStorage.getItem(cacheTimeKey);
+      
+      const now = Date.now();
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      
+      if (cached && cachedTime && (now - parseInt(cachedTime)) < twentyFourHours) {
+        console.log('✅ Using cached search results');
+        const cachedData = JSON.parse(cached);
+        setAllProperties(cachedData.allProperties);
+        setProperties(cachedData.convertedProperties);
+        setLoading(false);
+        return;
+      }
+      
       console.log('🔍 [INTELLIGENT SEARCH] Querying API for:', query);
       
       const isMlsNumber = /^[\d-]+$/.test(query);
@@ -240,7 +289,18 @@ const Properties = () => {
         setAllProperties(mlsProperties);
         const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
         setProperties(convertedProperties);
-        // Don't reset page here either
+        
+        // ⭐ Cache the search results
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify({
+            allProperties: mlsProperties,
+            convertedProperties: convertedProperties
+          }));
+          localStorage.setItem(cacheTimeKey, now.toString());
+          console.log('💾 Cached search results');
+        } catch (e) {
+          console.error('Error caching search:', e);
+        }
       } else {
         setProperties([]);
         setError(`No properties found matching "${query}"`);
@@ -444,6 +504,7 @@ const Properties = () => {
                                 src={property.image}
                                 alt={property.title}
                                 className="flex-1 h-32 object-cover rounded-lg"
+                                loading="lazy"
                                 onError={(e) => {
                                   e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=200&fit=crop';
                                 }}
