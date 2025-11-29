@@ -136,18 +136,38 @@ const getShuffledListings = (listings: any[], cacheKey: string) => {
 const BobLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // ⭐ Initialize from saved state if returning
+  const getInitialPage = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('bobBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.currentPage || 1;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return 1;
+  };
+  
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(false);
   const [myListings, setMyListings] = useState(fallbackListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [listingsSearchQuery, setListingsSearchQuery] = useState(""); // ⭐ NEW: Search state
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
+  const [listingsSearchQuery, setListingsSearchQuery] = useState("");
 
   // ==================== SAVE/RESTORE STATE ====================
   useEffect(() => {
-    // Save current state for property detail page returns
     if (typeof window !== 'undefined') {
       const browseState = {
         url: window.location.pathname,
@@ -156,35 +176,30 @@ const BobLandingPage = () => {
         currentPage: currentPage,
         timestamp: Date.now()
       };
-      sessionStorage.setItem('propertyBrowseReturnUrl', JSON.stringify(browseState));
+      sessionStorage.setItem('bobBrowseState', JSON.stringify(browseState));
     }
   }, [showMyListings, currentPage]);
 
   useEffect(() => {
-    // Restore state when returning from property detail
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
       if (returning === 'true') {
-        const savedState = sessionStorage.getItem('propertyBrowseReturnUrl');
+        const savedState = sessionStorage.getItem('bobBrowseState');
         if (savedState) {
           try {
             const state = JSON.parse(savedState);
             const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
             if (state.url === window.location.pathname && isRecent) {
               setShowMyListings(state.activeTab === 'my-listings');
-              setCurrentPage(state.currentPage || 1);
               setTimeout(() => {
-                window.scrollTo({
-                  top: state.scrollPosition || 0,
-                  behavior: 'smooth'
-                });
+                window.scrollTo({ top: state.scrollPosition || 0, behavior: 'smooth' });
+                sessionStorage.removeItem('returningFromProperty');
               }, 100);
             }
           } catch (e) {
             console.error('Error restoring browse state:', e);
           }
         }
-        sessionStorage.removeItem('returningFromProperty');
       }
     }
   }, []);
