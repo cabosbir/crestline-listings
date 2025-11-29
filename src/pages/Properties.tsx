@@ -113,6 +113,10 @@ const Properties = () => {
     const sellerFinancingParam = params.get('sellerFinancing');
     const primaryViewParam = params.get('primaryView');
     const currentPriceParam = params.get('currentPrice');
+    console.log("DEBUG FILTER TYPES:", {
+  sellerFinancingParam,
+  type: typeof sellerFinancingParam,
+});
     
     if (zonesParam || areasParam || communitiesParam || subdivisionsParam) {
       // Build filters object from URL params
