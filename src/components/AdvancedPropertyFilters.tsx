@@ -1,5 +1,5 @@
 // src/components/AdvancedPropertyFilters.tsx - WITH MLS TRANSLATOR
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -112,6 +112,28 @@ const AdvancedPropertyFilters = ({
     primaryView: false,
     currentPrice: false,
   });
+
+  // ⭐ CLEAR STALE CACHE ON MOUNT - Force fresh data
+  useEffect(() => {
+    try {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (
+          key.includes('featured') || 
+          key.includes('my-listings') || 
+          key.includes('search-results') ||
+          key.includes('property-cache')
+        )) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      console.log('🧹 Cleared stale listing cache on AdvancedPropertyFilters mount');
+    } catch (e) {
+      console.error('Error clearing cache:', e);
+    }
+  }, []); // Run only once on mount
 
   // ✅ COMPLETE CASCADING HIERARCHY MAPS
   const zoneToAreaMap: Record<string, string[]> = {

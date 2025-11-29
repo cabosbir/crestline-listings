@@ -46,6 +46,33 @@ const AdvancedSearch = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
+  // ⭐ CLEAR STALE CACHE ON MOUNT - Force fresh data
+  useEffect(() => {
+    const clearStaleCache = () => {
+      try {
+        // Clear only listing-related cache, preserve user preferences
+        const keysToRemove: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (
+            key.includes('featured') || 
+            key.includes('my-listings') || 
+            key.includes('search-results') ||
+            key.includes('property-cache')
+          )) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+        console.log('🧹 Cleared stale listing cache on AdvancedSearch mount');
+      } catch (e) {
+        console.error('Error clearing cache:', e);
+      }
+    };
+    
+    clearStaleCache();
+  }, []); // Run only once on mount
+  
   const [uiSearchQuery, setUiSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: ["Condos", "Houses", "Land"],
