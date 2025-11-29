@@ -118,7 +118,10 @@ const Properties = () => {
       if (currentPriceParam === 'true') apiFilters.currentPrice = true;
       
       console.log('🔍 [PROPERTIES] Loading from AdvancedSearch filters:', apiFilters);
-      loadProperties(apiFilters).then(() => {
+      
+      (async () => {
+        await loadProperties(apiFilters);
+        
         // Restore state AFTER properties load
         const returning = sessionStorage.getItem('returningFromProperty');
         if (returning === 'true') {
@@ -143,10 +146,9 @@ const Properties = () => {
           }
           sessionStorage.removeItem('returningFromProperty');
         } else {
-          // New search - reset to page 1
           setCurrentPage(1);
         }
-      });
+      })();
     }
   }, [location.search]);
 
