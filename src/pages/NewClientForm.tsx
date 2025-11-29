@@ -208,28 +208,33 @@ const NewClientForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+  <div className="min-h-screen bg-gray-50">
+    <Navbar />
 
-      <div className="container mx-auto px-4 py-8 sm:py-16 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 sm:py-16 max-w-4xl">
+      
+      <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
+
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 mb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-            <img 
-              src="https://res.cloudinary.com/dhwnr1pa5/image/upload/v1762021536/Screenshot_2025-10-31_at_5.21.25_PM-removebg-preview_2_gndt9y.png"
-              alt="BIR Logo"
-              className="h-16 sm:h-20 w-auto"
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+          <img
+            src="/BIRLOGO.png"
+            alt="BIR Logo"
+            className="h-16 sm:h-20 w-auto"
+          />
+
+          <div className="text-center sm:text-right">
+            <label className="text-sm font-semibold text-gray-700">DATE:</label>
+            <Input
+              type="date"
+              value={formData.date}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
+              className="mt-1 w-full sm:w-48"
             />
-            <div className="text-center sm:text-right">
-              <label className="text-sm font-semibold text-gray-700">DATE:</label>
-              <Input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({...formData, date: e.target.value})}
-                className="mt-1 w-full sm:w-48"
-              />
-            </div>
           </div>
+        </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-2">NEW CLIENT FORM</h1>
           <p className="text-center text-gray-600 mb-8">For {agent.name}</p>
