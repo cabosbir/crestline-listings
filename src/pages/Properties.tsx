@@ -460,15 +460,7 @@ const Properties = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {currentItems.map((property) => (
-                      <div
-                        key={property.id}
-                        onClick={() => {
-                          // ⭐ Mark that we're leaving to view a property
-                          sessionStorage.setItem('returningFromProperty', 'true');
-                        }}
-                      >
-                        <PropertyCard {...property} currentPage={currentPage} />
-                      </div>
+                      <PropertyCard key={property.id} {...property} currentPage={currentPage} />
                     ))}
                   </div>
 
