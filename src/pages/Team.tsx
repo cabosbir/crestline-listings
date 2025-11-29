@@ -327,7 +327,7 @@ const Team = () => {
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-foreground mb-4">Our Expert Advisors</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
-                Each member of our team brings unique expertise and a commitment to exceptional service in Cabo San Lucas
+                Each member of our team brings unique expertise<br />and a commitment to exceptional service in Cabo San Lucas
               </p>
               <p className="text-sm text-muted-foreground">
                 {agents.length} expert agents ready to assist you
