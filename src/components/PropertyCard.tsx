@@ -45,10 +45,13 @@ const PropertyCard = ({
   const handleViewDetails = (e?: React.MouseEvent) => {
     e?.stopPropagation();
 
+    console.log('🎯 PropertyCard clicked - currentPage:', currentPage);
+    
     // ⭐ Set flag before navigating
     sessionStorage.setItem('returningFromProperty', 'true');
 
     const routeId = mlsNumber ?? id;
+    console.log('🚀 Navigating to:', `/property/${routeId}?page=${currentPage}`);
     navigate(`/property/${routeId}?page=${currentPage}`);
   };
 
