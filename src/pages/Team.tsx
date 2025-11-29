@@ -291,8 +291,7 @@ const Team = () => {
             Meet Our Team
           </h1>
           <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
-            Our experienced team of real estate professionals is dedicated to helping you find your dream property in Cabo San Lucas. 
-            With decades of combined experience, we provide unparalleled expertise in Baja California Sur luxury real estate.
+            Our expert team is here to help you find the perfect property in Cabo San Lucas.
           </p>
         </div>
       </section>
