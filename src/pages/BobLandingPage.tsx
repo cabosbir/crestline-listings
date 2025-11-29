@@ -157,8 +157,27 @@ const BobLandingPage = () => {
     return 1;
   };
   
+  const getInitialTab = () => {
+    if (typeof window !== 'undefined') {
+      const returning = sessionStorage.getItem('returningFromProperty');
+      if (returning === 'true') {
+        const savedState = sessionStorage.getItem('bobBrowseState');
+        if (savedState) {
+          try {
+            const state = JSON.parse(savedState);
+            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+            if (isRecent && state.url === window.location.pathname) {
+              return state.activeTab === 'my-listings';
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    return false;
+  };
+  
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showMyListings, setShowMyListings] = useState(false);
+  const [showMyListings, setShowMyListings] = useState(getInitialTab());
   const [myListings, setMyListings] = useState(fallbackListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
@@ -190,7 +209,6 @@ const BobLandingPage = () => {
             const state = JSON.parse(savedState);
             const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
             if (state.url === window.location.pathname && isRecent) {
-              setShowMyListings(state.activeTab === 'my-listings');
               setTimeout(() => {
                 window.scrollTo({ top: state.scrollPosition || 0, behavior: 'smooth' });
                 sessionStorage.removeItem('returningFromProperty');
