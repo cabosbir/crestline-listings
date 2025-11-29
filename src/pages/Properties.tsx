@@ -38,44 +38,6 @@ const Properties = () => {
     }
   }, [currentPage, viewMode]);
 
-  // ⭐ RESTORE STATE - Restore page and scroll when returning from property details
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const returning = sessionStorage.getItem('returningFromProperty');
-      if (returning === 'true') {
-        const savedState = sessionStorage.getItem('propertiesBrowseState');
-        if (savedState) {
-          try {
-            const state = JSON.parse(savedState);
-            const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
-            const urlMatches = state.url === (window.location.pathname + window.location.search);
-            
-            if (urlMatches && isRecent) {
-              console.log('🔄 Restoring browse state:', state);
-              setCurrentPage(state.currentPage || 1);
-              setViewMode(state.viewMode || 'list');
-              
-              setTimeout(() => {
-                window.scrollTo({
-                  top: state.scrollPosition || 0,
-                  behavior: 'smooth'
-                });
-                sessionStorage.removeItem('returningFromProperty');
-              }, 500);
-            } else {
-              sessionStorage.removeItem('returningFromProperty');
-            }
-          } catch (e) {
-            console.error('Error restoring browse state:', e);
-            sessionStorage.removeItem('returningFromProperty');
-          }
-        } else {
-          sessionStorage.removeItem('returningFromProperty');
-        }
-      }
-    }
-  }, []);
-
   // Fetch real MLS total count
   useEffect(() => {
     const fetchTotalCount = async () => {
@@ -156,12 +118,35 @@ const Properties = () => {
       if (currentPriceParam === 'true') apiFilters.currentPrice = true;
       
       console.log('🔍 [PROPERTIES] Loading from AdvancedSearch filters:', apiFilters);
-      loadProperties(apiFilters);
-      
-      // Only reset to page 1 for new filter searches (not when returning)
-      if (!sessionStorage.getItem('returningFromProperty')) {
-        setCurrentPage(1);
-      }
+      loadProperties(apiFilters).then(() => {
+        // Restore state AFTER properties load
+        const returning = sessionStorage.getItem('returningFromProperty');
+        if (returning === 'true') {
+          const savedState = sessionStorage.getItem('propertiesBrowseState');
+          if (savedState) {
+            try {
+              const state = JSON.parse(savedState);
+              const isRecent = (Date.now() - state.timestamp) < 30 * 60 * 1000;
+              const urlMatches = state.url === (window.location.pathname + window.location.search);
+              
+              if (urlMatches && isRecent) {
+                console.log('🔄 Restoring page:', state.currentPage);
+                setCurrentPage(state.currentPage || 1);
+                setViewMode(state.viewMode || 'list');
+                setTimeout(() => {
+                  window.scrollTo({ top: state.scrollPosition || 0, behavior: 'smooth' });
+                }, 100);
+              }
+            } catch (e) {
+              console.error('Error restoring:', e);
+            }
+          }
+          sessionStorage.removeItem('returningFromProperty');
+        } else {
+          // New search - reset to page 1
+          setCurrentPage(1);
+        }
+      });
     }
   }, [location.search]);
 
