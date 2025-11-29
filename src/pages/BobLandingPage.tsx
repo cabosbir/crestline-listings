@@ -465,7 +465,7 @@ const BobLandingPage = () => {
             </div>
 
             <div className="order-1 lg:order-2 text-center lg:text-left">
-              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Real Estate Expert</p>
+              <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Your Luxury Real Estate Expert</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
                 {agent.name}
               </h1>
@@ -602,7 +602,7 @@ const BobLandingPage = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                 {displayedListings.map((property) => (
-                  <PropertyCard key={property.id} {...property} />
+                  <PropertyCard key={property.id} {...property} currentPage={currentPage} />
                 ))}
               </div>
 
