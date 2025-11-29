@@ -85,38 +85,6 @@ const Properties = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     
-    // ⭐ CHECK FOR CACHED RESULTS FIRST
-    const cacheKey = params.get('cacheKey');
-    if (cacheKey) {
-      const cachedData = sessionStorage.getItem(cacheKey);
-      const timestamp = sessionStorage.getItem(`${cacheKey}-timestamp`);
-      
-      if (cachedData && timestamp) {
-        const age = Date.now() - parseInt(timestamp);
-        const maxAge = 10 * 60 * 1000; // 10 minutes
-        
-        if (age < maxAge) {
-          try {
-            const cached = JSON.parse(cachedData);
-            console.log(`✅ Loading ${cached.mlsProperties?.length || 0} properties from cache (${cacheKey})`);
-            
-            // Use pre-converted data from cache
-            setAllProperties(cached.mlsProperties || []);
-            setProperties(cached.convertedProperties || []);
-            setCurrentPage(1);
-            setLoading(false);
-            return; // Don't fetch from API
-          } catch (e) {
-            console.error('❌ Error loading from cache:', e);
-          }
-        } else {
-          console.log('⚠️ Cache expired, fetching fresh data');
-          sessionStorage.removeItem(cacheKey);
-          sessionStorage.removeItem(`${cacheKey}-timestamp`);
-        }
-      }
-    }
-    
     // Check for direct search (MLS number, address, text search)
     const mlsNumberParam = params.get('mlsNumber');
     const addressParam = params.get('address');
