@@ -121,8 +121,17 @@ const Properties = () => {
       // Location filters
       if (zonesParam) apiFilters.city = zonesParam.split(',');
       if (areasParam) apiFilters.area = areasParam.split(',');
-      if (communitiesParam) apiFilters.subdivision = communitiesParam.split(',');
-      if (subdivisionsParam) apiFilters.subdivision = subdivisionsParam.split(',');
+      
+      // ⭐ FIXED: Community filter (was missing)
+      if (communitiesParam) {
+        apiFilters.community = communitiesParam.split(',');
+        console.log('🏘️ Community filter:', apiFilters.community);
+      }
+      
+      if (subdivisionsParam) {
+        apiFilters.subdivision = subdivisionsParam.split(',');
+        console.log('🏘️ Subdivision filter:', apiFilters.subdivision);
+      }
 
       // Price & property filters
       if (minPriceParam) apiFilters.minPrice = parsePrice(minPriceParam);
