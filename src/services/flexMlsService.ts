@@ -100,7 +100,7 @@ export async function fetchListings(params?: {
     if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     
-    // 🆕 SPECIAL FILTERS - THIS WAS MISSING!
+    // 🆕 SPECIAL FILTERS - Seller Financing (server-side)
     if (params?.sellerFinancing) {
       queryParams.append('sellerFinancing', 'true');
       if (params.sellerFinancingFieldName) {
@@ -108,15 +108,11 @@ export async function fetchListings(params?: {
       }
       console.log('💵 Service: Adding seller financing filter');
     }
-    if (params?.primaryView) {
-      queryParams.append('primaryView', 'true');
-      if (params.viewFieldName) {
-        queryParams.append('viewFieldName', params.viewFieldName);
-        console.log(`👁️ Service: Adding primary view filter (field: ${params.viewFieldName})`);
-      } else {
-        console.log('👁️ Service: Adding primary view filter');
-      }
-    }
+    
+    // ⚠️ PRIMARY VIEW - CLIENT-SIDE ONLY (removed from API call)
+    // Primary View filter will be applied after fetching results
+    
+    // 🆕 Current Price (server-side)
     if (params?.currentPrice) {
       queryParams.append('currentPrice', 'true');
       if (params.currentPriceFieldName) {
@@ -148,7 +144,26 @@ export async function fetchListings(params?: {
       });
     }
     
-    return data.results || getFallbackListings();
+    let results = data.results || [];
+    
+    // ⭐ CLIENT-SIDE FILTERING - Primary View
+    if (params?.primaryView && results.length > 0) {
+      const viewField = params.viewFieldName || 'General_sp_Description_co_Primary_sp_View';
+      console.log(`👁️ Filtering ${results.length} properties for Primary View (field: ${viewField})`);
+      
+      const beforeCount = results.length;
+      results = results.filter((property: any) => {
+        const hasView = property[viewField] === true || 
+                       property[viewField] === 'true' || 
+                       property[viewField] === 'Yes' ||
+                       property[viewField] === 'Y';
+        return hasView;
+      });
+      
+      console.log(`✅ Primary View filter: ${beforeCount} → ${results.length} properties`);
+    }
+    
+    return results;
   } catch (error) {
     console.error('❌ Error fetching listings:', error);
     return getFallbackListings();
