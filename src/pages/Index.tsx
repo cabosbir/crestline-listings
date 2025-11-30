@@ -16,15 +16,33 @@ const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch live properties on mount
+  // Fetch live properties on mount - OPTIMIZED with caching
   useEffect(() => {
     const loadFeaturedProperties = async () => {
       setLoading(true);
       try {
+        // ⭐ CACHE IMPLEMENTATION - Check cache first for faster loading
+        const cacheKey = 'homepage-featured-v1';
+        const cacheTimeKey = `${cacheKey}-time`;
+        const cached = localStorage.getItem(cacheKey);
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        
+        const now = Date.now();
+        const twentyFourHours = 24 * 60 * 60 * 1000; // Extended cache for better performance
+        
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < twentyFourHours) {
+          console.log('✅ Using cached featured properties');
+          const cachedData = JSON.parse(cached);
+          setFeaturedProperties(cachedData);
+          setLoading(false);
+          return;
+        }
+        
         console.log('📡 Loading featured properties from API...');
         
         // Fetch properties with no filters to get latest listings
-        const mlsProperties: MLSProperty[] = await fetchListings({ limit: 50 });
+        // OPTIMIZED: Reduced from 50 to 15 for faster loading (only need 3)
+        const mlsProperties: MLSProperty[] = await fetchListings({ limit: 15 });
         console.log('✅ Received properties:', mlsProperties.length);
         
         // Convert to PropertyCard format
@@ -35,6 +53,15 @@ const Index = () => {
         const featured = shuffled.slice(0, 3);
         
         setFeaturedProperties(featured);
+        
+        // ⭐ Cache the results
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(featured));
+          localStorage.setItem(cacheTimeKey, now.toString());
+          console.log('💾 Cached featured properties');
+        } catch (e) {
+          console.error('Error caching featured properties:', e);
+        }
       } catch (error) {
         console.error('❌ Error loading featured properties:', error);
         // Set empty array on error
