@@ -144,24 +144,26 @@ const Hero = () => {
       ref={heroRef}
       className="relative h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Background Video with Crossfade */}
+      {/* Background Video with Crossfade - OPTIMIZED */}
       <div className="absolute inset-0 z-0">
         <div className="video-container absolute inset-0 w-full h-full">
-          {/* Primary video */}
+          {/* Primary video - OPTIMIZED: preload="metadata" loads faster */}
           <video
             ref={videoRef}
             autoPlay
             muted
             playsInline
+            preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
           >
             <source src="/BIR.mp4" type="video/mp4" />
           </video>
-          {/* Secondary video for crossfade */}
+          {/* Secondary video for crossfade - OPTIMIZED: preload="none" saves bandwidth */}
           <video
             ref={video2Ref}
             muted
             playsInline
+            preload="none"
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
             style={{ opacity: 0 }}
           >
