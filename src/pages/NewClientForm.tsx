@@ -70,6 +70,18 @@ const agentsData = {
     name: "Don Weis",
     email: "Don@bircabo.com",
     phone: "+52 624 143 5555"
+  },
+  "fernando-cabrera": {
+    id: 11,
+    name: "Fernando Cabrera",
+    email: "fernando@bircabo.com",
+    phone: "+52 624 135 8900"
+  },
+  "charles-jones": {
+    id: 13,
+    name: "Charles Jones",
+    email: "cabocharlie79@gmail.com",
+    phone: "+1 858 964 4629"
   }
 };
 
@@ -358,16 +370,18 @@ const NewClientForm = () => {
                   className="w-full p-2 border border-gray-300 rounded-md"
                 >
                   <option value="">No Preference - Office Will Assign</option>
-                  <option value="alfonso">Alfonso Puente</option>
-                  <option value="bob">Bob Van Patten</option>
-                  <option value="cozbi">Cozbi Sanchez</option>
-                  <option value="david">David Scott Piper</option>
-                  <option value="don">Don Weis</option>
-                  <option value="edgar">Edgar Pacheco</option>
-                  <option value="erika">Erika Aispuro</option>
-                  <option value="hector">Hector Mendoza</option>
-                  <option value="marisol">Marisol Tort</option>
-                  <option value="susu">Susu Vieira</option>
+                <option value="alfonso">Alfonso Puente</option>
+                <option value="bob">Bob Van Patten</option>
+                <option value="charles-jones">Charles Jones</option>
+                <option value="cozbi">Cozbi Sanchez</option>
+                <option value="david">David Scott Piper</option>
+                <option value="don">Don Weis</option>
+                <option value="edgar">Edgar Pacheco</option>
+                <option value="erika">Erika Aispuro</option>
+                <option value="fernando-cabrera">Fernando Cabrera</option>
+                <option value="hector">Hector Mendoza</option>
+                <option value="marisol">Marisol Tort</option>
+                <option value="susu">Susu Vieira</option>
                 </select>
               )}
             </div>

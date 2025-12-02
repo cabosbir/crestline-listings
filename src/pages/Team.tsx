@@ -180,6 +180,36 @@ const Team = () => {
       certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
     },
+    {
+      id: 11,
+      slug: "fernando-cabrera",
+      name: "Fernando Cabrera",
+      title: "Real Estate Advisor",
+      specialization: "Residential Properties & Vacation Homes",
+      image: "/fernando-cabrera.jpg",
+      phone: "+52 624 135 8900",
+      email: "fernando@bircabo.com",
+      yearsExperience: 5,
+      propertiesSold: 40,
+      bio: "I'm a former professional tennis player, and now a passionate real-estate advisor in Los Cabos. I know how important it is to feel confident and comfortable when choosing a home. I love meeting new people, listening to their needs, and helping them find the best options available. My goal is simple: to make every client feel supported, informed, and excited about their real estate journey.",
+      certifications: ["MLS Member", "NAR Member"],
+      languages: ["English", "Spanish"]
+    },
+    {
+  id: 13,
+  slug: "charles-jones",
+  name: "Charles Jones",
+  title: "Luxury Property Specialist",
+  specialization: "Pedregal & Luxury Vacation Rentals",
+  image: "/charles-jones.jpg",
+  phone: "+1 858 964 4629",
+  email: "cabocharlie79@gmail.com",
+  yearsExperience: 30,
+  propertiesSold: 250,
+  bio: "A real estate professional by heritage, fluent in English and Spanish, with over 30 years of experience in Pedregal, Cabo San Lucas, and extensive knowledge of the entire area. This background allows me to offer a strategic and global approach when assisting my clients with buying, selling, or managing properties.",
+  certifications: ["REALTOR®", "MLS Member", "Property Management Specialist"],
+  languages: ["English", "Spanish"]
+},
   ];
 
   // Intersection Observer for stats animation

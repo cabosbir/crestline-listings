@@ -17,11 +17,13 @@ import AgentDetail from "./pages/AgentDetail";
 import IDXSearch from "./pages/IDXSearch";
 import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
 import BobLandingPage from "./pages/BobLandingPage";
+import CharlesLandingPage from "./pages/CharlesLandingPage";
 import CozbiLandingPage from "./pages/CozbiLandingPage";
 import DavidLandingPage from "./pages/DavidLandingPage";
 import DonLandingPage from "./pages/DonLandingPage";
 import EdgarLandingPage from "./pages/EdgarLandingPage";
 import ErikaLandingPage from "./pages/ErikaLandingPage";
+import FernandoLandingPage from "./pages/FernandoLandingPage";
 import HectorLandingPage from "./pages/HectorLandingPage";
 import MarisolLandingPage from "./pages/MarisolLandingPage";
 import SusuLandingPage from "./pages/SusuLandingPage";
@@ -83,11 +85,13 @@ const App = () => (
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/bob" element={<BobLandingPage />} />
+          <Route path="/charles-jones" element={<CharlesLandingPage />} />
           <Route path="/cozbi" element={<CozbiLandingPage />} />
           <Route path="/david" element={<DavidLandingPage />} />
           <Route path="/don" element={<DonLandingPage />} />
           <Route path="/edgar" element={<EdgarLandingPage />} />
           <Route path="/erika" element={<ErikaLandingPage />} />
+          <Route path="/fernando-cabrera" element={<FernandoLandingPage />} />
           <Route path="/hector" element={<HectorLandingPage />} />
           <Route path="/marisol" element={<MarisolLandingPage />} />
           <Route path="/susu" element={<SusuLandingPage />} />
@@ -95,11 +99,13 @@ const App = () => (
           {/* Agent Landing Pages - Full URLs (e.g., /agents/bob) */}
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/agents/bob" element={<BobLandingPage />} />
+          <Route path="/agents/charles-jones" element={<CharlesLandingPage />} />
           <Route path="/agents/cozbi" element={<CozbiLandingPage />} />
           <Route path="/agents/david" element={<DavidLandingPage />} />
           <Route path="/agents/don" element={<DonLandingPage />} />
           <Route path="/agents/edgar" element={<EdgarLandingPage />} />
           <Route path="/agents/erika" element={<ErikaLandingPage />} />
+          <Route path="/agents/fernando-cabrera" element={<FernandoLandingPage />} />
           <Route path="/agents/hector" element={<HectorLandingPage />} />
           <Route path="/agents/marisol" element={<MarisolLandingPage />} />
           <Route path="/agents/susu" element={<SusuLandingPage />} />
