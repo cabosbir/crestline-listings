@@ -70,9 +70,9 @@ export default async function handler(
     const raw = req.query;
 
     const cityRaw = raw.city;
-    const areaRaw = raw.area;
-    const communityRaw = raw.community;
-    const subdivisionRaw = raw.subdivision;
+    const areaRaw = raw.areas;           
+    const communityRaw = raw.communities; 
+    const subdivisionRaw = raw.subdivisions; 
     const minPriceRaw = raw.minPrice;
     const maxPriceRaw = raw.maxPrice;
     const bedroomsRaw = raw.bedrooms;
