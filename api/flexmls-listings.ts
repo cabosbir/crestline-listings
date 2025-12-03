@@ -153,7 +153,7 @@ export default async function handler(
     }
 
     // LOCATION - City/Zone
-    if (city) {
+    if (city && !area) {
       const cities = city.split(',').map(c => c.trim()).filter(Boolean);
       if (cities.length === 1) {
         filters.push(`City eq '${cities[0].replace(/'/g, "''")}'`);
