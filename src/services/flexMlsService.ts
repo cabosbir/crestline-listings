@@ -136,22 +136,22 @@ export async function fetchListings(params?: {
     
     const data = await response.json();
     
-    // ✅ FIXED: Check for 'listings' field instead of 'success'
-    // API returns: { listings: [...], total: 869 }
-    if (!data.listings || !Array.isArray(data.listings)) {
+    // ✅ FIXED: Check for 'results' field (what API actually returns)
+    // API returns: { success: true, count: 869, results: [...] }
+    if (!data.results || !Array.isArray(data.results)) {
       console.warn('⚠️ API returned invalid response format:', data);
       return getFallbackListings();
     }
     
-    console.log('✅ Fetched listings:', data.listings.length);
-    console.log('📊 Total in MLS:', data.total || 'Unknown');
+    console.log('✅ Fetched listings:', data.results.length);
+    console.log('📊 Total in MLS:', data.count || 'Unknown');
     
     // Cache all properties
-    data.listings.forEach((prop: MLSProperty) => {
+    data.results.forEach((prop: MLSProperty) => {
       propertyCache.set(prop.ListingKey, prop);
     });
     
-    let results = data.listings;
+    let results = data.results;
     
     // ⭐ CLIENT-SIDE FILTERING - Primary View
     if (params?.primaryView && results.length > 0) {
