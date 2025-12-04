@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/flexmls-listings",
+      "destination": "/api/flexmls-listings-v2"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
