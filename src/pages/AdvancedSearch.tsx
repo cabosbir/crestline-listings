@@ -146,7 +146,7 @@ const AdvancedSearch = () => {
     "CSL-Centro": ["Centro", "Pedregal CSL"],
     "CSL-North": ["CSL North-East 19", "CSL North-West 19", "El Tezal-East", "El Tezal-West", "El Tezal-OceanSide"],
     "CSL Cor-Inland": ["CSL Country Club", "Cabo del Sol-Inland", "Chileno Bay Club", "Chileno/Montage-Inland", "El Tezal-East", "El Tezal-West"],
-    "CSL-Corr. Oceanside": ["Punta Ballena", "Misiones", "Chileno Bay/Montage", "Chileno Bay Club", "Chileno Bay"],
+    "CSL-Corr. Oceanside": ["Punta Ballena", "Misiones", "Chileno Bay Club", "Chileno Bay"],
     "SJD Corr-Inland": ["El Tule-Inland", "Palmilla-Inland"],
     "SJD Corr-Oceanside": ["Chileno Bay Club", "Costa Palmas", "El Tule-Ocean Side", "Palmilla-Ocean Side", "Puerto Los Cabos"],
     "SJD-Centro": ["SJD Downtown", "Forjadores SJD"],

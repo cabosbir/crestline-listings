@@ -32,11 +32,19 @@ const KNOWN_SUBDIVISIONS = [
 ];
 
 // Community name corrections (UI label → actual FlexMLS value)
+// ✅ CORRECTED VERSION - Maps UI labels to real MLS Community field values
 const COMMUNITY_NAME_MAPPER: Record<string, string> = {
+  // UI → MLS
   'Cabo del Sol-Inland': 'Cabo del Sol',
-  'Chileno Bay Club': 'Chileno Bay',
-  'Chileno/Montage-Inland': 'Chileno Bay',
-  'CSL Country Club': 'Country Club Estates',
+
+  // Chileno / Montage area
+  'Chileno Bay Club': 'Chileno Bay',        // Optional but safe
+  'Chileno/Montage-Inland': 'El Tule',      // Correct MLS matching region
+
+  // Country Club
+  'CSL Country Club': 'CSL Country Club',   // Do NOT map to Country Club Estates
+
+  // El Tezal cluster
   'El Tezal-East': 'El Tezal',
   'El Tezal-West': 'El Tezal',
   'El Tezal-OceanSide': 'El Tezal'
