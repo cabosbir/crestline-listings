@@ -178,23 +178,42 @@ function buildLocationFilters({
   }
 
   if (city) {
-    // City is not a reliable field for Cabo; treat Cabo Corridor specially (area decoy)
-    if (city === 'Cabo Corridor') {
-      const corridorAreas = ['CSL Cor-Inland', 'CSL-Corr. Oceanside'];
-      const f = corridorAreas.map(a => {
-        const v = safeEscape(a);
-        return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
-      }).join(' or ');
-      parts.push(`(${f})`);
-    } else {
-      const s = safeEscape(city);
-      parts.push(`(City eq '${s}' or contains(City,'${s}') or contains(UnparsedAddress,'${s}'))`);
-    }
+  // -------------------------
+  // 1. If the "city" from UI is really a Zone
+  // -------------------------
+  if (ZONE_MAPPER[city]) {
+    const zones = ZONE_MAPPER[city]; // always an array
+
+    const zoneFilters = zones.map(z => {
+      const v = safeEscape(z);
+      return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+    }).join(' or ');
+
+    parts.push(`(${zoneFilters})`);
     return parts;
   }
 
+  // -------------------------
+  // 2. Actual Cabo Corridor hack (same logic as before)
+  // -------------------------
+  if (city === 'Cabo Corridor') {
+    const corridorAreas = ['CSL Cor-Inland', 'CSL Cor-Oceanside'];
+    const f = corridorAreas.map(a => {
+      const v = safeEscape(a);
+      return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+    }).join(' or ');
+    parts.push(`(${f})`);
+    return parts;
+  }
+
+  // -------------------------
+  // 3. Normal City logic
+  // -------------------------
+  const s = safeEscape(city);
+  parts.push(`(City eq '${s}' or contains(City,'${s}') or contains(UnparsedAddress,'${s}'))`);
   return parts;
 }
+
 
 // -----------------------------
 // Fetch helpers (use URL object so base must exist)
