@@ -273,6 +273,17 @@ export default async function handler(
     const statusValue = (status && typeof status === 'string') ? status : 'Active';
     filters.push(`StandardStatus eq '${statusValue}'`);
 
+    // ============================================================================
+    // GEOGRAPHIC BOUNDING BOX - Prevent properties showing in wrong locations
+    // ============================================================================
+    // Los Cabos region approximate bounds (prevents USA/ocean properties)
+    // This fixes the issue where properties appear in the USA or middle of ocean
+    filters.push(`Latitude ge 22.8`);     // South boundary (below Los Cabos)
+    filters.push(`Latitude le 23.3`);     // North boundary (above Los Cabos)
+    filters.push(`Longitude ge -110.3`);  // East boundary
+    filters.push(`Longitude le -109.6`);  // West boundary
+    console.log('🗺️ [Geographic Filter] Applied Los Cabos bounding box (Lat: 22.8-23.3, Lng: -110.3 to -109.6)');
+
     // SQFT
     if (minSqft && typeof minSqft === 'string' && minSqft !== 'No Preference') {
       const sqft = parseInt(minSqft.replace('+', ''));
