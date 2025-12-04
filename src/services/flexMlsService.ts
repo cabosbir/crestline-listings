@@ -1,4 +1,4 @@
-// src/services/flexMlsService.ts - FIXED TO PASS SPECIAL FILTERS
+// src/services/flexMlsService.ts - FIXED: Check for 'listings' field instead of 'success'
 
 export interface MLSProperty {
   ListingKey: string;
@@ -128,23 +128,30 @@ export async function fetchListings(params?: {
     
     console.log('📡 Fetching listings from:', url);
     const response = await fetch(url);
-    const data = await response.json();
     
-    if (!data.success) {
-      console.warn('⚠️ API returned no results, using fallback');
+    if (!response.ok) {
+      console.error(`❌ API returned ${response.status}`, await response.text());
       return getFallbackListings();
     }
     
-    console.log('✅ Fetched listings:', data.results?.length || 0);
-    console.log('📊 Total in MLS:', data.total || 'Unknown');
+    const data = await response.json();
     
-    if (data.results && Array.isArray(data.results)) {
-      data.results.forEach((prop: MLSProperty) => {
-        propertyCache.set(prop.ListingKey, prop);
-      });
+    // ✅ FIXED: Check for 'listings' field instead of 'success'
+    // API returns: { listings: [...], total: 869 }
+    if (!data.listings || !Array.isArray(data.listings)) {
+      console.warn('⚠️ API returned invalid response format:', data);
+      return getFallbackListings();
     }
     
-    let results = data.results || [];
+    console.log('✅ Fetched listings:', data.listings.length);
+    console.log('📊 Total in MLS:', data.total || 'Unknown');
+    
+    // Cache all properties
+    data.listings.forEach((prop: MLSProperty) => {
+      propertyCache.set(prop.ListingKey, prop);
+    });
+    
+    let results = data.listings;
     
     // ⭐ CLIENT-SIDE FILTERING - Primary View
     if (params?.primaryView && results.length > 0) {
@@ -194,16 +201,23 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
     
     console.log('📡 Fetching all listings from:', url);
     const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.error('❌ Failed to fetch listings:', response.status);
+      return null;
+    }
+    
     const data = await response.json();
     
-    if (!data.success || !data.results) {
-      console.error('❌ Failed to fetch listings');
+    // ✅ FIXED: Check for 'listings' field
+    if (!data.listings || !Array.isArray(data.listings)) {
+      console.error('❌ Invalid API response format');
       return null;
     }
 
-    console.log('✅ Fetched listings:', data.results?.length || 0);
+    console.log('✅ Fetched listings:', data.listings.length);
     
-    const property = data.results.find((p: MLSProperty) => p.ListingKey === trimmedKey);
+    const property = data.listings.find((p: MLSProperty) => p.ListingKey === trimmedKey);
     
     if (!property) {
       console.error('❌ Property not found:', trimmedKey);
