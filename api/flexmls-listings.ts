@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - WITH SPECIAL FILTERS SUPPORT
+// api/flexmls-listings.ts - WITH CASCADING DECOY FILTERS + SPECIAL FILTERS SUPPORT
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -152,19 +152,47 @@ export default async function handler(
       filters.push(`(${searchFilters.join(' or ')})`);
     }
 
-    // LOCATION - City/Zone
-    if (city && !area) {
-      const cities = city.split(',').map(c => c.trim()).filter(Boolean);
-      if (cities.length === 1) {
-        filters.push(`City eq '${cities[0].replace(/'/g, "''")}'`);
-      } else if (cities.length > 1) {
-        const cityFilters = cities.map(c => `City eq '${c.replace(/'/g, "''")}'`);
-        filters.push(`(${cityFilters.join(' or ')})`);
-      }
-    }
+    // ============================================================================
+    // CASCADING FILTER HIERARCHY WITH DECOY SYSTEM
+    // ============================================================================
+    // Rule: Most specific filter wins. Less specific filters become "decoys"
+    // Zone → Area → Community → Subdivision
+    // If Subdivision exists, use ONLY Subdivision
+    // Else if Community exists, use ONLY Community
+    // Else if Area exists, use ONLY Area
+    // Else if Zone exists, use Zone as decoy (fetch all related areas)
+    // ============================================================================
 
-    // AREAS - Use contains() for flexible matching
-    if (area) {
+    // SUBDIVISION - Most specific, always wins if present
+    if (subdivision) {
+      const subdivisionList = subdivision.split(',').map(s => s.trim()).filter(Boolean);
+      
+      if (subdivisionList.length === 1) {
+        filters.push(`(SubdivisionName eq '${subdivisionList[0].replace(/'/g, "''")}' or contains(SubdivisionName, '${subdivisionList[0].replace(/'/g, "''")}'))`);
+      } else if (subdivisionList.length > 1) {
+        const subdivisionFilters = subdivisionList.map(s => 
+          `(SubdivisionName eq '${s.replace(/'/g, "''")}' or contains(SubdivisionName, '${s.replace(/'/g, "''")}'))`
+        );
+        filters.push(`(${subdivisionFilters.join(' or ')})`);
+      }
+      console.log('🎯 [HIERARCHY] Using SUBDIVISION filter (most specific)');
+    }
+    // COMMUNITY - Second most specific, wins if no subdivision
+    else if (community) {
+      const communityList = community.split(',').map(c => c.trim()).filter(Boolean);
+      
+      if (communityList.length === 1) {
+        filters.push(`(CommunityName eq '${communityList[0].replace(/'/g, "''")}' or contains(CommunityName, '${communityList[0].replace(/'/g, "''")}'))`);
+      } else if (communityList.length > 1) {
+        const communityFilters = communityList.map(c => 
+          `(CommunityName eq '${c.replace(/'/g, "''")}' or contains(CommunityName, '${c.replace(/'/g, "''")}'))`
+        );
+        filters.push(`(${communityFilters.join(' or ')})`);
+      }
+      console.log('🎯 [HIERARCHY] Using COMMUNITY filter (Area/Zone become decoys)');
+    }
+    // AREA - Third most specific, wins if no community or subdivision
+    else if (area) {
       const areaList = area.split(',').map(a => a.trim()).filter(Boolean);
       
       if (areaList.length === 1) {
@@ -175,27 +203,35 @@ export default async function handler(
         );
         filters.push(`(${areaFilters.join(' or ')})`);
       }
+      console.log('🎯 [HIERARCHY] Using AREA filter (Zone becomes decoy)');
     }
-
-    // COMMUNITIES - Use contains() for flexible matching
-    if (community) {
-      const communityList = community.split(',').map(c => c.trim()).filter(Boolean);
-      if (communityList.length === 1) {
-        filters.push(`contains(SubdivisionName, '${communityList[0].replace(/'/g, "''")}')`);
-      } else if (communityList.length > 1) {
-        const communityFilters = communityList.map(c => `contains(SubdivisionName, '${c.replace(/'/g, "''")}')`);
-        filters.push(`(${communityFilters.join(' or ')})`);
-      }
-    }
-
-    // SUBDIVISIONS - Use contains() for flexible matching
-    if (subdivision) {
-      const subdivisionList = subdivision.split(',').map(s => s.trim()).filter(Boolean);
-      if (subdivisionList.length === 1) {
-        filters.push(`contains(SubdivisionName, '${subdivisionList[0].replace(/'/g, "''")}')`);
-      } else if (subdivisionList.length > 1) {
-        const subdivisionFilters = subdivisionList.map(s => `contains(SubdivisionName, '${s.replace(/'/g, "''")}')`);
-        filters.push(`(${subdivisionFilters.join(' or ')})`);
+    // CITY (Zone) - DECOY SYSTEM: Only active when no Area/Community/Subdivision
+    else if (city) {
+      // DECOY MODE for Cabo Corridor: Fetch all corridor properties using Area values
+      if (city === 'Cabo Corridor') {
+        // Get ALL corridor areas (both CSL and SJD corridor areas)
+        const corridorAreas = [
+          'CSL Cor-Inland',
+          'CSL-Corr. Oceanside',
+          'SJD Corr-Inland',
+          'SJD Corr-Oceanside'
+        ];
+        const areaFilters = corridorAreas.map(a => 
+          `(MLSAreaMajor eq '${a.replace(/'/g, "''")}' or contains(MLSAreaMajor, '${a.replace(/'/g, "''")}'))`
+        );
+        filters.push(`(${areaFilters.join(' or ')})`);
+        console.log('🎯 [HIERARCHY] Using ZONE DECOY for Cabo Corridor (fetching all 4 corridor areas)');
+      } else {
+        // For other cities, try the actual City field (may or may not work)
+        const cityList = city.split(',').map(c => c.trim()).filter(Boolean);
+        
+        if (cityList.length === 1) {
+          filters.push(`City eq '${cityList[0].replace(/'/g, "''")}'`);
+        } else if (cityList.length > 1) {
+          const cityFilters = cityList.map(c => `City eq '${c.replace(/'/g, "''")}'`);
+          filters.push(`(${cityFilters.join(' or ')})`);
+        }
+        console.log('🎯 [HIERARCHY] Using CITY filter (standard City field)');
       }
     }
 
