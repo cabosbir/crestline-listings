@@ -1,11 +1,11 @@
 // api/flexmls-listings.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const FLEXMLS_BASE_URL = process.env.FLEXMLS_BASE_URL; // e.g. https://replication.sparkapi.com/Version/3/Reso/OData
-const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;   // Bearer token or API key depending on your replication endpoint
+const FLEXMLS_BASE_URL = process.env.FLEXMLS_BASE_URL;
+const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
 
 // -----------------------------
-// Known subdivisions & mapper
+// Known subdivisions
 // -----------------------------
 const KNOWN_SUBDIVISIONS = [
   'Misiones',
@@ -30,6 +30,9 @@ const KNOWN_SUBDIVISIONS = [
   'El Tule',
 ];
 
+// -----------------------------
+// Community name mapper
+// -----------------------------
 const COMMUNITY_NAME_MAPPER: Record<string, string> = {
   'Cabo del Sol-Inland': 'Cabo del Sol',
   'Chileno Bay Club': 'Chileno Bay',
@@ -39,8 +42,24 @@ const COMMUNITY_NAME_MAPPER: Record<string, string> = {
   'El Tezal-West': 'El Tezal',
   'El Tezal-OceanSide': 'El Tezal',
 
-  // ➕ Newly added — belongs to Corridor
-  'Cabo Bello': 'Cabo Bello'
+  // Corridor mappings
+  'Cabo Bello': 'Cabo Bello',
+};
+
+// -----------------------------
+// Zone mapper (full zone list)
+// -----------------------------
+export const ZONE_MAPPER: Record<string, string[]> = {
+  'Cabo Corridor': ['Cabo Corridor'],
+  'Cabo San Lucas': ['Cabo San Lucas'],
+  'Comondu': ['Comondu'],
+  'East Cape': ['East Cape'],
+  'La Paz': ['La Paz'],
+  'Loreto': ['Loreto'],
+  'Mulege': ['Mulege'],
+  'Pacific': ['Pacific'],
+  'San Jose Corridor': ['San Jose Corridor'],
+  'San Jose del Cabo': ['San Jose del Cabo'],
 };
 
 // -----------------------------
