@@ -1,47 +1,8 @@
-// api/flexmls-listings.ts - WITH CASCADING DECOY FILTERS + SPECIAL FILTERS SUPPORT + GEOGRAPHIC BOUNDS
+// api/flexmls-listings.ts - FIXED WITH SINGULAR PARAMETERS
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
 const RESO_API_BASE = 'https://replication.sparkapi.com/Version/3/Reso/OData';
-
-function parseBooleanQuery(val: unknown): boolean | null {
-  if (val === undefined || val === null) return null;
-  if (typeof val === 'boolean') return val;
-  if (Array.isArray(val)) {
-    if (val.length === 1 && typeof val[0] === 'string') {
-      const s = (val[0] as string).toLowerCase();
-      if (s === 'true') return true;
-      if (s === 'false') return false;
-    }
-    return null;
-  }
-  if (typeof val === 'string') {
-    const s = val.toLowerCase();
-    if (s === 'true') return true;
-    if (s === 'false') return false;
-  }
-  return null;
-}
-
-function getStringOrNull(val: unknown): string | null {
-  if (val === undefined || val === null) return null;
-  if (typeof val === 'string') return val;
-  if (Array.isArray(val)) {
-    return val.join(',');
-  }
-  return null;
-}
-
-function getStringArray(val: unknown): string[] | null {
-  if (val === undefined || val === null) return null;
-  if (Array.isArray(val)) {
-    return val.map(v => String(v));
-  }
-  if (typeof val === 'string') {
-    return val.split(',').map(s => s.trim()).filter(Boolean);
-  }
-  return null;
-}
 
 export default async function handler(
   req: VercelRequest,
@@ -62,69 +23,34 @@ export default async function handler(
   }
 
   try {
-    const raw = req.query;
+    const { 
+      city,
+      area,        // FIXED: Changed from 'areas' to 'area'
+      community,   // FIXED: Changed from 'communities' to 'community'
+      subdivision, // FIXED: Changed from 'subdivisions' to 'subdivision'
+      minPrice, 
+      maxPrice, 
+      bedrooms,
+      bathrooms,
+      propertyTypes,
+      status,
+      minSqft,
+      yearBuilt,
+      search,
+      limit
+    } = req.query;
 
-    const cityRaw = raw.city;
-    const areaRaw = raw.areas;           
-    const communityRaw = raw.communities; 
-    const subdivisionRaw = raw.subdivisions; 
-    const minPriceRaw = raw.minPrice;
-    const maxPriceRaw = raw.maxPrice;
-    const bedroomsRaw = raw.bedrooms;
-    const bathroomsRaw = raw.bathrooms;
-    const propertyTypesRaw = raw.propertyTypes;
-    const statusRaw = raw.status;
-    const minSqftRaw = raw.minSqft;
-    const yearBuiltRaw = raw.yearBuilt;
-    const searchRaw = raw.search;
-    const limitRaw = raw.limit;
+    const maxResults = limit && typeof limit === 'string' ? parseInt(limit) : undefined;
 
-    const sellerFinancingRaw = raw.sellerFinancing;
-    const primaryViewRaw = raw.primaryView;
-    const currentPriceRaw = raw.currentPrice;
-    const viewFieldNameRaw = raw.viewFieldName;
-    const sellerFinancingFieldNameRaw = raw.sellerFinancingFieldName;
-    const currentPriceFieldNameRaw = raw.currentPriceFieldName;
-    const originalPriceFieldNameRaw = raw.originalPriceFieldName;
-
-    const maxResults = limitRaw && typeof limitRaw === 'string' ? parseInt(limitRaw) : undefined;
-    const search = typeof searchRaw === 'string' ? searchRaw : (Array.isArray(searchRaw) ? searchRaw[0] : undefined);
-
-    const city = getStringOrNull(cityRaw);
-    const area = getStringOrNull(areaRaw);
-    const community = getStringOrNull(communityRaw);
-    const subdivision = getStringOrNull(subdivisionRaw);
-    const minPrice = typeof minPriceRaw === 'string' ? minPriceRaw : (Array.isArray(minPriceRaw) ? String(minPriceRaw[0]) : undefined);
-    const maxPrice = typeof maxPriceRaw === 'string' ? maxPriceRaw : (Array.isArray(maxPriceRaw) ? String(maxPriceRaw[0]) : undefined);
-    const bedrooms = typeof bedroomsRaw === 'string' ? bedroomsRaw : (Array.isArray(bedroomsRaw) ? String(bedroomsRaw[0]) : undefined);
-    const bathrooms = typeof bathroomsRaw === 'string' ? bathroomsRaw : (Array.isArray(bathroomsRaw) ? String(bathroomsRaw[0]) : undefined);
-    const propertyTypes = getStringOrNull(propertyTypesRaw);
-    const status = typeof statusRaw === 'string' ? statusRaw : (Array.isArray(statusRaw) ? String(statusRaw[0]) : undefined);
-    const minSqft = typeof minSqftRaw === 'string' ? minSqftRaw : (Array.isArray(minSqftRaw) ? String(minSqftRaw[0]) : undefined);
-    const yearBuilt = typeof yearBuiltRaw === 'string' ? yearBuiltRaw : (Array.isArray(yearBuiltRaw) ? String(yearBuiltRaw[0]) : undefined);
-
-    const sellerFinancingBool = parseBooleanQuery(sellerFinancingRaw);
-    const primaryViewBool = parseBooleanQuery(primaryViewRaw);
-    const currentPriceBool = parseBooleanQuery(currentPriceRaw);
-    const viewFieldName = typeof viewFieldNameRaw === 'string' ? viewFieldNameRaw : (Array.isArray(viewFieldNameRaw) ? String(viewFieldNameRaw[0]) : undefined);
-    const sellerFinancingFieldName = typeof sellerFinancingFieldNameRaw === 'string' ? sellerFinancingFieldNameRaw : (Array.isArray(sellerFinancingFieldNameRaw) ? String(sellerFinancingFieldNameRaw[0]) : undefined);
-    const currentPriceFieldName = typeof currentPriceFieldNameRaw === 'string' ? currentPriceFieldNameRaw : (Array.isArray(currentPriceFieldNameRaw) ? String(currentPriceFieldNameRaw[0]) : undefined);
-    const originalPriceFieldName = typeof originalPriceFieldNameRaw === 'string' ? originalPriceFieldNameRaw : (Array.isArray(originalPriceFieldNameRaw) ? String(originalPriceFieldNameRaw[0]) : undefined);
-
-    console.log('🔍 [API] Filters (raw):', {
-      city: cityRaw, area: areaRaw, community: communityRaw, subdivision: subdivisionRaw,
-      minPrice: minPriceRaw, maxPrice: maxPriceRaw, bedrooms: bedroomsRaw, bathrooms: bathroomsRaw,
-      propertyTypes: propertyTypesRaw, status: statusRaw, search: searchRaw, limit: maxResults,
-      sellerFinancing: sellerFinancingRaw, primaryView: primaryViewRaw, currentPrice: currentPriceRaw
+    console.log('🔍 [API] Filters:', {
+      city, area, community, subdivision, minPrice, maxPrice, 
+      bedrooms, bathrooms, propertyTypes, status, search, limit: maxResults
     });
 
-    console.log('🔍 [API] Filters (normalized):', {
-      city, area, community, subdivision, minPrice, maxPrice, bedrooms, bathrooms, propertyTypes, status, search, maxResults,
-      sellerFinancingBool, primaryViewBool, currentPriceBool, viewFieldName, sellerFinancingFieldName, currentPriceFieldName, originalPriceFieldName
-    });
-
+    // BUILD RESO $filter QUERY
     const filters: string[] = [];
 
+    // MLS SEARCH - Search across multiple fields
     if (search && typeof search === 'string' && search.trim() !== '') {
       const searchTerm = search.trim();
       console.log('🔎 [MLS SEARCH]:', searchTerm);
@@ -141,82 +67,54 @@ export default async function handler(
       filters.push(`(${searchFilters.join(' or ')})`);
     }
 
-    // ============================================================================
-    // CASCADING FILTER HIERARCHY WITH DECOY SYSTEM
-    // ============================================================================
-    // Rule: Most specific filter wins. Less specific filters become "decoys"
-    // Zone → Area → Community → Subdivision
-    // If Subdivision exists, use ONLY Subdivision
-    // Else if Community exists, use ONLY Community
-    // Else if Area exists, use ONLY Area
-    // Else if Zone exists, use Zone as decoy (fetch all related areas)
-    // ============================================================================
+    // LOCATION - City/Zone
+    if (city && typeof city === 'string') {
+      const cities = city.split(',').map(c => c.trim());
+      if (cities.length === 1) {
+        filters.push(`City eq '${cities[0].replace(/'/g, "''")}'`);
+      } else {
+        const cityFilters = cities.map(c => `City eq '${c.replace(/'/g, "''")}'`);
+        filters.push(`(${cityFilters.join(' or ')})`);
+      }
+    }
 
-    if (subdivision) {
-      const subdivisionList = subdivision.split(',').map(s => s.trim()).filter(Boolean);
-      
-      if (subdivisionList.length === 1) {
-        filters.push(`(SubdivisionName eq '${subdivisionList[0].replace(/'/g, "''")}' or contains(SubdivisionName, '${subdivisionList[0].replace(/'/g, "''")}'))`);
-      } else if (subdivisionList.length > 1) {
-        const subdivisionFilters = subdivisionList.map(s => 
-          `(SubdivisionName eq '${s.replace(/'/g, "''")}' or contains(SubdivisionName, '${s.replace(/'/g, "''")}'))`
-        );
-        filters.push(`(${subdivisionFilters.join(' or ')})`);
-      }
-      console.log('🎯 [HIERARCHY] Using SUBDIVISION filter (most specific)');
-    }
-    else if (community) {
-      const communityList = community.split(',').map(c => c.trim()).filter(Boolean);
-      
-      if (communityList.length === 1) {
-        filters.push(`(CommunityName eq '${communityList[0].replace(/'/g, "''")}' or contains(CommunityName, '${communityList[0].replace(/'/g, "''")}'))`);
-      } else if (communityList.length > 1) {
-        const communityFilters = communityList.map(c => 
-          `(CommunityName eq '${c.replace(/'/g, "''")}' or contains(CommunityName, '${c.replace(/'/g, "''")}'))`
-        );
-        filters.push(`(${communityFilters.join(' or ')})`);
-      }
-      console.log('🎯 [HIERARCHY] Using COMMUNITY filter (Area/Zone become decoys)');
-    }
-    else if (area) {
-      const areaList = area.split(',').map(a => a.trim()).filter(Boolean);
+    // AREAS - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    if (area && typeof area === 'string') {
+      const areaList = area.split(',').map(a => a.trim());
       
       if (areaList.length === 1) {
         filters.push(`(MLSAreaMajor eq '${areaList[0].replace(/'/g, "''")}' or contains(MLSAreaMajor, '${areaList[0].replace(/'/g, "''")}'))`);
-      } else if (areaList.length > 1) {
+      } else {
         const areaFilters = areaList.map(a => 
           `(MLSAreaMajor eq '${a.replace(/'/g, "''")}' or contains(MLSAreaMajor, '${a.replace(/'/g, "''")}'))`
         );
         filters.push(`(${areaFilters.join(' or ')})`);
       }
-      console.log('🎯 [HIERARCHY] Using AREA filter (Zone becomes decoy)');
     }
-    else if (city) {
-      if (city === 'Cabo Corridor') {
-        const corridorAreas = [
-          'CSL Cor-Inland',
-          'CSL-Corr. Oceanside',
-          'SJD Corr-Inland',
-          'SJD Corr-Oceanside'
-        ];
-        const areaFilters = corridorAreas.map(a => 
-          `(MLSAreaMajor eq '${a.replace(/'/g, "''")}' or contains(MLSAreaMajor, '${a.replace(/'/g, "''")}'))`
-        );
-        filters.push(`(${areaFilters.join(' or ')})`);
-        console.log('🎯 [HIERARCHY] Using ZONE DECOY for Cabo Corridor (fetching all 4 corridor areas)');
+
+    // COMMUNITIES - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    if (community && typeof community === 'string') {
+      const communityList = community.split(',').map(c => c.trim());
+      if (communityList.length === 1) {
+        filters.push(`contains(SubdivisionName, '${communityList[0].replace(/'/g, "''")}')`);
       } else {
-        const cityList = city.split(',').map(c => c.trim()).filter(Boolean);
-        
-        if (cityList.length === 1) {
-          filters.push(`City eq '${cityList[0].replace(/'/g, "''")}'`);
-        } else if (cityList.length > 1) {
-          const cityFilters = cityList.map(c => `City eq '${c.replace(/'/g, "''")}'`);
-          filters.push(`(${cityFilters.join(' or ')})`);
-        }
-        console.log('🎯 [HIERARCHY] Using CITY filter (standard City field)');
+        const communityFilters = communityList.map(c => `contains(SubdivisionName, '${c.replace(/'/g, "''")}')`);
+        filters.push(`(${communityFilters.join(' or ')})`);
       }
     }
 
+    // SUBDIVISIONS - Use contains() for flexible matching (FIXED PARAMETER NAME)
+    if (subdivision && typeof subdivision === 'string') {
+      const subdivisionList = subdivision.split(',').map(s => s.trim());
+      if (subdivisionList.length === 1) {
+        filters.push(`contains(SubdivisionName, '${subdivisionList[0].replace(/'/g, "''")}')`);
+      } else {
+        const subdivisionFilters = subdivisionList.map(s => `contains(SubdivisionName, '${s.replace(/'/g, "''")}')`);
+        filters.push(`(${subdivisionFilters.join(' or ')})`);
+      }
+    }
+
+    // PRICE
     if (minPrice && typeof minPrice === 'string') {
       const min = parseFloat(minPrice);
       if (!isNaN(min)) filters.push(`ListPrice ge ${min}`);
@@ -226,6 +124,7 @@ export default async function handler(
       if (!isNaN(max)) filters.push(`ListPrice le ${max}`);
     }
 
+    // BEDS & BATHS
     if (bedrooms && typeof bedrooms === 'string') {
       const beds = parseInt(bedrooms);
       if (!isNaN(beds)) filters.push(`BedroomsTotal ge ${beds}`);
@@ -235,8 +134,9 @@ export default async function handler(
       if (!isNaN(baths)) filters.push(`BathroomsFull ge ${baths}`);
     }
 
-    if (propertyTypes) {
-      const types = propertyTypes.split(',').map(t => t.trim()).filter(Boolean);
+    // PROPERTY TYPES
+    if (propertyTypes && typeof propertyTypes === 'string') {
+      const types = propertyTypes.split(',').map(t => t.trim());
       if (types.length > 0) {
         if (types.length === 1) {
           filters.push(`PropertyType eq '${types[0]}'`);
@@ -247,80 +147,31 @@ export default async function handler(
       }
     }
 
+    // STATUS (default Active)
     const statusValue = (status && typeof status === 'string') ? status : 'Active';
     filters.push(`StandardStatus eq '${statusValue}'`);
 
-    // ============================================================================
-    // GEOGRAPHIC BOUNDING BOX - Prevent properties showing in wrong locations
-    // ============================================================================
-    // Los Cabos region approximate bounds (prevents USA/ocean properties)
-    // This fixes the issue where properties appear in the USA or middle of ocean
-    filters.push(`Latitude ge 22.8`);     // South boundary (below Los Cabos)
-    filters.push(`Latitude le 23.3`);     // North boundary (above Los Cabos)
-    filters.push(`Longitude ge -110.3`);  // East boundary
-    filters.push(`Longitude le -109.6`);  // West boundary
-    console.log('🗺️ [Geographic Filter] Applied Los Cabos bounding box (Lat: 22.8-23.3, Lng: -110.3 to -109.6)');
-
+    // SQFT
     if (minSqft && typeof minSqft === 'string' && minSqft !== 'No Preference') {
       const sqft = parseInt(minSqft.replace('+', ''));
       if (!isNaN(sqft)) filters.push(`LivingArea ge ${sqft}`);
     }
 
+    // YEAR
     if (yearBuilt && typeof yearBuilt === 'string' && yearBuilt !== 'No Preference') {
       const year = parseInt(yearBuilt.replace('+', ''));
       if (!isNaN(year)) filters.push(`YearBuilt ge ${year}`);
     }
 
-    if (sellerFinancingBool === true) {
-      const fieldName = (sellerFinancingFieldName && typeof sellerFinancingFieldName === 'string') 
-        ? sellerFinancingFieldName 
-        : 'SellerFinancingYN';
-      filters.push(`${fieldName} eq true`);
-      console.log(`💵 [Special Filter] Seller Financing: Yes (using ${fieldName})`);
-    }
-
-    if (primaryViewBool === true) {
-      console.log(`👁️ [Special Filter] Primary View: WILL FILTER CLIENT-SIDE (API doesn't support filtering this field)`);
-    }
-
-    if (currentPriceBool === true) {
-      const currentField = (currentPriceFieldName && typeof currentPriceFieldName === 'string') 
-        ? currentPriceFieldName 
-        : 'ListPrice';
-      const originalField = (originalPriceFieldName && typeof originalPriceFieldName === 'string') 
-        ? originalPriceFieldName 
-        : 'OriginalListPrice';
-      filters.push(`${currentField} eq ${originalField}`);
-      console.log(`💲 [Special Filter] Current Price: Yes (comparing ${currentField} eq ${originalField})`);
-    }
-
     const filterString = filters.join(' and ');
     console.log('🎯 [Filter]:', filterString);
 
-    let listings = maxResults 
+    // FETCH RESULTS (with optional limit)
+    const listings = maxResults 
       ? await fetchLimitedResults(filterString, maxResults)
       : await fetchAllResults(filterString);
 
-    console.log(`✅ [Result] ${listings.length} listings${maxResults ? ` (limited to ${maxResults})` : ''} BEFORE client-side filters`);
-
-    if (primaryViewBool === true) {
-      const viewFieldNameToUse = (viewFieldName && typeof viewFieldName === 'string')
-        ? viewFieldName
-        : 'General_sp_Description_co_Primary_sp_View';
-      
-      const beforeCount = listings.length;
-      listings = listings.filter(listing => {
-        const viewValue = listing[viewFieldNameToUse];
-        if (!viewValue) return false;
-        if (typeof viewValue !== 'string') return false;
-        const hasOcean = viewValue.toLowerCase().includes('ocean');
-        return hasOcean;
-      });
-      
-      console.log(`🌊 [Client Filter] Primary View: ${beforeCount} → ${listings.length} (filtered ${beforeCount - listings.length} non-ocean properties)`);
-    }
-
-    console.log(`✅ [Final Result] ${listings.length} listings AFTER client-side filters`);
+    console.log(`✅ [Result] ${listings.length} listings${maxResults ? ` (limited to ${maxResults})` : ''}`);
 
     return res.status(200).json({
       success: true,
@@ -341,6 +192,7 @@ export default async function handler(
   }
 }
 
+// FETCH LIMITED RESULTS (for landing pages)
 async function fetchLimitedResults(filterString: string, limit: number): Promise<any[]> {
   const url = new URL(`${RESO_API_BASE}/Property`);
   
@@ -390,6 +242,7 @@ async function fetchLimitedResults(filterString: string, limit: number): Promise
   }
 }
 
+// FETCH ALL RESULTS WITH PAGINATION (for search)
 async function fetchAllResults(filterString: string): Promise<any[]> {
   let allResults: any[] = [];
   let skip = 0;
