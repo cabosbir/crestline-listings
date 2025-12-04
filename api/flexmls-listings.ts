@@ -33,11 +33,14 @@ const KNOWN_SUBDIVISIONS = [
 const COMMUNITY_NAME_MAPPER: Record<string, string> = {
   'Cabo del Sol-Inland': 'Cabo del Sol',
   'Chileno Bay Club': 'Chileno Bay',
-  'Chileno/Montage-Inland': 'El Tule',
-  'CSL Country Club': 'CSL Country Club',
+  'Chileno/Montage-Inland': 'Chileno Bay',
+  'CSL Country Club': 'Country Club Estates',
   'El Tezal-East': 'El Tezal',
   'El Tezal-West': 'El Tezal',
-  'El Tezal-OceanSide': 'El Tezal'
+  'El Tezal-OceanSide': 'El Tezal',
+
+  // ➕ Newly added — belongs to Corridor
+  'Cabo Bello': 'Cabo Bello'
 };
 
 // -----------------------------
