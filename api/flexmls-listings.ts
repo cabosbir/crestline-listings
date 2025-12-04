@@ -470,12 +470,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Always only active listings
     otherFilters.push(`StandardStatus eq 'Active'`);
 
-    // Geographic bounding box for Los Cabos (prevents USA/ocean results)
+    // Geographic bounding box for Baja California Sur (all zones)
+    // Covers: Los Cabos (22.8-23.3), La Paz (24.1), Loreto (26.0), Mulegé (26.9)
     const geoFilters = [
-      'Latitude ge 22.8',
-      'Latitude le 23.3',
-      'Longitude ge -110.3',
-      'Longitude le -109.6'
+      'Latitude ge 22.8',   // Southern tip (Los Cabos)
+      'Latitude le 27.5',   // Northern BCS (Mulegé + buffer)
+      'Longitude ge -114.5', // West coast (Pacific side)
+      'Longitude le -109.0'  // East coast (Sea of Cortez)
     ];
 
     // Combine everything
