@@ -283,18 +283,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // Cabo Corridor decoy: fetch both corridor areas
         const corridorAreas = ['CSL Cor-Inland', 'CSL-Corr. Oceanside'];
         const areaFilters = corridorAreas
-          .map((a) => `(AreaName eq '${a}' or contains(AreaName, '${a}'))`)
+          .map((a) => `(MLSAreaMajor eq '${a}' or contains(MLSAreaMajor, '${a}'))`)
           .join(' or ');
         locationFilters.push(`(${areaFilters})`);
       } else {
         const areas = area.split(',').map((a) => a.trim());
         if (areas.length === 1) {
           locationFilters.push(
-            `(AreaName eq '${areas[0]}' or contains(AreaName, '${areas[0]}'))`
+            `(MLSAreaMajor eq '${areas[0]}' or contains(MLSAreaMajor, '${areas[0]}'))`
           );
         } else {
           const areaFilters = areas
-            .map((a) => `(AreaName eq '${a}' or contains(AreaName, '${a}'))`)
+            .map((a) => `(MLSAreaMajor eq '${a}' or contains(MLSAreaMajor, '${a}'))`)
             .join(' or ');
           locationFilters.push(`(${areaFilters})`);
         }
@@ -307,12 +307,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // Apply Cabo Corridor decoy: fetch both areas
         const corridorAreas = ['CSL Cor-Inland', 'CSL-Corr. Oceanside'];
         const areaFilters = corridorAreas
-          .map((a) => `(AreaName eq '${a}' or contains(AreaName, '${a}'))`)
+          .map((a) => `(MLSAreaMajor eq '${a}' or contains(MLSAreaMajor, '${a}'))`)
           .join(' or ');
         locationFilters.push(`(${areaFilters})`);
       } else {
         locationFilters.push(
-          `(CityName eq '${city}' or contains(CityName, '${city}'))`
+          `(City eq '${city}' or contains(City, '${city}'))`
         );
       }
     }
