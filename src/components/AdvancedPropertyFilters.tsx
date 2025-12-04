@@ -143,7 +143,7 @@ const AdvancedPropertyFilters = ({
     "La Paz": ["La Paz City", "LaPaz Beach", "El Centenario", "El Sargento", "La Ventana", "Los Planes"],
     "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
     "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
-    "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside", "SJD Corr-Inland", "SJD Corr-Oceanside"],
+    "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside"],
   };
 
   // Area → Community mapping
