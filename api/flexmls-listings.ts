@@ -1,12 +1,15 @@
-// api/flexmls-listings.ts
+// api/flexmls-listings.ts - COMPLETE CORRECTED VERSION
+// Fixed: City vs MLSAreaMajor filtering for all zones
+// All features preserved: hierarchy, subdivision detection, communities, special filters, pagination
+
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const FLEXMLS_BASE_URL = process.env.FLEXMLS_BASE_URL; // e.g. https://replication.sparkapi.com/Version/3/Reso/OData
-const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;   // Bearer token or API key depending on your replication endpoint
+const FLEXMLS_BASE_URL = process.env.FLEXMLS_BASE_URL;
+const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
 
-// -----------------------------
-// Known subdivisions & mapper
-// -----------------------------
+// ============================================================================
+// KNOWN SUBDIVISIONS
+// ============================================================================
 const KNOWN_SUBDIVISIONS = [
   'Misiones',
   'El Tezal',
@@ -30,6 +33,9 @@ const KNOWN_SUBDIVISIONS = [
   'El Tule',
 ];
 
+// ============================================================================
+// COMMUNITY NAME MAPPER
+// ============================================================================
 const COMMUNITY_NAME_MAPPER: Record<string, string> = {
   'Cabo del Sol-Inland': 'Cabo del Sol',
   'Chileno Bay Club': 'Chileno Bay',
@@ -37,12 +43,44 @@ const COMMUNITY_NAME_MAPPER: Record<string, string> = {
   'CSL Country Club': 'CSL Country Club',
   'El Tezal-East': 'El Tezal',
   'El Tezal-West': 'El Tezal',
-  'El Tezal-OceanSide': 'El Tezal'
+  'El Tezal-OceanSide': 'El Tezal',
+  'Cabo Bello': 'Cabo Bello',
 };
 
-// -----------------------------
-// Helpers
-// -----------------------------
+// ============================================================================
+// ZONE MAPPER - CORRECTED based on actual MLS field analysis
+// ============================================================================
+// Maps UI zone names to either City field OR MLSAreaMajor sub-areas
+const ZONE_MAPPER: Record<string, { useCity: boolean; values: string[] }> = {
+  // Zones that use City field directly (no sub-areas in MLSAreaMajor)
+  'East Cape': { useCity: true, values: ['East Cape'] },
+  'La Paz': { useCity: true, values: ['La Paz'] },
+  'Loreto': { useCity: true, values: ['Loreto'] },
+  'Pacific': { useCity: true, values: ['Pacific'] },
+  
+  // Zones that use MLSAreaMajor sub-areas
+  'Cabo Corridor': { 
+    useCity: false, 
+    values: ['CSL Cor-Inland', 'CSL-Corr. Oceanside'] 
+  },
+  'Cabo San Lucas': { 
+    useCity: false, 
+    values: ['CSL-Beach & Marina', 'CSL-Centro', 'CSL-North'] 
+  },
+  'San Jose Corridor': { 
+    useCity: false, 
+    values: ['SJD Corr-Inland', 'SJD Corr-Oceanside'] 
+  },
+  'San Jose del Cabo': { 
+    useCity: false, 
+    values: ['SJD-Beachside', 'SJD-Centro', 'SJD-East', 'SJD-Inland/Golf', 'SJD-North'] 
+  },
+};
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
 function parseBooleanQuery(val: unknown): boolean | null {
   if (val === undefined || val === null) return null;
   if (typeof val === 'boolean') return val;
@@ -92,7 +130,10 @@ function correctHierarchyFields(params: {
   return { city, area, community, subdivision };
 }
 
-// Build a "safe" list of location filter clauses, using fields that are commonly present on Cabo MLS
+// ============================================================================
+// BUILD LOCATION FILTERS - CORRECTED
+// ============================================================================
+
 function buildLocationFilters({
   city,
   area,
@@ -106,77 +147,123 @@ function buildLocationFilters({
 }) {
   const parts: string[] = [];
 
+  // -------------------------
+  // 1. Subdivision (highest priority)
+  // -------------------------
   if (subdivision) {
     const list = subdivision.split(',').map(s => s.trim()).filter(Boolean);
+
     if (list.length === 1) {
       const s = safeEscape(list[0]);
-      // Prefer SubdivisionName but also check Community/UnparsedAddress as fallback text search
-      parts.push(`(SubdivisionName eq '${s}' or contains(SubdivisionName,'${s}') or contains(UnparsedAddress,'${s}'))`);
-    } else if (list.length > 1) {
-      const f = list.map(s => {
-        const v = safeEscape(s);
-        return `(SubdivisionName eq '${v}' or contains(SubdivisionName,'${v}') or contains(UnparsedAddress,'${v}'))`;
-      }).join(' or ');
+      parts.push(
+        `(SubdivisionName eq '${s}' or contains(SubdivisionName,'${s}') or contains(UnparsedAddress,'${s}'))`
+      );
+    } else {
+      const f = list
+        .map(s => {
+          const v = safeEscape(s);
+          return `(SubdivisionName eq '${v}' or contains(SubdivisionName,'${v}') or contains(UnparsedAddress,'${v}'))`;
+        })
+        .join(' or ');
       parts.push(`(${f})`);
     }
-    // When subdivision used, we will ignore other location levels (honor hierarchy elsewhere).
+
     return parts;
   }
 
+  // -------------------------
+  // 2. Community
+  // -------------------------
   if (community) {
     const list = community.split(',').map(s => s.trim()).filter(Boolean);
+
     if (list.length === 1) {
       const s = safeEscape(list[0]);
-      // Community field is inconsistent across boards; search community & fallback to unparsed address
-      parts.push(`(Community eq '${s}' or contains(Community,'${s}') or contains(UnparsedAddress,'${s}'))`);
-    } else if (list.length > 1) {
-      const f = list.map(s => {
-        const v = safeEscape(s);
-        return `(Community eq '${v}' or contains(Community,'${v}') or contains(UnparsedAddress,'${v}'))`;
-      }).join(' or ');
+      parts.push(
+        `(Community eq '${s}' or contains(Community,'${s}') or contains(UnparsedAddress,'${s}'))`
+      );
+    } else {
+      const f = list
+        .map(s => {
+          const v = safeEscape(s);
+          return `(Community eq '${v}' or contains(Community,'${v}') or contains(UnparsedAddress,'${v}'))`;
+        })
+        .join(' or ');
       parts.push(`(${f})`);
     }
+
     return parts;
   }
 
+  // -------------------------
+  // 3. Area (uses MLSAreaMajor)
+  // -------------------------
   if (area) {
     const list = area.split(',').map(s => s.trim()).filter(Boolean);
-    // Use MLSAreaMajor (older code used MLSAreaMajor); keep both forms accepted by some boards
+
     if (list.length === 1) {
       const s = safeEscape(list[0]);
-      parts.push(`(MLSAreaMajor eq '${s}' or contains(MLSAreaMajor,'${s}') or contains(UnparsedAddress,'${s}'))`);
-    } else if (list.length > 1) {
-      const f = list.map(a => {
-        const v = safeEscape(a);
-        return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}') or contains(UnparsedAddress,'${v}'))`;
-      }).join(' or ');
+      parts.push(
+        `(MLSAreaMajor eq '${s}' or contains(MLSAreaMajor,'${s}'))`
+      );
+    } else {
+      const f = list
+        .map(a => {
+          const v = safeEscape(a);
+          return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+        })
+        .join(' or ');
       parts.push(`(${f})`);
     }
+
     return parts;
   }
 
+  // -------------------------
+  // 4. City / Zone - CORRECTED LOGIC
+  // -------------------------
   if (city) {
-    // City is not a reliable field for Cabo; treat Cabo Corridor specially (area decoy)
-    if (city === 'Cabo Corridor') {
-      const corridorAreas = ['CSL Cor-Inland', 'CSL-Corr. Oceanside'];
-      const f = corridorAreas.map(a => {
-        const v = safeEscape(a);
-        return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
-      }).join(' or ');
-      parts.push(`(${f})`);
-    } else {
-      const s = safeEscape(city);
-      parts.push(`(City eq '${s}' or contains(City,'${s}') or contains(UnparsedAddress,'${s}'))`);
+    const zoneConfig = ZONE_MAPPER[city];
+
+    if (zoneConfig) {
+      if (zoneConfig.useCity) {
+        // For East Cape, La Paz, Loreto, Pacific → use City field
+        const f = zoneConfig.values
+          .map(c => {
+            const v = safeEscape(c);
+            return `(City eq '${v}')`;
+          })
+          .join(' or ');
+        parts.push(`(${f})`);
+        console.log(`🎯 [Zone Filter] Using City field for: ${city}`);
+      } else {
+        // For Cabo zones with sub-areas → use MLSAreaMajor
+        const f = zoneConfig.values
+          .map(a => {
+            const v = safeEscape(a);
+            return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+          })
+          .join(' or ');
+        parts.push(`(${f})`);
+        console.log(`🎯 [Zone Filter] Using MLSAreaMajor for: ${city}`);
+      }
+      return parts;
     }
+
+    // Fallback: treat as normal city
+    const s = safeEscape(city);
+    parts.push(`(City eq '${s}')`);
+    console.log(`🎯 [Zone Filter] Using City fallback for: ${city}`);
     return parts;
   }
 
   return parts;
 }
 
-// -----------------------------
-// Fetch helpers (use URL object so base must exist)
-// -----------------------------
+// ============================================================================
+// FETCH HELPERS
+// ============================================================================
+
 async function fetchLimitedResultsFromUrl(urlObj: URL, limit: number, apiKey: string) {
   urlObj.searchParams.set('$top', String(limit));
   urlObj.searchParams.set('$skip', '0');
@@ -243,9 +330,10 @@ async function fetchAllResultsFromUrl(urlObj: URL, apiKey: string): Promise<any[
   return all;
 }
 
-// -----------------------------
-// Main handler
-// -----------------------------
+// ============================================================================
+// MAIN HANDLER
+// ============================================================================
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Basic method + env validation
   if (req.method === 'OPTIONS') {
