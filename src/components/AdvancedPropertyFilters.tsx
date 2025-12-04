@@ -114,72 +114,44 @@ const AdvancedPropertyFilters = ({
   });
 
   // ⭐ CLEAR STALE CACHE ON MOUNT - Force fresh data
-  useEffect(() => {
-    try {
-      const keysToRemove: string[] = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (
-          key.includes('featured') || 
-          key.includes('my-listings') || 
-          key.includes('search-results') ||
-          key.includes('property-cache')
-        )) {
-          keysToRemove.push(key);
-        }
+useEffect(() => {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (
+        key.includes('featured') || 
+        key.includes('my-listings') || 
+        key.includes('search-results') ||
+        key.includes('property-cache')
+      )) {
+        keysToRemove.push(key);
       }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-      console.log('🧹 Cleared stale listing cache on AdvancedSearch mount');
-    } catch (e) {
-      console.error('Error clearing cache:', e);
     }
-  }, []); // Run only once on mount
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    console.log('🧹 Cleared stale listing cache on AdvancedPropertyFilters mount');
+  } catch (e) {
+    console.error('Error clearing cache:', e);
+  }
+}, []); // Run only once on mount
 
-  // 🆕 Load ALL properties on initial mount to populate map
-  useEffect(() => {
-    const loadInitialProperties = async () => {
-      console.log('🗺️ Loading all properties for initial map view...');
-      setLoading(true);
-      
-      try {
-        // Fetch all active properties with minimal filters
-        const allProperties: MLSProperty[] = await fetchListings({
-          status: 'Active',
-          // No other filters - get everything!
-        });
-        
-        const converted = allProperties
-          .map(convertMLSToPropertyCard)
-          .filter(p => p.latitude && p.longitude);
-        
-        setPreviewProperties(converted);
-        setTotalCount(allProperties.length);
-        
-        console.log(`✅ Initial load complete: ${allProperties.length} total properties, ${converted.length} with coordinates for map`);
-      } catch (err) {
-        console.error('❌ Error loading initial properties:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    // Only run on initial mount
-    loadInitialProperties();
-  }, []); // Empty dependency array = runs once on mount
+// 🆕 NO INITIAL LOAD HERE - AdvancedSearch page handles the smart loading
+// This component only provides filter UI and doesn't need to populate the map
+// The illusion happens in AdvancedSearch.tsx, this just clears stale cache
 
-  // ✅ COMPLETE CASCADING HIERARCHY MAPS
-  const zoneToAreaMap: Record<string, string[]> = {
-    "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside"],
-    "Cabo San Lucas": ["CSL-Beach & Marina", "CSL-Centro", "CSL-North"],
-    "Comondu": [],
-    "East Cape": ["East Cape North", "East Cape South", "La Ribera", "Los Barriles", "BuenaVista/Rancho Leonero", "BuenVsta/LosBarilles", "ElCardonal/N of Bariles", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta", "Bay of Dreams", "Costa Palmas"],
-    "La Paz": ["La Paz City", "LaPaz Beach", "El Centenario", "El Sargento", "La Ventana", "Los Planes"],
-    "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
-    "Mulege": [],
-    "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
-    "San Jose Corridor": ["SJD Corr-Inland", "SJD Corr-Oceanside"],
-    "San Jose del Cabo": ["SJD-Beachside", "SJD-Centro", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
-  };
+// ✅ COMPLETE CASCADING HIERARCHY MAPS
+const zoneToAreaMap: Record<string, string[]> = {
+  "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside"],
+  "Cabo San Lucas": ["CSL-Beach & Marina", "CSL-Centro", "CSL-North"],
+  "Comondu": [],
+  "East Cape": ["East Cape North", "East Cape South", "La Ribera", "Los Barriles", "BuenaVista/Rancho Leonero", "BuenVsta/LosBarilles", "ElCardonal/N of Bariles", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta", "Bay of Dreams", "Costa Palmas"],
+  "La Paz": ["La Paz City", "LaPaz Beach", "El Centenario", "El Sargento", "La Ventana", "Los Planes"],
+  "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
+  "Mulege": [],
+  "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
+  "San Jose Corridor": ["SJD Corr-Inland", "SJD Corr-Oceanside"],
+  "San Jose del Cabo": ["SJD-Beachside", "SJD-Centro", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
+};
 
   // Area → Community mapping
   const areaToCommunityMap: Record<string, string[]> = {

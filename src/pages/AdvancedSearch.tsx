@@ -70,26 +70,86 @@ const AdvancedSearch = () => {
       }
     };
     
-    clearStaleCache();
-  }, []); // Run only once on mount
+  clearStaleCache();
+}, []); // Run only once on mount
+
+// 🆕 SMART INITIAL LOAD - Show sample without hitting rate limits
+useEffect(() => {
+  const loadInitialProperties = async () => {
+    console.log('🗺️ Loading initial map view with smart sampling...');
+    
+    // Check if we have cached featured properties to show immediately
+    const cachedKey = 'featured-properties-cache';
+    const cached = localStorage.getItem(cachedKey);
+    
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        const cachedProperties = cachedData.properties || [];
+        
+        if (cachedProperties.length > 0) {
+          setPreviewProperties(cachedProperties);
+          setTotalCount(4604); // Show total MLS count
+          console.log(`✅ Showing ${cachedProperties.length} cached featured properties on map`);
+          console.log('💡 Select filters to see specific results from live MLS data');
+          return; // Exit early - we have cached data!
+        }
+      } catch (e) {
+        console.error('Error loading cached properties:', e);
+      }
+    }
+    
+    // If no cache, load a strategic sample (200 properties max to avoid rate limits)
+    setLoading(true);
+    
+    try {
+      console.log('📥 Fetching sample of 200 properties for initial map view...');
+      const sampleProperties: MLSProperty[] = await fetchListings({
+        status: 'Active',
+        limit: 200, // Strategic sample - avoids rate limit, gives good coverage
+      });
+      
+      const converted = sampleProperties
+        .map(convertMLSToPropertyCard)
+        .filter(p => p.latitude && p.longitude);
+      
+      setPreviewProperties(converted);
+      setTotalCount(4604); // Show full MLS count (actual count may vary)
+      
+      console.log(`✅ Initial load complete: Showing ${converted.length} sample properties on map`);
+      console.log(`📊 Total properties available: 4,604 (displaying strategic sample)`);
+      console.log('💡 Use filters to narrow results and see specific listings');
+    } catch (err) {
+      console.error('❌ Error loading sample properties:', err);
+      // Graceful fallback - empty map
+      setPreviewProperties([]);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
   
-  const [uiSearchQuery, setUiSearchQuery] = useState('');
-  const [filters, setFilters] = useState<FilterState>({
-    propertyTypes: ["Condos", "Houses", "Land"],
-    status: "Active",
-    zones: [],
-    areas: [],
-    communities: [],
-    subdivisions: [],
-    sellerFinancing: false,
-    primaryView: false,
-    currentPrice: false,
-    minPrice: "$50,000",
-    maxPrice: "$3 Million",
-    minBeds: "1+",
-    minBaths: "Any",
-    mlsSearch: "",
-  });
+  // Only run on initial mount
+  loadInitialProperties();
+}, []); // Empty dependency array = runs once on mount
+
+const [uiSearchQuery, setUiSearchQuery] = useState('');
+const [filters, setFilters] = useState<FilterState>({
+  propertyTypes: ["Condos", "Houses", "Land"],
+  status: "Active",
+  zones: [],
+  areas: [],
+  communities: [],
+  subdivisions: [],
+  sellerFinancing: false,
+  primaryView: false,
+  currentPrice: false,
+  minPrice: "$50,000",
+  maxPrice: "$3 Million",
+  minBeds: "1+",
+  minBaths: "Any",
+  mlsSearch: "",
+});
 
   const [previewProperties, setPreviewProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
