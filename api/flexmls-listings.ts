@@ -128,92 +128,122 @@ function buildLocationFilters({
 }) {
   const parts: string[] = [];
 
+  // -------------------------
+  // 1. Subdivision (highest priority)
+  // -------------------------
   if (subdivision) {
     const list = subdivision.split(',').map(s => s.trim()).filter(Boolean);
+
     if (list.length === 1) {
       const s = safeEscape(list[0]);
-      // Prefer SubdivisionName but also check Community/UnparsedAddress as fallback text search
-      parts.push(`(SubdivisionName eq '${s}' or contains(SubdivisionName,'${s}') or contains(UnparsedAddress,'${s}'))`);
-    } else if (list.length > 1) {
-      const f = list.map(s => {
-        const v = safeEscape(s);
-        return `(SubdivisionName eq '${v}' or contains(SubdivisionName,'${v}') or contains(UnparsedAddress,'${v}'))`;
-      }).join(' or ');
+      parts.push(
+        `(SubdivisionName eq '${s}' or contains(SubdivisionName,'${s}') or contains(UnparsedAddress,'${s}'))`
+      );
+    } else {
+      const f = list
+        .map(s => {
+          const v = safeEscape(s);
+          return `(SubdivisionName eq '${v}' or contains(SubdivisionName,'${v}') or contains(UnparsedAddress,'${v}'))`;
+        })
+        .join(' or ');
       parts.push(`(${f})`);
     }
-    // When subdivision used, we will ignore other location levels (honor hierarchy elsewhere).
-    return parts;
+
+    return parts; // stop — subdivision takes priority
   }
 
+  // -------------------------
+  // 2. Community
+  // -------------------------
   if (community) {
     const list = community.split(',').map(s => s.trim()).filter(Boolean);
+
     if (list.length === 1) {
       const s = safeEscape(list[0]);
-      // Community field is inconsistent across boards; search community & fallback to unparsed address
-      parts.push(`(Community eq '${s}' or contains(Community,'${s}') or contains(UnparsedAddress,'${s}'))`);
-    } else if (list.length > 1) {
-      const f = list.map(s => {
-        const v = safeEscape(s);
-        return `(Community eq '${v}' or contains(Community,'${v}') or contains(UnparsedAddress,'${v}'))`;
-      }).join(' or ');
+      parts.push(
+        `(Community eq '${s}' or contains(Community,'${s}') or contains(UnparsedAddress,'${s}'))`
+      );
+    } else {
+      const f = list
+        .map(s => {
+          const v = safeEscape(s);
+          return `(Community eq '${v}' or contains(Community,'${v}') or contains(UnparsedAddress,'${v}'))`;
+        })
+        .join(' or ');
       parts.push(`(${f})`);
     }
+
     return parts;
   }
 
+  // -------------------------
+  // 3. Area
+  // -------------------------
   if (area) {
     const list = area.split(',').map(s => s.trim()).filter(Boolean);
-    // Use MLSAreaMajor (older code used MLSAreaMajor); keep both forms accepted by some boards
+
     if (list.length === 1) {
       const s = safeEscape(list[0]);
-      parts.push(`(MLSAreaMajor eq '${s}' or contains(MLSAreaMajor,'${s}') or contains(UnparsedAddress,'${s}'))`);
-    } else if (list.length > 1) {
-      const f = list.map(a => {
-        const v = safeEscape(a);
-        return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}') or contains(UnparsedAddress,'${v}'))`;
-      }).join(' or ');
+      parts.push(
+        `(MLSAreaMajor eq '${s}' or contains(MLSAreaMajor,'${s}') or contains(UnparsedAddress,'${s}'))`
+      );
+    } else {
+      const f = list
+        .map(a => {
+          const v = safeEscape(a);
+          return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}') or contains(UnparsedAddress,'${v}'))`;
+        })
+        .join(' or ');
       parts.push(`(${f})`);
     }
+
     return parts;
   }
 
+  // -------------------------
+  // 4. City / Zone
+  // -------------------------
   if (city) {
-  // -------------------------
-  // 1. If the "city" from UI is really a Zone
-  // -------------------------
-  if (ZONE_MAPPER[city]) {
-    const zones = ZONE_MAPPER[city]; // always an array
+    // 4A. Zone via ZONE_MAPPER (UI → MLSAreaMajor)
+    if (ZONE_MAPPER[city]) {
+      const zones = ZONE_MAPPER[city];
 
-    const zoneFilters = zones.map(z => {
-      const v = safeEscape(z);
-      return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
-    }).join(' or ');
+      const f = zones
+        .map(z => {
+          const v = safeEscape(z);
+          return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+        })
+        .join(' or ');
 
-    parts.push(`(${zoneFilters})`);
+      parts.push(`(${f})`);
+      return parts;
+    }
+
+    // 4B. Cabo Corridor legacy fix
+    if (city === 'Cabo Corridor') {
+      const corridorAreas = ['CSL Cor-Inland', 'CSL Cor-Oceanside'];
+
+      const f = corridorAreas
+        .map(a => {
+          const v = safeEscape(a);
+          return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+        })
+        .join(' or ');
+
+      parts.push(`(${f})`);
+      return parts;
+    }
+
+    // 4C. Normal city search
+    const s = safeEscape(city);
+    parts.push(
+      `(City eq '${s}' or contains(City,'${s}') or contains(UnparsedAddress,'${s}'))`
+    );
     return parts;
   }
 
-  // -------------------------
-  // 2. Actual Cabo Corridor hack (same logic as before)
-  // -------------------------
-  if (city === 'Cabo Corridor') {
-    const corridorAreas = ['CSL Cor-Inland', 'CSL Cor-Oceanside'];
-    const f = corridorAreas.map(a => {
-      const v = safeEscape(a);
-      return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
-    }).join(' or ');
-    parts.push(`(${f})`);
-    return parts;
-  }
-
-  // -------------------------
-  // 3. Normal City logic
-  // -------------------------
-  const s = safeEscape(city);
-  parts.push(`(City eq '${s}' or contains(City,'${s}') or contains(UnparsedAddress,'${s}'))`);
   return parts;
 }
-
 
 // -----------------------------
 // Fetch helpers (use URL object so base must exist)
