@@ -167,8 +167,7 @@ function buildLocationFilters({
         .join(' or ');
       parts.push(`(${f})`);
     }
-
-    return parts;
+    // Don't return - continue to add zone context
   }
 
   // -------------------------
@@ -191,8 +190,7 @@ function buildLocationFilters({
         .join(' or ');
       parts.push(`(${f})`);
     }
-
-    return parts;
+    // Don't return - continue to add zone context
   }
 
   // -------------------------
@@ -215,14 +213,58 @@ function buildLocationFilters({
         .join(' or ');
       parts.push(`(${f})`);
     }
-
-    return parts;
+    // Don't return - continue to add zone context
   }
 
   // -------------------------
   // 4. City / Zone - CORRECTED LOGIC
   // -------------------------
   if (city) {
+    // Handle multiple zones (comma-separated)
+    const cityList = city.split(',').map(c => c.trim()).filter(Boolean);
+    
+    if (cityList.length > 1) {
+      // Multiple zones - process each and combine with OR
+      const zoneFilters: string[] = [];
+      
+      for (const zoneName of cityList) {
+        const zoneConfig = ZONE_MAPPER[zoneName];
+        
+        if (zoneConfig) {
+          if (zoneConfig.useCity) {
+            // For East Cape, La Paz, Loreto, Pacific → use City field
+            const f = zoneConfig.values
+              .map(c => {
+                const v = safeEscape(c);
+                return `City eq '${v}'`;
+              })
+              .join(' or ');
+            zoneFilters.push(f);
+          } else {
+            // For Cabo zones with sub-areas → use MLSAreaMajor
+            const f = zoneConfig.values
+              .map(a => {
+                const v = safeEscape(a);
+                return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+              })
+              .join(' or ');
+            zoneFilters.push(f);
+          }
+        } else {
+          // Fallback: treat as normal city
+          const s = safeEscape(zoneName);
+          zoneFilters.push(`City eq '${s}'`);
+        }
+      }
+      
+      if (zoneFilters.length > 0) {
+        parts.push(`(${zoneFilters.join(' or ')})`);
+        console.log(`🎯 [Zone Filter] Combined ${cityList.length} zones`);
+      }
+      return parts;
+    }
+    
+    // Single zone
     const zoneConfig = ZONE_MAPPER[city];
 
     if (zoneConfig) {
