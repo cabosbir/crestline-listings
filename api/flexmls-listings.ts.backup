@@ -1,4 +1,4 @@
-// api/flexmls-listings.ts - WITH CASCADING DECOY FILTERS + SPECIAL FILTERS SUPPORT + GEOGRAPHIC BOUNDS
+// api/flexmls-listings.ts - WITH CASCADING DECOY FILTERS + SPECIAL FILTERS SUPPORT
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
@@ -8,6 +8,7 @@ function parseBooleanQuery(val: unknown): boolean | null {
   if (val === undefined || val === null) return null;
   if (typeof val === 'boolean') return val;
   if (Array.isArray(val)) {
+    // If array, only accept single-value arrays like ['true']
     if (val.length === 1 && typeof val[0] === 'string') {
       const s = (val[0] as string).toLowerCase();
       if (s === 'true') return true;
@@ -27,6 +28,7 @@ function getStringOrNull(val: unknown): string | null {
   if (val === undefined || val === null) return null;
   if (typeof val === 'string') return val;
   if (Array.isArray(val)) {
+    // join multiple query params into comma separated string (consistent with previous behavior)
     return val.join(',');
   }
   return null;
@@ -38,6 +40,7 @@ function getStringArray(val: unknown): string[] | null {
     return val.map(v => String(v));
   }
   if (typeof val === 'string') {
+    // split comma separated strings into array
     return val.split(',').map(s => s.trim()).filter(Boolean);
   }
   return null;
@@ -62,6 +65,8 @@ export default async function handler(
   }
 
   try {
+    // NB: do not destructure into types that force comparisons later.
+    // Keep raw query, but normalize below.
     const raw = req.query;
 
     const cityRaw = raw.city;
@@ -79,14 +84,16 @@ export default async function handler(
     const searchRaw = raw.search;
     const limitRaw = raw.limit;
 
-    const sellerFinancingRaw = raw.sellerFinancing;
-    const primaryViewRaw = raw.primaryView;
-    const currentPriceRaw = raw.currentPrice;
+    // Special / dynamic fields:
+    const sellerFinancingRaw = raw.sellerFinancing;  // may be boolean, string, or null
+    const primaryViewRaw = raw.primaryView;          // may be boolean, string, or null
+    const currentPriceRaw = raw.currentPrice;        // often string or null
     const viewFieldNameRaw = raw.viewFieldName;
     const sellerFinancingFieldNameRaw = raw.sellerFinancingFieldName;
     const currentPriceFieldNameRaw = raw.currentPriceFieldName;
     const originalPriceFieldNameRaw = raw.originalPriceFieldName;
 
+    // Normalized values (safe to compare)
     const maxResults = limitRaw && typeof limitRaw === 'string' ? parseInt(limitRaw) : undefined;
     const search = typeof searchRaw === 'string' ? searchRaw : (Array.isArray(searchRaw) ? searchRaw[0] : undefined);
 
@@ -103,9 +110,11 @@ export default async function handler(
     const minSqft = typeof minSqftRaw === 'string' ? minSqftRaw : (Array.isArray(minSqftRaw) ? String(minSqftRaw[0]) : undefined);
     const yearBuilt = typeof yearBuiltRaw === 'string' ? yearBuiltRaw : (Array.isArray(yearBuiltRaw) ? String(yearBuiltRaw[0]) : undefined);
 
+    // Normalized booleans
     const sellerFinancingBool = parseBooleanQuery(sellerFinancingRaw);
     const primaryViewBool = parseBooleanQuery(primaryViewRaw);
-    const currentPriceBool = parseBooleanQuery(currentPriceRaw);
+    const currentPriceBool = parseBooleanQuery(currentPriceRaw); // if front sends boolean for this
+    // view field names (strings)
     const viewFieldName = typeof viewFieldNameRaw === 'string' ? viewFieldNameRaw : (Array.isArray(viewFieldNameRaw) ? String(viewFieldNameRaw[0]) : undefined);
     const sellerFinancingFieldName = typeof sellerFinancingFieldNameRaw === 'string' ? sellerFinancingFieldNameRaw : (Array.isArray(sellerFinancingFieldNameRaw) ? String(sellerFinancingFieldNameRaw[0]) : undefined);
     const currentPriceFieldName = typeof currentPriceFieldNameRaw === 'string' ? currentPriceFieldNameRaw : (Array.isArray(currentPriceFieldNameRaw) ? String(currentPriceFieldNameRaw[0]) : undefined);
@@ -123,8 +132,10 @@ export default async function handler(
       sellerFinancingBool, primaryViewBool, currentPriceBool, viewFieldName, sellerFinancingFieldName, currentPriceFieldName, originalPriceFieldName
     });
 
+    // BUILD RESO $filter QUERY
     const filters: string[] = [];
 
+    // MLS SEARCH - Search across multiple fields
     if (search && typeof search === 'string' && search.trim() !== '') {
       const searchTerm = search.trim();
       console.log('🔎 [MLS SEARCH]:', searchTerm);
@@ -152,6 +163,7 @@ export default async function handler(
     // Else if Zone exists, use Zone as decoy (fetch all related areas)
     // ============================================================================
 
+    // SUBDIVISION - Most specific, always wins if present
     if (subdivision) {
       const subdivisionList = subdivision.split(',').map(s => s.trim()).filter(Boolean);
       
@@ -165,6 +177,7 @@ export default async function handler(
       }
       console.log('🎯 [HIERARCHY] Using SUBDIVISION filter (most specific)');
     }
+    // COMMUNITY - Second most specific, wins if no subdivision
     else if (community) {
       const communityList = community.split(',').map(c => c.trim()).filter(Boolean);
       
@@ -178,6 +191,7 @@ export default async function handler(
       }
       console.log('🎯 [HIERARCHY] Using COMMUNITY filter (Area/Zone become decoys)');
     }
+    // AREA - Third most specific, wins if no community or subdivision
     else if (area) {
       const areaList = area.split(',').map(a => a.trim()).filter(Boolean);
       
@@ -191,8 +205,11 @@ export default async function handler(
       }
       console.log('🎯 [HIERARCHY] Using AREA filter (Zone becomes decoy)');
     }
+    // CITY (Zone) - DECOY SYSTEM: Only active when no Area/Community/Subdivision
     else if (city) {
+      // DECOY MODE for Cabo Corridor: Fetch all corridor properties using Area values
       if (city === 'Cabo Corridor') {
+        // Get ALL corridor areas (both CSL and SJD corridor areas)
         const corridorAreas = [
           'CSL Cor-Inland',
           'CSL-Corr. Oceanside',
@@ -205,6 +222,7 @@ export default async function handler(
         filters.push(`(${areaFilters.join(' or ')})`);
         console.log('🎯 [HIERARCHY] Using ZONE DECOY for Cabo Corridor (fetching all 4 corridor areas)');
       } else {
+        // For other cities, try the actual City field (may or may not work)
         const cityList = city.split(',').map(c => c.trim()).filter(Boolean);
         
         if (cityList.length === 1) {
@@ -217,6 +235,7 @@ export default async function handler(
       }
     }
 
+    // PRICE
     if (minPrice && typeof minPrice === 'string') {
       const min = parseFloat(minPrice);
       if (!isNaN(min)) filters.push(`ListPrice ge ${min}`);
@@ -226,6 +245,7 @@ export default async function handler(
       if (!isNaN(max)) filters.push(`ListPrice le ${max}`);
     }
 
+    // BEDS & BATHS
     if (bedrooms && typeof bedrooms === 'string') {
       const beds = parseInt(bedrooms);
       if (!isNaN(beds)) filters.push(`BedroomsTotal ge ${beds}`);
@@ -235,7 +255,9 @@ export default async function handler(
       if (!isNaN(baths)) filters.push(`BathroomsFull ge ${baths}`);
     }
 
+    // PROPERTY TYPES
     if (propertyTypes) {
+      // propertyTypes may be passed as comma string or array joined into a CSV above
       const types = propertyTypes.split(',').map(t => t.trim()).filter(Boolean);
       if (types.length > 0) {
         if (types.length === 1) {
@@ -247,6 +269,7 @@ export default async function handler(
       }
     }
 
+    // STATUS (default Active)
     const statusValue = (status && typeof status === 'string') ? status : 'Active';
     filters.push(`StandardStatus eq '${statusValue}'`);
 
@@ -261,28 +284,41 @@ export default async function handler(
     filters.push(`Longitude le -109.6`);  // West boundary
     console.log('🗺️ [Geographic Filter] Applied Los Cabos bounding box (Lat: 22.8-23.3, Lng: -110.3 to -109.6)');
 
+    // SQFT
     if (minSqft && typeof minSqft === 'string' && minSqft !== 'No Preference') {
       const sqft = parseInt(minSqft.replace('+', ''));
       if (!isNaN(sqft)) filters.push(`LivingArea ge ${sqft}`);
     }
 
+    // YEAR
     if (yearBuilt && typeof yearBuilt === 'string' && yearBuilt !== 'No Preference') {
       const year = parseInt(yearBuilt.replace('+', ''));
       if (!isNaN(year)) filters.push(`YearBuilt ge ${year}`);
     }
 
+    // 🆕 SPECIAL FILTERS WITH DYNAMIC FIELD DISCOVERY
+    // Field names are discovered by Groq AI and passed from frontend
+    
+    // Seller Financing
+    // Use normalized boolean sellerFinancingBool
     if (sellerFinancingBool === true) {
       const fieldName = (sellerFinancingFieldName && typeof sellerFinancingFieldName === 'string') 
         ? sellerFinancingFieldName 
         : 'SellerFinancingYN';
+      // API-side filter if field supports boolean equality
       filters.push(`${fieldName} eq true`);
       console.log(`💵 [Special Filter] Seller Financing: Yes (using ${fieldName})`);
     }
 
+    // Primary View - Oceanfront properties
+    // NOTE: This field exists in the data but FlexMLS API may not support filtering on it.
+    // We'll filter client-side instead to avoid breaking the entire query
     if (primaryViewBool === true) {
       console.log(`👁️ [Special Filter] Primary View: WILL FILTER CLIENT-SIDE (API doesn't support filtering this field)`);
     }
 
+    // Current Price - No price reductions
+    // If front sends a boolean for 'currentPrice' we'll interpret it as "only current price"
     if (currentPriceBool === true) {
       const currentField = (currentPriceFieldName && typeof currentPriceFieldName === 'string') 
         ? currentPriceFieldName 
@@ -297,12 +333,16 @@ export default async function handler(
     const filterString = filters.join(' and ');
     console.log('🎯 [Filter]:', filterString);
 
+    // FETCH RESULTS (with optional limit)
     let listings = maxResults 
       ? await fetchLimitedResults(filterString, maxResults)
       : await fetchAllResults(filterString);
 
     console.log(`✅ [Result] ${listings.length} listings${maxResults ? ` (limited to ${maxResults})` : ''} BEFORE client-side filters`);
 
+    // 🆕 CLIENT-SIDE SPECIAL FILTERS (fields that API can't filter on)
+    
+    // Primary View - Filter for Ocean views (client-side)
     if (primaryViewBool === true) {
       const viewFieldNameToUse = (viewFieldName && typeof viewFieldName === 'string')
         ? viewFieldName
@@ -341,6 +381,7 @@ export default async function handler(
   }
 }
 
+// FETCH LIMITED RESULTS (for landing pages)
 async function fetchLimitedResults(filterString: string, limit: number): Promise<any[]> {
   const url = new URL(`${RESO_API_BASE}/Property`);
   
@@ -390,6 +431,7 @@ async function fetchLimitedResults(filterString: string, limit: number): Promise
   }
 }
 
+// FETCH ALL RESULTS WITH PAGINATION (for search)
 async function fetchAllResults(filterString: string): Promise<any[]> {
   let allResults: any[] = [];
   let skip = 0;
