@@ -156,6 +156,12 @@ const [filters, setFilters] = useState<FilterState>({
   const [totalCount, setTotalCount] = useState(0);
   const [aiOptimizing, setAiOptimizing] = useState(false);
   const [discoveredFields, setDiscoveredFields] = useState<any>(null); // 🆕 MLS field discovery cache
+   
+  const hasActiveFilters = 
+  filters.zones.length > 0 || 
+  filters.areas.length > 0 || 
+  filters.communities.length > 0 || 
+  filters.subdivisions.length > 0;
 
   // Load filters from URL on mount
   useEffect(() => {
@@ -725,14 +731,29 @@ const [filters, setFilters] = useState<FilterState>({
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
-            <Button 
-              onClick={handleSearch} 
-              disabled={totalCount === 0}
-              className={totalCount > 0 ? "bg-green-600 hover:bg-green-700 text-white" : ""}
-            >
-              <Search className="w-4 h-4 mr-2" />
-              View {totalCount} Results
-            </Button>
+            
+            {/* 🆕 SMART BUTTON WITH TOOLTIP */}
+            <div className="relative group">
+              <Button 
+                onClick={handleSearch} 
+                disabled={!hasActiveFilters}
+                className={hasActiveFilters 
+                  ? "bg-green-600 hover:bg-green-700 text-white" 
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }
+              >
+                <Search className="w-4 h-4 mr-2" />
+                View {totalCount} Results
+              </Button>
+              
+              {/* Tooltip - Only shows when button is disabled */}
+              {!hasActiveFilters && (
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                  Select at least one filter to view results
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
