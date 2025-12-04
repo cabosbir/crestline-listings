@@ -94,7 +94,7 @@ async function fetchLimitedResults(
   
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${process.env.FLEXMLS_ACCESS_TOKEN}`,
+      Authorization: `Bearer ${process.env.FLEXMLS_API_KEY}`,
       'Content-Type': 'application/json',
     },
   });
@@ -118,7 +118,7 @@ async function fetchAllResults(baseUrl: string): Promise<any[]> {
     try {
       const response = await fetch(url, {
         headers: {
-          Authorization: `Bearer ${process.env.FLEXMLS_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.FLEXMLS_API_KEY}`,
           'Content-Type': 'application/json',
         },
       });
@@ -389,7 +389,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const filterString = allFilters.join(' and ');
 
     // Build base URL
-    const baseUrl = `${process.env.FLEXMLS_BASE_URL}/Property?$filter=${encodeURIComponent(
+    const FLEXMLS_BASE_URL = 'https://replication.sparkapi.com/Version/3/Reso/OData';
+    const baseUrl = `${FLEXMLS_BASE_URL}/Property?$filter=${encodeURIComponent(
       filterString
     )}`;
 
