@@ -10,6 +10,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 const KNOWN_SUBDIVISIONS = [
   'Misiones',
   'El Tezal-OceanSide',
+  'El Tezal-East',
+  'El Tezal-West',
   'Chileno Bay',
   'Cabo Bello/Santa Carmela',
   'Cabo del Sol',
@@ -24,7 +26,9 @@ const KNOWN_SUBDIVISIONS = [
   'La Jolla',
   'Palmilla',
   'Puerto Los Cabos',
-  'Zacatitos'
+  'Zacatitos',
+  'CSL Country Club',
+  'Country Club Estates'
 ];
 
 // Community name corrections (UI label → actual FlexMLS value)
