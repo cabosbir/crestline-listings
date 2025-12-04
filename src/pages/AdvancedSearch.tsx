@@ -135,9 +135,9 @@ useEffect(() => {
 
 const [uiSearchQuery, setUiSearchQuery] = useState('');
 const [filters, setFilters] = useState<FilterState>({
-  propertyTypes: ["Condos", "Houses", "Land"],
+  propertyTypes: ["Condos", "Houses"],
   status: "Active",
-  zones: [],
+  zones: ["Cabo San Lucas"],
   areas: [],
   communities: [],
   subdivisions: [],
@@ -567,9 +567,9 @@ const [filters, setFilters] = useState<FilterState>({
 
   const handleReset = () => {
     setFilters({
-      propertyTypes: ["Condos", "Houses", "Land"],
+      propertyTypes: ["Condos", "Houses"],
       status: "Active",
-      zones: [],
+      zones: ["Cabo San Lucas"],
       areas: [],
       communities: [],
       subdivisions: [],
