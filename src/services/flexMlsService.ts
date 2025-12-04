@@ -1,4 +1,4 @@
-// src/services/flexMlsService.ts - FIXED: Check for 'listings' field instead of 'success'
+// src/services/flexMlsService.ts - FIXED: Consistent field names (results not listings)
 
 export interface MLSProperty {
   ListingKey: string;
@@ -209,15 +209,15 @@ export async function fetchPropertyById(listingKey: string): Promise<MLSProperty
     
     const data = await response.json();
     
-    // ✅ FIXED: Check for 'listings' field
-    if (!data.listings || !Array.isArray(data.listings)) {
+    // ✅ FIXED: Check for 'results' field (consistent with API response)
+    if (!data.results || !Array.isArray(data.results)) {
       console.error('❌ Invalid API response format');
       return null;
     }
 
-    console.log('✅ Fetched listings:', data.listings.length);
+    console.log('✅ Fetched listings:', data.results.length);
     
-    const property = data.listings.find((p: MLSProperty) => p.ListingKey === trimmedKey);
+    const property = data.results.find((p: MLSProperty) => p.ListingKey === trimmedKey);
     
     if (!property) {
       console.error('❌ Property not found:', trimmedKey);
