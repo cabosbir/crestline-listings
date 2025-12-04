@@ -1,22 +1,20 @@
-// api/flexmls-listings.ts - COMPLETE FIX: Cascading Hierarchy + Field Name Corrections
-// Build timestamp: Force rebuild without cache
+// api/flexmls-listings.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-// ============================================================================
-// FIELD NAME CORRECTION - Community vs Subdivision Auto-Detection
-// ============================================================================
-// Many FlexMLS properties use SubdivisionName instead of CommunityName
-// This mapper auto-corrects known communities that are actually subdivisions
+const FLEXMLS_BASE_URL = process.env.FLEXMLS_BASE_URL; // e.g. https://replication.sparkapi.com/Version/3/Reso/OData
+const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;   // Bearer token or API key depending on your replication endpoint
+
+// -----------------------------
+// Known subdivisions & mapper
+// -----------------------------
 const KNOWN_SUBDIVISIONS = [
   'Misiones',
-  'El Tezal-OceanSide',
-  'El Tezal-East',
-  'El Tezal-West',
+  'El Tezal',
   'Chileno Bay',
-  'Cabo Bello/Santa Carmela',
+  'Cabo Bello',
+  'Santa Carmela',
   'Cabo del Sol',
   'Cabo del Sol Viejo',
-  'Chileno Bay/Montage',
   'Maravilla',
   'Punta Ballena',
   'Pedregal',
@@ -28,49 +26,65 @@ const KNOWN_SUBDIVISIONS = [
   'Puerto Los Cabos',
   'Zacatitos',
   'CSL Country Club',
-  'Country Club Estates'
+  'Country Club Estates',
+  'El Tule',
 ];
 
-// Community name corrections (UI label → actual FlexMLS value)
-// ✅ CORRECTED VERSION - Maps UI labels to real MLS Community field values
 const COMMUNITY_NAME_MAPPER: Record<string, string> = {
-  // UI → MLS
   'Cabo del Sol-Inland': 'Cabo del Sol',
-
-  // Chileno / Montage area
-  'Chileno Bay Club': 'Chileno Bay',        // Optional but safe
-  'Chileno/Montage-Inland': 'El Tule',      // Correct MLS matching region
-
-  // Country Club
-  'CSL Country Club': 'CSL Country Club',   // Do NOT map to Country Club Estates
-
-  // El Tezal cluster
+  'Chileno Bay Club': 'Chileno Bay',
+  'Chileno/Montage-Inland': 'El Tule',
+  'CSL Country Club': 'CSL Country Club',
   'El Tezal-East': 'El Tezal',
   'El Tezal-West': 'El Tezal',
   'El Tezal-OceanSide': 'El Tezal'
 };
 
+// -----------------------------
+// Helpers
+// -----------------------------
+function parseBooleanQuery(val: unknown): boolean | null {
+  if (val === undefined || val === null) return null;
+  if (typeof val === 'boolean') return val;
+  const s = Array.isArray(val) ? String(val[0]) : String(val);
+  if (!s) return null;
+  const low = s.toLowerCase();
+  if (low === 'true') return true;
+  if (low === 'false') return false;
+  return null;
+}
+
+function getStringOrNull(val: unknown): string | null {
+  if (val === undefined || val === null) return null;
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'string') return val[0];
+  return null;
+}
+
+function safeEscape(s: string) {
+  return s.replace(/'/g, "''");
+}
+
 /**
- * Corrects hierarchy fields by detecting if a "community" is actually a subdivision
- * and normalizing field names to match FlexMLS database values
+ * Try to map UI labels into MLS-identical values, and
+ * detect when a community string is actually a subdivision.
  */
 function correctHierarchyFields(params: {
   city: string | null;
   area: string | null;
   community: string | null;
   subdivision: string | null;
-}): { city: string | null; area: string | null; community: string | null; subdivision: string | null } {
+}) {
   let { city, area, community, subdivision } = params;
 
-  // Apply community name corrections
   if (community && COMMUNITY_NAME_MAPPER[community]) {
     console.log(`📝 [Field Correction] Mapping "${community}" → "${COMMUNITY_NAME_MAPPER[community]}"`);
     community = COMMUNITY_NAME_MAPPER[community];
   }
 
-  // Auto-detect if community is actually a subdivision
+  // If the community matches a known subdivision, treat it as subdivision (most specific).
   if (community && !subdivision && KNOWN_SUBDIVISIONS.includes(community)) {
-    console.log(`🔄 [Field Correction] "${community}" detected as Subdivision, not Community`);
+    console.log(`🔄 [Field Correction] "${community}" detected as Subdivision`);
     subdivision = community;
     community = null;
   }
@@ -78,356 +92,356 @@ function correctHierarchyFields(params: {
   return { city, area, community, subdivision };
 }
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
+// Build a "safe" list of location filter clauses, using fields that are commonly present on Cabo MLS
+function buildLocationFilters({
+  city,
+  area,
+  community,
+  subdivision,
+}: {
+  city: string | null;
+  area: string | null;
+  community: string | null;
+  subdivision: string | null;
+}) {
+  const parts: string[] = [];
 
-function parseBooleanQuery(value: string | string[] | undefined): string | null {
-  if (!value) return null;
-  const val = Array.isArray(value) ? value[0] : value;
-  return val.toLowerCase() === 'true' ? 'true' : val.toLowerCase() === 'false' ? 'false' : null;
+  if (subdivision) {
+    const list = subdivision.split(',').map(s => s.trim()).filter(Boolean);
+    if (list.length === 1) {
+      const s = safeEscape(list[0]);
+      // Prefer SubdivisionName but also check Community/UnparsedAddress as fallback text search
+      parts.push(`(SubdivisionName eq '${s}' or contains(SubdivisionName,'${s}') or contains(UnparsedAddress,'${s}'))`);
+    } else if (list.length > 1) {
+      const f = list.map(s => {
+        const v = safeEscape(s);
+        return `(SubdivisionName eq '${v}' or contains(SubdivisionName,'${v}') or contains(UnparsedAddress,'${v}'))`;
+      }).join(' or ');
+      parts.push(`(${f})`);
+    }
+    // When subdivision used, we will ignore other location levels (honor hierarchy elsewhere).
+    return parts;
+  }
+
+  if (community) {
+    const list = community.split(',').map(s => s.trim()).filter(Boolean);
+    if (list.length === 1) {
+      const s = safeEscape(list[0]);
+      // Community field is inconsistent across boards; search community & fallback to unparsed address
+      parts.push(`(Community eq '${s}' or contains(Community,'${s}') or contains(UnparsedAddress,'${s}'))`);
+    } else if (list.length > 1) {
+      const f = list.map(s => {
+        const v = safeEscape(s);
+        return `(Community eq '${v}' or contains(Community,'${v}') or contains(UnparsedAddress,'${v}'))`;
+      }).join(' or ');
+      parts.push(`(${f})`);
+    }
+    return parts;
+  }
+
+  if (area) {
+    const list = area.split(',').map(s => s.trim()).filter(Boolean);
+    // Use MLSAreaMajor (older code used MLSAreaMajor); keep both forms accepted by some boards
+    if (list.length === 1) {
+      const s = safeEscape(list[0]);
+      parts.push(`(MLSAreaMajor eq '${s}' or contains(MLSAreaMajor,'${s}') or contains(UnparsedAddress,'${s}'))`);
+    } else if (list.length > 1) {
+      const f = list.map(a => {
+        const v = safeEscape(a);
+        return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}') or contains(UnparsedAddress,'${v}'))`;
+      }).join(' or ');
+      parts.push(`(${f})`);
+    }
+    return parts;
+  }
+
+  if (city) {
+    // City is not a reliable field for Cabo; treat Cabo Corridor specially (area decoy)
+    if (city === 'Cabo Corridor') {
+      const corridorAreas = ['CSL Cor-Inland', 'CSL-Corr. Oceanside'];
+      const f = corridorAreas.map(a => {
+        const v = safeEscape(a);
+        return `(MLSAreaMajor eq '${v}' or contains(MLSAreaMajor,'${v}'))`;
+      }).join(' or ');
+      parts.push(`(${f})`);
+    } else {
+      const s = safeEscape(city);
+      parts.push(`(City eq '${s}' or contains(City,'${s}') or contains(UnparsedAddress,'${s}'))`);
+    }
+    return parts;
+  }
+
+  return parts;
 }
 
-function getStringOrNull(value: string | string[] | undefined): string | null {
-  if (!value) return null;
-  return Array.isArray(value) ? value[0] : value;
-}
+// -----------------------------
+// Fetch helpers (use URL object so base must exist)
+// -----------------------------
+async function fetchLimitedResultsFromUrl(urlObj: URL, limit: number, apiKey: string) {
+  urlObj.searchParams.set('$top', String(limit));
+  urlObj.searchParams.set('$skip', '0');
+  urlObj.searchParams.set('$orderby', 'ModificationTimestamp desc');
+  urlObj.searchParams.set('$expand', 'Media');
 
-// ============================================================================
-// PAGINATION FUNCTIONS
-// ============================================================================
+  console.log(`📡 [Limited] ${urlObj.toString()}`);
 
-async function fetchLimitedResults(
-  baseUrl: string,
-  limit: number
-): Promise<{ value: any[]; '@iot.count'?: number }> {
-  const url = `${baseUrl}&$top=${limit}`;
-  console.log(`🔗 [Limited Fetch] ${url}`);
-  
-  const response = await fetch(url, {
+  const response = await fetch(urlObj.toString(), {
+    method: 'GET',
     headers: {
-      Authorization: `Bearer ${process.env.FLEXMLS_API_KEY}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+      Accept: 'application/json',
     },
   });
 
   if (!response.ok) {
     throw new Error(`API returned ${response.status}`);
   }
-
   return await response.json();
 }
 
-async function fetchAllResults(baseUrl: string): Promise<any[]> {
-  let allResults: any[] = [];
-  let skip = 0;
+async function fetchAllResultsFromUrl(urlObj: URL, apiKey: string): Promise<any[]> {
   const top = 200;
+  let skip = 0;
+  const all: any[] = [];
 
   while (true) {
-    const url = `${baseUrl}&$top=${top}&$skip=${skip}`;
-    console.log(`🔗 [Paginated Fetch at skip ${skip}] ${url}`);
+    urlObj.searchParams.set('$top', String(top));
+    urlObj.searchParams.set('$skip', String(skip));
+    urlObj.searchParams.set('$orderby', 'ModificationTimestamp desc');
+    urlObj.searchParams.set('$expand', 'Media');
 
-    try {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${process.env.FLEXMLS_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-      });
+    console.log(`📡 [Page fetch] skip=${skip} ${urlObj.toString()}`);
 
-      if (!response.ok) {
-        console.error(`❌ [Fetch Failed at skip ${skip}]: API returned ${response.status}`);
-        throw new Error(`API returned ${response.status}`);
-      }
+    const response = await fetch(urlObj.toString(), {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        Accept: 'application/json',
+      },
+    });
 
-      const data = await response.json();
-      const results = data.value || [];
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`);
+    }
 
-      if (results.length === 0) {
-        console.log(`✅ [Pagination Complete] No more results at skip ${skip}`);
-        break;
-      }
+    const data = await response.json();
+    const results = data?.value || [];
+    all.push(...results);
 
-      allResults = allResults.concat(results);
-      console.log(`📦 [Batch ${skip / top + 1}] Retrieved ${results.length} listings (total: ${allResults.length})`);
+    console.log(`📦 Retrieved ${results.length} (accum ${all.length})`);
 
-      if (results.length < top) {
-        console.log(`✅ [Pagination Complete] Last batch was partial (${results.length} < ${top})`);
-        break;
-      }
+    if (results.length < top) break;
+    skip += top;
 
-      skip += top;
-    } catch (error) {
-      console.error(`❌ [Fetch Failed at skip ${skip}]:`, error);
-      throw error;
+    // safety cap to avoid infinite loops
+    if (skip >= 5000) {
+      console.warn('⚠️ reached safe pagination cap (5000) - breaking');
+      break;
     }
   }
 
-  return allResults;
+  return all;
 }
 
-// ============================================================================
-// MAIN HANDLER
-// ============================================================================
-
+// -----------------------------
+// Main handler
+// -----------------------------
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Basic method + env validation
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    return res.status(200).end();
+  }
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
+  }
+  if (!FLEXMLS_BASE_URL || !FLEXMLS_API_KEY) {
+    console.error('🚨 Missing FLEXMLS_BASE_URL or FLEXMLS_API_KEY env vars');
+    return res.status(500).json({
+      success: false,
+      error: 'Server misconfigured: FLEXMLS_BASE_URL or FLEXMLS_API_KEY missing',
+    });
   }
 
   try {
-    const {
-      limit: rawLimit,
-      city: rawCity,
-      area: rawArea,
-      areas: rawAreas,
-      community: rawCommunity,
-      communities: rawCommunities,
-      subdivision: rawSubdivision,
-      subdivisions: rawSubdivisions,
-      propertyType,
-      minPrice,
-      maxPrice,
-      minBeds,
-      maxBeds,
-      minBaths,
-      maxBaths,
-      search,
-      sellerFinancing: rawSellerFinancing,
-      primaryView: rawPrimaryView,
-      currentPrice: rawCurrentPrice
-    } = req.query;
+    // parse incoming query params
+    const raw = req.query;
+    const search = getStringOrNull(raw.search);
+    const limit = raw.limit ? parseInt(String(Array.isArray(raw.limit) ? raw.limit[0] : raw.limit), 10) : undefined;
 
-    // Parse parameters
-    const limit = rawLimit ? parseInt(rawLimit as string, 10) : undefined;
-    let city = getStringOrNull(rawCity);
-    let area = getStringOrNull(rawArea || rawAreas);
-    let community = getStringOrNull(rawCommunity || rawCommunities);
-    let subdivision = getStringOrNull(rawSubdivision || rawSubdivisions);
+    // Accept either singular or plural param names (areas / areas)
+    let city = getStringOrNull(raw.city);
+    let area = getStringOrNull(raw.area ?? raw.areas);
+    let community = getStringOrNull(raw.community ?? raw.communities);
+    let subdivision = getStringOrNull(raw.subdivision ?? raw.subdivisions);
 
-    // Special filters
-    const sellerFinancing = parseBooleanQuery(rawSellerFinancing);
-    const primaryView = parseBooleanQuery(rawPrimaryView);
-    const currentPrice = parseBooleanQuery(rawCurrentPrice);
+    const minPrice = getStringOrNull(raw.minPrice);
+    const maxPrice = getStringOrNull(raw.maxPrice);
+    const minBeds = getStringOrNull(raw.minBeds ?? raw.bedrooms);
+    const maxBeds = getStringOrNull(raw.maxBeds);
+    const minBaths = getStringOrNull(raw.minBaths ?? raw.bathrooms);
+    const maxBaths = getStringOrNull(raw.maxBaths);
+    const propertyType = getStringOrNull(raw.propertyType);
+    const sellerFinancing = parseBooleanQuery(raw.sellerFinancing);
+    const primaryView = parseBooleanQuery(raw.primaryView);
+    const currentPrice = parseBooleanQuery(raw.currentPrice);
 
-    console.log(`\n🎯 [Request] city=${city}, area=${area}, community=${community}, subdivision=${subdivision}`);
+    console.log('🎯 [Request raw]', { city, area, community, subdivision, limit, search });
 
-    // ============================================================================
-    // FIELD NAME CORRECTION - Apply before cascading hierarchy
-    // ============================================================================
-    const corrected = correctHierarchyFields({ city, area, community, subdivision });
-    city = corrected.city;
-    area = corrected.area;
-    community = corrected.community;
-    subdivision = corrected.subdivision;
+    // Apply corrections / normalization for known UI labels
+    ({ city, area, community, subdivision } = correctHierarchyFields({
+      city, area, community, subdivision
+    }));
 
-    console.log(`✅ [After Correction] city=${city}, area=${area}, community=${community}, subdivision=${subdivision}`);
+    console.log('🔧 [After correction]', { city, area, community, subdivision });
 
-    // ============================================================================
-    // CASCADING FILTER HIERARCHY WITH DECOY SYSTEM
-    // ============================================================================
-    // Rule: Most specific filter wins. Less specific filters become "decoys"
-    // Hierarchy: City → Area → Community → Subdivision
-    // If Subdivision exists, use ONLY Subdivision (ignore all others)
-    // Else if Community exists, use ONLY Community (ignore City/Area)
-    // Else if Area exists, use ONLY Area (ignore City)
-    // Else if City exists, use City (or decoy for Cabo Corridor)
-    // ============================================================================
-
+    // Cascading hierarchy: most specific first
+    // If subdivision exists, ignore community/area/city
     if (subdivision) {
-      console.log(`🎯 [HIERARCHY] Using SUBDIVISION filter (most specific) - City/Area/Community ignored`);
-      city = null;
-      area = null;
+      console.log('🎯 [Hierarchy] Using SUBDIVISION only');
       community = null;
-    } else if (community) {
-      console.log(`🎯 [HIERARCHY] Using COMMUNITY filter - City/Area become decoys (ignored)`);
-      city = null;
       area = null;
-    } else if (area) {
-      console.log(`🎯 [HIERARCHY] Using AREA filter - City becomes decoy (ignored)`);
       city = null;
-    } else if (city === 'Cabo Corridor') {
-      // Special handling for Cabo Corridor zone
-      console.log(`🎯 [HIERARCHY] Using ZONE DECOY for Cabo Corridor (fetching 2 corridor areas)`);
-      area = null; // Will be replaced with corridor areas below
+    } else if (community) {
+      console.log('🎯 [Hierarchy] Using COMMUNITY only (subdivision absent)');
+      area = null;
+      city = null;
+    } else if (area) {
+      console.log('🎯 [Hierarchy] Using AREA only');
+      city = null;
+    } else if (city) {
+      // City used only as last resort (and special zone handling)
+      console.log('🎯 [Hierarchy] Using CITY/ZONE only');
     }
 
-    // Build location filters
-    const locationFilters: string[] = [];
+    // Build location filters (safe)
+    const locationFilters = buildLocationFilters({ city, area, community, subdivision });
 
-    // Subdivision filter (highest priority)
-    if (subdivision) {
-      const subdivisions = subdivision.split(',').map((s) => s.trim());
-      if (subdivisions.length === 1) {
-        locationFilters.push(
-          `(SubdivisionName eq '${subdivisions[0]}' or contains(SubdivisionName, '${subdivisions[0]}'))`
-        );
-      } else {
-        const subFilters = subdivisions
-          .map(
-            (sub) => `(SubdivisionName eq '${sub}' or contains(SubdivisionName, '${sub}'))`
-          )
-          .join(' or ');
-        locationFilters.push(`(${subFilters})`);
-      }
-    }
+    // Additional filters
+    const otherFilters: string[] = [];
 
-    // Community filter
-    if (community && !subdivision) {
-      const communities = community.split(',').map((c) => c.trim());
-      if (communities.length === 1) {
-        locationFilters.push(
-          `(CommunityName eq '${communities[0]}' or contains(CommunityName, '${communities[0]}'))`
-        );
-      } else {
-        const commFilters = communities
-          .map(
-            (com) => `(CommunityName eq '${com}' or contains(CommunityName, '${com}'))`
-          )
-          .join(' or ');
-        locationFilters.push(`(${commFilters})`);
-      }
-    }
-
-    // Area filter - Special handling for Cabo Corridor
-    if (area && !community && !subdivision) {
-      if (city === 'Cabo Corridor' && !area) {
-        // Cabo Corridor decoy: fetch both corridor areas
-        const corridorAreas = ['CSL Cor-Inland', 'CSL-Corr. Oceanside'];
-        const areaFilters = corridorAreas
-          .map((a) => `(MLSAreaMajor eq '${a}' or contains(MLSAreaMajor, '${a}'))`)
-          .join(' or ');
-        locationFilters.push(`(${areaFilters})`);
-      } else {
-        const areas = area.split(',').map((a) => a.trim());
-        if (areas.length === 1) {
-          locationFilters.push(
-            `(MLSAreaMajor eq '${areas[0]}' or contains(MLSAreaMajor, '${areas[0]}'))`
-          );
-        } else {
-          const areaFilters = areas
-            .map((a) => `(MLSAreaMajor eq '${a}' or contains(MLSAreaMajor, '${a}'))`)
-            .join(' or ');
-          locationFilters.push(`(${areaFilters})`);
-        }
-      }
-    }
-
-    // City filter (lowest priority)
-    if (city && !area && !community && !subdivision) {
-      if (city === 'Cabo Corridor') {
-        // Apply Cabo Corridor decoy: fetch both areas
-        const corridorAreas = ['CSL Cor-Inland', 'CSL-Corr. Oceanside'];
-        const areaFilters = corridorAreas
-          .map((a) => `(MLSAreaMajor eq '${a}' or contains(MLSAreaMajor, '${a}'))`)
-          .join(' or ');
-        locationFilters.push(`(${areaFilters})`);
-      } else {
-        locationFilters.push(
-          `(City eq '${city}' or contains(City, '${city}'))`
-        );
-      }
-    }
-
-    // ============================================================================
-    // GEOGRAPHIC BOUNDING BOX (Los Cabos Region)
-    // ============================================================================
-    // Prevents properties from showing in USA or in the ocean
-    const geographicFilters: string[] = [];
-    geographicFilters.push('Latitude ge 22.8');
-    geographicFilters.push('Latitude le 23.3');
-    geographicFilters.push('Longitude ge -110.3');
-    geographicFilters.push('Longitude le -109.6');
-    console.log(`🗺️ [Geographic Filter] Applied Los Cabos bounding box`);
-
-    // Property Type filter
-    if (propertyType && propertyType !== 'All') {
-      const typeValue = propertyType === 'Condos' ? 'A' : propertyType === 'Houses' ? 'B' : 'C';
-      locationFilters.push(`PropertyType eq '${typeValue}'`);
-    }
-
-    // Price filters
+    // Price
     if (minPrice) {
-      locationFilters.push(`CurrentPricePublic ge ${minPrice}`);
+      const v = Number(minPrice);
+      if (!Number.isNaN(v)) otherFilters.push(`ListPrice ge ${v}`);
     }
     if (maxPrice) {
-      locationFilters.push(`CurrentPricePublic le ${maxPrice}`);
+      const v = Number(maxPrice);
+      if (!Number.isNaN(v)) otherFilters.push(`ListPrice le ${v}`);
     }
 
-    // Bedroom filters
+    // Beds/Baths
     if (minBeds) {
-      locationFilters.push(`BedsTotal ge ${minBeds}`);
+      const v = Number(minBeds);
+      if (!Number.isNaN(v)) otherFilters.push(`BedroomsTotal ge ${v}`);
     }
     if (maxBeds) {
-      locationFilters.push(`BedsTotal le ${maxBeds}`);
+      const v = Number(maxBeds);
+      if (!Number.isNaN(v)) otherFilters.push(`BedroomsTotal le ${v}`);
     }
-
-    // Bathroom filters
     if (minBaths) {
-      locationFilters.push(`BathsTotal ge ${minBaths}`);
+      const v = Number(minBaths);
+      if (!Number.isNaN(v)) otherFilters.push(`BathroomsFull ge ${v}`);
     }
     if (maxBaths) {
-      locationFilters.push(`BathsTotal le ${maxBaths}`);
+      const v = Number(maxBaths);
+      if (!Number.isNaN(v)) otherFilters.push(`BathroomsFull le ${v}`);
     }
 
-    // Search filter (MLSAreaMajor, UnparsedAddress, PublicRemarks)
-    if (search) {
-      const searchValue = Array.isArray(search) ? search[0] : search;
-      locationFilters.push(
-        `(contains(MLSAreaMajor, '${searchValue}') or contains(UnparsedAddress, '${searchValue}') or contains(PublicRemarks, '${searchValue}'))`
-      );
+    // Property type (simple mapping — adjust to your MLS codes)
+    if (propertyType && propertyType !== 'All') {
+      // Example mapping; adapt if your MLS uses different codes
+      const typeMap: Record<string, string> = {
+        'Condo': 'Condo',
+        'Condos': 'Condo',
+        'House': 'Residential',
+        'Houses': 'Residential'
+      };
+      const mapped = typeMap[propertyType] ?? propertyType;
+      otherFilters.push(`PropertyType eq '${safeEscape(mapped)}'`);
     }
 
-    // Special filters
-    if (sellerFinancing === 'true') {
-      locationFilters.push(`SellerFinancing eq true`);
-    } else if (sellerFinancing === 'false') {
-      locationFilters.push(`SellerFinancing eq false`);
+    // Search - free text (safe)
+    if (search && search.trim() !== '') {
+      const s = safeEscape(search.trim());
+      otherFilters.push(`(contains(UnparsedAddress,'${s}') or contains(PublicRemarks,'${s}') or contains(ListingId,'${s}'))`);
     }
 
-    if (primaryView === 'true') {
-      locationFilters.push(`View eq 'Ocean' or View eq 'Water' or View eq 'Beach'`);
+    // Special flags
+    if (sellerFinancing === true) otherFilters.push(`SellerFinancingYN eq true`);
+    if (sellerFinancing === false) otherFilters.push(`SellerFinancingYN eq false`);
+    if (currentPrice === true) otherFilters.push(`ListPrice gt 0`);
+
+    // Primary view - we prefer client-side filtering for robustness; if requested, add a loose server-side hint
+    if (primaryView === true) {
+      // Loose server-side hint: look for 'View' field values that commonly indicate ocean/water
+      otherFilters.push(`(contains(View,'ocean') or contains(View,'water') or contains(View,'beach'))`);
     }
 
-    if (currentPrice === 'true') {
-      locationFilters.push(`CurrentPricePublic gt 0`);
-    }
+    // Always only active listings
+    otherFilters.push(`StandardStatus eq 'Active'`);
 
-    // Add active status
-    locationFilters.push(`StandardStatus eq 'Active'`);
+    // Geographic bounding box for Los Cabos (prevents USA/ocean results)
+    const geoFilters = [
+      'Latitude ge 22.8',
+      'Latitude le 23.3',
+      'Longitude ge -110.3',
+      'Longitude le -109.6'
+    ];
 
-    // Combine all filters
-    const allFilters = [...locationFilters, ...geographicFilters];
-    const filterString = allFilters.join(' and ');
+    // Combine everything
+    const allFilters = [...locationFilters, ...otherFilters, ...geoFilters].filter(Boolean);
+    const filterString = allFilters.length > 0 ? allFilters.join(' and ') : '';
 
-    // Build base URL
-    const FLEXMLS_BASE_URL = 'https://replication.sparkapi.com/Version/3/Reso/OData';
-    const baseUrl = `${FLEXMLS_BASE_URL}/Property?$filter=${encodeURIComponent(
-      filterString
-    )}`;
+    // Build URL safely using URL API
+    const base = new URL(`${FLEXMLS_BASE_URL}/Property`);
+    if (filterString) base.searchParams.set('$filter', filterString);
+    // Add minimal default expansion/order for performance
+    base.searchParams.set('$orderby', 'ModificationTimestamp desc');
+    base.searchParams.set('$expand', 'Media');
 
-    console.log(`🔍 [Final Filter] ${filterString}`);
+    console.log('🔍 [Final Filter]', filterString);
 
-    // Fetch results
-    let data: { value: any[]; '@iot.count'?: number };
-    if (limit) {
-      data = await fetchLimitedResults(baseUrl, limit);
+    // Fetch
+    let results: any[] = [];
+    if (limit && Number.isFinite(limit)) {
+      const resp = await fetchLimitedResultsFromUrl(new URL(base.toString()), limit, FLEXMLS_API_KEY);
+      results = resp?.value ?? [];
     } else {
-      const results = await fetchAllResults(baseUrl);
-      data = { value: results };
+      results = await fetchAllResultsFromUrl(new URL(base.toString()), FLEXMLS_API_KEY);
     }
 
-    console.log(`✅ [Final Result] ${data.value?.length || 0} listings AFTER client-side filters`);
+    // Client-side stronger primary view filter (optional) — keep as you previously had
+    if (primaryView === true && Array.isArray(results)) {
+      const viewFieldNames = ['View', 'General_sp_Description_co_Primary_sp_View'];
+      results = results.filter(r => {
+        for (const f of viewFieldNames) {
+          const v = r[f];
+          if (typeof v === 'string' && v.toLowerCase().includes('ocean')) return true;
+          if (typeof v === 'string' && v.toLowerCase().includes('water')) return true;
+        }
+        return false;
+      });
+    }
 
+    console.log(`✅ [Result] ${results.length} listings`);
+
+    // return sanitized response
     return res.status(200).json({
-      listings: data.value || [],
-      total: data['@iot.count'],
+      success: true,
+      count: results.length,
+      results,
+      filters: filterString
     });
-  } catch (error) {
-    console.error('❌ [API Error]:', error);
+
+  } catch (err) {
+    console.error('❌ [API Error]:', err);
+    // Include message for debugging in logs but return safe error to client
     return res.status(500).json({
+      success: false,
       error: 'Failed to fetch listings',
-      details: error instanceof Error ? error.message : 'Unknown error',
+      details: err instanceof Error ? err.message : String(err)
     });
   }
 }
