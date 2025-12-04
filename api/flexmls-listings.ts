@@ -11,6 +11,7 @@ const FLEXMLS_API_KEY = process.env.FLEXMLS_API_KEY;
 // KNOWN SUBDIVISIONS
 // ============================================================================
 const KNOWN_SUBDIVISIONS = [
+  // Los Cabos subdivisions
   'Misiones',
   'El Tezal',
   'Chileno Bay',
@@ -31,6 +32,24 @@ const KNOWN_SUBDIVISIONS = [
   'CSL Country Club',
   'Country Club Estates',
   'El Tule',
+  
+  // East Cape communities (stored as SubdivisionName in MLS)
+  'Los Barriles',
+  'La Ribera',
+  'Costa Palmas',
+  'Vinorama',
+  'Cabo Pulmo',
+  'Vinorama/Cabo Pulmo',
+  'Zacatitos/PtaPerfcta',
+  'Bay of Dreams',
+  'BayOfDreams/Ventanas',
+  
+  // La Paz communities (stored as SubdivisionName in MLS)
+  'El Centenario',
+  'El Sargento',
+  'La Ventana',
+  'Los Planes',
+  'San Juan de la Costa',
 ];
 
 // ============================================================================
@@ -175,21 +194,55 @@ function buildLocationFilters({
   // -------------------------
   if (community) {
     const list = community.split(',').map(s => s.trim()).filter(Boolean);
-
-    if (list.length === 1) {
-      const s = safeEscape(list[0]);
-      parts.push(
-        `(Community eq '${s}' or contains(Community,'${s}') or contains(UnparsedAddress,'${s}'))`
-      );
-    } else {
-      const f = list
-        .map(s => {
-          const v = safeEscape(s);
-          return `(Community eq '${v}' or contains(Community,'${v}') or contains(UnparsedAddress,'${v}'))`;
-        })
-        .join(' or ');
-      parts.push(`(${f})`);
+    
+    // Check if any communities are actually subdivisions (East Cape, La Paz communities)
+    const subdivisionList: string[] = [];
+    const communityList: string[] = [];
+    
+    for (const name of list) {
+      if (KNOWN_SUBDIVISIONS.includes(name)) {
+        subdivisionList.push(name);
+      } else {
+        communityList.push(name);
+      }
     }
+    
+    // Search SubdivisionName for known subdivisions
+    if (subdivisionList.length > 0) {
+      if (subdivisionList.length === 1) {
+        const s = safeEscape(subdivisionList[0]);
+        parts.push(
+          `(SubdivisionName eq '${s}' or contains(SubdivisionName,'${s}') or contains(UnparsedAddress,'${s}'))`
+        );
+      } else {
+        const f = subdivisionList
+          .map(s => {
+            const v = safeEscape(s);
+            return `(SubdivisionName eq '${v}' or contains(SubdivisionName,'${v}') or contains(UnparsedAddress,'${v}'))`;
+          })
+          .join(' or ');
+        parts.push(`(${f})`);
+      }
+    }
+    
+    // Search Community field for actual communities (Cabo zones)
+    if (communityList.length > 0) {
+      if (communityList.length === 1) {
+        const s = safeEscape(communityList[0]);
+        parts.push(
+          `(Community eq '${s}' or contains(Community,'${s}') or contains(UnparsedAddress,'${s}'))`
+        );
+      } else {
+        const f = communityList
+          .map(s => {
+            const v = safeEscape(s);
+            return `(Community eq '${v}' or contains(Community,'${v}') or contains(UnparsedAddress,'${v}'))`;
+          })
+          .join(' or ');
+        parts.push(`(${f})`);
+      }
+    }
+    
     // Don't return - continue to add zone context
   }
 
