@@ -465,7 +465,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const maxBeds = getStringOrNull(raw.maxBeds);
     const minBaths = getStringOrNull(raw.minBaths ?? raw.bathrooms);
     const maxBaths = getStringOrNull(raw.maxBaths);
-    const propertyType = getStringOrNull(raw.propertyType);
+    
+    // Property type can be single value, array, or comma-separated string
+    let propertyType: string | null = null;
+    if (raw.propertyType) {
+      if (Array.isArray(raw.propertyType)) {
+        propertyType = raw.propertyType.join(',');
+      } else if (typeof raw.propertyType === 'string') {
+        propertyType = raw.propertyType;
+      }
+    }
+    
     const sellerFinancing = parseBooleanQuery(raw.sellerFinancing);
     const primaryView = parseBooleanQuery(raw.primaryView);
     const currentPrice = parseBooleanQuery(raw.currentPrice);
@@ -532,17 +542,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!Number.isNaN(v)) otherFilters.push(`BathroomsFull le ${v}`);
     }
 
-    // Property type (simple mapping — adjust to your MLS codes)
+    // Property type - handle multiple selections
     if (propertyType && propertyType !== 'All') {
-      // Example mapping; adapt if your MLS uses different codes
+      console.log(`🏠 [Property Type] Raw input: "${propertyType}"`);
+      
       const typeMap: Record<string, string> = {
         'Condo': 'Condo',
         'Condos': 'Condo',
         'House': 'Residential',
-        'Houses': 'Residential'
+        'Houses': 'Residential',
+        'Land': 'Land',
+        'Commercial': 'Commercial',
+        'Fractional': 'Fractional',
+        'MultiFamily': 'Multi Family'
       };
-      const mapped = typeMap[propertyType] ?? propertyType;
-      otherFilters.push(`PropertyType eq '${safeEscape(mapped)}'`);
+      
+      // Handle multiple property types (comma-separated)
+      const types = propertyType.split(',').map(t => t.trim()).filter(Boolean);
+      console.log(`🏠 [Property Type] Parsed types: [${types.join(', ')}]`);
+      
+      if (types.length === 1) {
+        const mapped = typeMap[types[0]] ?? types[0];
+        console.log(`🏠 [Property Type] Single type: ${types[0]} → ${mapped}`);
+        otherFilters.push(`PropertyType eq '${safeEscape(mapped)}'`);
+      } else if (types.length > 1) {
+        // Multiple types - use OR logic
+        const typeFilters = types
+          .map(t => {
+            const mapped = typeMap[t] ?? t;
+            console.log(`🏠 [Property Type] Mapping: ${t} → ${mapped}`);
+            return `PropertyType eq '${safeEscape(mapped)}'`;
+          })
+          .join(' or ');
+        console.log(`🏠 [Property Type] Final filter: (${typeFilters})`);
+        otherFilters.push(`(${typeFilters})`);
+      }
     }
 
     // Search - free text (safe)
