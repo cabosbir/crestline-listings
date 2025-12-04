@@ -131,14 +131,17 @@ const AdvancedSearch = () => {
 
   // ✅ COMPLETE CASCADING HIERARCHY MAPS
   const zoneToAreaMap: Record<string, string[]> = {
-    "Cabo San Lucas": ["CSL Cor-Inland", "CSL-Centro", "CSL-Corr. Oceanside", "CSL-Beach & Marina", "CSL-North"],
-    "San Jose del Cabo": ["SJD Corr-Inland", "SJD Corr-Oceanside", "SJD-Centro", "SJD-Beachside", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
-    "East Cape": ["East Cape North", "East Cape South", "La Ribera", "Los Barriles", "BuenaVista/Rancho Leonero", "BuenVsta/LosBarilles", "ElCardonal/N of Bariles", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta", "Bay of Dreams", "Costa Palmas"],
-    "La Paz": ["La Paz City", "LaPaz Beach", "El Centenario", "El Sargento", "La Ventana", "Los Planes"],
-    "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
-    "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
-    "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside"],
-  };
+  "Cabo Corridor": ["CSL Cor-Inland", "CSL-Corr. Oceanside"],
+  "Cabo San Lucas": ["CSL-Beach & Marina", "CSL-Centro", "CSL-North"],
+  "Comondu": [],
+  "East Cape": ["East Cape North", "East Cape South", "La Ribera", "Los Barriles", "BuenaVista/Rancho Leonero", "BuenVsta/LosBarilles", "ElCardonal/N of Bariles", "Vinorama/Cabo Pulmo", "Zacatitos/PtaPerfcta", "Bay of Dreams", "Costa Palmas"],
+  "La Paz": ["La Paz City", "LaPaz Beach", "El Centenario", "El Sargento", "La Ventana", "Los Planes"],
+  "Loreto": ["Loreto", "Loreto Bay", "Nopolo"],
+  "Mulege": [],
+  "Pacific": ["Pacific North", "Pacific South", "Pescadero/Cerritos", "Migrino Area"],
+  "San Jose Corridor": ["SJD Corr-Inland", "SJD Corr-Oceanside"],
+  "San Jose del Cabo": ["SJD-Beachside", "SJD-Centro", "SJD-East", "SJD-Inland/Golf", "SJD-North"],
+};
 
   // Area → Community mapping
   const areaToCommunityMap: Record<string, string[]> = {
