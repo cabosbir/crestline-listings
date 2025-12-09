@@ -365,7 +365,7 @@ const [filters, setFilters] = useState<FilterState>({
         console.log('  💰 Max price:', apiFilters.maxPrice);
       }
       
-      if (filters.minBeds !== "Any" && filters.minBeds !== "1+") {
+      if (filters.minBeds !== "Any") {
         apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
         console.log('  🛏️ Min beds:', apiFilters.bedrooms);
       }
