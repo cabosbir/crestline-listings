@@ -23,6 +23,7 @@ import DavidLandingPage from "./pages/DavidLandingPage";
 import DonLandingPage from "./pages/DonLandingPage";
 import EdgarLandingPage from "./pages/EdgarLandingPage";
 import ErikaLandingPage from "./pages/ErikaLandingPage";
+import ErikaGracianoLandingPage from "./pages/ErikaGracianoLandingPage";
 import FernandoLandingPage from "./pages/FernandoLandingPage";
 import HectorLandingPage from "./pages/HectorLandingPage";
 import MarisolLandingPage from "./pages/MarisolLandingPage";
@@ -91,6 +92,7 @@ const App = () => (
           <Route path="/don" element={<DonLandingPage />} />
           <Route path="/edgar" element={<EdgarLandingPage />} />
           <Route path="/erika" element={<ErikaLandingPage />} />
+          <Route path="/erika-graciano" element={<ErikaGracianoLandingPage />} />
           <Route path="/fernando-cabrera" element={<FernandoLandingPage />} />
           <Route path="/hector" element={<HectorLandingPage />} />
           <Route path="/marisol" element={<MarisolLandingPage />} />
@@ -105,6 +107,7 @@ const App = () => (
           <Route path="/agents/don" element={<DonLandingPage />} />
           <Route path="/agents/edgar" element={<EdgarLandingPage />} />
           <Route path="/agents/erika" element={<ErikaLandingPage />} />
+          <Route path="/agents/erika-graciano" element={<ErikaGracianoLandingPage />} />
           <Route path="/agents/fernando-cabrera" element={<FernandoLandingPage />} />
           <Route path="/agents/hector" element={<HectorLandingPage />} />
           <Route path="/agents/marisol" element={<MarisolLandingPage />} />
