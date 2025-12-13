@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"; 
 import { Phone, Mail, Award, Home, Users, CheckCircle, MessageCircle, ChevronDown, Loader2, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
@@ -136,6 +138,10 @@ const getShuffledListings = (listings: any[], cacheKey: string) => {
 const BobLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isShortUrl = location.pathname === '/bob';
+  const canonicalUrl = 'https://www.bircabo.com/bob';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -444,7 +450,42 @@ const BobLandingPage = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
+  <Helmet>
+    <title>Bob Van Patten - Senior Real Estate Advisor | Cabo San Lucas Properties | Baja International Realty</title>
+    <meta 
+      name="description" 
+      content="Connect with Bob Van Patten, Senior Real Estate Advisor specializing in high-yield investment properties in Cabo San Lucas. 9 years experience, 85+ properties sold, $35M+ in sales. Expert in Cabo luxury real estate."
+    />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content="Bob Van Patten - Cabo San Lucas Real Estate Expert" />
+    <meta property="og:description" content="Senior advisor with 85+ properties sold in Los Cabos. Specializing in high-yield investment properties." />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content="https://www.bircabo.com/bob-van-patten.jpg" />
+    <meta property="og:type" content="profile" />
+    
+    {/* Person Schema */}
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Bob Van Patten",
+        "jobTitle": "Senior Real Estate Advisor",
+        "worksFor": {
+          "@type": "Organization",
+          "name": "Baja International Realty",
+          "url": "https://www.bircabo.com"
+        },
+        "email": "robertvanpatten2@gmail.com",
+        "telephone": "+52 624 127 6012",
+        "image": "https://www.bircabo.com/bob-van-patten.jpg",
+        "url": canonicalUrl,
+        "description": "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales.",
+        "knowsAbout": ["Real Estate", "Investment Properties", "Cabo San Lucas", "Los Cabos"],
+        "award": "Top Producer"
+      })}
+    </script>
+  </Helmet>
+  <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
       <div className="container mx-auto px-4 pt-24">
@@ -483,7 +524,7 @@ const BobLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

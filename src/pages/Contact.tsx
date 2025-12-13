@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Helmet } from "react-helmet-async";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -103,7 +104,46 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background">
+  {/* ⭐ ADD THIS ENTIRE HELMET BLOCK */}
+  <Helmet>
+    <title>Contact Baja International Realty | Cabo San Lucas Real Estate Experts</title>
+    <meta 
+      name="description" 
+      content="Contact Baja International Realty in Cabo San Lucas. Call +52 624 143 5555 or email info@bircabo.com. Office located at Boulevard Marina, downtown Cabo. Open Monday-Sunday."
+    />
+    <link rel="canonical" href="https://www.bircabo.com/contact" />
+    <meta property="og:title" content="Contact Baja International Realty | Cabo Real Estate" />
+    <meta property="og:description" content="Get in touch with our expert team in Cabo San Lucas. Call, email, or visit our downtown office today." />
+    <meta property="og:url" content="https://www.bircabo.com/contact" />
+    <meta property="og:type" content="website" />
+    
+    {/* Local Business Schema */}
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "name": "Baja International Realty",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Boulevard Marina s/n y Vicente Guerrero s/n, Manzana 31-A, Colonia Centro",
+          "addressLocality": "Cabo San Lucas",
+          "addressRegion": "Baja California Sur",
+          "postalCode": "23400",
+          "addressCountry": "MX"
+        },
+        "telephone": "+52-624-143-5555",
+        "email": "info@bircabo.com",
+        "openingHours": "Mo-Fr 09:00-18:00, Sa-Su 10:00-16:00",
+        "url": "https://www.bircabo.com"
+      })}
+    </script>
+  </Helmet>
+  {/* ⭐ END OF HELMET BLOCK */}
+
+  <Navbar />
+  <FloatingContact />
+  {/* ... rest of your code stays exactly the same ... */}
       <Navbar />
       <FloatingContact />
 
@@ -111,7 +151,7 @@ const Contact = () => {
       <section className="pt-32 pb-16 bg-secondary">
         <div className="container mx-auto px-4">
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
-            Contact Us
+            Contact Baja International Realty
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl">
             Let's discuss your real estate goals. Our team is ready to help you find your perfect property in Cabo San Lucas.

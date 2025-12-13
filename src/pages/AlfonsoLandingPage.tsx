@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -223,6 +225,9 @@ const ITEMS_PER_PAGE = 9;
 const AlfonsoLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/alfonso';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -499,6 +504,41 @@ const AlfonsoLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Alfonso Puente - Sales Manager & Commercial Real Estate Expert | Cabo San Lucas | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Alfonso Puente, Sales Manager with 18 years experience and 890+ properties sold. Expert in commercial real estate developments and market analysis in Cabo San Lucas."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Alfonso Puente - Cabo San Lucas Commercial Real Estate Expert" />
+        <meta property="og:description" content="Sales manager with 890+ properties sold. Specializing in real estate developments and market analysis." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/alfonso-puente.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Alfonso Puente",
+            "jobTitle": "Sales Manager & Commercial Real Estate Expert",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "alfonso@bircabo.com",
+            "telephone": "+52 664 188 8681",
+            "image": "https://www.bircabo.com/alfonso-puente.jpg",
+            "url": canonicalUrl,
+            "description": "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates.",
+            "knowsAbout": ["Commercial Real Estate", "Real Estate Developments", "Market Analysis", "Cabo San Lucas", "Los Cabos"],
+            "award": "Top Producer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* Back to Team Button */}
@@ -538,7 +578,7 @@ const AlfonsoLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

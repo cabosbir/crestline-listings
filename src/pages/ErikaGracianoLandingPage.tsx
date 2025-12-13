@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -246,6 +248,9 @@ const ITEMS_PER_PAGE = 9;
 const ErikaLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/erika-graciano';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -502,6 +507,41 @@ const ErikaLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Erika Graciano - Real Estate Agent & Administrative Specialist | Client Relations Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Erika Graciano, Real Estate Agent with 15 years experience in administrative management and client relations. 150+ properties sold. Expert in property management and luxury hospitality in Cabo San Lucas."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Erika Graciano - Cabo San Lucas Real Estate & Client Relations Expert" />
+        <meta property="og:description" content="15 years experience, 150+ properties sold. Exceptional client service with meticulous attention to detail in Los Cabos real estate." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/ErikaGraciano.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Erika Graciano",
+            "jobTitle": "Real Estate Agent & Administrative Specialist",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "erikag@bircabo.com",
+            "telephone": "+52 624 157 2154",
+            "image": "https://www.bircabo.com/ErikaGraciano.jpg",
+            "url": canonicalUrl,
+            "description": "Professional with extensive experience in administrative tasks and client service. Born and raised in La Paz, bringing deep local knowledge to real estate in Cabo San Lucas.",
+            "knowsAbout": ["Real Estate", "Client Relations", "Property Management", "Administrative Management", "Cabo San Lucas", "Los Cabos", "Baja California Sur"],
+            "award": "Client Service Excellence"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -541,7 +581,7 @@ const ErikaLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

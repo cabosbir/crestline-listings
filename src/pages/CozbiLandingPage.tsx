@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -242,6 +244,9 @@ const ITEMS_PER_PAGE = 9;
 const CozbiLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/cozbi';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -498,6 +503,41 @@ const CozbiLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Cozbi Sanchez - Residential Specialist | Family Homes & Condos Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Cozbi Sanchez, Residential Specialist with 8 years experience in Cabo San Lucas. 105+ properties sold. Expert in family homes and condominiums for first-time buyers and growing families."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Cozbi Sanchez - Cabo San Lucas Family Homes Expert" />
+        <meta property="og:description" content="8 years experience, 105+ properties sold. Specializing in family homes and condos with patient, client-focused service." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/cozbi-sanchez.png" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Cozbi Sanchez",
+            "jobTitle": "Residential Specialist",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "Cozbi@bajainternationalrealty.com",
+            "telephone": "+52 624 118 9512",
+            "image": "https://www.bircabo.com/cozbi-sanchez.png",
+            "url": canonicalUrl,
+            "description": "I bring dedication and genuine care to every real estate transaction in Cabo San Lucas, specializing in family homes and condominiums.",
+            "knowsAbout": ["Residential Real Estate", "Family Homes", "Condominiums", "First-Time Buyers", "Cabo San Lucas", "Los Cabos"],
+            "award": "Top Producer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -537,7 +577,7 @@ const CozbiLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

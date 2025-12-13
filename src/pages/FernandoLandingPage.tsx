@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -136,6 +138,9 @@ const getShuffledListings = (listings: any[], cacheKey: string) => {
 const FernandoLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/fernando';
   
   const getInitialPage = () => {
     if (typeof window !== 'undefined') {
@@ -429,6 +434,41 @@ const FernandoLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Fernando Cabrera - Real Estate Advisor | Residential & Vacation Homes Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Fernando Cabrera, Real Estate Advisor with 5 years experience in Cabo San Lucas. 40+ properties sold, $18M+ in sales. Former professional tennis player bringing dedication and focus to residential and vacation home sales."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Fernando Cabrera - Cabo San Lucas Residential & Vacation Homes Expert" />
+        <meta property="og:description" content="5 years experience, 40+ properties sold, $18M+ in sales. Dedicated advisor combining athletic discipline with personalized service." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/fernando-cabrera.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Fernando Cabrera",
+            "jobTitle": "Real Estate Advisor",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "fernando@bircabo.com",
+            "telephone": "+52 624 135 8900",
+            "image": "https://www.bircabo.com/fernando-cabrera.jpg",
+            "url": canonicalUrl,
+            "description": "Former professional tennis player and passionate real-estate advisor in Los Cabos. Helping clients feel confident and comfortable when choosing a home.",
+            "knowsAbout": ["Real Estate", "Residential Properties", "Vacation Homes", "Cabo San Lucas", "Los Cabos"],
+            "award": "Top Producer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       <div className="container mx-auto px-4 pt-24">
@@ -465,7 +505,7 @@ const FernandoLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

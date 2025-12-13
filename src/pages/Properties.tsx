@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import PropertyCard from "@/components/PropertyCard";
 import LeafletPropertyMap from "@/components/LeafletPropertyMap";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronLeft, ChevronRight, Map, Grid, SlidersHorizontal } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
@@ -353,13 +354,25 @@ const Properties = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+    <title>Cabo San Lucas Properties for Sale | MLS Listings | Baja International Realty</title>
+    <meta 
+      name="description" 
+      content={`Browse ${totalCount.toLocaleString()}+ luxury properties in Cabo San Lucas, San Jose del Cabo, and Los Cabos. Oceanfront villas, beachfront condos, and investment properties from Baja International Realty.`}
+    />
+    <link rel="canonical" href="https://www.bircabo.com/properties" />
+    <meta property="og:title" content="Cabo San Lucas Properties for Sale | Luxury MLS Listings" />
+    <meta property="og:description" content={`Search ${totalCount.toLocaleString()}+ luxury homes, villas, and condos in Los Cabos, Mexico.`} />
+    <meta property="og:url" content="https://www.bircabo.com/properties" />
+    <meta property="og:type" content="website" />
+      </Helmet>
       <Navbar />
       <FloatingContact />
 
       <section className="pt-32 pb-12 bg-secondary">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Cabo San Lucas Properties
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Cabo San Lucas Properties for Sale
           </h1>
           <p className="text-xl text-muted-foreground mb-6">
             Search {totalCount.toLocaleString()}+ Properties across Baja California Sur including Cabo San Lucas, 

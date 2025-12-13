@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -243,6 +245,9 @@ const ITEMS_PER_PAGE = 9;
 const EdgarLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/edgar';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -499,6 +504,41 @@ const EdgarLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Edgar Pacheco - Real Estate Advisor | Luxury Properties Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Edgar Pacheco, Real Estate Advisor specializing in luxury properties in Cabo San Lucas. Data-driven market analysis with personalized service at Baja International Realty. $1.5M+ in sales."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Edgar Pacheco - Cabo San Lucas Luxury Real Estate Advisor" />
+        <meta property="og:description" content="Your insider advantage with analytical precision and real estate expertise. Specialized luxury property advisor in Cabo San Lucas." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/edgar-pacheco.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Edgar Pacheco",
+            "jobTitle": "Real Estate Advisor",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "Edgar@bircabo.com",
+            "telephone": "+52 612 169 8328",
+            "image": "https://www.bircabo.com/edgar-pacheco.jpg",
+            "url": canonicalUrl,
+            "description": "Looking to invest in Cabo San Lucas? I'm your insider advantage with analytical precision and real estate expertise, combining data-driven market analysis with personalized service.",
+            "knowsAbout": ["Luxury Real Estate", "Market Analysis", "Investment Properties", "Cabo San Lucas", "Los Cabos"],
+            "award": "Top Producer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -538,7 +578,7 @@ const EdgarLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

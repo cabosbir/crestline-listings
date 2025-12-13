@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -246,6 +248,9 @@ const ITEMS_PER_PAGE = 9;
 const DonLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/don';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -502,6 +507,45 @@ const DonLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Don Weis - Founder & Broker | Luxury Properties & Development Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Don Weis, Founder & Broker of Baja International Realty with 35 years experience. 2,200+ properties sold, $250M+ in personal sales. Pioneer of luxury real estate development in Cabo San Lucas since the 1980s."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Don Weis - Cabo San Lucas Real Estate Visionary & Founder" />
+        <meta property="og:description" content="35 years experience, 2,200+ properties sold, $250M+ in sales. Legendary founder of Baja International Realty." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/don-weis.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Don Weis",
+            "jobTitle": "Founder & Broker",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com",
+              "founder": {
+                "@type": "Person",
+                "name": "Don Weis"
+              }
+            },
+            "email": "Don@BIRCabo.com",
+            "telephone": "+52 624 143 5555",
+            "image": "https://www.bircabo.com/don-weis.jpg",
+            "url": canonicalUrl,
+            "description": "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s with over $250 million in personal sales.",
+            "knowsAbout": ["Luxury Real Estate", "Development", "Resort Communities", "Land Acquisitions", "Cabo San Lucas", "Los Cabos", "Baja California Sur"],
+            "award": "Legendary Real Estate Pioneer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -541,7 +585,7 @@ const DonLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -242,6 +244,9 @@ const ITEMS_PER_PAGE = 9;
 const MarisolLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/marisol';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -498,6 +503,41 @@ const MarisolLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Marisol Tort - Real Estate Advisor | Luxury Property Investment Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Marisol Tort, Real Estate Advisor with 12 years experience in Cabo San Lucas. 50+ properties sold. Data-driven approach and sharp negotiation skills for profitable luxury property investments."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Marisol Tort - Cabo San Lucas Luxury Investment Expert" />
+        <meta property="og:description" content="12 years experience, 50+ properties sold. Trusted advisor specializing in profitable luxury property opportunities." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/marisol-tort.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Marisol Tort",
+            "jobTitle": "Real Estate Advisor",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "mtortricardi@gmail.com",
+            "telephone": "+52 624 264 3896",
+            "image": "https://www.bircabo.com/marisol-tort.jpg",
+            "url": canonicalUrl,
+            "description": "Trusted real estate advisor specializing in identifying profitable investment and luxury property opportunities in Cabo San Lucas with data-driven approach and sharp negotiation skills.",
+            "knowsAbout": ["Real Estate", "Luxury Properties", "Investment Analysis", "Negotiation", "Cabo San Lucas", "Los Cabos"],
+            "award": "Top Producer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -537,7 +577,7 @@ const MarisolLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

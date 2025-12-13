@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -242,6 +244,9 @@ const ITEMS_PER_PAGE = 9;
 const HectorLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/hector';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -498,6 +503,41 @@ const HectorLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Hector Mendoza - Investment Property Advisor | Data-Driven Market Analysis | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Hector Mendoza, Investment Property Advisor with 2 years experience in Cabo San Lucas. 12+ properties sold. Data-driven insights and honest guidance for confident investment decisions."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Hector Mendoza - Cabo San Lucas Investment Property Expert" />
+        <meta property="og:description" content="2 years experience, 12+ properties sold. Making real estate simple, personal, and rewarding with data-driven market knowledge." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/hector-mendoza.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Hector Mendoza",
+            "jobTitle": "Investment Property Advisor",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "Hector@BIRCabo.com",
+            "telephone": "+52 624 211 4879",
+            "image": "https://www.bircabo.com/hector-mendoza.jpg",
+            "url": canonicalUrl,
+            "description": "Real estate in Mexico should feel exciting, not overwhelming. I help clients see that buying a home is an investment that grows in value and brings lasting satisfaction.",
+            "knowsAbout": ["Real Estate", "Investment Properties", "Portfolio Management", "Market Analysis", "Cabo San Lucas", "Los Cabos"],
+            "award": "Rising Star"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -537,7 +577,7 @@ const HectorLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

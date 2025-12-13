@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -136,6 +138,9 @@ const getShuffledListings = (listings: any[], cacheKey: string) => {
 const CharlesLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+   
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/charles-jones';
   
   const getInitialPage = () => {
     if (typeof window !== 'undefined') {
@@ -429,6 +434,41 @@ const CharlesLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Charles Jones - Luxury Property Specialist | Pedregal & Cabo San Lucas Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Charles Jones, Luxury Property Specialist with 30 years experience in Pedregal and Cabo San Lucas. 250+ properties sold, $95M+ in sales. Expert in luxury vacation rentals and property management."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Charles Jones - Pedregal & Cabo San Lucas Luxury Real Estate Expert" />
+        <meta property="og:description" content="30 years experience, 250+ properties sold. Specializing in Pedregal luxury properties and vacation rental management." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/charles-jones.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Charles Jones",
+            "jobTitle": "Luxury Property Specialist",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "cabocharlie79@gmail.com",
+            "telephone": "+1 858 964 4629",
+            "image": "https://www.bircabo.com/charles-jones.jpg",
+            "url": canonicalUrl,
+            "description": "A real estate professional by heritage, fluent in English and Spanish, with over 30 years of experience in Pedregal, Cabo San Lucas.",
+            "knowsAbout": ["Luxury Real Estate", "Pedregal", "Vacation Rental Management", "Property Management", "Cabo San Lucas", "Los Cabos"],
+            "award": "Top Producer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       <div className="container mx-auto px-4 pt-24">
@@ -465,7 +505,7 @@ const CharlesLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

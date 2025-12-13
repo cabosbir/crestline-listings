@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -243,6 +245,9 @@ const ITEMS_PER_PAGE = 9;
 const SusuLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/susu';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -499,6 +504,41 @@ const SusuLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Susu Vieira - Luxury Real Estate | Staging & Design Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Susu Vieira, Luxury Real Estate specialist with 22 years experience. 50+ properties sold. Expert in staging, design, and full-service real estate in Cabo San Lucas and La Paz."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Susu Vieira - Cabo San Lucas Luxury Real Estate & Staging Expert" />
+        <meta property="og:description" content="22 years experience, 50+ properties sold. Unmatched expertise in luxury real estate, staging, and interior design." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/susu-vieira.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Susu Vieira",
+            "jobTitle": "Luxury Real Estate Specialist",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "Susu@BIRCabo.com",
+            "telephone": "+1 (808) 226-6120",
+            "image": "https://www.bircabo.com/susu-vieira.jpg",
+            "url": canonicalUrl,
+            "description": "With decades of experience in Real Estate, Susu brings unmatched expertise in luxury properties, staging, and design. Full-service and results-driven in Cabo San Lucas and La Paz.",
+            "knowsAbout": ["Luxury Real Estate", "Interior Design", "Home Staging", "Property Investment", "Cabo San Lucas", "La Paz", "Los Cabos"],
+            "award": "Luxury Properties Specialist"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -538,7 +578,7 @@ const SusuLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

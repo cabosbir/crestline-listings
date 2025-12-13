@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import AgentBioCard from "@/components/AgentBioCard";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 
 // ⚡ OPTIMIZATION 1: Move static data outside component to prevent re-creation
@@ -339,6 +340,18 @@ const Team = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+      <title>Meet Our Expert Cabo San Lucas Real Estate Team | Baja International Realty</title>
+      <meta 
+        name="description" 
+        content="Meet our team of 13 expert real estate advisors in Cabo San Lucas. Led by founder Don Weis with 35+ years experience. 75+ combined years, 1,850+ properties sold, $800M+ in sales."
+      />
+      <link rel="canonical" href="https://www.bircabo.com/team" />
+      <meta property="og:title" content="Expert Cabo San Lucas Real Estate Team | Baja International Realty" />
+      <meta property="og:description" content="13 professional agents with 75+ years combined experience. $800M+ in sales since 1987." />
+      <meta property="og:url" content="https://www.bircabo.com/team" />
+      <meta property="og:type" content="website" />
+    </Helmet>
       <Navbar />
       <FloatingContact />
 
@@ -346,7 +359,7 @@ const Team = () => {
       <section className="pt-32 pb-20 bg-gradient-to-br from-primary via-primary-dark to-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-            Meet Our Team
+             Meet Our BIR Cabo San Lucas Real Estate Team
           </h1>
           <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
             Our expert team is here to help you find the perfect property in Cabo San Lucas.

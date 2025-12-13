@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -242,6 +244,9 @@ const ITEMS_PER_PAGE = 9;
 const ErikaLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/erika-aispuro';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -498,6 +503,41 @@ const ErikaLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Erika Aispuro - Luxury Property Specialist | Oceanfront Estates Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with Erika Aispuro, Luxury Property Specialist with 8 years experience in Cabo San Lucas. 60+ properties sold. Expert in oceanfront estates and investment properties throughout Baja California Sur."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Erika Aispuro - Cabo San Lucas Oceanfront Estates Expert" />
+        <meta property="og:description" content="8 years experience, 60+ properties sold. Passionate about luxury coastal living with comprehensive market analysis and personalized service." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/erika-aispuro.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "Erika Aispuro",
+            "jobTitle": "Luxury Property Specialist",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "Eaispuro80@gmail.com",
+            "telephone": "+52 624 109 7909",
+            "image": "https://www.bircabo.com/erika-aispuro.jpg",
+            "url": canonicalUrl,
+            "description": "My passion for luxury coastal living in Cabo San Lucas and commitment to client satisfaction have made me one of the most sought-after agents in the region.",
+            "knowsAbout": ["Luxury Real Estate", "Oceanfront Estates", "Investment Properties", "Coastal Living", "Cabo San Lucas", "Los Cabos", "Baja California Sur"],
+            "award": "Top Producer"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -537,7 +577,7 @@ const ErikaLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>

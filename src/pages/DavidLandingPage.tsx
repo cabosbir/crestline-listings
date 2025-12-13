@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";  
+import { useLocation } from "react-router-dom"; 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -242,6 +244,9 @@ const ITEMS_PER_PAGE = 9;
 const DavidLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/david';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -498,6 +503,41 @@ const DavidLandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>David Scott Piper - International Real Estate Specialist | Resort & Second-Home Expert | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Connect with David Scott Piper, International Real Estate Specialist with 25 years experience. Licensed in California and Mexico. C.I.P.S.®, A.B.R.®, R.S.P.S.® certified. Expert in resort and second-home properties in Cabo San Lucas."
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="David Scott Piper - Cabo San Lucas International Real Estate Expert" />
+        <meta property="og:description" content="25 years experience, licensed in California and Mexico. Certified International Property Specialist serving Cabo San Lucas." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://www.bircabo.com/david-scott-piper.jpg" />
+        <meta property="og:type" content="profile" />
+        
+        {/* Person Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "name": "David Scott Piper",
+            "jobTitle": "International Real Estate Specialist",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Baja International Realty",
+              "url": "https://www.bircabo.com"
+            },
+            "email": "David@bircabo.com",
+            "telephone": "+52 624 317 0297",
+            "image": "https://www.bircabo.com/david-scott-piper.jpg",
+            "url": canonicalUrl,
+            "description": "David has over 25 years of experience in the real estate industry, licensed in both California and Mexico with comprehensive market knowledge in Cabo San Lucas luxury real estate.",
+            "knowsAbout": ["International Real Estate", "Resort Properties", "Second-Home Properties", "Luxury Real Estate", "Cabo San Lucas", "Los Cabos"],
+            "award": "Certified International Property Specialist"
+          })}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
@@ -537,7 +577,7 @@ const DavidLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>
