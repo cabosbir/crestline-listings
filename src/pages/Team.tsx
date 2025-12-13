@@ -133,7 +133,7 @@ const agents = [
     name: "Erika Graciano",
     title: "Real Estate Agent & Administrative Specialist",
     specialization: "Client Relations & Property Management",
-    image: "/ErikaGraciano.jpeg",
+    image: "/ErikaGraciano.jpg",
     phone: "+52 624 157 2154",
     email: "erikag@bircabo.com",
     yearsExperience: 15,

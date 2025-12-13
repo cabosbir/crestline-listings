@@ -66,7 +66,7 @@ const agentsData = {
     email: "Edgar@bircabo.com",
     phone: "+52 612 169 8328"
     },
-    "erika graciano": {
+    "erika-graciano": {
   id: 14,
   name: "Erika Graciano",
   email: "erikag@bircabo.com",
@@ -483,7 +483,7 @@ const SellerEvaluationForm = () => {
                     <option value="">No Preference - Office Will Assign</option>
                   <option value="alfonso">Alfonso Puente</option>
                   <option value="bob">Bob Van Patten</option>
-                  <option value="erika">Erika Graciano</option>
+                  <option value="erika-graciano">Erika Graciano</option>
                   <option value="charles-jones">Charles Jones</option>
                   <option value="cozbi">Cozbi Sanchez</option>
                   <option value="david">David Scott Piper</option>
