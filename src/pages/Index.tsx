@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import PropertyCard from "@/components/PropertyCard";
@@ -15,6 +17,9 @@ import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/ser
 const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const location = useLocation();
+  const canonicalUrl = 'https://www.bircabo.com/';
 
   // Fetch live properties on mount - OPTIMIZED with caching
   useEffect(() => {
@@ -108,6 +113,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Cabo San Lucas Real Estate | Luxury Homes & Condos for Sale | Baja International Realty</title>
+        <meta 
+          name="description" 
+          content="Browse 4,500+ luxury properties in Cabo San Lucas & Los Cabos. Oceanfront villas, beachfront condos, investment properties. Expert team since 1987. MLS member." 
+        />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:title" content="Cabo San Lucas Real Estate | Luxury Properties Los Cabos" />
+        <meta property="og:description" content="Premier real estate agency in Cabo San Lucas. Browse oceanfront villas, beachfront condos & investment properties. 35+ years experience." />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <Navbar />
       <Hero />
       <FloatingContact />
