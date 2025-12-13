@@ -128,6 +128,21 @@ const agents = [
     languages: ["English", "Spanish"]
   },
   {
+  id: 14,
+  slug: "erika",
+  name: "Erika Graciano",
+  title: "Real Estate Agent & Administrative Specialist",
+  specialization: "Client Relations & Property Management",
+  image: "/ErikaGraciano.jpeg",
+  phone: "+52 624 157 2154",
+  email: "erikag@bircabo.com",
+  yearsExperience: 15,
+  propertiesSold: 150,
+  bio: "Professional with extensive experience in administrative tasks and organizational skills. With solid knowledge of document management and customer service, Erika brings a unique perspective to real estate in Cabo San Lucas. Her background in administrative management and HR positions her perfectly to guide clients through the complex process of buying or selling property in Los Cabos.",
+  certifications: ["Real Estate Agent", "AMPI® Member", "Administrative Management Specialist"],
+  languages: ["Spanish", "English"]
+  },
+  {
     id: 7,
     slug: "marisol",
     name: "Marisol Tort",
