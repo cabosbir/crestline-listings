@@ -51,11 +51,14 @@ const Contact = () => {
     { id: 3, name: "Alfonso Puente", email: "alfonso@bircabo.com" },
     { id: 4, name: "Cozbi Sanchez", email: "Cozbi@bajainternationalrealty.com" },
     { id: 5, name: "Hector Mendoza", email: "Hector@bircabo.com" },
+    { id: 6, name: "Charles Jones", email: "charles@bircabo.com" },
     { id: 7, name: "Marisol Tort", email: "mtortricardi@gmail.com" },
     { id: 8, name: "David Scott Piper", email: "David@bircabo.com" },
     { id: 9, name: "Susu Vieira", email: "Susu@bircabo.com" },
     { id: 10, name: "Edgar Pacheco", email: "Edgar@bircabo.com" },
-    { id: 12, name: "Don Weis", email: "Don@bircabo.com" }
+    { id: 11, name: "Erika Graciano", email: "erikagraciano@bircabo.com" },
+    { id: 12, name: "Don Weis", email: "Don@bircabo.com" },
+    { id: 13, name: "Fernando Cabrera", email: "fernando@bircabo.com" }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {

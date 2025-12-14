@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -308,6 +309,18 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>About Baja International Realty | Premier Cabo San Lucas Real Estate Agency Since 1987</title>
+        <meta 
+          name="description" 
+          content="Baja International Realty: Cabo's #1 real estate agency since 1987. Founded by Don Weis. Team of 13 expert agents. 1,850+ properties sold. $800M+ in sales. MLS & AMPI member." 
+        />
+        <link rel="canonical" href="https://www.bircabo.com/about" />
+        <meta property="og:url" content="https://www.bircabo.com/about" />
+        <meta property="og:title" content="About Baja International Realty | Cabo San Lucas Real Estate Experts" />
+        <meta property="og:type" content="website" />
+        <meta property="og:description" content="35+ years of excellence in Cabo San Lucas luxury real estate. Founding MLS member, 1,850+ families served, $800M+ in sales." />
+      </Helmet>
       <Navbar />
       <FloatingContact />
       

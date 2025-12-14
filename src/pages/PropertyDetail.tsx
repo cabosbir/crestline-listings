@@ -1,6 +1,7 @@
 // src/pages/PropertyDetail.tsx - SUPER-POWERED VERSION 🚀
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -329,8 +330,64 @@ const PropertyDetail = () => {
 
   // 🎯 SUCCESS STATE - RENDER PROPERTY
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background"> 
       <Navbar />
+     {property && (
+        <Helmet>
+          <title>{property.beds} Bed {property.baths} Bath {property.propertyType} for Sale in {property.location} | MLS {property.mlsNumber}</title>
+          <meta 
+            name="description" 
+            content={`${property.propertyType} for sale in ${property.location}. ${property.beds} bedrooms, ${property.baths} bathrooms, ${property.sqft}. Listed at ${property.price}. ${property.description.substring(0, 150)}...`}
+          />
+          <link rel="canonical" href={`https://www.bircabo.com/property/${property.mlsNumber}`} />
+          <meta property="og:url" content={`https://www.bircabo.com/property/${property.mlsNumber}`} />
+          <meta property="og:title" content={`${property.title} - ${property.price}`} />
+          <meta property="og:description" content={`${property.beds} bed, ${property.baths} bath ${property.propertyType} in ${property.location}. ${property.price}.`} />
+          <meta property="og:image" content={property.images[0]} />
+          <meta property="og:type" content="product" />
+          
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "RealEstateListing",
+              "name": property.title,
+              "description": property.description,
+              "image": property.images,
+              "offers": {
+                "@type": "Offer",
+                "priceCurrency": "USD",
+                "price": property.priceRaw,
+                "availability": property.status === "Active" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                "url": `https://www.bircabo.com/property/${property.mlsNumber}`
+              },
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": property.location,
+                "addressRegion": "Baja California Sur",
+                "addressCountry": "MX"
+              },
+              ...(property.latitude && property.longitude ? {
+                "geo": {
+                  "@type": "GeoCoordinates",
+                  "latitude": property.latitude,
+                  "longitude": property.longitude
+                }
+              } : {}),
+              "numberOfRooms": property.beds,
+              "numberOfBedrooms": property.beds,
+              "numberOfBathroomsTotal": property.baths,
+              ...(property.sqftRaw ? {
+                "floorSize": {
+                  "@type": "QuantitativeValue",
+                  "value": property.sqftRaw,
+                  "unitCode": "FTK"
+                }
+              } : {})
+            })}
+          </script>
+        </Helmet>
+      )}
+
       <FloatingContact />
 
       {/* Navigation Bar */}
