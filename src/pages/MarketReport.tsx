@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Chart, ChartConfiguration, registerables } from "chart.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -305,6 +306,19 @@ const MarketReport = () => {
 
   return (
     <div className="bg-white min-h-screen">
+      <Helmet>
+        <title>Cabo San Lucas Real Estate Market Report | Los Cabos Property Trends 2025</title>
+        <meta 
+          name="description" 
+          content="Latest market trends, pricing data, and investment insights for Cabo San Lucas real estate. Updated monthly by Baja International Realty experts. Currency converter included." 
+        />
+        <link rel="canonical" href="https://www.bircabo.com/market-report" />
+        <meta property="og:url" content="https://www.bircabo.com/market-report" />
+        <meta property="og:title" content="Cabo San Lucas Real Estate Market Report | 2025 Property Trends" />
+        <meta property="og:description" content="Monthly market analysis for Cabo San Lucas. Median prices, days on market, inventory trends. Expert insights from Baja International Realty." />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      
       {/* Top Navigation - Mobile Friendly */}
       <div className="bg-white border-b border-gray-200 py-3">
         <div className="max-w-[1400px] mx-auto px-4 md:px-10">

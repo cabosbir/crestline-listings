@@ -1,4 +1,5 @@
 // src/pages/IDXSearch.tsx
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -6,6 +7,19 @@ import FloatingContact from "@/components/FloatingContact";
 const IDXSearch = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>MLS Property Search | IDX Listings | Cabo San Lucas Real Estate</title>
+        <meta 
+          name="description" 
+          content="Search all MLS listings in Cabo San Lucas and Los Cabos. Real-time property data from FlexMLS. Filter by price, bedrooms, location, and more." 
+        />
+        <link rel="canonical" href="https://www.bircabo.com/idx-search" />
+        <meta property="og:url" content="https://www.bircabo.com/idx-search" />
+        <meta property="og:title" content="MLS Property Search | Cabo San Lucas IDX Listings" />
+        <meta property="og:description" content="Browse all MLS listings in Los Cabos. Real-time property data with advanced filters." />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      
       <Navbar />
       <FloatingContact />
 

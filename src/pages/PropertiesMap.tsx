@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -69,6 +70,19 @@ const PropertiesMap = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Property Map View | Interactive Search | Cabo San Lucas Real Estate</title>
+        <meta 
+          name="description" 
+          content="Interactive map view of Cabo San Lucas properties. Click pins to view details. Real-time MLS listings with location coordinates on live map." 
+        />
+        <link rel="canonical" href="https://www.bircabo.com/properties/map" />
+        <meta property="og:url" content="https://www.bircabo.com/properties/map" />
+        <meta property="og:title" content="Interactive Property Map | Cabo San Lucas Real Estate" />
+        <meta property="og:description" content="Browse Cabo properties on an interactive map. Click any pin to see details, prices, and photos." />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      
       <Navbar />
       <FloatingContact />
 

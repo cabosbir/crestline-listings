@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import LeafletPropertyMap from "@/components/LeafletPropertyMap";
 import { Button } from "@/components/ui/button";
@@ -644,6 +645,19 @@ const [filters, setFilters] = useState<FilterState>({
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Advanced Property Search | Interactive Map Search | Cabo San Lucas Real Estate</title>
+        <meta 
+          name="description" 
+          content="Search Cabo San Lucas real estate with our advanced interactive map. Filter by zone, area, community, price, bedrooms. Real-time MLS property search with live map preview." 
+        />
+        <link rel="canonical" href="https://www.bircabo.com/search" />
+        <meta property="og:url" content="https://www.bircabo.com/search" />
+        <meta property="og:title" content="Advanced Property Search | Cabo San Lucas Real Estate Map" />
+        <meta property="og:description" content="Interactive map search for Cabo San Lucas properties. Filter by location, price, size. Real-time MLS results." />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      
       <Navbar />
 
       {/* Header Bar with AI Intelligence Indicator */}
