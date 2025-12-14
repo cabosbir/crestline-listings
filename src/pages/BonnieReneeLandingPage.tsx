@@ -58,7 +58,7 @@ const agent = {
   title: "Senior Real Estate Advisor",
   specialization: "Residential, Commercial & Investment Properties",
   image: "/bonnie-renee.jpg",
-  phone: "+52 1 624 127 6012",
+  phone: "+1 858-204-3115",
   email: "bonnie@bircabo.com",
   yearsExperience: 25,
   propertiesSold: 200,
