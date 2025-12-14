@@ -111,8 +111,7 @@ const PropertyCard = ({
       </div>
 
       {/* ✨ Subtle light-gray gradient under price */}
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-gray-100/85 via-gray-100/40 to-transparent pointer-events-none" />
-
+      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 via-black/30 to-transparent pointer-events-none" />
       {/* Property details */}
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
         <div className="text-4xl font-bold mb-3">{price}</div>
