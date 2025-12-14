@@ -334,7 +334,7 @@ const PropertyDetail = () => {
       <Navbar />
      {property && (
         <Helmet>
-          <title>{property.beds} Bed {property.baths} Bath {property.propertyType} for Sale in {property.location} | MLS {property.mlsNumber}</title>
+          <title>{property.beds || 'N/A'} Bed {property.baths || 'N/A'} Bath {property.propertyType || 'Property'} for Sale in {property.location || 'Cabo San Lucas'} | MLS {property.mlsNumber || 'Listing'}</title>
           <meta 
             name="description" 
             content={`${property.propertyType} for sale in ${property.location}. ${property.beds} bedrooms, ${property.baths} bathrooms, ${property.sqft}. Listed at ${property.price}. ${property.description.substring(0, 150)}...`}
