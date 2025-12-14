@@ -62,7 +62,7 @@ const agent = {
   image: "/bonnie-renee.jpg",
   phone: "+1 858-204-3115",
   email: "bonnie@bircabo.com",
-  yearsExperience: 25,
+  yearsExperience: 15,
   propertiesSold: 200,
   bio: "Born and raised in California, I bring a unique blend of cultural fluency and professional expertise to the world of real estate. Having lived in Mexico for over 35 years, I've developed deep roots and a strong understanding of both Baja and Mainland markets.",
   bio2: "With 25 years of hands-on experience in real estate, I've guided clients through residential, commercial, and investment opportunities across diverse regions. My bilingual skills allow me to seamlessly connect with clients in both English and Spanish, bridging cultures and building trust.",
