@@ -100,6 +100,9 @@ const PropertyCard = ({
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           onError={handleImageError}
           loading="lazy"
+          decoding="async"
+          width={800}
+          height={600}
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
