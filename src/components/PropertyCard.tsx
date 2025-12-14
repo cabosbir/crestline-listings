@@ -94,25 +94,20 @@ const PropertyCard = ({
       onClick={handleViewDetails}
     >
       <div className="relative overflow-hidden" style={{ height: "400px" }}>
-        <img 
-          src={image}
-          alt={title}
-          loading="lazy"
-          decoding="async"
-          width={400}
-          height={300}
-          onError={(e) => {
-          e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop';
-      }}
-        />
+  <img 
+    src={imgSrc}
+    alt={title}
+    loading="lazy"
+    decoding="async"
+    onError={handleImageError}
+    className="w-full h-full object-cover"
+  />
 
-        {/* This line should be DELETED */}
-
-        <div className="absolute top-4 left-4">
-          <span className="bg-purple-600 text-white px-4 py-1.5 rounded text-sm font-semibold shadow-lg">
-            {status}
-          </span>
-        </div>
+  <div className="absolute top-4 left-4">
+    <span className="bg-purple-600 text-white px-4 py-1.5 rounded text-sm font-semibold shadow-lg">
+      {status}
+    </span>
+  </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
           <div className="text-4xl font-bold mb-3">{price}</div>
