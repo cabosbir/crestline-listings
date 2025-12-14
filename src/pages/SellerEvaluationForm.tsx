@@ -13,67 +13,73 @@ import { Upload, X, Image as ImageIcon } from "lucide-react";
 
 // Agent data
 const agentsData = {
-  susu: {
+  "susu": {
     id: 9,
     name: "Susu Vieira",
     email: "Susu@BIRCabo.com",
     phone: "+1 (808) 226-6120"
   },
-  bob: {
+  "bob": {
     id: 1,
     name: "Bob Van Patten",
     email: "robertvanpatten2@gmail.com",
     phone: "+52 624 127 6012"
   },
-  alfonso: {
+  "alfonso": {
     id: 3,
     name: "Alfonso Puente",
     email: "alfonso@bircabo.com",
     phone: "+52 664 188 8681"
   },
-  david: {
+  "david": {
     id: 8,
     name: "David Scott Piper",
     email: "David@bircabo.com",
     phone: "+52 624 317 0297"
   },
-  erika: {
+  "erika": {
     id: 2,
     name: "Erika Aispuro",
     email: "eaispuro80@gmail.com",
     phone: "+52 624 109 7909"
   },
-  hector: {
+  "hector": {
     id: 5,
     name: "Hector Mendoza",
     email: "Hector@bircabo.com",
     phone: "+52 624 211 4879"
   },
-  marisol: {
+  "marisol": {
     id: 7,
     name: "Marisol Tort",
     email: "mtortricardi@gmail.com",
     phone: "+52 624 264 3896"
   },
-  cozbi: {
+  "cozbi": {
     id: 4,
     name: "Cozbi Sanchez",
     email: "Cozbi@bajainternationalrealty.com",
     phone: "+52 624 118 9512"
   },
-  edgar: {
+  "edgar": {
     id: 10,
     name: "Edgar Pacheco",
     email: "Edgar@bircabo.com",
     phone: "+52 612 169 8328"
     },
-    "erika-graciano": {
+ "bonnie-renee": {
+  id: 15,
+  name: "Bonnie Renee G.",
+  email: "bonnie@bircabo.com",
+  phone: "+52 1 624 127 6012"
+},
+  "erika-graciano": {
   id: 14,
   name: "Erika Graciano",
   email: "erikag@bircabo.com",
   phone: "+52 624 157 2154"
   },
-  don: {
+  "don": {
     id: 12,
     name: "Don Weis",
     email: "Don@bircabo.com",
@@ -506,6 +512,7 @@ const SellerEvaluationForm = () => {
                   <option value="edgar">Edgar Pacheco</option>
                   <option value="erika">Erika Aispuro</option>
                   <option value="fernando-cabrera">Fernando Cabrera</option>
+                  <option value="bonnie-renee">Bonnie Renee G.</option>
                   <option value="hector">Hector Mendoza</option>
                   <option value="marisol">Marisol Tort</option>
                   <option value="susu">Susu Vieira</option>

@@ -18,6 +18,7 @@ import AgentDetail from "./pages/AgentDetail";
 import IDXSearch from "./pages/IDXSearch";
 import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
 import BobLandingPage from "./pages/BobLandingPage";
+import BonnieReneeLandingPage from "./pages/BonnieReneeLandingPage";
 import CharlesLandingPage from "./pages/CharlesLandingPage";
 import CozbiLandingPage from "./pages/CozbiLandingPage";
 import DavidLandingPage from "./pages/DavidLandingPage";
@@ -88,6 +89,7 @@ const App = () => (
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/bob" element={<BobLandingPage />} />
+          <Route path="/bonnie-renee" element={<BonnieReneeLandingPage />} />
           <Route path="/charles-jones" element={<CharlesLandingPage />} />
           <Route path="/cozbi" element={<CozbiLandingPage />} />
           <Route path="/david" element={<DavidLandingPage />} />
@@ -103,6 +105,7 @@ const App = () => (
           {/* Agent Landing Pages - Full URLs (e.g., /agents/bob) */}
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/agents/bob" element={<BobLandingPage />} />
+          <Route path="/agents/bonnie-renee" element={<BonnieReneeLandingPage />} />
           <Route path="/agents/charles-jones" element={<CharlesLandingPage />} />
           <Route path="/agents/cozbi" element={<CozbiLandingPage />} />
           <Route path="/agents/david" element={<DavidLandingPage />} />
