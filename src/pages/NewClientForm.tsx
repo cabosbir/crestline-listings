@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -227,6 +228,20 @@ const NewClientForm = () => {
 
   return (
   <div className="min-h-screen bg-gray-50">
+    <Helmet>
+      <title>New Client Form | Work with Baja International Realty | Cabo San Lucas</title>
+      <meta 
+        name="description" 
+        content="Start your Cabo San Lucas real estate journey. Complete our client form to connect with expert agents and find your dream property." 
+      />
+      <link rel="canonical" href="https://www.bircabo.com/new-client" />
+      <meta property="og:url" content="https://www.bircabo.com/new-client" />
+      <meta property="og:title" content="New Client Registration | Baja International Realty" />
+      <meta property="og:description" content="Register as a new client with Baja International Realty. Get personalized service from our expert Cabo San Lucas agents." />
+      <meta property="og:type" content="website" />
+      <meta name="robots" content="noindex, follow" />
+    </Helmet>
+    
     <Navbar />
 
     <div className="container mx-auto px-4 py-8 sm:py-16 max-w-4xl">

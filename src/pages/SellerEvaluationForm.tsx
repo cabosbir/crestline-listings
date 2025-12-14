@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -365,6 +366,20 @@ const SellerEvaluationForm = () => {
 
   return (
   <div className="min-h-screen bg-gray-50">
+    <Helmet>
+      <title>Free Property Evaluation | Sell Your Cabo Home | Baja International Realty</title>
+      <meta 
+        name="description" 
+        content="Get a free property evaluation from Cabo San Lucas experts. Professional market analysis for sellers. Upload photos, get accurate pricing, sell faster." 
+      />
+      <link rel="canonical" href="https://www.bircabo.com/seller-evaluation" />
+      <meta property="og:url" content="https://www.bircabo.com/seller-evaluation" />
+      <meta property="og:title" content="Free Property Evaluation | Sell Your Cabo San Lucas Home" />
+      <meta property="og:description" content="Request a free professional property evaluation. Expert market analysis from Baja International Realty agents." />
+      <meta property="og:type" content="website" />
+      <meta name="robots" content="noindex, follow" />
+    </Helmet>
+    
     <Navbar />
 
     <div className="container mx-auto px-4 py-8 sm:py-16 max-w-4xl">
