@@ -114,7 +114,7 @@ const PropertyCard = ({
           </span>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%)' }}>
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
           <div className="text-4xl font-bold mb-3">{price}</div>
 
           <div className="flex items-center gap-4 mb-3 text-lg">
