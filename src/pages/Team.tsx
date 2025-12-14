@@ -359,7 +359,7 @@ const Team = () => {
       <section className="pt-32 pb-20 bg-gradient-to-br from-primary via-primary-dark to-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-             Meet Our BIR Cabo San Lucas Real Estate Team
+             BIR Cabo San Lucas Real Estate Team
           </h1>
           <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
             Our expert team is here to help you find the perfect property in Cabo San Lucas.
