@@ -89,68 +89,77 @@ const PropertyCard = ({
       : 'N/A';
 
   return (
-    <Card
-      className="group overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer border-0"
-      onClick={handleViewDetails}
-    >
-      <div className="relative overflow-hidden" style={{ height: "400px" }}>
-  <img 
-    src={imgSrc}
-    alt={title}
-    loading="lazy"
-    decoding="async"
-    onError={handleImageError}
-    className="w-full h-full object-cover"
-  />
+  <Card
+    className="group overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer border-0"
+    onClick={handleViewDetails}
+  >
+    <div className="relative overflow-hidden" style={{ height: "400px" }}>
+      <img 
+        src={imgSrc}
+        alt={title}
+        loading="lazy"
+        decoding="async"
+        onError={handleImageError}
+        className="w-full h-full object-cover"
+      />
 
-  <div className="absolute top-4 left-4">
-    <span className="bg-purple-600 text-white px-4 py-1.5 rounded text-sm font-semibold shadow-lg">
-      {status}
-    </span>
-  </div>
+      {/* Status badge */}
+      <div className="absolute top-4 left-4 z-10">
+        <span className="bg-purple-600 text-white px-4 py-1.5 rounded text-sm font-semibold shadow-lg">
+          {status}
+        </span>
+      </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <div className="text-4xl font-bold mb-3">{price}</div>
+      {/* ✨ Subtle light-gray gradient under price */}
+      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-gray-100/85 via-gray-100/40 to-transparent pointer-events-none" />
 
-          <div className="flex items-center gap-4 mb-3 text-lg">
-            <div className="flex items-center gap-1.5">
-              <Bed className="w-5 h-5" />
-              <span className="font-semibold">{beds} Beds</span>
-            </div>
-            <span className="text-white/60">•</span>
-            <div className="flex items-center gap-1.5">
-              <Bath className="w-5 h-5" />
-              <span className="font-semibold">{baths} Baths</span>
-            </div>
-            {formattedSqft !== "N/A" && (
-              <>
-                <span className="text-white/60">•</span>
-                <div className="flex items-center gap-1.5">
-                  <Maximize className="w-5 h-5" />
-                  <span className="font-semibold">{formattedSqft} SqFt</span>
-                </div>
-              </>
-            )}
+      {/* Property details */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
+        <div className="text-4xl font-bold mb-3">{price}</div>
+
+        <div className="flex items-center gap-4 mb-3 text-lg">
+          <div className="flex items-center gap-1.5">
+            <Bed className="w-5 h-5" />
+            <span className="font-semibold">{beds} Beds</span>
           </div>
 
-          <div className="text-base mb-1 line-clamp-1 flex items-center gap-2">
-            <MapPin className="w-4 h-4 flex-shrink-0" />
-            {title}
+          <span className="text-white/60">•</span>
+
+          <div className="flex items-center gap-1.5">
+            <Bath className="w-5 h-5" />
+            <span className="font-semibold">{baths} Baths</span>
           </div>
 
-          <div className="text-sm text-white/80">{propertyType}</div>
+          {formattedSqft !== "N/A" && (
+            <>
+              <span className="text-white/60">•</span>
+              <div className="flex items-center gap-1.5">
+                <Maximize className="w-5 h-5" />
+                <span className="font-semibold">{formattedSqft} SqFt</span>
+              </div>
+            </>
+          )}
         </div>
 
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
-          <Button
-            variant="default"
-            size="lg"
-            className="bg-white text-black hover:bg-gray-100 font-semibold px-8"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleViewDetails(e);
-            }}
-          >
+        <div className="text-base mb-1 line-clamp-1 flex items-center gap-2">
+          <MapPin className="w-4 h-4 flex-shrink-0" />
+          {title}
+        </div>
+
+        <div className="text-sm text-white/80">{propertyType}</div>
+      </div>
+
+      {/* Hover actions */}
+      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 z-20">
+        <Button
+          variant="default"
+          size="lg"
+          className="bg-white text-black hover:bg-gray-100 font-semibold px-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleViewDetails(e);
+          }}
+        >
             View Details
           </Button>
 
