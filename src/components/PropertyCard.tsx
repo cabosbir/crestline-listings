@@ -104,8 +104,9 @@ const PropertyCard = ({
           onError={(e) => {
           e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop';
       }}
-         />
-        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-gray-900/20 via-gray-900/5 to-transparent" />
+        />
+
+        {/* This line should be DELETED */}
 
         <div className="absolute top-4 left-4">
           <span className="bg-purple-600 text-white px-4 py-1.5 rounded text-sm font-semibold shadow-lg">
