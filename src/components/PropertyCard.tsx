@@ -94,13 +94,17 @@ const PropertyCard = ({
       onClick={handleViewDetails}
     >
       <div className="relative overflow-hidden" style={{ height: "400px" }}>
-        <img
-          src={imgSrc}
+        <img 
+          src={image}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          onError={handleImageError}
           loading="lazy"
-        />
+          decoding="async"
+          width={400}
+          height={300}
+          onError={(e) => {
+          e.currentTarget.src = 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop';
+      }}
+         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 

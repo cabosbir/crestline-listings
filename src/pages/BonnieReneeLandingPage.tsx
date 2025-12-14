@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -246,6 +248,10 @@ const ITEMS_PER_PAGE = 9;
 const BonnieReneeLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const location = useLocation();
+const isShortUrl = location.pathname === '/bonnie-renee';
+const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {
@@ -501,9 +507,44 @@ const BonnieReneeLandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <Navbar />
-
+  <div className="min-h-screen">
+    <Helmet>
+      <title>Bonnie Renee G. - Senior Real Estate Advisor | 25 Years Experience | Baja International Realty</title>
+      <meta 
+        name="description" 
+        content="Connect with Bonnie Renee G., Senior Real Estate Advisor with 25 years experience. 200+ properties sold. Bilingual expert in residential, commercial, and investment properties in Cabo San Lucas and Mexico."
+      />
+      <link rel="canonical" href={canonicalUrl} />
+      <meta property="og:title" content="Bonnie Renee G. - Cabo San Lucas Real Estate Expert & Bilingual Specialist" />
+      <meta property="og:description" content="25 years experience, 200+ properties sold. California-born with 35+ years living in Mexico. Expert in residential, commercial, and investment real estate." />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:image" content="https://www.bircabo.com/bonnie-renee.jpg" />
+      <meta property="og:type" content="profile" />
+      
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Bonnie Renee G.",
+          "jobTitle": "Senior Real Estate Advisor",
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Baja International Realty",
+            "url": "https://www.bircabo.com"
+          },
+          "email": "bonnie@bircabo.com",
+          "telephone": "+1 858-204-3115",
+          "image": "https://www.bircabo.com/bonnie-renee.jpg",
+          "url": canonicalUrl,
+          "description": "Born and raised in California with 35+ years living in Mexico. 25 years of hands-on real estate experience in residential, commercial, and investment properties. Bilingual expertise connecting clients in English and Spanish.",
+          "knowsAbout": ["Residential Real Estate", "Commercial Real Estate", "Investment Properties", "Cabo San Lucas", "Baja California Sur", "Mexico Real Estate", "Bilingual Services"],
+          "award": "Senior Real Estate Advisor",
+          "knowsLanguage": ["English", "Spanish"]
+        })}
+      </script>
+    </Helmet>
+    
+    <Navbar />
       {/* ==================== BACK TO TEAM BUTTON ==================== */}
       <div className="container mx-auto px-4 pt-24">
         <Button 
@@ -541,7 +582,7 @@ const BonnieReneeLandingPage = () => {
             <div className="order-2 lg:order-1">
               <img 
                 src={agent.image}
-                alt={agent.name}
+                alt={`Bonnie Renee G. - Senior Real Estate Advisor at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>
