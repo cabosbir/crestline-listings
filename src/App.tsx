@@ -9,6 +9,7 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import Properties from "./pages/Properties";
 import AdvancedSearch from "./pages/AdvancedSearch"; // 🔥 NEW: Full-page search with live map
+import AIPropertySearch from "./pages/AIPropertySearch"; // 🤖 NEW: AI-powered property search chatbot
 import PropertiesMap from "./pages/PropertiesMap";
 import PropertyDetail from "./pages/PropertyDetail";
 import About from "./pages/About";
@@ -61,6 +62,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/search" element={<AdvancedSearch />} /> {/* 🔥 NEW: Full-page search */}
+          <Route path="/ai-search" element={<AIPropertySearch />} /> {/* 🤖 NEW: AI property search */}
           <Route path="/properties/map" element={<PropertiesMap />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/about" element={<About />} />

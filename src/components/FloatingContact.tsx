@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { Phone, Mail, MessageCircle, Calendar } from "lucide-react";
+import { Phone, Mail, MessageCircle, Calendar, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AIChat from "@/components/AIChat";
+import PropertyChatBot from "@/components/PropertyChatBot";
 
 const FloatingContact = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isPropertyChatOpen, setIsPropertyChatOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,9 +52,19 @@ const FloatingContact = () => {
         <Button
           variant="luxury"
           size="icon"
-          className="rounded-full shadow-gold"
+          className="rounded-full shadow-gold relative"
+          onClick={() => setIsPropertyChatOpen(true)}
+          title="AI Property Search"
+        >
+          <Search className="h-5 w-5" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+        </Button>
+        <Button
+          variant="default"
+          size="icon"
+          className="rounded-full shadow-hover"
           onClick={() => setIsChatOpen(true)}
-          title="AI Assistant"
+          title="General AI Assistant"
         >
           <MessageCircle className="h-5 w-5" />
         </Button>
@@ -70,7 +82,7 @@ const FloatingContact = () => {
 
       {/* Mobile - Bottom Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-primary/95 backdrop-blur-md border-t border-primary-light shadow-elegant animate-in slide-in-from-bottom duration-500">
-        <div className="grid grid-cols-4 gap-2 p-3">
+        <div className="grid grid-cols-5 gap-1 p-3">
           <Button
             variant="ghost"
             size="sm"
@@ -78,7 +90,7 @@ const FloatingContact = () => {
             asChild
           >
             <a href="tel:+526241435555">
-              <Phone className="h-5 w-5 mb-1" />
+              <Phone className="h-4 w-4 mb-1" />
               <span className="text-xs">Call</span>
             </a>
           </Button>
@@ -89,9 +101,19 @@ const FloatingContact = () => {
             asChild
           >
             <a href="mailto:info@bircabo.com">
-              <Mail className="h-5 w-5 mb-1" />
+              <Mail className="h-4 w-4 mb-1" />
               <span className="text-xs">Email</span>
             </a>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-col h-auto py-2 text-primary-foreground hover:text-accent relative"
+            onClick={() => setIsPropertyChatOpen(true)}
+          >
+            <Search className="h-4 w-4 mb-1" />
+            <span className="text-xs">Search</span>
+            <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
           </Button>
           <Button
             variant="ghost"
@@ -99,8 +121,8 @@ const FloatingContact = () => {
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent"
             onClick={() => setIsChatOpen(true)}
           >
-            <MessageCircle className="h-5 w-5 mb-1" />
-            <span className="text-xs">AI Chat</span>
+            <MessageCircle className="h-4 w-4 mb-1" />
+            <span className="text-xs">Chat</span>
           </Button>
           <Button
             variant="ghost"
@@ -109,22 +131,38 @@ const FloatingContact = () => {
             asChild
           >
             <a href="/contact">
-              <Calendar className="h-5 w-5 mb-1" />
-              <span className="text-xs">Schedule</span>
+              <Calendar className="h-4 w-4 mb-1" />
+              <span className="text-xs">Contact</span>
             </a>
           </Button>
         </div>
       </div>
 
-      {/* AI Chat Modal */}
+      {/* Property Search Chat Modal */}
+      {isPropertyChatOpen && (
+        <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsPropertyChatOpen(false)}
+          />
+
+          {/* Chat Container */}
+          <div className="relative w-full lg:w-[800px] h-[90vh] lg:h-[700px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
+            <PropertyChatBot onClose={() => setIsPropertyChatOpen(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* General AI Chat Modal */}
       {isChatOpen && (
         <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsChatOpen(false)}
           />
-          
+
           {/* Chat Container */}
           <div className="relative w-full lg:w-96 h-[80vh] lg:h-[600px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
             <AIChat onClose={() => setIsChatOpen(false)} />
