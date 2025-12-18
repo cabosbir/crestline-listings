@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Phone, Mail, MessageCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PropertyChatBot from "@/components/PropertyChatBot";
+import { useChat } from "@/contexts/ChatContext";
 
 const FloatingContact = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const { isChatOpen, openChat, closeChat } = useChat();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +52,7 @@ const FloatingContact = () => {
           variant="luxury"
           size="icon"
           className="rounded-full shadow-gold relative"
-          onClick={() => setIsChatOpen(true)}
+          onClick={openChat}
           title="Property Search Assistant"
         >
           <MessageCircle className="h-5 w-5" />
@@ -98,7 +99,7 @@ const FloatingContact = () => {
             variant="ghost"
             size="sm"
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent relative"
-            onClick={() => setIsChatOpen(true)}
+            onClick={openChat}
           >
             <MessageCircle className="h-4 w-4 mb-1" />
             <span className="text-xs">Chat</span>
@@ -124,12 +125,12 @@ const FloatingContact = () => {
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsChatOpen(false)}
+            onClick={closeChat}
           />
 
           {/* Chat Container */}
           <div className="relative w-full lg:w-[800px] h-[90vh] lg:h-[700px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
-            <PropertyChatBot onClose={() => setIsChatOpen(false)} />
+            <PropertyChatBot onClose={closeChat} />
           </div>
         </div>
       )}

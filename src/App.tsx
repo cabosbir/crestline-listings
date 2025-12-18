@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { ChatProvider } from "@/contexts/ChatContext";
 import Index from "./pages/Index";
 import Properties from "./pages/Properties";
 import AdvancedSearch from "./pages/AdvancedSearch"; // 🔥 NEW: Full-page search with live map
@@ -54,10 +55,11 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
+        <ChatProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/properties" element={<Properties />} />
@@ -124,9 +126,10 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-</HelmetProvider>
+        </ChatProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

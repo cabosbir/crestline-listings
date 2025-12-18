@@ -8,11 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import PropertyChatBot from "@/components/PropertyChatBot";
+import { useChat } from "@/contexts/ChatContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const { openChat } = useChat();
 
   const navLinks = [
     { name: "About", href: "/about" },
@@ -73,7 +73,7 @@ const Navbar = () => {
                   <DropdownMenuItem
                     key={link.name}
                     asChild={link.href ? true : false}
-                    onClick={link.action === "openChat" ? () => setIsChatOpen(true) : undefined}
+                    onClick={link.action === "openChat" ? openChat : undefined}
                   >
                     {link.href ? (
                       <Link
@@ -177,7 +177,7 @@ const Navbar = () => {
                         className="text-left text-muted-foreground hover:text-accent transition-fast font-heading"
                         onClick={() => {
                           setIsOpen(false);
-                          setIsChatOpen(true);
+                          openChat();
                         }}
                       >
                         {link.name}
@@ -225,21 +225,6 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Property Search Assistant Modal */}
-      {isChatOpen && (
-        <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsChatOpen(false)}
-          />
-
-          {/* Chat Container */}
-          <div className="relative w-full lg:w-[800px] h-[90vh] lg:h-[700px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
-            <PropertyChatBot onClose={() => setIsChatOpen(false)} />
-          </div>
-        </div>
-      )}
     </nav>
   );
 };
