@@ -101,6 +101,23 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
       }
 
       if (parsedQuery.intent === "general_info") {
+        // Check if we just gave this same response (prevent loops)
+        const lastMessage = messages[messages.length - 1];
+        const isRepeatingAreas = lastMessage.role === "assistant" &&
+                                lastMessage.content.includes("Los Cabos offers diverse neighborhoods");
+
+        if (isRepeatingAreas) {
+          // User likely wants to search, not info - convert to clarification
+          const clarificationMessage: Message = {
+            role: "assistant",
+            content: "I'd be happy to help you search for properties! To get started, could you tell me:\n\n• What type of property? (condo, house, land)\n• Your budget range?\n• How many bedrooms?\n\nOr simply say something like: \"Show me 3-bedroom condos under $500k in Pedregal\"",
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, clarificationMessage]);
+          setIsLoading(false);
+          return;
+        }
+
         // Provide company/area/process information
         let responseContent = "";
 
@@ -247,10 +264,15 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           input
         );
 
-        // Add form recommendation if properties were found
+        // Build response based on results
         let finalResponse = conversationalResponse;
+
         if (properties.length > 0) {
+          // Add form recommendation
           finalResponse += "\n\n💡 **Interested in any of these properties?**\nFill out our [New Client Form](/new-client) and one of our expert agents will reach out to schedule viewings and answer your questions!";
+        } else {
+          // No results - provide helpful suggestions
+          finalResponse += "\n\n**Try adjusting your search:**\n• Increase your budget range\n• Expand to nearby areas\n• Reduce bedroom/bathroom requirements\n• Remove specific amenities\n\n**Or I can help you:**\n• Search in a different area\n• [Contact an agent](/contact) for personalized assistance\n• [Browse all properties](/properties)";
         }
 
         const assistantMessage: Message = {

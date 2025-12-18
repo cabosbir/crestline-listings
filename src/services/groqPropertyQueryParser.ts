@@ -106,14 +106,19 @@ COMMON MAPPINGS:
 - "over X" / "above X" → minPrice: X
 
 INTENT DETECTION:
-- "search": User wants to find properties (e.g., "Show me condos under $500k")
-- "question": User is asking about market/area pricing (e.g., "What's the average price in Pedregal?")
-- "general_info": Questions about areas, process, company (e.g., "Tell me about Pedregal", "How does buying work?")
+- "search": User wants to find properties (e.g., "Show me condos under $500k", "Pedregal", "properties in Marina", "3 bedroom homes")
+- "question": User is asking about market/area pricing (e.g., "What's the average price in Pedregal?", "How much do condos cost?")
+- "general_info": ONLY for asking ABOUT areas/process/company (e.g., "Tell me ABOUT Pedregal", "How does buying work?", "What is Pedregal like?")
 - "forms": User wants to get started, interested in properties (e.g., "I'm interested", "How do I apply?")
 - "contact": Wants to reach out, schedule meeting
 - "clarification_needed": Query is too vague (e.g., "Show me properties")
 - "greeting": User is greeting (e.g., "Hi", "Hello")
 - "off_topic": Not related to real estate
+
+CRITICAL RULES:
+- If user mentions just a location name (e.g., "Pedregal", "Marina", "Cabo Corridor") → intent is "search" NOT "general_info"
+- If user says "in [location]" or "[location] properties" → intent is "search"
+- Only use "general_info" if user explicitly asks "tell me about", "what is", "describe", "explain"
 
 FORM RECOMMENDATIONS:
 - If user shows interest after seeing properties → recommend /new-client form
