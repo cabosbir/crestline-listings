@@ -29,7 +29,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm your AI property search assistant. I can help you find your dream home in Los Cabos!\n\nTry asking me things like:\n• \"Show me 3-bedroom condos under $500k in Cabo San Lucas\"\n• \"Find beachfront properties with ocean views\"\n• \"What luxury homes are near the marina?\"\n\nWhat are you looking for today?",
+      content: "Hi! I'm your AI property assistant for Baja International Realty. I can help you:\n\n🏠 **Search Properties** - Find homes, condos, and land in Los Cabos\n📍 **Area Info** - Learn about neighborhoods and communities\n👥 **Meet Our Team** - Connect with expert local agents\n📝 **Get Started** - Access buyer/seller forms\n\nTry asking:\n• \"Show me 3-bedroom condos under $500k\"\n• \"What areas are best for beachfront living?\"\n• \"I'm interested in properties, how do I get started?\"\n\nWhat can I help you with today?",
       timestamp: new Date(),
     },
   ]);
@@ -100,8 +100,58 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         return;
       }
 
+      if (parsedQuery.intent === "general_info") {
+        // Provide company/area/process information
+        let responseContent = "";
+
+        if (parsedQuery.infoType === "office") {
+          responseContent = "**Baja International Realty** is your trusted real estate partner in Los Cabos!\n\n📍 **Location:** Los Cabos, Baja California Sur, Mexico\n📞 **Phone:** +52 612 169 8328\n📧 **Email:** cabosbir@gmail.com\n\nWe specialize in residential, commercial, and land sales throughout the Los Cabos area. Our experienced team is here to help you find your perfect property!\n\nWould you like to search for properties or meet our team?";
+        } else if (parsedQuery.infoType === "agents") {
+          responseContent = "Our team consists of expert local agents who know Los Cabos inside and out!\n\n👥 **Meet Our Team:** [View All Agents](/team)\n\nEach agent brings unique expertise in different areas and property types. Would you like me to help you find properties, or would you prefer to contact an agent directly?";
+        } else if (parsedQuery.infoType === "areas") {
+          responseContent = "Los Cabos offers diverse neighborhoods, each with its own character:\n\n🏖️ **Cabo San Lucas** - Vibrant marina, nightlife, beaches\n🏡 **San Jose del Cabo** - Historic downtown, art galleries, tranquil\n🌅 **Cabo Corridor** - Luxury resorts, golf courses, stunning coastline\n🎨 **Todos Santos** - Artistic community, surfing, bohemian vibe\n\n**Popular Areas:**\n• Pedregal - Hillside luxury with ocean views\n• Marina District - Waterfront living\n• East Cape - Secluded beaches\n\nWant to search for properties in a specific area?";
+        } else if (parsedQuery.infoType === "process") {
+          responseContent = "**Buying Real Estate in Mexico:**\n\n1️⃣ **Property Search** - Let me help you find the perfect property!\n2️⃣ **Make an Offer** - Our agents guide you through negotiations\n3️⃣ **Fideicomiso** - Bank trust for foreign buyers (we'll explain everything)\n4️⃣ **Due Diligence** - Title search, inspections, legal review\n5️⃣ **Closing** - Sign documents, transfer funds, get keys!\n\n📝 **Ready to start?** [New Client Form](/new-client)\n\nWould you like to search for properties now?";
+        } else {
+          responseContent = parsedQuery.interpretation + "\n\nHow else can I assist you today?";
+        }
+
+        const infoMessage: Message = {
+          role: "assistant",
+          content: responseContent,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, infoMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      if (parsedQuery.intent === "forms") {
+        // User wants to get started with forms
+        const formsMessage: Message = {
+          role: "assistant",
+          content: "Great! I'm excited to help you get started with your Los Cabos real estate journey!\n\n📝 **For Buyers:**\nReady to explore properties? Fill out our New Client Form and one of our expert agents will contact you:\n👉 [New Client Registration](/new-client)\n\n🏠 **For Sellers:**\nInterested in selling your property? Get a professional evaluation:\n👉 [Seller Property Evaluation](/seller-evaluation)\n\n📅 **Want to Talk First?**\nSchedule a consultation with our team:\n👉 [Contact Us](/contact)\n\nOr feel free to keep chatting with me to search for properties!",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, formsMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      if (parsedQuery.intent === "contact") {
+        // User wants contact information
+        const contactMessage: Message = {
+          role: "assistant",
+          content: "**Get in Touch with Baja International Realty:**\n\n📞 **Call/WhatsApp:** +52 612 169 8328\n📧 **Email:** cabosbir@gmail.com\n🌐 **Website:** bircabo.com\n\n📅 **Schedule a Meeting:**\n👉 [Contact Form](/contact)\n\n💬 **Or continue chatting here!**\nI can help you search for properties right now. What are you looking for?",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, contactMessage]);
+        setIsLoading(false);
+        return;
+      }
+
       if (parsedQuery.intent === "question") {
-        // For general questions, provide a helpful response
+        // For market questions, provide a helpful response
         const questionResponse: Message = {
           role: "assistant",
           content: "That's a great question! Let me search for relevant properties that can give you a better idea. Please provide more specific search criteria like bedrooms, price range, or location.",
@@ -197,9 +247,15 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           input
         );
 
+        // Add form recommendation if properties were found
+        let finalResponse = conversationalResponse;
+        if (properties.length > 0) {
+          finalResponse += "\n\n💡 **Interested in any of these properties?**\nFill out our [New Client Form](/new-client) and one of our expert agents will reach out to schedule viewings and answer your questions!";
+        }
+
         const assistantMessage: Message = {
           role: "assistant",
-          content: conversationalResponse,
+          content: finalResponse,
           timestamp: new Date(),
           properties: properties.slice(0, parsedQuery.limit || 20),
           parsedQuery,
@@ -269,7 +325,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
       {/* Quick Search Suggestions (only show if no messages yet) */}
       {messages.length === 1 && (
         <div className="p-4 bg-secondary/30 border-b border-border">
-          <p className="text-xs text-muted-foreground mb-2">Quick searches:</p>
+          <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
           <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
@@ -278,25 +334,25 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
               onClick={() => handleQuickSearch("Show me 3-bedroom condos under $500k")}
             >
               <Home className="h-3 w-3 mr-1" />
-              Condos under $500k
+              Search Properties
             </Button>
             <Button
               variant="outline"
               size="sm"
               className="text-xs"
-              onClick={() => handleQuickSearch("Find beachfront properties with ocean views")}
+              onClick={() => handleQuickSearch("Tell me about areas in Los Cabos")}
             >
               <MapPin className="h-3 w-3 mr-1" />
-              Beachfront homes
+              Learn About Areas
             </Button>
             <Button
               variant="outline"
               size="sm"
               className="text-xs"
-              onClick={() => handleQuickSearch("Luxury homes in Pedregal")}
+              onClick={() => handleQuickSearch("I'm interested in buying, how do I get started?")}
             >
               <Sparkles className="h-3 w-3 mr-1" />
-              Luxury properties
+              Get Started
             </Button>
           </div>
         </div>

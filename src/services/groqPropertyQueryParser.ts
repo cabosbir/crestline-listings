@@ -34,11 +34,15 @@ export interface ParsedPropertyQuery {
   sortBy?: 'price_low' | 'price_high' | 'newest' | 'beds';
 
   // Query understanding
-  intent: 'search' | 'question' | 'clarification_needed' | 'greeting' | 'off_topic';
+  intent: 'search' | 'question' | 'clarification_needed' | 'greeting' | 'off_topic' | 'general_info' | 'contact' | 'forms';
   confidence: number;
   clarificationNeeded?: string;
   originalQuery: string;
   interpretation: string;
+
+  // For non-search intents
+  infoType?: 'office' | 'agents' | 'areas' | 'process' | 'forms';
+  recommendedAction?: string;
 }
 
 // Cache for conversation context
@@ -54,9 +58,22 @@ export async function parsePropertyQuery(
   // Get conversation history for context
   const history = conversationContext[sessionId] || [];
 
-  const prompt = `You are an expert real estate search assistant for Cabo San Lucas, Los Cabos, Mexico.
+  const prompt = `You are an AI assistant for Baja International Realty in Los Cabos, Mexico.
 
-Your job: Parse the user's natural language query into structured MLS search filters.
+COMPANY INFO:
+- Office: Baja International Realty (BIR)
+- Location: Los Cabos, Baja California Sur, Mexico
+- Phone: +52 612 169 8328
+- Email: cabosbir@gmail.com / info@bircabo.com
+- Website: bircabo.com
+- Services: Residential, Commercial, Land sales in Los Cabos area
+
+AVAILABLE RESOURCES:
+- /new-client - New Client Registration Form (for buyers interested in properties)
+- /seller-evaluation - Seller Property Evaluation Form
+- /contact - Contact page to schedule showings or meetings
+- /team - Meet our expert agents
+- /about - Learn about Baja International Realty
 
 USER QUERY: "${userQuery}"
 
@@ -90,10 +107,18 @@ COMMON MAPPINGS:
 
 INTENT DETECTION:
 - "search": User wants to find properties (e.g., "Show me condos under $500k")
-- "question": User is asking about market/area (e.g., "What's the average price in Pedregal?")
+- "question": User is asking about market/area pricing (e.g., "What's the average price in Pedregal?")
+- "general_info": Questions about areas, process, company (e.g., "Tell me about Pedregal", "How does buying work?")
+- "forms": User wants to get started, interested in properties (e.g., "I'm interested", "How do I apply?")
+- "contact": Wants to reach out, schedule meeting
 - "clarification_needed": Query is too vague (e.g., "Show me properties")
 - "greeting": User is greeting (e.g., "Hi", "Hello")
 - "off_topic": Not related to real estate
+
+FORM RECOMMENDATIONS:
+- If user shows interest after seeing properties → recommend /new-client form
+- If user asks about selling → recommend /seller-evaluation form
+- If user wants to schedule showing → recommend /contact page
 
 IMPORTANT:
 - If query mentions specific numbers, extract them precisely
@@ -103,28 +128,27 @@ IMPORTANT:
 - If user says "near the marina", use areas: ["Marina"] or communities with marina
 
 Respond with ONLY valid JSON (no markdown, no code blocks):
+
+FOR SEARCH QUERIES:
 {
   "city": ["Cabo San Lucas"],
-  "areas": [],
-  "communities": [],
-  "subdivisions": [],
   "minPrice": 500000,
-  "maxPrice": 2000000,
   "bedrooms": 3,
-  "bathrooms": 2,
   "propertyTypes": ["Condominium"],
-  "status": "Active",
-  "amenities": ["pool", "ocean view"],
-  "oceanView": true,
-  "beachfront": false,
-  "pool": true,
-  "limit": 20,
-  "sortBy": "price_low",
   "intent": "search",
   "confidence": 85,
-  "clarificationNeeded": null,
   "originalQuery": "${userQuery}",
-  "interpretation": "Looking for 3-bedroom condos under $2M in Cabo San Lucas with ocean views"
+  "interpretation": "Looking for 3-bedroom condos under $2M in Cabo San Lucas"
+}
+
+FOR GENERAL INFO/FORMS/CONTACT:
+{
+  "intent": "forms" or "general_info" or "contact",
+  "confidence": 90,
+  "originalQuery": "${userQuery}",
+  "interpretation": "User wants to get started as a buyer",
+  "infoType": "forms" or "office" or "agents" or "areas" or "process",
+  "recommendedAction": "/new-client" or "/seller-evaluation" or "/contact" or "provide info"
 }
 
 Only include fields that are relevant to the query. If a field isn't mentioned, omit it (except intent, confidence, originalQuery, interpretation).`;
