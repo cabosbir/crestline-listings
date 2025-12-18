@@ -8,17 +8,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import PropertyChatBot from "@/components/PropertyChatBot";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const navLinks = [
     { name: "About", href: "/about" },
-    { name: "Team", href: "/team" },
   ];
 
   const propertyLinks = [
     { name: "View All Properties", href: "/search" },
+  ];
+
+  const teamLinks: Array<{ name: string; href?: string; action?: string }> = [
+    { name: "View Our Agents", href: "/team" },
+    { name: "24/7 BIR Assistant", action: "openChat" },
   ];
 
   return (
@@ -51,6 +57,36 @@ const Navbar = () => {
                     >
                       {link.name}
                     </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Team Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-heading text-lg outline-none">
+                Team
+                <ChevronDown className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                {teamLinks.map((link) => (
+                  <DropdownMenuItem
+                    key={link.name}
+                    asChild={link.href ? true : false}
+                    onClick={link.action === "openChat" ? () => setIsChatOpen(true) : undefined}
+                  >
+                    {link.href ? (
+                      <Link
+                        to={link.href}
+                        className="cursor-pointer w-full font-heading"
+                      >
+                        {link.name}
+                      </Link>
+                    ) : (
+                      <div className="cursor-pointer w-full font-heading">
+                        {link.name}
+                      </div>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -121,6 +157,36 @@ const Navbar = () => {
                 </div>
               </div>
 
+              {/* Team Section in Mobile */}
+              <div className="px-2">
+                <div className="text-foreground font-heading text-lg mb-2">Team</div>
+                <div className="flex flex-col space-y-2 pl-4">
+                  {teamLinks.map((link) => (
+                    link.href ? (
+                      <Link
+                        key={link.name}
+                        to={link.href}
+                        className="text-muted-foreground hover:text-accent transition-fast font-heading"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </Link>
+                    ) : (
+                      <button
+                        key={link.name}
+                        className="text-left text-muted-foreground hover:text-accent transition-fast font-heading"
+                        onClick={() => {
+                          setIsOpen(false);
+                          setIsChatOpen(true);
+                        }}
+                      >
+                        {link.name}
+                      </button>
+                    )
+                  ))}
+                </div>
+              </div>
+
               {/* Other Nav Links in Mobile */}
               {navLinks.map((link) => (
                 <Link
@@ -158,6 +224,22 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      {/* Property Search Assistant Modal */}
+      {isChatOpen && (
+        <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsChatOpen(false)}
+          />
+
+          {/* Chat Container */}
+          <div className="relative w-full lg:w-[800px] h-[90vh] lg:h-[700px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
+            <PropertyChatBot onClose={() => setIsChatOpen(false)} />
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
