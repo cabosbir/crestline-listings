@@ -52,7 +52,7 @@ const FloatingContact = () => {
           size="icon"
           className="rounded-full shadow-gold relative"
           onClick={() => setIsChatOpen(true)}
-          title="AI Property Assistant"
+          title="Property Search Assistant"
         >
           <MessageCircle className="h-5 w-5" />
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
@@ -101,7 +101,7 @@ const FloatingContact = () => {
             onClick={() => setIsChatOpen(true)}
           >
             <MessageCircle className="h-4 w-4 mb-1" />
-            <span className="text-xs">AI Chat</span>
+            <span className="text-xs">Chat</span>
             <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
           </Button>
           <Button
@@ -118,7 +118,7 @@ const FloatingContact = () => {
         </div>
       </div>
 
-      {/* AI Property Assistant Modal */}
+      {/* Property Search Assistant Modal */}
       {isChatOpen && (
         <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
           {/* Backdrop */}

@@ -29,7 +29,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm your AI property assistant for Baja International Realty. I can help you:\n\n🏠 **Search Properties** - Find homes, condos, and land in Los Cabos\n📍 **Area Info** - Learn about neighborhoods and communities\n👥 **Meet Our Team** - Connect with expert local agents\n📝 **Get Started** - Access buyer/seller forms\n\nTry asking:\n• \"Show me 3-bedroom condos under $500k\"\n• \"What areas are best for beachfront living?\"\n• \"I'm interested in properties, how do I get started?\"\n\nWhat can I help you with today?",
+      content: "Hi! I'm your intelligent property assistant for Baja International Realty. I can help you:\n\n🏠 **Search Properties** - Find homes, condos, and land in Los Cabos\n📍 **Area Info** - Learn about neighborhoods and communities\n👥 **Meet Our Team** - Connect with expert local agents\n📝 **Get Started** - Access buyer/seller forms\n\nTry asking:\n• \"Show me 3-bedroom condos under $500k\"\n• \"What areas are best for beachfront living?\"\n• \"I'm interested in properties, how do I get started?\"\n\nWhat can I help you with today?",
       timestamp: new Date(),
     },
   ]);
@@ -299,15 +299,15 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
   return (
     <div className={containerClass}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-[#112f76] text-white">
         <div className="flex items-center gap-3">
           <div className="relative">
             <Bot className="h-8 w-8" />
             <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-yellow-300" />
           </div>
           <div>
-            <h3 className="text-lg font-bold">AI Property Search</h3>
-            <p className="text-xs text-white/80">Powered by Groq Intelligence</p>
+            <h3 className="text-lg font-bold">Property Search Assistant</h3>
+            <p className="text-xs text-white/80">Powered by BIR</p>
           </div>
         </div>
         {!fullPage && (
@@ -372,7 +372,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                     message.role === "user"
-                      ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white"
+                      ? "bg-[#112f76] text-white"
                       : "bg-secondary text-foreground border border-border"
                   }`}
                 >
@@ -448,7 +448,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           {isLoading && (
             <div className="flex justify-start">
               <div className="bg-secondary border border-border rounded-2xl px-4 py-3 flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
+                <Loader2 className="h-4 w-4 animate-spin text-[#112f76]" />
                 <span className="text-sm text-muted-foreground">Searching properties...</span>
               </div>
             </div>
@@ -474,7 +474,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             disabled={isLoading || !input.trim()}
             variant="default"
             size="icon"
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            className="bg-[#112f76] hover:bg-[#0d2459]"
             data-send-button
           >
             {isLoading ? (
@@ -485,7 +485,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          AI-powered property search • Try natural language like "beachfront homes in Cabo"
+          Intelligent property search • Try natural language like "beachfront homes in Cabo"
         </p>
       </div>
     </div>

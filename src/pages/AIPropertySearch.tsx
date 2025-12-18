@@ -7,14 +7,14 @@ const AIPropertySearch = () => {
   return (
     <>
       <Helmet>
-        <title>AI Property Search | Baja International Realty</title>
+        <title>Property Search | Baja International Realty</title>
         <meta
           name="description"
-          content="Search for properties in Los Cabos using our AI-powered natural language search. Ask questions like 'Show me 3-bedroom condos under $500k in Cabo San Lucas' and get instant results."
+          content="Search for properties in Los Cabos using our intelligent natural language search. Ask questions like 'Show me 3-bedroom condos under $500k in Cabo San Lucas' and get instant results."
         />
         <meta
           name="keywords"
-          content="AI property search, Los Cabos real estate, Cabo San Lucas homes, intelligent property search, natural language search"
+          content="property search, Los Cabos real estate, Cabo San Lucas homes, intelligent property search, natural language search"
         />
       </Helmet>
 
@@ -22,10 +22,10 @@ const AIPropertySearch = () => {
         <Navbar />
 
         {/* Hero Header */}
-        <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 text-white py-12">
+        <div className="bg-[#112f76] text-white py-12">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              AI-Powered Property Search
+              Intelligent Property Search
             </h1>
             <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
               Find your dream home in Los Cabos using natural language. Just ask what you're looking for!
@@ -33,7 +33,7 @@ const AIPropertySearch = () => {
             <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                <span>Powered by Groq AI</span>
+                <span>Powered by BIR</span>
               </div>
               <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                 <span>Live MLS Data</span>
@@ -87,7 +87,7 @@ const AIPropertySearch = () => {
               </h3>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                 <li>• <strong>Natural Language:</strong> Ask questions like you would to a real estate agent</li>
-                <li>• <strong>Smart Parsing:</strong> Our AI understands locations, budgets, bedrooms, amenities, and more</li>
+                <li>• <strong>Smart Parsing:</strong> Our system understands locations, budgets, bedrooms, amenities, and more</li>
                 <li>• <strong>Live Results:</strong> Search our entire MLS database in real-time</li>
                 <li>• <strong>Follow-ups:</strong> Refine your search with conversational follow-up questions</li>
               </ul>
