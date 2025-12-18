@@ -507,7 +507,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          BIR search • Try natural language like "beachfront homes in Cabo"
+          BIR Search Assistant • Try using natural language like "beachfront homes in Cabo"
         </p>
       </div>
     </div>
