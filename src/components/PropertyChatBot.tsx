@@ -328,7 +328,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-yellow-300" />
           </div>
           <div>
-            <h3 className="text-lg font-bold">Property Search Assistant</h3>
+            <h3 className="text-lg font-bold">BIR Search Assistant</h3>
             <p className="text-xs text-white/80">Powered by BIR</p>
           </div>
         </div>
@@ -507,7 +507,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Intelligent property search • Try natural language like "beachfront homes in Cabo"
+          BIR search • Try natural language like "beachfront homes in Cabo"
         </p>
       </div>
     </div>
