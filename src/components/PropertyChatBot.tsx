@@ -15,6 +15,7 @@ import {
 } from "@/services/groqPropertyQueryParser";
 import { getAreaKnowledge, compareAreas, BUYING_PROCESS, OWNERSHIP_COSTS, MARKET_INSIGHTS, COMMON_FAQS } from "@/services/realEstateKnowledge";
 import { COMPANY_INFO, TEAM_INFO, formatOfficeHours, formatAddress } from "@/services/businessKnowledge";
+import { canSendMessage, recordMessage, getTimeRemainingMessage, getUsageStats, isApproachingLimit } from "@/services/rateLimiter";
 
 interface Message {
   role: "user" | "assistant" | "system";
@@ -28,6 +29,29 @@ interface PropertyChatBotProps {
   onClose: () => void;
   fullPage?: boolean; // If true, render as full page instead of modal
 }
+
+// Usage Limit Indicator Component
+const UsageLimitIndicator = () => {
+  const stats = getUsageStats();
+  const approaching = isApproachingLimit();
+
+  const dailyRemaining = stats.dailyLimit - stats.dailyUsed;
+  const showWarning = approaching.approachingDaily && dailyRemaining > 0;
+
+  if (dailyRemaining === 0) return null; // Don't show if at limit (already blocked)
+
+  return (
+    <div className="text-xs text-muted-foreground mt-2 flex items-center justify-between">
+      <span>BIR Search Assistant • Natural language search</span>
+      {showWarning && (
+        <span className="text-orange-600 dark:text-orange-400 flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" />
+          {dailyRemaining} {dailyRemaining === 1 ? 'message' : 'messages'} left today
+        </span>
+      )}
+    </div>
+  );
+};
 
 const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) => {
   const [messages, setMessages] = useState<Message[]>([
@@ -53,6 +77,21 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
+    // Check rate limits before processing
+    const rateLimitCheck = canSendMessage();
+    if (!rateLimitCheck.allowed) {
+      const resetTimeMsg = getTimeRemainingMessage(rateLimitCheck.resetTime || 0);
+      const limitMessage: Message = {
+        role: "assistant",
+        content: rateLimitCheck.reason === 'daily'
+          ? `⏸️ **Daily Message Limit Reached**\n\nYou've reached the maximum of 20 messages per day. This helps us manage our AI costs while keeping the chatbot free for everyone.\n\n**Your limit resets in:** ${resetTimeMsg}\n\n**In the meantime:**\n📞 Call us: ${COMPANY_INFO.phone}\n📧 Email: ${COMPANY_INFO.email}\n👉 [Contact Form](/contact)\n\nOur team is available ${COMPANY_INFO.officeHours.formatted} and happy to help!`
+          : `⏸️ **Hourly Message Limit Reached**\n\nYou've sent 5 messages in the last hour. Please wait ${resetTimeMsg} before sending more.\n\nThis helps prevent spam and ensures quality responses for all users.\n\n**Need immediate help?**\n📞 Call: ${COMPANY_INFO.phone}\n📧 Email: ${COMPANY_INFO.email}`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, limitMessage]);
+      return;
+    }
+
     const userMessage: Message = {
       role: "user",
       content: input,
@@ -62,6 +101,9 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+
+    // Record that a message was sent
+    recordMessage();
 
     try {
       // EARLY CATCH: Check for office hours questions before parsing
@@ -898,9 +940,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             )}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          BIR Search Assistant • Try using natural language like "beachfront homes in Cabo"
-        </p>
+        <UsageLimitIndicator />
       </div>
     </div>
   );
