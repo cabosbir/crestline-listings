@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, X, Bot, Sparkles, Home, MapPin } from "lucide-react";
+import { Send, Loader2, X, Bot, Sparkles, Home, MapPin, AlertTriangle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard, MLSProperty } from "@/services/flexMlsService";
@@ -438,6 +438,15 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
                       );
                     })}
                   </div>
+
+                  {/* AI Disclaimer */}
+                  <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-800 dark:text-amber-200">
+                      <strong>Please verify:</strong> Property details are AI-summarized from MLS data. Always verify information with one of our agents before making decisions.
+                    </p>
+                  </div>
+
                   {message.properties.length > 6 && (
                     <div className="text-center">
                       <Button variant="outline" size="sm" asChild>
@@ -452,15 +461,25 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
 
               {/* No results message */}
               {message.properties && message.properties.length === 0 && (
-                <div className="mt-2 p-4 bg-secondary/50 border border-border rounded-lg text-sm text-muted-foreground">
-                  <p className="mb-2">No properties found matching those exact criteria.</p>
-                  <p className="text-xs">Try adjusting your search:</p>
-                  <ul className="text-xs list-disc list-inside mt-1 space-y-1">
-                    <li>Increase your budget range</li>
-                    <li>Consider a different area</li>
-                    <li>Reduce the number of bedrooms/bathrooms</li>
-                    <li>Remove some specific requirements</li>
-                  </ul>
+                <div className="mt-2 space-y-3">
+                  <div className="p-4 bg-secondary/50 border border-border rounded-lg text-sm text-muted-foreground">
+                    <p className="mb-2">No properties found matching those exact criteria.</p>
+                    <p className="text-xs">Try adjusting your search:</p>
+                    <ul className="text-xs list-disc list-inside mt-1 space-y-1">
+                      <li>Increase your budget range</li>
+                      <li>Consider a different area</li>
+                      <li>Reduce the number of bedrooms/bathrooms</li>
+                      <li>Remove some specific requirements</li>
+                    </ul>
+                  </div>
+
+                  {/* AI Disclaimer */}
+                  <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-800 dark:text-amber-200">
+                      Our search uses AI to interpret your request. For personalized assistance finding the perfect property, [contact one of our expert agents](/contact).
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
