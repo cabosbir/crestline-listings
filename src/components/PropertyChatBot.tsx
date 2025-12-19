@@ -32,7 +32,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm your intelligent property assistant for Baja International Realty. I can help you:\n\n🏠 **Search Properties** - Find homes, condos, and land in Los Cabos\n📍 **Area Info** - Learn about neighborhoods and communities\n👥 **Meet Our Team** - Connect with expert local agents\n📝 **Get Started** - Access buyer/seller forms\n\nTry asking:\n• \"Show me 3-bedroom condos under $500k\"\n• \"What areas are best for beachfront living?\"\n• \"I'm interested in properties, how do I get started?\"\n\nWhat can I help you with today?",
+      content: "Hi! I'm your assistant for Baja International Realty. I can help you:\n\n🏠 **Search Properties** - Find homes, condos, and land in Los Cabos\n📍 **Area Info** - Learn about neighborhoods and communities\n👥 **Meet Our Team** - Connect with expert local agents\n📝 **Get Started** - Access buyer/seller forms\n\nTry asking:\n• \"Show me 3-bedroom condos under $500k\"\n• \"What areas are best for beachfront living?\"\n• \"I'm interested in properties, how do I get started?\"\n\nWhat can I help you with today?",
       timestamp: new Date(),
     },
   ]);
@@ -744,7 +744,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
               variant="outline"
               size="sm"
               className="text-xs"
-              onClick={() => handleQuickSearch("Show me 3-bedroom condos under $500k")}
+              onClick={() => handleQuickSearch("Show me 2 listings of 2-bedroom condos under $500k")}
             >
               <Home className="h-3 w-3 mr-1" />
               Search Properties
