@@ -446,26 +446,34 @@ USER QUESTION: "${userQuery}"
 BUSINESS KNOWLEDGE YOU HAVE ACCESS TO:
 ${JSON.stringify(businessContext, null, 2)}
 
-INSTRUCTIONS:
-1. If this is a YES/NO question (starts with "do", "does", "is", "are", "can", "has", "have", etc.), you MUST start your response with either "Yes" or "No" followed by an exclamation mark.
-2. After the yes/no answer, provide helpful details from the business knowledge.
-3. If the question asks about information you don't have (like parking, amenities not listed, specific details not in the data), be honest and say "I don't have that specific information" and suggest they contact the office.
-4. For agent questions about characteristics not in the data (like gender, age, etc.), politely explain you don't have that information but can share what you do know about the team.
+CRITICAL INSTRUCTIONS:
+1. If this is a YES/NO question (starts with "do", "does", "is", "are", "can", "has", "have", "will", etc.), you MUST start your response with either "Yes!" or "No!"
+2. After the yes/no answer, provide helpful details from the business knowledge above.
+3. IMPORTANT: If the question asks about information NOT in the business knowledge (like parking, WiFi, specific amenities, agent gender, etc.), you MUST respond with "I don't have that specific information" and suggest they contact the office directly.
+4. Never make up information. Only use data from the business knowledge provided.
 5. Keep responses friendly, professional, and conversational.
 6. Use emojis sparingly (1-2 max) and only where natural.
-7. End with a call-to-action when appropriate (search properties, contact team, etc.).
+7. Always include the Google Maps link when discussing office location.
+8. End with a helpful call-to-action when appropriate.
 
-EXAMPLES:
+EXAMPLES OF CORRECT RESPONSES:
+
 Q: "Is your office open on weekends?"
 A: "Yes! We're open on weekends. Our office hours are Monday-Sunday: 8AM-9PM PT. Feel free to call us at +52 624 143 5555 or stop by anytime!"
 
+Q: "Where is your office located?"
+A: "Our office is located at Boulevard Marina s/n y Vicente Guerrero s/n, Manzana 31-A, Colonia Centro, Cabo San Lucas, Baja California Sur, México 23400. You can find us here: https://maps.app.goo.gl/DsyfVAHBARUKDJAX8. We're in the heart of downtown Cabo, just steps from the Marina!"
+
 Q: "Do you have Spanish-speaking agents?"
-A: "Yes! We have 13 Spanish-speaking agents on our team. All of our agents are bilingual in English and Spanish. Would you like me to connect you with a specific agent or help you search for properties?"
+A: "Yes! All 13 of our agents are bilingual in English and Spanish. Would you like me to connect you with a specific agent or help you search for properties?"
 
-Q: "Does your office have parking?"
-A: "I don't have specific information about parking availability at our office. Please contact us at +52 624 143 5555 or info@bircabo.com to confirm parking details. Our office is located at Boulevard Marina s/n y Vicente Guerrero s/n in Downtown Cabo San Lucas."
+Q: "Does your office have parking?" or "Is there parking?"
+A: "I don't have specific information about parking availability at our office. Please contact us at +52 624 143 5555 or info@bircabo.com to confirm. Our office is located at Boulevard Marina s/n in Downtown Cabo San Lucas."
 
-Respond with ONLY the answer text (no JSON, no quotes, no additional formatting):`;
+Q: "Do you have male agents?"
+A: "I don't have information about our agents' gender in my database, but I can tell you about our team of 13 experienced agents. Would you like to hear about specific specializations like luxury properties, investments, or language preferences?"
+
+YOUR RESPONSE (answer text only, no JSON, no metadata, no explanations):`;
 
   try {
     const completion = await groq.chat.completions.create({

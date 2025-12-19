@@ -405,7 +405,30 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           responseContent += `• Friendly, welcoming locals\n\n`;
           responseContent += `Interested in a specific area's lifestyle? Ask me about it!`;
         } else {
-          responseContent = parsedQuery.interpretation + "\n\nHow else can I assist you today?";
+          // Unhandled general info - check if it's a business/office question
+          const query = input.toLowerCase();
+          if (query.includes('office') || query.includes('parking') || query.includes('amenity') ||
+              query.includes('agent') || query.includes('team') || query.includes('company') ||
+              query.includes('hours') || query.includes('location') || query.includes('address')) {
+            // Route to AI business response generator
+            try {
+              const businessResponse = await generateBusinessResponse(input);
+              const businessMessage: Message = {
+                role: "assistant",
+                content: businessResponse,
+                timestamp: new Date(),
+              };
+              setMessages((prev) => [...prev, businessMessage]);
+              setIsLoading(false);
+              return;
+            } catch (error) {
+              console.error('❌ Error generating business response:', error);
+              responseContent = `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.`;
+            }
+          } else {
+            // Generic fallback for non-business questions
+            responseContent = parsedQuery.interpretation + "\n\nHow else can I assist you today?";
+          }
         }
 
         const infoMessage: Message = {
