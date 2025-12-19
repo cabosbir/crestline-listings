@@ -80,14 +80,14 @@ export const COMPANY_INFO: CompanyInfo = {
     googleMapsLink: "https://maps.app.goo.gl/DsyfVAHBARUKDJAX8"
   },
   officeHours: {
-    monday: "9:00 AM - 6:00 PM PT",
-    tuesday: "9:00 AM - 6:00 PM PT",
-    wednesday: "9:00 AM - 6:00 PM PT",
-    thursday: "9:00 AM - 6:00 PM PT",
-    friday: "9:00 AM - 6:00 PM PT",
-    saturday: "10:00 AM - 4:00 PM PT",
-    sunday: "10:00 AM - 4:00 PM PT",
-    formatted: "Monday-Friday: 9AM-6PM PT, Saturday-Sunday: 10AM-4PM PT"
+    monday: "8:00 AM - 9:00 PM PT",
+    tuesday: "8:00 AM - 9:00 PM PT",
+    wednesday: "8:00 AM - 9:00 PM PT",
+    thursday: "8:00 AM - 9:00 PM PT",
+    friday: "8:00 AM - 9:00 PM PT",
+    saturday: "8:00 AM - 9:00 PM PT",
+    sunday: "8:00 AM - 9:00 PM PT",
+    formatted: "Monday-Sunday: 8AM-9PM PT"
   },
   social: {
     facebook: "https://www.facebook.com/BajaInternationalRealty"
