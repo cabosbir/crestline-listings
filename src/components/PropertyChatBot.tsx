@@ -125,8 +125,8 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           // Enhanced fallback with direct answer
           const isWeekendQuestion = lowerInput.includes('weekend') || lowerInput.includes('saturday') || lowerInput.includes('sunday');
           const fallbackResponse = isWeekendQuestion
-            ? `Yes! We're open on weekends.\n\n📅 **Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})`
-            : `**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n📍 ${formatAddress()}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})`;
+            ? `Yes! We're open on weekends.\n\n📅 **Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`
+            : `**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n📍 ${formatAddress()}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
 
           const fallbackMessage: Message = {
             role: "assistant",
@@ -354,7 +354,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           // Fallback to basic contact info
           const fallbackMessage: Message = {
             role: "assistant",
-            content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.`,
+            content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
             timestamp: new Date(),
           };
           setMessages((prev) => [...prev, fallbackMessage]);
@@ -381,7 +381,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           // Fallback to basic team info
           const fallbackMessage: Message = {
             role: "assistant",
-            content: `**Our Expert Team:**\n\nWe have ${TEAM_INFO.length} experienced agents ready to help.\n\n[View Full Team](/team)\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}`,
+            content: `**Our Expert Team:**\n\nWe have ${TEAM_INFO.length} experienced agents ready to help.\n\n[View Full Team](/team)\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
             timestamp: new Date(),
           };
           setMessages((prev) => [...prev, fallbackMessage]);
@@ -410,7 +410,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             console.error('❌ Error generating business response:', error);
             const fallbackMessage: Message = {
               role: "assistant",
-              content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.`,
+              content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
               timestamp: new Date(),
             };
             setMessages((prev) => [...prev, fallbackMessage]);
@@ -526,7 +526,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
               return;
             } catch (error) {
               console.error('❌ Error generating business response:', error);
-              responseContent = `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.`;
+              responseContent = `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
             }
           } else {
             // Generic fallback for non-business questions
