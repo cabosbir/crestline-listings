@@ -1,6 +1,7 @@
 // groqPropertyQueryParser.ts - Natural Language Property Search Query Parser
 import Groq from 'groq-sdk';
 import { getAreaKnowledge, compareAreas, AREA_KNOWLEDGE, COMMON_FAQS } from './realEstateKnowledge';
+import { COMPANY_INFO, TEAM_INFO, WHY_WORK_WITH_US } from './businessKnowledge';
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -35,20 +36,21 @@ export interface ParsedPropertyQuery {
   sortBy?: 'price_low' | 'price_high' | 'newest' | 'beds';
 
   // Query understanding
-  intent: 'search' | 'question' | 'clarification_needed' | 'greeting' | 'off_topic' | 'general_info' | 'contact' | 'forms' | 'comparison' | 'market_data' | 'buyer_qualification';
+  intent: 'search' | 'question' | 'clarification_needed' | 'greeting' | 'off_topic' | 'general_info' | 'contact' | 'forms' | 'comparison' | 'market_data' | 'buyer_qualification' | 'business_info' | 'agent_request';
   confidence: number;
   clarificationNeeded?: string;
   originalQuery: string;
   interpretation: string;
 
   // For non-search intents
-  infoType?: 'office' | 'agents' | 'areas' | 'process' | 'forms' | 'rental_investment' | 'buying_costs' | 'legal' | 'lifestyle' | 'comparison';
+  infoType?: 'office' | 'agents' | 'areas' | 'process' | 'forms' | 'rental_investment' | 'buying_costs' | 'legal' | 'lifestyle' | 'comparison' | 'office_hours' | 'office_location' | 'company_history' | 'agent_info' | 'agent_specialization';
   recommendedAction?: string;
 
   // Enhanced query understanding
   buyerIntent?: 'vacation_home' | 'investment' | 'retirement' | 'relocation' | 'unknown';
   comparisonAreas?: string[];
   specificQuestion?: string;
+  agentName?: string; // For agent-specific queries
 }
 
 // Cache for conversation context
@@ -67,11 +69,18 @@ export async function parsePropertyQuery(
   const prompt = `You are an experienced real estate AI assistant for Baja International Realty in Los Cabos, Mexico. You have the knowledge of a junior agent with 2 years of local experience.
 
 ===== COMPANY INFO =====
-- Office: Baja International Realty (BIR)
-- Phone: +52 612 169 8328
-- Email: cabosbir@gmail.com / info@bircabo.com
+- Office: Baja International Realty (BIR Cabo)
+- Founded: Late 1980s by Don Weis (35+ years in business)
+- Phone: +52 624 143 5555
+- Email: info@bircabo.com
 - Website: bircabo.com
-- Services: Residential, Commercial, Land sales in Los Cabos
+- Address: Boulevard Marina s/n y Vicente Guerrero s/n, Manzana 31-A, Colonia Centro, Cabo San Lucas, BCS 23400
+- Google Maps: https://maps.app.goo.gl/DsyfVAHBARUKDJAX8
+- Office Hours: Mon-Fri 9AM-6PM PT, Sat-Sun 10AM-4PM PT
+- Stats: 13 agents, 75+ years combined experience, 1,850+ properties sold, $800M+ sales, 2,200+ families served
+- Memberships: MLS-BCS Founding Member, AMPI, International Realtor®
+- Featured On: CNN, ABC 20/20, National Radio
+- Services: Residential, Commercial, Land, Luxury Properties, Investment Properties, Property Management
 
 ===== USER QUERY =====
 "${userQuery}"
@@ -121,6 +130,22 @@ Q: Is it safe? A: Los Cabos very safe, tourism-dependent, use normal precautions
 Q: Healthcare? A: Excellent private hospitals, costs 50-70% less than US
 Q: Hurricanes? A: Season Jun-Nov, direct hits rare (avg 1 per 15-20 years)
 
+===== OUR TEAM (13 AGENTS) =====
+Don Weis (Founder/Broker, 35 yrs, Luxury/Development) - English/Spanish
+Bob Van Patten (9 yrs, High Yield Investment) - English - +52 624 127 6012
+Alfonso Puente (18 yrs, Commercial/Developments) - English/Spanish - +52 664 188 8681
+David Scott Piper (10 yrs, Luxury/Portfolio) - English/Spanish - +52 624 317 0297
+Erika Aispuro (8 yrs, Oceanfront Estates) - English/Spanish - +52 624 109 7909
+Hector Mendoza (2 yrs, Investment/Portfolio) - English/Spanish - +52 624 211 4879
+Susu Vieira (11 yrs, Staging/Design) - English/Spanish - +1 808 226 6120
+Erika Graciano (15 yrs, Client Relations) - Spanish/English - +52 624 157 2154
+Marisol Tort (12 yrs, Luxury Properties) - English/Spanish - +52 624 264 3896
+Cozbi Sanchez (8 yrs, Family Homes/Condos) - English/Spanish - +52 624 118 9512
+Edgar Pacheco (1 yr, Luxury Properties) - English/Spanish - +52 612 169 8328
+Fernando Cabrera (5 yrs, Residential/Vacation) - English/Spanish - +52 624 135 8900
+Bonnie Renee G. (15 yrs, Residential/Commercial/Investment) - English/Spanish - +1 858-204-3115
+Charles Jones (30 yrs, Pedregal/Luxury Rentals) - English/Spanish - +1 858 964 4629
+
 ===== INTENT DETECTION RULES =====
 
 **SEARCH** - User wants properties:
@@ -154,6 +179,24 @@ Q: Hurricanes? A: Season Jun-Nov, direct hits rare (avg 1 per 15-20 years)
 - "What is Querencia like?"
 - "Best areas for beachfront living" (WITHOUT specific search)
 → Sub-types: areas, process, legal, lifestyle, rental_investment, buying_costs
+
+**BUSINESS_INFO** - Company/office questions:
+- "What are your office hours?"
+- "Where is your office located?"
+- "When are you open?"
+- "How do I get to your office?"
+- "Tell me about your company"
+- "Company history"
+→ Set intent: "business_info", infoType: "office_hours" | "office_location" | "company_history"
+
+**AGENT_REQUEST** - Agent-specific questions:
+- "Who speaks Spanish?"
+- "I want to talk to Bob"
+- "Contact agent [name]"
+- "Who specializes in investment properties?"
+- "Which agent handles luxury?"
+- "Tell me about [agent name]"
+→ Set intent: "agent_request", infoType: "agent_info" | "agent_specialization", extract agentName if mentioned
 
 **FORMS** - Ready to start:
 - "I'm interested"

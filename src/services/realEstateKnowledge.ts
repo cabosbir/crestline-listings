@@ -382,11 +382,19 @@ export function getAreaKnowledge(query: string): AreaKnowledge | null {
     }
   }
 
-  // Keyword matches
+  // City-level matches first (more specific, longer phrases)
+  // When someone says the full city name, return a representative area
+  if (normalized.includes('cabo san lucas') && !normalized.includes('san jose')) {
+    return AREA_KNOWLEDGE.marina; // Marina represents downtown Cabo San Lucas
+  }
+  if (normalized.includes('san jose del cabo') || (normalized.includes('san jose') && !normalized.includes('pedregal'))) {
+    return AREA_KNOWLEDGE.san_jose_del_cabo; // San Jose del Cabo city
+  }
+
+  // Specific area/community keyword matches
   if (normalized.includes('marina')) return AREA_KNOWLEDGE.marina;
   if (normalized.includes('pedregal')) return AREA_KNOWLEDGE.pedregal;
   if (normalized.includes('corridor')) return AREA_KNOWLEDGE.cabo_corridor;
-  if (normalized.includes('san jose')) return AREA_KNOWLEDGE.san_jose_del_cabo;
   if (normalized.includes('querencia')) return AREA_KNOWLEDGE.querencia;
   if (normalized.includes('palmilla')) return AREA_KNOWLEDGE.palmilla;
   if (normalized.includes('east cape')) return AREA_KNOWLEDGE.east_cape;

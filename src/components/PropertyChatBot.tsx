@@ -13,6 +13,7 @@ import {
   ParsedPropertyQuery,
 } from "@/services/groqPropertyQueryParser";
 import { getAreaKnowledge, compareAreas, BUYING_PROCESS, OWNERSHIP_COSTS, MARKET_INSIGHTS, COMMON_FAQS } from "@/services/realEstateKnowledge";
+import { COMPANY_INFO, TEAM_INFO, getAgentByName, getAgentsByLanguage, getAgentsBySpecialization, formatOfficeHours, formatAddress } from "@/services/businessKnowledge";
 
 interface Message {
   role: "user" | "assistant" | "system";
@@ -259,6 +260,144 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         return;
       }
 
+      // NEW: Handle business info questions (office hours, location, company history)
+      if (parsedQuery.intent === "business_info") {
+        let businessResponse = "";
+
+        if (parsedQuery.infoType === "office_hours") {
+          businessResponse = `**${COMPANY_INFO.name} Office Hours:**\n\n`;
+          businessResponse += `📅 Monday-Friday: ${COMPANY_INFO.officeHours.monday}\n`;
+          businessResponse += `📅 Saturday: ${COMPANY_INFO.officeHours.saturday}\n`;
+          businessResponse += `📅 Sunday: ${COMPANY_INFO.officeHours.sunday}\n\n`;
+          businessResponse += `📞 **Call anytime:** ${COMPANY_INFO.phone}\n`;
+          businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n\n`;
+          businessResponse += `We're located in downtown Cabo San Lucas, just steps from the Marina!\n\n`;
+          businessResponse += `Would you like to schedule a meeting or search for properties?`;
+        } else if (parsedQuery.infoType === "office_location") {
+          businessResponse = `**${COMPANY_INFO.name} Office Location:**\n\n`;
+          businessResponse += `📍 ${formatAddress()}\n\n`;
+          businessResponse += `🗺️ **Get Directions:** ${COMPANY_INFO.address.googleMapsLink}\n\n`;
+          businessResponse += `We're conveniently located in the heart of Downtown Cabo San Lucas, just steps from the Marina. Easy to find and always ready to assist you!\n\n`;
+          businessResponse += `📞 **Phone:** ${COMPANY_INFO.phone}\n`;
+          businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n`;
+          businessResponse += `⏰ **Hours:** ${formatOfficeHours()}\n\n`;
+          businessResponse += `Visit us during regular business hours, or contact us to schedule a private appointment!`;
+        } else if (parsedQuery.infoType === "company_history") {
+          businessResponse = `**About ${COMPANY_INFO.name}:**\n\n`;
+          businessResponse += `${COMPANY_INFO.founderBio}\n\n`;
+          businessResponse += `**Our Track Record:**\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.combinedYearsExperience} combined years of experience\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.propertiesSold} properties sold\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.totalSalesVolume} in total sales volume\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.familiesServed} families served\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.totalAgents} expert agents\n\n`;
+          businessResponse += `**Memberships & Recognition:**\n`;
+          businessResponse += COMPANY_INFO.memberships.map(m => `• ${m}`).join('\n');
+          businessResponse += `\n\n**Featured On:** ${COMPANY_INFO.mediaFeatures.join(', ')}\n\n`;
+          businessResponse += `Ready to work with Cabo's #1 real estate agency?`;
+        } else {
+          // Generic business info
+          businessResponse = `**${COMPANY_INFO.name}** - Your trusted Cabo San Lucas real estate partner since the ${COMPANY_INFO.founded}!\n\n`;
+          businessResponse += `📞 **Phone:** ${COMPANY_INFO.phone}\n`;
+          businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n`;
+          businessResponse += `📍 **Office:** Downtown Cabo San Lucas (near Marina)\n`;
+          businessResponse += `⏰ **Hours:** ${formatOfficeHours()}\n\n`;
+          businessResponse += `${COMPANY_INFO.stats.totalAgents} expert agents ready to help you find your perfect property!`;
+        }
+
+        const businessMessage: Message = {
+          role: "assistant",
+          content: businessResponse,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, businessMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // NEW: Handle agent-specific requests
+      if (parsedQuery.intent === "agent_request") {
+        let agentResponse = "";
+
+        if (parsedQuery.infoType === "agent_info" && parsedQuery.agentName) {
+          const agent = getAgentByName(parsedQuery.agentName);
+          if (agent) {
+            agentResponse = `**${agent.name}**\n${agent.title}\n\n`;
+            agentResponse += `**Specialization:** ${agent.specialization}\n`;
+            agentResponse += `**Experience:** ${agent.yearsExperience} years in Los Cabos\n`;
+            agentResponse += `**Properties Sold:** ${agent.propertiesSold}+\n`;
+            agentResponse += `**Languages:** ${agent.languages.join(', ')}\n\n`;
+            agentResponse += `📞 **Phone:** ${agent.phone}\n`;
+            if (agent.phoneSecondary) agentResponse += `📞 **Alt Phone:** ${agent.phoneSecondary}\n`;
+            agentResponse += `📧 **Email:** ${agent.email}\n\n`;
+            agentResponse += `**About ${agent.name.split(' ')[0]}:**\n${agent.bio}\n\n`;
+            agentResponse += `**Certifications:**\n${agent.certifications.map(c => `• ${c}`).join('\n')}\n\n`;
+            agentResponse += `Ready to connect with ${agent.name.split(' ')[0]}? Call ${agent.phone} or visit [/contact](/contact)`;
+          } else {
+            agentResponse = `I couldn't find an agent by that name. Here's our full team:\n\n`;
+            agentResponse += TEAM_INFO.slice(0, 5).map(a => `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs)`).join('\n');
+            agentResponse += `\n\n[View Full Team](/team) | Call us: ${COMPANY_INFO.phone}`;
+          }
+        } else if (parsedQuery.infoType === "agent_specialization") {
+          // Extract specialization from query
+          const query = parsedQuery.originalQuery.toLowerCase();
+
+          if (query.includes('spanish')) {
+            const spanishAgents = getAgentsByLanguage('Spanish');
+            agentResponse = `**Our Spanish-Speaking Agents:**\n\n`;
+            agentResponse += spanishAgents.map(a =>
+              `• **${a.name}** - ${a.title} (${a.yearsExperience} yrs) - ${a.phone}`
+            ).join('\n');
+            agentResponse += `\n\nAll agents listed are fluent in both English and Spanish!`;
+          } else if (query.includes('investment')) {
+            const investmentAgents = getAgentsBySpecialization('investment');
+            agentResponse = `**Our Investment Property Specialists:**\n\n`;
+            agentResponse += investmentAgents.map(a =>
+              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs, ${a.propertiesSold}+ sold) - ${a.phone}`
+            ).join('\n');
+            agentResponse += `\n\nThese agents specialize in high-yield investment properties and portfolio management!`;
+          } else if (query.includes('luxury')) {
+            const luxuryAgents = getAgentsBySpecialization('luxury');
+            agentResponse = `**Our Luxury Property Specialists:**\n\n`;
+            agentResponse += luxuryAgents.map(a =>
+              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs) - ${a.phone}`
+            ).join('\n');
+            agentResponse += `\n\nOur luxury specialists have extensive experience with high-end properties!`;
+          } else if (query.includes('commercial')) {
+            const commercialAgents = getAgentsBySpecialization('commercial');
+            agentResponse = `**Our Commercial Real Estate Experts:**\n\n`;
+            agentResponse += commercialAgents.map(a =>
+              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs) - ${a.phone}`
+            ).join('\n');
+          } else {
+            // Show all agents
+            agentResponse = `**Meet Our ${TEAM_INFO.length} Expert Agents:**\n\n`;
+            agentResponse += TEAM_INFO.slice(0, 6).map(a =>
+              `• **${a.name}** - ${a.title}\n  ${a.specialization} | ${a.yearsExperience} yrs | ${a.languages.join('/')} | ${a.phone}`
+            ).join('\n\n');
+            agentResponse += `\n\n[View Full Team](/team) | Contact us: ${COMPANY_INFO.phone}`;
+          }
+        } else {
+          // Generic agent list
+          agentResponse = `**Our Expert Team of ${TEAM_INFO.length} Agents:**\n\n`;
+          agentResponse += `${COMPANY_INFO.stats.combinedYearsExperience} combined years of experience serving Los Cabos!\n\n`;
+          agentResponse += `**Featured Agents:**\n`;
+          agentResponse += TEAM_INFO.slice(0, 5).map(a =>
+            `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs)`
+          ).join('\n');
+          agentResponse += `\n\n[View All ${TEAM_INFO.length} Agents](/team) | Call: ${COMPANY_INFO.phone}`;
+        }
+
+        const agentMessage: Message = {
+          role: "assistant",
+          content: agentResponse,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, agentMessage]);
+        setIsLoading(false);
+        return;
+      }
+
       if (parsedQuery.intent === "general_info") {
         // Check if we just gave this same response (prevent loops)
         const lastMessage = messages[messages.length - 1];
@@ -281,9 +420,9 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         let responseContent = "";
 
         if (parsedQuery.infoType === "office") {
-          responseContent = "**Baja International Realty** is your trusted real estate partner in Los Cabos!\n\n📍 **Location:** Los Cabos, Baja California Sur, Mexico\n📞 **Phone:** +52 612 169 8328\n📧 **Email:** cabosbir@gmail.com\n\nWe specialize in residential, commercial, and land sales throughout the Los Cabos area. Our experienced team is here to help you find your perfect property!\n\nWould you like to search for properties or meet our team?";
+          responseContent = `**${COMPANY_INFO.name}** is your trusted real estate partner in Los Cabos!\n\n📍 **Location:** ${formatAddress()}\n📞 **Phone:** ${COMPANY_INFO.phone}\n📧 **Email:** ${COMPANY_INFO.email}\n⏰ **Hours:** ${formatOfficeHours()}\n\nWe specialize in residential, commercial, and land sales throughout the Los Cabos area. Our experienced team of ${COMPANY_INFO.stats.totalAgents} agents is here to help you find your perfect property!\n\nWould you like to search for properties or meet our team?`;
         } else if (parsedQuery.infoType === "agents") {
-          responseContent = "Our team consists of expert local agents who know Los Cabos inside and out!\n\n👥 **Meet Our Team:** [View All Agents](/team)\n\nEach agent brings unique expertise in different areas and property types. Would you like me to help you find properties, or would you prefer to contact an agent directly?";
+          responseContent = `Our team consists of ${TEAM_INFO.length} expert local agents who know Los Cabos inside and out!\n\n👥 **Meet Our Team:** [View All Agents](/team)\n\n**Stats:**\n• ${COMPANY_INFO.stats.combinedYearsExperience} combined years experience\n• ${COMPANY_INFO.stats.propertiesSold} properties sold\n• All agents are MLS/AMPI certified\n\nEach agent brings unique expertise in different areas and property types. Would you like me to help you find properties, or would you prefer to contact an agent directly?`;
         } else if (parsedQuery.infoType === "areas") {
           responseContent = "Los Cabos offers diverse neighborhoods, each with its own character:\n\n🏖️ **Cabo San Lucas** - Vibrant marina, nightlife, beaches\n🏡 **San Jose del Cabo** - Historic downtown, art galleries, tranquil\n🌅 **Cabo Corridor** - Luxury resorts, golf courses, stunning coastline\n🎨 **Todos Santos** - Artistic community, surfing, bohemian vibe\n\n**Best Areas for Beachfront Living:**\n🌊 **Cabo Corridor** - Premier beachfront real estate, world-class resorts, stunning ocean views\n🏖️ **Pedregal** - Dramatic hillside properties with private beach club access in Cabo San Lucas\n🌅 **Palmilla/San Jose Corridor** - Tranquil beaches, excellent for swimming and water sports\n🐚 **East Cape** - Secluded, pristine beaches for those seeking privacy and natural beauty\n🎣 **Marina District** - Not beachfront but waterfront living with easy beach access\n\n**Other Popular Areas:**\n• Downtown San Jose del Cabo - Art galleries, dining, historic charm\n• El Tezal - Family-friendly, affordable, close to beaches\n• Todos Santos - Bohemian surf town on the Pacific side\n\nWant to search for beachfront properties in a specific area?";
         } else if (parsedQuery.infoType === "rental_investment") {
