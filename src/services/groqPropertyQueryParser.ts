@@ -180,10 +180,12 @@ Charles Jones (30 yrs, Pedregal/Luxury Rentals) - English/Spanish - +1 858 964 4
 - "Best areas for beachfront living" (WITHOUT specific search)
 → Sub-types: areas, process, legal, lifestyle, rental_investment, buying_costs
 
-**BUSINESS_INFO** - Company/office questions:
+**BUSINESS_INFO** - Company/office questions (NOT property search):
 - "What are your office hours?"
-- "Where is your office located?"
+- "Is your office open on weekends?"
+- "Are you open on Saturday?"
 - "When are you open?"
+- "Where is your office located?"
 - "How do I get to your office?"
 - "Tell me about your company"
 - "Company history"
@@ -191,6 +193,7 @@ Charles Jones (30 yrs, Pedregal/Luxury Rentals) - English/Spanish - +1 858 964 4
 - "Why choose you?"
 - "What makes you different?"
 → Set intent: "business_info", infoType: "office_hours" | "office_location" | "company_history" | "why_work_with_us"
+→ CRITICAL: Office hours questions are ALWAYS business_info, NEVER property search
 
 **AGENT_REQUEST** - Agent-specific questions:
 - "Who speaks Spanish?"
@@ -316,6 +319,24 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
   "confidence": 90,
   "originalQuery": "${userQuery}",
   "interpretation": "Retiree looking for property in Cabo"
+}
+
+**FOR BUSINESS INFO (office hours, location, company):**
+{
+  "intent": "business_info",
+  "infoType": "office_hours",
+  "confidence": 95,
+  "originalQuery": "${userQuery}",
+  "interpretation": "User asking about office hours/schedule"
+}
+
+**FOR AGENT REQUEST:**
+{
+  "intent": "agent_request",
+  "infoType": "agent_specialization",
+  "confidence": 90,
+  "originalQuery": "${userQuery}",
+  "interpretation": "User looking for Spanish-speaking agent"
 }
 
 ===== IMPORTANT REMINDERS =====
