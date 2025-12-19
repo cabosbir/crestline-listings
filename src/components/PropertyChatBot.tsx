@@ -128,7 +128,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         } else if (parsedQuery.infoType === "areas") {
           responseContent = "Los Cabos offers diverse neighborhoods, each with its own character:\n\n🏖️ **Cabo San Lucas** - Vibrant marina, nightlife, beaches\n🏡 **San Jose del Cabo** - Historic downtown, art galleries, tranquil\n🌅 **Cabo Corridor** - Luxury resorts, golf courses, stunning coastline\n🎨 **Todos Santos** - Artistic community, surfing, bohemian vibe\n\n**Popular Areas:**\n• Pedregal - Hillside luxury with ocean views\n• Marina District - Waterfront living\n• East Cape - Secluded beaches\n\n**💰 Best Areas for Rental ROI:**\n• **Beachfront properties** - #1 rental demand\n• **Walking distance to marina/downtown** - Easy access to fishing, restaurants, nightlife\n• Communities known for vacation rentals with proven track records\n\n*Note: Individual rental history isn't searchable in MLS, but our agents know which communities perform best. Contact us for personalized rental investment advice!*\n\nWant to search for properties in a specific area?";
         } else if (parsedQuery.infoType === "process") {
-          responseContent = "**Buying Real Estate in Mexico:**\n\n1️⃣ **Property Search** - Let me help you find the perfect property!\n2️⃣ **Make an Offer** - Our agents guide you through negotiations\n3️⃣ **Fideicomiso** - Bank trust for foreign buyers (we'll explain everything)\n4️⃣ **Due Diligence** - Title search, inspections, legal review\n5️⃣ **Closing** - Sign documents, transfer funds, get keys!\n\n📝 **Ready to start?** [New Client Form](/new-client)\n\nWould you like to search for properties now?";
+          responseContent = "**Buying Real Estate in Mexico:**\n\n1️⃣ **Property Search** - Let me help you find the perfect property!\n2️⃣ **Make an Offer** - Our agents guide you through negotiations\n3️⃣ **Fideicomiso** - Bank trust for foreign buyers (we'll explain everything)\n4️⃣ **Due Diligence** - Title search, inspections, legal review\n5️⃣ **Closing** - Sign documents, transfer funds, get keys!\n\n📝 **Ready to start?** [New Client Form](https://www.bircabo.com/new-client)\n\nWould you like to search for properties now?";
         } else {
           responseContent = parsedQuery.interpretation + "\n\nHow else can I assist you today?";
         }
@@ -147,7 +147,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         // User wants to get started with forms
         const formsMessage: Message = {
           role: "assistant",
-          content: "Great! I'm excited to help you get started with your Los Cabos real estate journey!\n\n📝 **For Buyers:**\nReady to explore properties? Fill out our New Client Form and one of our expert agents will contact you:\n👉 [New Client Registration](/new-client)\n\n🏠 **For Sellers:**\nInterested in selling your property? Get a professional evaluation:\n👉 [Seller Property Evaluation](/seller-evaluation)\n\n📅 **Want to Talk First?**\nSchedule a consultation with our team:\n👉 [Contact Us](/contact)\n\nOr feel free to keep chatting with me to search for properties!",
+          content: "Great! I'm excited to help you get started with your Los Cabos real estate journey!\n\n📝 **For Buyers:**\nReady to explore properties? Fill out our New Client Form and one of our expert agents will contact you:\n👉 [New Client Registration](https://www.bircabo.com/new-client)\n\n🏠 **For Sellers:**\nInterested in selling your property? Get a professional evaluation:\n👉 [Seller Property Evaluation](https://www.bircabo.com/seller-evaluation)\n\n📅 **Want to Talk First?**\nSchedule a consultation with our team:\n👉 [Contact Us](/contact)\n\nOr feel free to keep chatting with me to search for properties!",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, formsMessage]);
@@ -269,7 +269,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
 
         if (properties.length > 0) {
           // Add form recommendation
-          finalResponse += "\n\n💡 **Interested in any of these properties?**\nFill out our [New Client Form](/new-client) and one of our expert agents will reach out to schedule viewings and answer your questions!";
+          finalResponse += "\n\n💡 **Interested in any of these properties?**\nFill out our [New Client Form](https://www.bircabo.com/new-client) and one of our expert agents will reach out to schedule viewings and answer your questions!";
         } else {
           // No results - provide helpful suggestions
           finalResponse += "\n\n**Try adjusting your search:**\n• Increase your budget range\n• Expand to nearby areas\n• Reduce bedroom/bathroom requirements\n• Remove specific amenities\n\n**Or I can help you:**\n• Search in a different area\n• [Contact an agent](/contact) for personalized assistance\n• [Browse all properties](/properties)";
