@@ -106,10 +106,10 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
     recordMessage();
 
     try {
-      // EARLY CATCH: Check for office hours questions before parsing
+      // EARLY CATCH: Check for office hours/location questions before parsing
       const lowerInput = input.toLowerCase();
-      if ((lowerInput.includes('office') && (lowerInput.includes('open') || lowerInput.includes('hours') || lowerInput.includes('weekend') || lowerInput.includes('saturday') || lowerInput.includes('sunday'))) ||
-          (lowerInput.includes('are you open') || lowerInput.includes('when are you open') || lowerInput.includes('what time'))) {
+      if ((lowerInput.includes('office') && (lowerInput.includes('open') || lowerInput.includes('hours') || lowerInput.includes('weekend') || lowerInput.includes('saturday') || lowerInput.includes('sunday') || lowerInput.includes('located') || lowerInput.includes('location') || lowerInput.includes('address') || lowerInput.includes('where'))) ||
+          (lowerInput.includes('are you open') || lowerInput.includes('when are you open') || lowerInput.includes('what time') || lowerInput.includes('where are you') || lowerInput.includes('where is your'))) {
         try {
           const businessResponse = await generateBusinessResponse(input);
           const businessMessage: Message = {
@@ -124,9 +124,16 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           console.error('❌ Error generating business response:', error);
           // Enhanced fallback with direct answer
           const isWeekendQuestion = lowerInput.includes('weekend') || lowerInput.includes('saturday') || lowerInput.includes('sunday');
-          const fallbackResponse = isWeekendQuestion
-            ? `Yes! We're open on weekends.\n\n📅 **Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`
-            : `**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n📍 ${formatAddress()}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+          const isLocationQuestion = lowerInput.includes('located') || lowerInput.includes('location') || lowerInput.includes('address') || lowerInput.includes('where');
+
+          let fallbackResponse = '';
+          if (isWeekendQuestion) {
+            fallbackResponse = `Yes! We're open on weekends.\n\n📅 **Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+          } else if (isLocationQuestion) {
+            fallbackResponse = `**Our Office Location:**\n\n📍 ${formatAddress()}\n\n**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+          } else {
+            fallbackResponse = `**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n📍 ${formatAddress()}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+          }
 
           const fallbackMessage: Message = {
             role: "assistant",
