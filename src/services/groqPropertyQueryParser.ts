@@ -194,6 +194,9 @@ Charles Jones (30 yrs, Pedregal/Luxury Rentals) - English/Spanish - +1 858 964 4
 
 **AGENT_REQUEST** - Agent-specific questions:
 - "Who speaks Spanish?"
+- "Who in your office speaks Spanish?"
+- "Which agents speak Spanish?"
+- "Spanish-speaking agents"
 - "I want to talk to Bob"
 - "Contact agent [name]"
 - "Who specializes in investment properties?"

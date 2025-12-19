@@ -385,14 +385,40 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             agentResponse += `\n\n[View Full Team](/team) | Contact us: ${COMPANY_INFO.phone}`;
           }
         } else {
-          // Generic agent list
-          agentResponse = `**Our Expert Team of ${TEAM_INFO.length} Agents:**\n\n`;
-          agentResponse += `${COMPANY_INFO.stats.combinedYearsExperience} combined years of experience serving Los Cabos!\n\n`;
-          agentResponse += `**Featured Agents:**\n`;
-          agentResponse += TEAM_INFO.slice(0, 5).map(a =>
-            `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs)`
-          ).join('\n');
-          agentResponse += `\n\n[View All ${TEAM_INFO.length} Agents](/team) | Call: ${COMPANY_INFO.phone}`;
+          // Check if query contains language/specialization keywords as fallback
+          const query = parsedQuery.originalQuery.toLowerCase();
+
+          if (query.includes('spanish') || query.includes('speaks') || query.includes('language')) {
+            const spanishAgents = getAgentsByLanguage('Spanish');
+            agentResponse = `**Our Spanish-Speaking Agents:**\n\n`;
+            agentResponse += spanishAgents.map(a =>
+              `• **${a.name}** - ${a.title} (${a.yearsExperience} yrs) - ${a.phone}`
+            ).join('\n');
+            agentResponse += `\n\nAll of these agents are fluent in both English and Spanish.`;
+          } else if (query.includes('investment')) {
+            const investmentAgents = getAgentsBySpecialization('investment');
+            agentResponse = `**Our Investment Property Specialists:**\n\n`;
+            agentResponse += investmentAgents.map(a =>
+              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs, ${a.propertiesSold}+ sold) - ${a.phone}`
+            ).join('\n');
+            agentResponse += `\n\nThese agents specialize in high-yield investment properties and portfolio management.`;
+          } else if (query.includes('luxury')) {
+            const luxuryAgents = getAgentsBySpecialization('luxury');
+            agentResponse = `**Our Luxury Property Specialists:**\n\n`;
+            agentResponse += luxuryAgents.map(a =>
+              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs) - ${a.phone}`
+            ).join('\n');
+            agentResponse += `\n\nOur luxury specialists have extensive experience with high-end properties.`;
+          } else {
+            // Generic agent list
+            agentResponse = `**Our Expert Team of ${TEAM_INFO.length} Agents:**\n\n`;
+            agentResponse += `${COMPANY_INFO.stats.combinedYearsExperience} combined years of experience serving Los Cabos!\n\n`;
+            agentResponse += `**Featured Agents:**\n`;
+            agentResponse += TEAM_INFO.slice(0, 5).map(a =>
+              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs)`
+            ).join('\n');
+            agentResponse += `\n\n[View All ${TEAM_INFO.length} Agents](/team) | Call: ${COMPANY_INFO.phone}`;
+          }
         }
 
         const agentMessage: Message = {
