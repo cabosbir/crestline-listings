@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { ChatProvider } from "@/contexts/ChatContext";
+import { ChatProvider, useChat } from "@/contexts/ChatContext";
+import PropertyChatBot from "@/components/PropertyChatBot";
 import Index from "./pages/Index";
 import Properties from "./pages/Properties";
 import AdvancedSearch from "./pages/AdvancedSearch"; // 🔥 NEW: Full-page search with live map
@@ -51,6 +52,28 @@ function ScrollToTop() {
   return null;
 }
 
+// Global Chat Modal - renders on all pages
+function GlobalChatModal() {
+  const { isChatOpen, closeChat } = useChat();
+
+  if (!isChatOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={closeChat}
+      />
+
+      {/* Chat Container */}
+      <div className="relative w-full lg:w-[800px] h-[90vh] lg:h-[700px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
+        <PropertyChatBot onClose={closeChat} />
+      </div>
+    </div>
+  );
+}
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
@@ -72,24 +95,24 @@ const App = () => (
           <Route path="/team" element={<Team />} />
           <Route path="/team/:id" element={<AgentDetail />} />
           <Route path="/idx-search" element={<IDXSearch />} />
-          
+
           {/* Market Report Page */}
           <Route path="/market-report" element={<MarketReport />} />
-          
+
           {/* Admin: Filter Training Dashboard - 🧠 NEW */}
           <Route path="/admin/filter-training" element={<FilterTrainingDashboard />} />
-          
+
           {/* New Client Forms - All URL patterns supported */}
           <Route path="/new-client" element={<NewClientForm />} />
           <Route path="/new-client-form" element={<NewClientForm />} />
           <Route path="/new-client/:agentSlug" element={<NewClientForm />} />
           <Route path="/agents/:agentSlug/new-client" element={<NewClientForm />} />
-          
+
           {/* Seller Evaluation Forms - Both URL patterns supported */}
           <Route path="/seller-evaluation" element={<SellerEvaluationForm />} />
           <Route path="/seller-evaluation/:agentSlug" element={<SellerEvaluationForm />} />
           <Route path="/agents/:agentSlug/seller-evaluation" element={<SellerEvaluationForm />} />
-          
+
           {/* Agent Landing Pages - Short URLs (e.g., /bob) */}
           <Route path="/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/bob" element={<BobLandingPage />} />
@@ -105,7 +128,7 @@ const App = () => (
           <Route path="/hector" element={<HectorLandingPage />} />
           <Route path="/marisol" element={<MarisolLandingPage />} />
           <Route path="/susu" element={<SusuLandingPage />} />
-          
+
           {/* Agent Landing Pages - Full URLs (e.g., /agents/bob) */}
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
           <Route path="/agents/bob" element={<BobLandingPage />} />
@@ -121,10 +144,12 @@ const App = () => (
           <Route path="/agents/hector" element={<HectorLandingPage />} />
           <Route path="/agents/marisol" element={<MarisolLandingPage />} />
           <Route path="/agents/susu" element={<SusuLandingPage />} />
-          
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+            {/* Global Chat Modal - Available on ALL pages */}
+            <GlobalChatModal />
       </BrowserRouter>
         </ChatProvider>
       </TooltipProvider>

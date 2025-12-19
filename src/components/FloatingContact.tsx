@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { Phone, Mail, MessageCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import PropertyChatBot from "@/components/PropertyChatBot";
 import { useChat } from "@/contexts/ChatContext";
 
 const FloatingContact = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const { isChatOpen, openChat, closeChat } = useChat();
+  const { openChat } = useChat();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,22 +117,6 @@ const FloatingContact = () => {
           </Button>
         </div>
       </div>
-
-      {/* Property Search Assistant Modal */}
-      {isChatOpen && (
-        <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={closeChat}
-          />
-
-          {/* Chat Container */}
-          <div className="relative w-full lg:w-[800px] h-[90vh] lg:h-[700px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
-            <PropertyChatBot onClose={closeChat} />
-          </div>
-        </div>
-      )}
     </>
   );
 };
