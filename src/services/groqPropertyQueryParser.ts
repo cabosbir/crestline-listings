@@ -430,6 +430,59 @@ Respond with ONLY the message text (no JSON, no quotes around the entire message
   }
 }
 
+// Generate intelligent business responses using AI
+export async function generateBusinessResponse(userQuery: string): Promise<string> {
+  // Prepare business knowledge for the AI
+  const businessContext = {
+    company: COMPANY_INFO,
+    team: TEAM_INFO,
+    whyWorkWithUs: WHY_WORK_WITH_US,
+  };
+
+  const prompt = `You are an AI assistant for ${COMPANY_INFO.name}, a real estate agency in Cabo San Lucas, Mexico.
+
+USER QUESTION: "${userQuery}"
+
+BUSINESS KNOWLEDGE YOU HAVE ACCESS TO:
+${JSON.stringify(businessContext, null, 2)}
+
+INSTRUCTIONS:
+1. If this is a YES/NO question (starts with "do", "does", "is", "are", "can", "has", "have", etc.), you MUST start your response with either "Yes" or "No" followed by an exclamation mark.
+2. After the yes/no answer, provide helpful details from the business knowledge.
+3. If the question asks about information you don't have (like parking, amenities not listed, specific details not in the data), be honest and say "I don't have that specific information" and suggest they contact the office.
+4. For agent questions about characteristics not in the data (like gender, age, etc.), politely explain you don't have that information but can share what you do know about the team.
+5. Keep responses friendly, professional, and conversational.
+6. Use emojis sparingly (1-2 max) and only where natural.
+7. End with a call-to-action when appropriate (search properties, contact team, etc.).
+
+EXAMPLES:
+Q: "Is your office open on weekends?"
+A: "Yes! We're open on weekends. Our office hours are Monday-Sunday: 8AM-9PM PT. Feel free to call us at +52 624 143 5555 or stop by anytime!"
+
+Q: "Do you have Spanish-speaking agents?"
+A: "Yes! We have 13 Spanish-speaking agents on our team. All of our agents are bilingual in English and Spanish. Would you like me to connect you with a specific agent or help you search for properties?"
+
+Q: "Does your office have parking?"
+A: "I don't have specific information about parking availability at our office. Please contact us at +52 624 143 5555 or info@bircabo.com to confirm parking details. Our office is located at Boulevard Marina s/n y Vicente Guerrero s/n in Downtown Cabo San Lucas."
+
+Respond with ONLY the answer text (no JSON, no quotes, no additional formatting):`;
+
+  try {
+    const completion = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'llama-3.3-70b-versatile',
+      temperature: 0.7,
+      max_tokens: 300,
+    });
+
+    return completion.choices[0]?.message?.content?.trim() || "I'd be happy to help! Could you rephrase your question?";
+  } catch (error) {
+    console.error('❌ Failed to generate business response:', error);
+    // Fallback to basic response
+    return `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.`;
+  }
+}
+
 // Ask clarifying questions when query is ambiguous
 export async function generateClarifyingQuestion(parsedQuery: ParsedPropertyQuery): Promise<string> {
   if (!parsedQuery.clarificationNeeded) {

@@ -10,10 +10,11 @@ import {
   parsePropertyQuery,
   generateConversationalResponse,
   generateClarifyingQuestion,
+  generateBusinessResponse,
   ParsedPropertyQuery,
 } from "@/services/groqPropertyQueryParser";
 import { getAreaKnowledge, compareAreas, BUYING_PROCESS, OWNERSHIP_COSTS, MARKET_INSIGHTS, COMMON_FAQS } from "@/services/realEstateKnowledge";
-import { COMPANY_INFO, TEAM_INFO, WHY_WORK_WITH_US, getAgentByName, getAgentsByLanguage, getAgentsBySpecialization, formatOfficeHours, formatAddress } from "@/services/businessKnowledge";
+import { COMPANY_INFO, TEAM_INFO, formatOfficeHours, formatAddress } from "@/services/businessKnowledge";
 
 interface Message {
   role: "user" | "assistant" | "system";
@@ -26,34 +27,6 @@ interface Message {
 interface PropertyChatBotProps {
   onClose: () => void;
   fullPage?: boolean; // If true, render as full page instead of modal
-}
-
-// Helper function to detect and answer yes/no questions
-function enhanceYesNoResponse(query: string, response: string, context: { hasInfo: boolean }): string {
-  const lowerQuery = query.toLowerCase().trim();
-
-  // Detect yes/no question patterns
-  const yesNoPatterns = [
-    /^(do|does|is|are|can|will|would|could|should|have|has|did)\s/,
-    /\?$/  // ends with question mark
-  ];
-
-  const isYesNoQuestion = yesNoPatterns.some(pattern => pattern.test(lowerQuery));
-
-  if (!isYesNoQuestion) {
-    return response;
-  }
-
-  // If it's a yes/no question and we have info, prepend "Yes"
-  // If we don't have info or it's negative, prepend "No"
-  if (context.hasInfo) {
-    // Only add "Yes" if response doesn't already start with it
-    if (!response.toLowerCase().startsWith('yes')) {
-      return `Yes! ${response}`;
-    }
-  }
-
-  return response;
 }
 
 const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) => {
@@ -288,182 +261,58 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         return;
       }
 
-      // NEW: Handle business info questions (office hours, location, company history)
+      // NEW: Handle business info questions (office hours, location, company history) with AI
       if (parsedQuery.intent === "business_info") {
-        let businessResponse = "";
+        try {
+          const businessResponse = await generateBusinessResponse(input);
 
-        if (parsedQuery.infoType === "office_hours") {
-          const query = parsedQuery.originalQuery.toLowerCase();
-
-          // Build base response
-          if (query.includes('weekend') || (query.includes('saturday') && query.includes('sunday'))) {
-            businessResponse = `We're open on weekends!\n\n📅 **Weekend Hours:**\nSaturday: ${COMPANY_INFO.officeHours.saturday}\nSunday: ${COMPANY_INFO.officeHours.sunday}\n\n`;
-          } else {
-            businessResponse = `**Office Hours:**\n\n📅 Monday-Sunday: ${COMPANY_INFO.officeHours.formatted}\n\n`;
-          }
-          businessResponse += `📞 **Call anytime:** ${COMPANY_INFO.phone}\n📧 **Email:** ${COMPANY_INFO.email}\n\nWould you like to schedule a meeting or search for properties?`;
-
-          // Enhance with yes/no if applicable
-          businessResponse = enhanceYesNoResponse(parsedQuery.originalQuery, businessResponse, { hasInfo: true });
-        } else if (parsedQuery.infoType === "office_location") {
-          businessResponse = `**${COMPANY_INFO.name} Office Location:**\n\n`;
-          businessResponse += `📍 ${formatAddress()}\n\n`;
-          businessResponse += `🗺️ [**Get Directions on Google Maps**](${COMPANY_INFO.address.googleMapsLink})\n\n`;
-          businessResponse += `We're conveniently located in the heart of Downtown Cabo San Lucas, just steps from the Marina. Easy to find and always ready to assist you!\n\n`;
-          businessResponse += `📞 **Phone:** ${COMPANY_INFO.phone}\n`;
-          businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n`;
-          businessResponse += `⏰ **Hours:** ${formatOfficeHours()}\n\n`;
-          businessResponse += `Visit us during regular business hours, or contact us to schedule a private appointment!`;
-        } else if (parsedQuery.infoType === "company_history") {
-          businessResponse = `**About ${COMPANY_INFO.name}:**\n\n`;
-          businessResponse += `${COMPANY_INFO.founderBio}\n\n`;
-          businessResponse += `**Our Track Record:**\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.combinedYearsExperience} combined years of experience\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.propertiesSold} properties sold\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.totalSalesVolume} in total sales volume\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.familiesServed} families served\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.totalAgents} expert agents\n\n`;
-          businessResponse += `**Memberships & Recognition:**\n`;
-          businessResponse += COMPANY_INFO.memberships.map(m => `• ${m}`).join('\n');
-          businessResponse += `\n\n**Featured On:** ${COMPANY_INFO.mediaFeatures.join(', ')}\n\n`;
-          businessResponse += `Want to start your property search?`;
-        } else if (parsedQuery.infoType === "why_work_with_us") {
-          businessResponse = `**Why Choose ${COMPANY_INFO.name}?**\n\n`;
-          businessResponse += `${WHY_WORK_WITH_US.family}\n\n`;
-          businessResponse += `${WHY_WORK_WITH_US.experience}\n\n`;
-          businessResponse += `${WHY_WORK_WITH_US.innovation}\n\n`;
-          businessResponse += `${WHY_WORK_WITH_US.results}\n\n`;
-          businessResponse += `Ready to experience the difference? [Contact us](/contact) or start searching properties now!`;
-        } else {
-          // Generic business info
-          businessResponse = `**${COMPANY_INFO.name}** - Your trusted Cabo San Lucas real estate partner since the ${COMPANY_INFO.founded}!\n\n`;
-          businessResponse += `📞 **Phone:** ${COMPANY_INFO.phone}\n`;
-          businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n`;
-          businessResponse += `📍 **Office:** Downtown Cabo San Lucas (near Marina)\n`;
-          businessResponse += `⏰ **Hours:** ${formatOfficeHours()}\n\n`;
-          businessResponse += `${COMPANY_INFO.stats.totalAgents} agents ready to help you find what you're looking for.`;
+          const businessMessage: Message = {
+            role: "assistant",
+            content: businessResponse,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, businessMessage]);
+          setIsLoading(false);
+          return;
+        } catch (error) {
+          console.error('❌ Error generating business response:', error);
+          // Fallback to basic contact info
+          const fallbackMessage: Message = {
+            role: "assistant",
+            content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.`,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, fallbackMessage]);
+          setIsLoading(false);
+          return;
         }
-
-        const businessMessage: Message = {
-          role: "assistant",
-          content: businessResponse,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, businessMessage]);
-        setIsLoading(false);
-        return;
       }
 
-      // NEW: Handle agent-specific requests
+      // NEW: Handle agent-specific requests with AI
       if (parsedQuery.intent === "agent_request") {
-        let agentResponse = "";
+        try {
+          const agentResponse = await generateBusinessResponse(input);
 
-        if (parsedQuery.infoType === "agent_info" && parsedQuery.agentName) {
-          const agent = getAgentByName(parsedQuery.agentName);
-          if (agent) {
-            agentResponse = `**${agent.name}**\n${agent.title}\n\n`;
-            agentResponse += `**Specialization:** ${agent.specialization}\n`;
-            agentResponse += `**Experience:** ${agent.yearsExperience} years in Los Cabos\n`;
-            agentResponse += `**Properties Sold:** ${agent.propertiesSold}+\n`;
-            agentResponse += `**Languages:** ${agent.languages.join(', ')}\n\n`;
-            agentResponse += `📞 **Phone:** ${agent.phone}\n`;
-            if (agent.phoneSecondary) agentResponse += `📞 **Alt Phone:** ${agent.phoneSecondary}\n`;
-            agentResponse += `📧 **Email:** ${agent.email}\n\n`;
-            agentResponse += `**About ${agent.name.split(' ')[0]}:**\n${agent.bio}\n\n`;
-            agentResponse += `**Certifications:**\n${agent.certifications.map(c => `• ${c}`).join('\n')}\n\n`;
-            agentResponse += `Ready to connect with ${agent.name.split(' ')[0]}? Call ${agent.phone} or visit [/contact](/contact)`;
-          } else {
-            agentResponse = `I couldn't find an agent by that name. Here's our full team:\n\n`;
-            agentResponse += TEAM_INFO.slice(0, 5).map(a => `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs)`).join('\n');
-            agentResponse += `\n\n[View Full Team](/team) | Call us: ${COMPANY_INFO.phone}`;
-          }
-        } else if (parsedQuery.infoType === "agent_specialization") {
-          // Extract specialization from query
-          const query = parsedQuery.originalQuery.toLowerCase();
-
-          if (query.includes('spanish')) {
-            const spanishAgents = getAgentsByLanguage('Spanish');
-            agentResponse = `Yes, we have ${spanishAgents.length} Spanish-speaking agents.\n\n`;
-            agentResponse += spanishAgents.map(a =>
-              `• **${a.name}** - ${a.title} (${a.yearsExperience} yrs) - ${a.phone}`
-            ).join('\n');
-            agentResponse += `\n\nAll of these agents are fluent in both English and Spanish.`;
-          } else if (query.includes('investment')) {
-            const investmentAgents = getAgentsBySpecialization('investment');
-            agentResponse = `**Our Investment Property Specialists:**\n\n`;
-            agentResponse += investmentAgents.map(a =>
-              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs, ${a.propertiesSold}+ sold) - ${a.phone}`
-            ).join('\n');
-            agentResponse += `\n\nThese agents specialize in high-yield investment properties and portfolio management.`;
-          } else if (query.includes('luxury')) {
-            const luxuryAgents = getAgentsBySpecialization('luxury');
-            agentResponse = `**Our Luxury Property Specialists:**\n\n`;
-            agentResponse += luxuryAgents.map(a =>
-              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs) - ${a.phone}`
-            ).join('\n');
-            agentResponse += `\n\nOur luxury specialists have extensive experience with high-end properties.`;
-          } else if (query.includes('commercial')) {
-            const commercialAgents = getAgentsBySpecialization('commercial');
-            agentResponse = `**Our Commercial Real Estate Experts:**\n\n`;
-            agentResponse += commercialAgents.map(a =>
-              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs) - ${a.phone}`
-            ).join('\n');
-          } else {
-            // Show all agents
-            agentResponse = `**Meet Our ${TEAM_INFO.length} Expert Agents:**\n\n`;
-            agentResponse += TEAM_INFO.slice(0, 6).map(a =>
-              `• **${a.name}** - ${a.title}\n  ${a.specialization} | ${a.yearsExperience} yrs | ${a.languages.join('/')} | ${a.phone}`
-            ).join('\n\n');
-            agentResponse += `\n\n[View Full Team](/team) | Contact us: ${COMPANY_INFO.phone}`;
-          }
-        } else {
-          // Check if query contains language/specialization keywords as fallback
-          const query = parsedQuery.originalQuery.toLowerCase();
-
-          if (query.includes('spanish') || query.includes('speaks') || query.includes('language')) {
-            const spanishAgents = getAgentsByLanguage('Spanish');
-            agentResponse = `Yes, we have ${spanishAgents.length} Spanish-speaking agents.\n\n`;
-            agentResponse += spanishAgents.map(a =>
-              `• **${a.name}** - ${a.title} (${a.yearsExperience} yrs) - ${a.phone}`
-            ).join('\n');
-            agentResponse += `\n\nAll of these agents are fluent in both English and Spanish.`;
-          } else if (query.includes('investment')) {
-            const investmentAgents = getAgentsBySpecialization('investment');
-            agentResponse = `**Our Investment Property Specialists:**\n\n`;
-            agentResponse += investmentAgents.map(a =>
-              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs, ${a.propertiesSold}+ sold) - ${a.phone}`
-            ).join('\n');
-            agentResponse += `\n\nThese agents specialize in high-yield investment properties and portfolio management.`;
-          } else if (query.includes('luxury')) {
-            const luxuryAgents = getAgentsBySpecialization('luxury');
-            agentResponse = `**Our Luxury Property Specialists:**\n\n`;
-            agentResponse += luxuryAgents.map(a =>
-              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs) - ${a.phone}`
-            ).join('\n');
-            agentResponse += `\n\nOur luxury specialists have extensive experience with high-end properties.`;
-          } else {
-            // Generic agent list
-            agentResponse = `**Our Expert Team of ${TEAM_INFO.length} Agents:**\n\n`;
-            agentResponse += `${COMPANY_INFO.stats.combinedYearsExperience} combined years of experience serving Los Cabos!\n\n`;
-            agentResponse += `**Featured Agents:**\n`;
-            agentResponse += TEAM_INFO.slice(0, 5).map(a =>
-              `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs)`
-            ).join('\n');
-            agentResponse += `\n\n[View All ${TEAM_INFO.length} Agents](/team) | Call: ${COMPANY_INFO.phone}`;
-          }
+          const agentMessage: Message = {
+            role: "assistant",
+            content: agentResponse,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, agentMessage]);
+          setIsLoading(false);
+          return;
+        } catch (error) {
+          console.error('❌ Error generating agent response:', error);
+          // Fallback to basic team info
+          const fallbackMessage: Message = {
+            role: "assistant",
+            content: `**Our Expert Team:**\n\nWe have ${TEAM_INFO.length} experienced agents ready to help.\n\n[View Full Team](/team)\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}`,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, fallbackMessage]);
+          setIsLoading(false);
+          return;
         }
-
-        // Enhance agent response with yes/no if applicable
-        agentResponse = enhanceYesNoResponse(parsedQuery.originalQuery, agentResponse, { hasInfo: agentResponse.length > 0 });
-
-        const agentMessage: Message = {
-          role: "assistant",
-          content: agentResponse,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, agentMessage]);
-        setIsLoading(false);
-        return;
       }
 
       if (parsedQuery.intent === "general_info") {
