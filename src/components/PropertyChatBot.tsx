@@ -64,6 +64,25 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
     setIsLoading(true);
 
     try {
+      // EARLY CATCH: Check for office hours questions before parsing
+      const lowerInput = input.toLowerCase();
+      if ((lowerInput.includes('office') && (lowerInput.includes('open') || lowerInput.includes('hours') || lowerInput.includes('weekend') || lowerInput.includes('saturday') || lowerInput.includes('sunday'))) ||
+          (lowerInput.includes('are you open') || lowerInput.includes('when are you open') || lowerInput.includes('what time'))) {
+        try {
+          const businessResponse = await generateBusinessResponse(input);
+          const businessMessage: Message = {
+            role: "assistant",
+            content: businessResponse,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, businessMessage]);
+          setIsLoading(false);
+          return;
+        } catch (error) {
+          console.error('❌ Error generating business response:', error);
+        }
+      }
+
       // Parse the natural language query
       const parsedQuery = await parsePropertyQuery(input, sessionId);
 
