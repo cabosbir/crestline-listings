@@ -326,18 +326,10 @@ export function formatAddress(): string {
   return `${addr.street}, ${addr.unit}, ${addr.city}, ${addr.state}, ${addr.country}, ${addr.postalCode}`;
 }
 
-// Why Work With Us - Company Values
+// Why Work With Us - Natural talking points (not promotional titles)
 export const WHY_WORK_WITH_US = {
-  family: {
-    title: "THE POWER OF FAMILY",
-    summary: "We're a family-run business committed to creating lasting relationships. You're not just a client – you're part of our real estate family. We treat every transaction with the care and dedication we'd give our own family."
-  },
-  experience: {
-    title: "THE POWER OF EXPERIENCE",
-    summary: "Our licensed agents bring decades of combined real estate expertise. With successful careers in the US and Canada, we understand luxury markets inside and out. Track record of thousands of successful transactions and satisfied clients."
-  },
-  innovation: {
-    title: "THE POWER OF INNOVATION",
-    summary: "We leverage cutting-edge technology and AI-powered tools to deliver exceptional results. Specialized marketing team creates stunning campaigns, while our advanced CRM ensures personalized, timely service at every step."
-  }
+  family: "We're a family-run business, which means every client gets personalized attention. You're not just another transaction to us – we treat your property search with the same care we'd give our own family.",
+  experience: "Our team has decades of combined experience in Los Cabos real estate. Many of our agents have successful careers in the US and Canada before specializing here, so we understand what international buyers need.",
+  innovation: "We use modern technology and AI tools to make your search easier. Our marketing team knows how to showcase properties professionally, and our systems ensure you get timely updates throughout the process.",
+  results: "We've helped over 2,200 families find properties in Los Cabos, with more than $800M in sales since the late 1980s. Our track record speaks for itself."
 };

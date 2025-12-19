@@ -294,21 +294,14 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           businessResponse += `**Memberships & Recognition:**\n`;
           businessResponse += COMPANY_INFO.memberships.map(m => `• ${m}`).join('\n');
           businessResponse += `\n\n**Featured On:** ${COMPANY_INFO.mediaFeatures.join(', ')}\n\n`;
-          businessResponse += `Ready to work with Cabo's #1 real estate agency?`;
+          businessResponse += `Want to start your property search?`;
         } else if (parsedQuery.infoType === "why_work_with_us") {
           businessResponse = `**Why Choose ${COMPANY_INFO.name}?**\n\n`;
-          businessResponse += `🏡 **${WHY_WORK_WITH_US.family.title}**\n`;
-          businessResponse += `${WHY_WORK_WITH_US.family.summary}\n\n`;
-          businessResponse += `🏆 **${WHY_WORK_WITH_US.experience.title}**\n`;
-          businessResponse += `${WHY_WORK_WITH_US.experience.summary}\n\n`;
-          businessResponse += `💡 **${WHY_WORK_WITH_US.innovation.title}**\n`;
-          businessResponse += `${WHY_WORK_WITH_US.innovation.summary}\n\n`;
-          businessResponse += `**Our Results:**\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.propertiesSold} properties sold\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.totalSalesVolume} in total sales\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.familiesServed} satisfied families\n`;
-          businessResponse += `• ${COMPANY_INFO.stats.combinedYearsExperience} combined expertise\n\n`;
-          businessResponse += `Ready to experience the BIR difference? [Contact us](/contact) or start searching properties now!`;
+          businessResponse += `${WHY_WORK_WITH_US.family}\n\n`;
+          businessResponse += `${WHY_WORK_WITH_US.experience}\n\n`;
+          businessResponse += `${WHY_WORK_WITH_US.innovation}\n\n`;
+          businessResponse += `${WHY_WORK_WITH_US.results}\n\n`;
+          businessResponse += `Ready to experience the difference? [Contact us](/contact) or start searching properties now!`;
         } else {
           // Generic business info
           businessResponse = `**${COMPANY_INFO.name}** - Your trusted Cabo San Lucas real estate partner since the ${COMPANY_INFO.founded}!\n\n`;
@@ -316,7 +309,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n`;
           businessResponse += `📍 **Office:** Downtown Cabo San Lucas (near Marina)\n`;
           businessResponse += `⏰ **Hours:** ${formatOfficeHours()}\n\n`;
-          businessResponse += `${COMPANY_INFO.stats.totalAgents} expert agents ready to help you find your perfect property!`;
+          businessResponse += `${COMPANY_INFO.stats.totalAgents} agents ready to help you find what you're looking for.`;
         }
 
         const businessMessage: Message = {
@@ -362,21 +355,21 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             agentResponse += spanishAgents.map(a =>
               `• **${a.name}** - ${a.title} (${a.yearsExperience} yrs) - ${a.phone}`
             ).join('\n');
-            agentResponse += `\n\nAll agents listed are fluent in both English and Spanish!`;
+            agentResponse += `\n\nAll of these agents are fluent in both English and Spanish.`;
           } else if (query.includes('investment')) {
             const investmentAgents = getAgentsBySpecialization('investment');
             agentResponse = `**Our Investment Property Specialists:**\n\n`;
             agentResponse += investmentAgents.map(a =>
               `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs, ${a.propertiesSold}+ sold) - ${a.phone}`
             ).join('\n');
-            agentResponse += `\n\nThese agents specialize in high-yield investment properties and portfolio management!`;
+            agentResponse += `\n\nThese agents specialize in high-yield investment properties and portfolio management.`;
           } else if (query.includes('luxury')) {
             const luxuryAgents = getAgentsBySpecialization('luxury');
             agentResponse = `**Our Luxury Property Specialists:**\n\n`;
             agentResponse += luxuryAgents.map(a =>
               `• **${a.name}** - ${a.specialization} (${a.yearsExperience} yrs) - ${a.phone}`
             ).join('\n');
-            agentResponse += `\n\nOur luxury specialists have extensive experience with high-end properties!`;
+            agentResponse += `\n\nOur luxury specialists have extensive experience with high-end properties.`;
           } else if (query.includes('commercial')) {
             const commercialAgents = getAgentsBySpecialization('commercial');
             agentResponse = `**Our Commercial Real Estate Experts:**\n\n`;
@@ -434,9 +427,9 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         let responseContent = "";
 
         if (parsedQuery.infoType === "office") {
-          responseContent = `**${COMPANY_INFO.name}** is your trusted real estate partner in Los Cabos!\n\n📍 **Location:** ${formatAddress()}\n📞 **Phone:** ${COMPANY_INFO.phone}\n📧 **Email:** ${COMPANY_INFO.email}\n⏰ **Hours:** ${formatOfficeHours()}\n\nWe specialize in residential, commercial, and land sales throughout the Los Cabos area. Our experienced team of ${COMPANY_INFO.stats.totalAgents} agents is here to help you find your perfect property!\n\nWould you like to search for properties or meet our team?`;
+          responseContent = `**${COMPANY_INFO.name}**\n\n📍 **Location:** ${formatAddress()}\n📞 **Phone:** ${COMPANY_INFO.phone}\n📧 **Email:** ${COMPANY_INFO.email}\n⏰ **Hours:** ${formatOfficeHours()}\n\nWe handle residential, commercial, and land sales throughout Los Cabos. Our team of ${COMPANY_INFO.stats.totalAgents} agents can help you find what you're looking for.\n\nWant to search properties or meet our team?`;
         } else if (parsedQuery.infoType === "agents") {
-          responseContent = `Our team consists of ${TEAM_INFO.length} expert local agents who know Los Cabos inside and out!\n\n👥 **Meet Our Team:** [View All Agents](/team)\n\n**Stats:**\n• ${COMPANY_INFO.stats.combinedYearsExperience} combined years experience\n• ${COMPANY_INFO.stats.propertiesSold} properties sold\n• All agents are MLS/AMPI certified\n\nEach agent brings unique expertise in different areas and property types. Would you like me to help you find properties, or would you prefer to contact an agent directly?`;
+          responseContent = `We have ${TEAM_INFO.length} local agents who know Los Cabos well.\n\n👥 **Meet Our Team:** [View All Agents](/team)\n\n**Stats:**\n• ${COMPANY_INFO.stats.combinedYearsExperience} combined years experience\n• ${COMPANY_INFO.stats.propertiesSold} properties sold\n• All agents are MLS/AMPI certified\n\nEach agent has different expertise in areas and property types. Want to search properties or contact an agent?`;
         } else if (parsedQuery.infoType === "areas") {
           responseContent = "Los Cabos offers diverse neighborhoods, each with its own character:\n\n🏖️ **Cabo San Lucas** - Vibrant marina, nightlife, beaches\n🏡 **San Jose del Cabo** - Historic downtown, art galleries, tranquil\n🌅 **Cabo Corridor** - Luxury resorts, golf courses, stunning coastline\n🎨 **Todos Santos** - Artistic community, surfing, bohemian vibe\n\n**Best Areas for Beachfront Living:**\n🌊 **Cabo Corridor** - Premier beachfront real estate, world-class resorts, stunning ocean views\n🏖️ **Pedregal** - Dramatic hillside properties with private beach club access in Cabo San Lucas\n🌅 **Palmilla/San Jose Corridor** - Tranquil beaches, excellent for swimming and water sports\n🐚 **East Cape** - Secluded, pristine beaches for those seeking privacy and natural beauty\n🎣 **Marina District** - Not beachfront but waterfront living with easy beach access\n\n**Other Popular Areas:**\n• Downtown San Jose del Cabo - Art galleries, dining, historic charm\n• El Tezal - Family-friendly, affordable, close to beaches\n• Todos Santos - Bohemian surf town on the Pacific side\n\nWant to search for beachfront properties in a specific area?";
         } else if (parsedQuery.infoType === "rental_investment") {
