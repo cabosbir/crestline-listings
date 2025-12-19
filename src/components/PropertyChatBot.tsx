@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Loader2, X, Bot, Sparkles, Home, MapPin, AlertTriangle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ReactMarkdown from "react-markdown";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard, MLSProperty } from "@/services/flexMlsService";
 import {
@@ -398,9 +399,23 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
                       : "bg-secondary text-foreground border border-border"
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                    {message.content}
-                  </p>
+                  <div className="text-sm whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none dark:prose-invert">
+                    <ReactMarkdown
+                      components={{
+                        a: ({ node, ...props }) => (
+                          <a
+                            {...props}
+                            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          />
+                        ),
+                        p: ({ node, ...props }) => <p {...props} className="mb-2 last:mb-0" />,
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
                   <p className="text-xs opacity-60 mt-1">
                     {message.timestamp.toLocaleTimeString([], {
                       hour: "2-digit",
