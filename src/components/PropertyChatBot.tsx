@@ -12,6 +12,7 @@ import {
   generateClarifyingQuestion,
   ParsedPropertyQuery,
 } from "@/services/groqPropertyQueryParser";
+import { getAreaKnowledge, compareAreas, BUYING_PROCESS, OWNERSHIP_COSTS, MARKET_INSIGHTS, COMMON_FAQS } from "@/services/realEstateKnowledge";
 
 interface Message {
   role: "user" | "assistant" | "system";
@@ -101,6 +102,163 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         return;
       }
 
+      // NEW: Handle area comparisons intelligently
+      if (parsedQuery.intent === "comparison" && parsedQuery.comparisonAreas && parsedQuery.comparisonAreas.length >= 2) {
+        const comparison = compareAreas(parsedQuery.comparisonAreas[0], parsedQuery.comparisonAreas[1]);
+        const area1 = getAreaKnowledge(parsedQuery.comparisonAreas[0]);
+        const area2 = getAreaKnowledge(parsedQuery.comparisonAreas[1]);
+
+        let comparisonResponse = comparison;
+
+        if (area1 && area2) {
+          comparisonResponse += `\n\n**${area1.name} - Best For:**\n${area1.bestFor.map(b => `• ${b}`).join('\n')}`;
+          comparisonResponse += `\n\n**${area2.name} - Best For:**\n${area2.bestFor.map(b => `• ${b}`).join('\n')}`;
+          comparisonResponse += `\n\n**Bottom Line:**\n• Choose ${area1.name} if you want: ${area1.lifestyle.slice(0, 3).join(', ')}`;
+          comparisonResponse += `\n• Choose ${area2.name} if you want: ${area2.lifestyle.slice(0, 3).join(', ')}`;
+          comparisonResponse += `\n\nWould you like to search for properties in either area?`;
+        }
+
+        const comparisonMessage: Message = {
+          role: "assistant",
+          content: comparisonResponse,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, comparisonMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // NEW: Handle market data questions
+      if (parsedQuery.intent === "market_data") {
+        let marketResponse = "";
+
+        if (parsedQuery.areas && parsedQuery.areas.length > 0) {
+          const areaName = parsedQuery.areas[0];
+          const areaInfo = getAreaKnowledge(areaName);
+
+          if (areaInfo) {
+            marketResponse = `**Market Data for ${areaInfo.name}:**\n\n`;
+            marketResponse += `💵 **Price Range:** $${areaInfo.pricePerSqFt.min}-${areaInfo.pricePerSqFt.max} per square foot\n`;
+            marketResponse += `📈 **Appreciation:** ${areaInfo.appreciation} (historically 3-5% annually)\n`;
+            marketResponse += `🏠 **Rental Demand:** ${areaInfo.rentalDemand}\n`;
+
+            if (areaInfo.avgHOA) {
+              marketResponse += `💰 **HOA Fees:** $${areaInfo.avgHOA.min}-${areaInfo.avgHOA.max}/month\n`;
+            }
+
+            marketResponse += `\n**For Example:**\n`;
+            marketResponse += `• 2,000 sq ft property: ~$${(areaInfo.pricePerSqFt.min * 2000).toLocaleString()}-$${(areaInfo.pricePerSqFt.max * 2000).toLocaleString()}\n`;
+            marketResponse += `• Rental yields: 5-8% gross for well-managed vacation rentals\n`;
+
+            marketResponse += `\n*Note: Actual prices vary by specific location, views, condition, and amenities. These are market averages.*\n\n`;
+            marketResponse += `Want to see actual listings in ${areaInfo.name}?`;
+          } else {
+            marketResponse = `I'd be happy to provide market data! Los Cabos market insights:\n\n`;
+            marketResponse += MARKET_INSIGHTS.slice(0, 5).map(insight => `• **${insight.topic}:** ${insight.insight}`).join('\n');
+            marketResponse += `\n\nWhich specific area would you like detailed pricing for? (e.g., Pedregal, Marina, Cabo Corridor)`;
+          }
+        } else {
+          marketResponse = `**Los Cabos Real Estate Market Overview:**\n\n`;
+          marketResponse += MARKET_INSIGHTS.map(insight => `📊 **${insight.topic}:** ${insight.insight}`).join('\n\n');
+          marketResponse += `\n\nWould you like detailed pricing for a specific area?`;
+        }
+
+        const marketMessage: Message = {
+          role: "assistant",
+          content: marketResponse,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, marketMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // NEW: Handle buyer qualification
+      if (parsedQuery.intent === "buyer_qualification") {
+        let qualificationResponse = "";
+
+        if (parsedQuery.buyerIntent === "retirement") {
+          qualificationResponse = `**Perfect! Los Cabos is an excellent retirement destination.**\n\n`;
+          qualificationResponse += `**Best Areas for Retirees:**\n`;
+          qualificationResponse += `🏡 **San Jose del Cabo** - Quieter, cultural, walkable downtown, good healthcare\n`;
+          qualificationResponse += `🏖️ **Cabo Corridor** - Resort living, golf, beaches, established expat community\n`;
+          qualificationResponse += `🌅 **Pedregal** - Luxury, security, views, close to amenities\n\n`;
+          qualificationResponse += `**Key Considerations for Retirees:**\n`;
+          qualificationResponse += `• Healthcare: Excellent private hospitals, 50-70% cheaper than US\n`;
+          qualificationResponse += `• Property tax: Only 0.1-0.3% annually (very low!)\n`;
+          qualificationResponse += `• Walkability: Marina/San Jose downtown best, elsewhere car needed\n`;
+          qualificationResponse += `• Expat community: Large English-speaking community\n`;
+          qualificationResponse += `• Climate: 350+ days sunshine, 70-90°F year-round\n\n`;
+          qualificationResponse += `What's your budget range? I can show you retirement-perfect properties!`;
+        } else if (parsedQuery.buyerIntent === "investment") {
+          qualificationResponse = `**Los Cabos is a strong investment market!**\n\n`;
+          qualificationResponse += `**Best ROI Areas:**\n`;
+          qualificationResponse += `🏆 **#1: Beachfront (Corridor)** - Highest rental rates, $600-2000/sqft\n`;
+          qualificationResponse += `🎣 **#2: Marina/Downtown** - Strong occupancy, walkable, $450-900/sqft\n`;
+          qualificationResponse += `🏘️ **#3: Palmilla/Resort Communities** - Proven rental track record\n\n`;
+          qualificationResponse += `**Investment Metrics:**\n`;
+          qualificationResponse += `• Rental Yields: 5-8% gross annually\n`;
+          qualificationResponse += `• Appreciation: 3-5% historical average\n`;
+          qualificationResponse += `• Peak Season: Nov-April (rates 2-3x summer)\n`;
+          qualificationResponse += `• Property Management: Typically 20-30% of rental income\n\n`;
+          qualificationResponse += `**Key Costs:**\n`;
+          qualificationResponse += `• Closing: 4-6% of purchase price\n`;
+          qualificationResponse += `• Annual: Property tax 0.1-0.3%, HOA $200-1200/month\n\n`;
+          qualificationResponse += `What's your investment budget? I'll find high-ROI properties!`;
+        } else if (parsedQuery.buyerIntent === "vacation_home") {
+          qualificationResponse = `**Los Cabos is perfect for a vacation home!**\n\n`;
+          qualificationResponse += `**Top Vacation Home Areas:**\n`;
+          qualificationResponse += `🏖️ **Cabo Corridor** - Premier beaches, resort amenities, rental potential\n`;
+          qualificationResponse += `🏔️ **Pedregal** - Luxury, views, beach club, close to Cabo nightlife\n`;
+          qualificationResponse += `⛵ **Marina** - Walkable, restaurants, fishing, vibrant atmosphere\n\n`;
+          qualificationResponse += `**Vacation Home Perks:**\n`;
+          qualificationResponse += `• Use it when you want, rent it when you don't\n`;
+          qualificationResponse += `• Rental income can offset costs (5-8% yields)\n`;
+          qualificationResponse += `• Property management available ($200-400/month)\n`;
+          qualificationResponse += `• Easy access: Direct flights from major US/Canadian cities\n\n`;
+          qualificationResponse += `**Typical Costs:**\n`;
+          qualificationResponse += `• HOA: $200-1200/month (covers landscaping, security, amenities)\n`;
+          qualificationResponse += `• Utilities: ~$150-350/month\n`;
+          qualificationResponse += `• Property tax: 0.1-0.3% annually\n\n`;
+          qualificationResponse += `How often do you plan to visit? And what's your budget range?`;
+        } else if (parsedQuery.buyerIntent === "relocation") {
+          qualificationResponse = `**Relocating to Los Cabos full-time!**\n\n`;
+          qualificationResponse += `**Best Areas for Full-Time Living:**\n`;
+          qualificationResponse += `🏡 **San Jose del Cabo** - Local services, schools, authentic, affordable\n`;
+          qualificationResponse += `🏘️ **El Tezal** - Family-friendly, supermarkets, local community\n`;
+          qualificationResponse += `⛵ **Marina (if you like action)** - Walkable, no car needed, restaurants\n\n`;
+          qualificationResponse += `**Full-Time Living Considerations:**\n`;
+          qualificationResponse += `• Visa: Tourist visa 180 days, or get temporary/permanent residency\n`;
+          qualificationResponse += `• Cost of living: 30-50% less than US/Canada\n`;
+          qualificationResponse += `• Schools: International schools available in San Jose\n`;
+          qualificationResponse += `• Work: Many expats are remote workers or retirees\n`;
+          qualificationResponse += `• Car: Recommended outside Marina/downtown areas\n`;
+          qualificationResponse += `• Community: Large expat community, English widely spoken\n\n`;
+          qualificationResponse += `Are you working remotely, retiring, or starting a business? What's your budget?`;
+        } else {
+          qualificationResponse = `**I'd love to help you find the perfect property in Los Cabos!**\n\n`;
+          qualificationResponse += `To give you the best recommendations, could you tell me:\n\n`;
+          qualificationResponse += `🎯 **What brings you to Los Cabos?**\n`;
+          qualificationResponse += `• Vacation/second home\n`;
+          qualificationResponse += `• Investment/rental income\n`;
+          qualificationResponse += `• Retirement\n`;
+          qualificationResponse += `• Full-time relocation\n\n`;
+          qualificationResponse += `💰 **What's your budget range?**\n`;
+          qualificationResponse += `🏠 **How many bedrooms?**\n`;
+          qualificationResponse += `📍 **Any area preferences?** (beachfront, walkable, quiet, etc.)\n\n`;
+          qualificationResponse += `This helps me narrow down the perfect options for you!`;
+        }
+
+        const qualificationMessage: Message = {
+          role: "assistant",
+          content: qualificationResponse,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, qualificationMessage]);
+        setIsLoading(false);
+        return;
+      }
+
       if (parsedQuery.intent === "general_info") {
         // Check if we just gave this same response (prevent loops)
         const lastMessage = messages[messages.length - 1];
@@ -127,9 +285,69 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         } else if (parsedQuery.infoType === "agents") {
           responseContent = "Our team consists of expert local agents who know Los Cabos inside and out!\n\n👥 **Meet Our Team:** [View All Agents](/team)\n\nEach agent brings unique expertise in different areas and property types. Would you like me to help you find properties, or would you prefer to contact an agent directly?";
         } else if (parsedQuery.infoType === "areas") {
-          responseContent = "Los Cabos offers diverse neighborhoods, each with its own character:\n\n🏖️ **Cabo San Lucas** - Vibrant marina, nightlife, beaches\n🏡 **San Jose del Cabo** - Historic downtown, art galleries, tranquil\n🌅 **Cabo Corridor** - Luxury resorts, golf courses, stunning coastline\n🎨 **Todos Santos** - Artistic community, surfing, bohemian vibe\n\n**Popular Areas:**\n• Pedregal - Hillside luxury with ocean views\n• Marina District - Waterfront living\n• East Cape - Secluded beaches\n\n**💰 Best Areas for Rental ROI:**\n• **Beachfront properties** - #1 rental demand\n• **Walking distance to marina/downtown** - Easy access to fishing, restaurants, nightlife\n• Communities known for vacation rentals with proven track records\n\n*Note: Individual rental history isn't searchable in MLS, but our agents know which communities perform best. Contact us for personalized rental investment advice!*\n\nWant to search for properties in a specific area?";
+          responseContent = "Los Cabos offers diverse neighborhoods, each with its own character:\n\n🏖️ **Cabo San Lucas** - Vibrant marina, nightlife, beaches\n🏡 **San Jose del Cabo** - Historic downtown, art galleries, tranquil\n🌅 **Cabo Corridor** - Luxury resorts, golf courses, stunning coastline\n🎨 **Todos Santos** - Artistic community, surfing, bohemian vibe\n\n**Best Areas for Beachfront Living:**\n🌊 **Cabo Corridor** - Premier beachfront real estate, world-class resorts, stunning ocean views\n🏖️ **Pedregal** - Dramatic hillside properties with private beach club access in Cabo San Lucas\n🌅 **Palmilla/San Jose Corridor** - Tranquil beaches, excellent for swimming and water sports\n🐚 **East Cape** - Secluded, pristine beaches for those seeking privacy and natural beauty\n🎣 **Marina District** - Not beachfront but waterfront living with easy beach access\n\n**Other Popular Areas:**\n• Downtown San Jose del Cabo - Art galleries, dining, historic charm\n• El Tezal - Family-friendly, affordable, close to beaches\n• Todos Santos - Bohemian surf town on the Pacific side\n\nWant to search for beachfront properties in a specific area?";
+        } else if (parsedQuery.infoType === "rental_investment") {
+          responseContent = "**💰 Best Areas for Rental ROI in Los Cabos:**\n\n🏆 **#1: Beachfront Properties**\n• Highest rental demand year-round\n• Premium nightly rates\n• Attracts luxury travelers\n\n🎣 **#2: Walking Distance to Marina/Downtown**\n• Easy access to fishing charters, restaurants, nightlife\n• Popular with active travelers\n• Strong booking consistency\n\n🏘️ **#3: Master-Planned Communities**\n• Proven vacation rental track records\n• Resort-style amenities (pools, security, beach clubs)\n• Examples: Cabo Del Sol, Querencia, Palmilla\n\n**📊 Investment Tips:**\n• Short-term vacation rentals typically outperform long-term\n• Properties near golf courses attract premium renters\n• Proximity to Los Cabos airport is a strong advantage\n\n*Note: Individual rental history isn't searchable in MLS, but our agents have insider knowledge on which communities perform best.*\n\n**Ready to explore investment properties?** [Contact our team](/contact) for personalized rental income projections!";
         } else if (parsedQuery.infoType === "process") {
-          responseContent = "**Buying Real Estate in Mexico:**\n\n1️⃣ **Property Search** - Let me help you find the perfect property!\n2️⃣ **Make an Offer** - Our agents guide you through negotiations\n3️⃣ **Fideicomiso** - Bank trust for foreign buyers (we'll explain everything)\n4️⃣ **Due Diligence** - Title search, inspections, legal review\n5️⃣ **Closing** - Sign documents, transfer funds, get keys!\n\n📝 **Ready to start?** [New Client Form](https://www.bircabo.com/new-client)\n\nWould you like to search for properties now?";
+          responseContent = "**Buying Real Estate in Mexico - Complete Process:**\n\n";
+          BUYING_PROCESS.forEach(step => {
+            responseContent += `**${step.step}. ${step.title}** (${step.duration})\n`;
+            responseContent += `${step.description}\n`;
+            if (step.cost) responseContent += `💰 Cost: ${step.cost}\n`;
+            responseContent += `📌 Key Tips:\n${step.tips.map(tip => `• ${tip}`).join('\n')}\n\n`;
+          });
+          responseContent += `**Total Timeline:** Typically 60-90 days from offer to closing\n`;
+          responseContent += `**Total Closing Costs:** 4-6% of purchase price\n\n`;
+          responseContent += `📝 **Ready to start?** [New Client Form](https://www.bircabo.com/new-client)\n\n`;
+          responseContent += `Would you like to search for properties now?`;
+        } else if (parsedQuery.infoType === "buying_costs") {
+          responseContent = "**Complete Cost Breakdown for Buying in Los Cabos:**\n\n";
+          OWNERSHIP_COSTS.forEach(category => {
+            responseContent += `**${category.category}:**\n`;
+            category.items.forEach(item => {
+              responseContent += `• **${item.name}:** ${item.amount}`;
+              if (item.frequency) responseContent += ` (${item.frequency})`;
+              if (item.notes) responseContent += ` - ${item.notes}`;
+              responseContent += `\n`;
+            });
+            responseContent += `\n`;
+          });
+          responseContent += `**Example for $500,000 Property:**\n`;
+          responseContent += `• One-time closing: ~$25,000 (5%)\n`;
+          responseContent += `• Annual costs: ~$2,000-4,000 (property tax + fideicomiso)\n`;
+          responseContent += `• Monthly HOA: $200-600 (varies by community)\n`;
+          responseContent += `• Monthly utilities: ~$150-300\n\n`;
+          responseContent += `*These are estimates - actual costs vary by property and location.*`;
+        } else if (parsedQuery.infoType === "legal") {
+          const legalFAQs = COMMON_FAQS.filter(faq => faq.category === 'legal');
+          responseContent = "**Legal Information for Buying in Mexico:**\n\n";
+          legalFAQs.forEach(faq => {
+            responseContent += `**Q: ${faq.question}**\n${faq.answer}\n\n`;
+          });
+          responseContent += `**Important Legal Documents:**\n`;
+          responseContent += `• Fideicomiso (bank trust) - YOU own 100%, bank holds title\n`;
+          responseContent += `• Title Insurance - Recommended for protection\n`;
+          responseContent += `• Notario Public - Government attorney handles closing\n`;
+          responseContent += `• RFC (tax ID) - Required for property purchase\n\n`;
+          responseContent += `**Always consult with a bilingual attorney ($1500-3000)** for legal guidance.\n\n`;
+          responseContent += `Have specific legal questions? [Contact our team](/contact) for attorney referrals.`;
+        } else if (parsedQuery.infoType === "lifestyle") {
+          const lifestyleFAQs = COMMON_FAQS.filter(faq => faq.category === 'lifestyle');
+          responseContent = "**Living in Los Cabos:**\n\n";
+          lifestyleFAQs.forEach(faq => {
+            responseContent += `**${faq.question}**\n${faq.answer}\n\n`;
+          });
+          responseContent += `**Climate & Weather:**\n`;
+          responseContent += `• 350+ days of sunshine annually\n`;
+          responseContent += `• Temperatures: 70-90°F year-round\n`;
+          responseContent += `• Hurricane season: Jun-Nov (direct hits rare)\n`;
+          responseContent += `• Dry desert climate, low humidity\n\n`;
+          responseContent += `**Culture & Community:**\n`;
+          responseContent += `• Large expat community (US, Canada, Europe)\n`;
+          responseContent += `• English widely spoken in tourist areas\n`;
+          responseContent += `• Mexican culture and traditions\n`;
+          responseContent += `• Friendly, welcoming locals\n\n`;
+          responseContent += `Interested in a specific area's lifestyle? Ask me about it!`;
         } else {
           responseContent = parsedQuery.interpretation + "\n\nHow else can I assist you today?";
         }

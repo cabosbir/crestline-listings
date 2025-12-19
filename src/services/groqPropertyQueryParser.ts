@@ -1,5 +1,6 @@
 // groqPropertyQueryParser.ts - Natural Language Property Search Query Parser
 import Groq from 'groq-sdk';
+import { getAreaKnowledge, compareAreas, AREA_KNOWLEDGE, COMMON_FAQS } from './realEstateKnowledge';
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -34,15 +35,20 @@ export interface ParsedPropertyQuery {
   sortBy?: 'price_low' | 'price_high' | 'newest' | 'beds';
 
   // Query understanding
-  intent: 'search' | 'question' | 'clarification_needed' | 'greeting' | 'off_topic' | 'general_info' | 'contact' | 'forms';
+  intent: 'search' | 'question' | 'clarification_needed' | 'greeting' | 'off_topic' | 'general_info' | 'contact' | 'forms' | 'comparison' | 'market_data' | 'buyer_qualification';
   confidence: number;
   clarificationNeeded?: string;
   originalQuery: string;
   interpretation: string;
 
   // For non-search intents
-  infoType?: 'office' | 'agents' | 'areas' | 'process' | 'forms';
+  infoType?: 'office' | 'agents' | 'areas' | 'process' | 'forms' | 'rental_investment' | 'buying_costs' | 'legal' | 'lifestyle' | 'comparison';
   recommendedAction?: string;
+
+  // Enhanced query understanding
+  buyerIntent?: 'vacation_home' | 'investment' | 'retirement' | 'relocation' | 'unknown';
+  comparisonAreas?: string[];
+  specificQuestion?: string;
 }
 
 // Cache for conversation context
@@ -58,106 +64,221 @@ export async function parsePropertyQuery(
   // Get conversation history for context
   const history = conversationContext[sessionId] || [];
 
-  const prompt = `You are an AI assistant for Baja International Realty in Los Cabos, Mexico.
+  const prompt = `You are an experienced real estate AI assistant for Baja International Realty in Los Cabos, Mexico. You have the knowledge of a junior agent with 2 years of local experience.
 
-COMPANY INFO:
+===== COMPANY INFO =====
 - Office: Baja International Realty (BIR)
-- Location: Los Cabos, Baja California Sur, Mexico
 - Phone: +52 612 169 8328
 - Email: cabosbir@gmail.com / info@bircabo.com
 - Website: bircabo.com
-- Services: Residential, Commercial, Land sales in Los Cabos area
+- Services: Residential, Commercial, Land sales in Los Cabos
 
-AVAILABLE RESOURCES:
-- /new-client - New Client Registration Form (for buyers interested in properties)
-- /seller-evaluation - Seller Property Evaluation Form
-- /contact - Contact page to schedule showings or meetings
-- /team - Meet our expert agents
-- /about - Learn about Baja International Realty
+===== USER QUERY =====
+"${userQuery}"
 
-USER QUERY: "${userQuery}"
+${previousContext ? `\n===== PREVIOUS SEARCH =====\n${JSON.stringify(previousContext, null, 2)}` : ''}
 
-${previousContext ? `\nPREVIOUS SEARCH CONTEXT:\n${JSON.stringify(previousContext, null, 2)}` : ''}
+${history.length > 0 ? `\n===== CONVERSATION HISTORY =====\n${history.slice(-3).map((h, i) => `${i + 1}. ${h.originalQuery}`).join('\n')}` : ''}
 
-${history.length > 0 ? `\nCONVERSATION HISTORY (last ${Math.min(3, history.length)} queries):\n${history.slice(-3).map(h => h.originalQuery).join('\n')}` : ''}
+===== AREA KNOWLEDGE (USE THIS!) =====
 
-LOCATION HIERARCHY:
-- CITIES (zones): "Cabo San Lucas", "San Jose del Cabo", "Cabo Corridor", "Todos Santos", "La Paz", "East Cape"
-- AREAS: neighborhoods within cities (e.g., "Pedregal", "Downtown", "Marina", "El Tezal")
-- COMMUNITIES: master-planned communities (e.g., "Querencia", "Palmilla", "Cabo Del Sol", "Chileno Bay")
-- SUBDIVISIONS: specific developments
+PEDREGAL: Luxury hillside, $500-1200/sqft, stunning views, gated security, steep roads, private beach club, high rental demand, best for: luxury buyers/views/security
+MARINA (Cabo San Lucas): Vibrant waterfront, $450-900/sqft, walkable, flat, restaurants/nightlife nearby, very high rental demand, best for: active lifestyle/boaters/no car needed
+CABO CORRIDOR: Premier beachfront, $600-2000/sqft, best beaches, golf courses, swimmable beaches, very high rental demand, best for: beachfront/golf/luxury/investment
+SAN JOSE DEL CABO: Charming colonial, $300-700/sqft, quieter, art district, family-friendly, schools, best for: families/retirees/authentic Mexico
+QUERENCIA: Ultra-luxury golf community, $800-2500/sqft, Tom Fazio golf, extreme privacy, isolated, low rental demand, best for: ultra-high-net-worth/golfers
+PALMILLA: Luxury community, $700-1800/sqft, Jack Nicklaus golf, Four Seasons, beach club, best for: golfers/luxury/investment
+EAST CAPE: Remote/authentic, $200-500/sqft, world-class fishing, off-grid, 1-2hr from Cabo, best for: fishermen/adventure/budget
+TODOS SANTOS: Artistic/bohemian, $250-600/sqft, surf town, Pacific side, cooler temps, 1hr from airport, best for: artists/surfers/alternative
+EL TEZAL: Family/affordable, $250-450/sqft, local Mexican character, schools/supermarkets, no views, best for: families/budget/full-time residents
+
+===== BUYING PROCESS =====
+1. Property Search (1-4 weeks) - work with agent
+2. Make Offer (1-3 days) - typically start 10-15% below asking
+3. Fideicomiso Setup (2-4 weeks) - $1000 setup + $500/year, required for foreigners within 50km of coast, YOU OWN 100%, bank just holds title
+4. Due Diligence (2-3 weeks) - title search, inspection, attorney ($1500-3000)
+5. Closing (1-2 weeks) - notario handles, 4-6% closing costs total
+
+===== OWNERSHIP COSTS =====
+ONE-TIME: Acquisition tax 2%, Notary 1-2%, Fideicomiso $1000, Attorney $1500-3000
+ANNUAL: Property tax 0.1-0.3% (very low!), Fideicomiso renewal $500, HOA $200-1200/month
+MONTHLY: Electric $50-200, Water $20-50, Internet $30-80, Gas $30-60
+
+===== MARKET INTELLIGENCE =====
+- Appreciation: 3-5% annually (historical)
+- Rental yields: 5-8% gross for well-managed vacation rentals
+- Best rental ROI: Beachfront > Walking distance to marina/downtown
+- Peak rental season: Nov-April (rates 2-3x summer)
+- Days on market: 60-120 avg, beachfront sells faster
+- Price per sqft: Beachfront $800-3000, Ocean view $400-800, No view $250-500
+
+===== COMMON FAQS (REFERENCE THESE!) =====
+Q: Can foreigners buy? A: YES! 100% legal, use fideicomiso (bank trust) where you maintain ALL rights
+Q: Is fideicomiso safe? A: YES! Protected by constitution since 1973, millions use it, you own 100%
+Q: Total closing costs? A: 4-6% of purchase price total
+Q: Need a car? A: Marina/downtown walkable, everywhere else highly recommended
+Q: Is it safe? A: Los Cabos very safe, tourism-dependent, use normal precautions
+Q: Healthcare? A: Excellent private hospitals, costs 50-70% less than US
+Q: Hurricanes? A: Season Jun-Nov, direct hits rare (avg 1 per 15-20 years)
+
+===== INTENT DETECTION RULES =====
+
+**SEARCH** - User wants properties:
+- "Show me condos under $500k"
+- "Pedregal" (location name alone)
+- "3 bedroom homes"
+- "beachfront properties in Corridor"
+
+**COMPARISON** - Comparing 2+ areas:
+- "Pedregal vs Marina"
+- "What's difference between X and Y"
+- "Compare [area1] and [area2]"
+→ Set intent: "comparison", extract comparisonAreas: ["area1", "area2"]
+
+**MARKET_DATA** - Asking about pricing/trends:
+- "What's average price in Pedregal?"
+- "How much do condos cost?"
+- "Price per square foot in Marina?"
+→ Set intent: "market_data"
+
+**BUYER_QUALIFICATION** - Understanding buyer needs:
+- "I'm looking to retire in Cabo"
+- "Want vacation home"
+- "Investment property"
+- "Relocating for work"
+→ Set intent: "buyer_qualification", extract buyerIntent
+
+**GENERAL_INFO** - Educational questions:
+- "Tell me about Pedregal" (ABOUT keyword)
+- "How does buying work?"
+- "What is Querencia like?"
+- "Best areas for beachfront living" (WITHOUT specific search)
+→ Sub-types: areas, process, legal, lifestyle, rental_investment, buying_costs
+
+**FORMS** - Ready to start:
+- "I'm interested"
+- "How do I get started?"
+- "Want to schedule viewing"
+
+**CONTACT** - Wants to reach out:
+- "Contact an agent"
+- "Schedule meeting"
+- "Speak to someone"
+
+**CLARIFICATION_NEEDED** - Too vague:
+- "Show me properties" (no criteria)
+- "I want a house" (no location/price)
+
+**GREETING** - Social:
+- "Hi", "Hello", "Hey there"
+
+**OFF_TOPIC** - Not real estate:
+- "What's the weather?"
+- "Best restaurant?"
+
+===== EXTRACTION RULES =====
+
+LOCATIONS:
+- CITIES: Cabo San Lucas, San Jose del Cabo, Cabo Corridor, Todos Santos, East Cape, La Paz
+- AREAS: Pedregal, Marina, El Tezal, Downtown
+- COMMUNITIES: Querencia, Palmilla, Cabo Del Sol, Chileno Bay
 
 PROPERTY TYPES:
-- "Residential" (single family homes)
-- "Condominium"
-- "Lots/Land"
-- "Townhouse"
-- "Commercial"
+- "condo/condos" → ["Condominium"]
+- "house/home/villa" → ["Residential"]
+- "land/lot" → ["Lots/Land"]
+- "townhouse" → ["Townhouse"]
 
-COMMON MAPPINGS:
-- "beachfront" / "ocean view" / "waterfront" → oceanView: true
-- "pool" / "swimming pool" → pool: true
-- "condo" / "condos" → propertyTypes: ["Condominium"]
-- "house" / "home" / "villa" → propertyTypes: ["Residential"]
-- "land" / "lot" → propertyTypes: ["Lots/Land"]
+PRICE INDICATORS:
 - "luxury" → minPrice: 1000000
-- "affordable" / "budget" → maxPrice: 500000
-- "under X" / "below X" → maxPrice: X
-- "over X" / "above X" → minPrice: X
+- "affordable/budget" → maxPrice: 500000
+- "under X / below X" → maxPrice: X
+- "over X / above X / minimum X" → minPrice: X
 
-INTENT DETECTION:
-- "search": User wants to find properties (e.g., "Show me condos under $500k", "Pedregal", "properties in Marina", "3 bedroom homes")
-- "question": User is asking about market/area pricing (e.g., "What's the average price in Pedregal?", "How much do condos cost?")
-- "general_info": ONLY for asking ABOUT areas/process/company (e.g., "Tell me ABOUT Pedregal", "How does buying work?", "What is Pedregal like?", "rental ROI", "best areas for rentals", "investment properties")
-- "forms": User wants to get started, interested in properties (e.g., "I'm interested", "How do I apply?")
-- "contact": Wants to reach out, schedule meeting
-- "clarification_needed": Query is too vague (e.g., "Show me properties")
-- "greeting": User is greeting (e.g., "Hi", "Hello")
-- "off_topic": Not related to real estate
+FEATURES:
+- "beachfront/waterfront/oceanfront" → beachfront: true
+- "ocean view/sea view/water view" → oceanView: true
+- "pool/swimming pool" → pool: true
+- "golf" → look for golf communities
+- "walkable/walking distance" → Marina or downtown areas
+- "family-friendly/schools" → San Jose del Cabo, El Tezal
+- "quiet/tranquil" → San Jose, East Cape, Todos Santos
+- "nightlife/restaurants" → Marina, downtown Cabo
+- "investment/rental income" → high rental demand areas
 
-CRITICAL RULES:
-- If user mentions just a location name (e.g., "Pedregal", "Marina", "Cabo Corridor") → intent is "search" NOT "general_info"
-- If user says "in [location]" or "[location] properties" → intent is "search"
-- Only use "general_info" if user explicitly asks "tell me about", "what is", "describe", "explain"
-- If user asks about "rental ROI", "rental income", "investment", "best areas for rentals" → intent is "general_info" with infoType: "areas"
+BUYER INTENT DETECTION:
+- "retire/retirement" → buyerIntent: "retirement"
+- "vacation home/second home" → buyerIntent: "vacation_home"
+- "investment/rental income/ROI" → buyerIntent: "investment"
+- "relocating/moving/living full-time" → buyerIntent: "relocation"
 
-FORM RECOMMENDATIONS:
-- If user shows interest after seeing properties → recommend /new-client form
-- If user asks about selling → recommend /seller-evaluation form
-- If user wants to schedule showing → recommend /contact page
-
-IMPORTANT:
-- If query mentions specific numbers, extract them precisely
-- If query is vague, set intent to "clarification_needed" and suggest what info is needed
-- Combine filters intelligently (e.g., "luxury beachfront" = minPrice + oceanView)
-- Default limit to 20 unless specified
-- If user says "near the marina", use areas: ["Marina"] or communities with marina
+===== RESPONSE FORMAT =====
 
 Respond with ONLY valid JSON (no markdown, no code blocks):
 
-FOR SEARCH QUERIES:
+**FOR SEARCH:**
 {
   "city": ["Cabo San Lucas"],
+  "areas": ["Marina"],
   "minPrice": 500000,
   "bedrooms": 3,
   "propertyTypes": ["Condominium"],
   "intent": "search",
-  "confidence": 85,
+  "confidence": 90,
+  "buyerIntent": "vacation_home",
   "originalQuery": "${userQuery}",
-  "interpretation": "Looking for 3-bedroom condos under $2M in Cabo San Lucas"
+  "interpretation": "Looking for 3-bed condos in Marina under $2M for vacation home"
 }
 
-FOR GENERAL INFO/FORMS/CONTACT:
+**FOR COMPARISON:**
 {
-  "intent": "forms" or "general_info" or "contact",
+  "intent": "comparison",
+  "comparisonAreas": ["Pedregal", "Marina"],
+  "confidence": 95,
+  "originalQuery": "${userQuery}",
+  "interpretation": "User wants to compare Pedregal vs Marina",
+  "infoType": "comparison"
+}
+
+**FOR MARKET DATA:**
+{
+  "intent": "market_data",
+  "areas": ["Pedregal"],
   "confidence": 90,
   "originalQuery": "${userQuery}",
-  "interpretation": "User wants to get started as a buyer",
-  "infoType": "forms" or "office" or "agents" or "areas" or "process",
-  "recommendedAction": "/new-client" or "/seller-evaluation" or "/contact" or "provide info"
+  "interpretation": "User asking about average prices in Pedregal",
+  "specificQuestion": "average price per sqft"
 }
 
-Only include fields that are relevant to the query. If a field isn't mentioned, omit it (except intent, confidence, originalQuery, interpretation).`;
+**FOR GENERAL INFO:**
+{
+  "intent": "general_info",
+  "confidence": 85,
+  "originalQuery": "${userQuery}",
+  "interpretation": "User wants to understand buying process",
+  "infoType": "process",
+  "recommendedAction": "provide buying steps"
+}
+
+**FOR BUYER QUALIFICATION:**
+{
+  "intent": "buyer_qualification",
+  "buyerIntent": "retirement",
+  "confidence": 90,
+  "originalQuery": "${userQuery}",
+  "interpretation": "Retiree looking for property in Cabo"
+}
+
+===== IMPORTANT REMINDERS =====
+- Use the AREA KNOWLEDGE above to understand locations
+- Extract buyer intent when mentioned
+- Compare areas when user asks about differences
+- Reference market data for pricing questions
+- Be precise with number extraction
+- If vague, ask for: budget, location, bedrooms, purpose
+- Default limit: 20 properties
+
+Only include relevant fields. Required: intent, confidence, originalQuery, interpretation.`;
 
   try {
     const completion = await groq.chat.completions.create({
