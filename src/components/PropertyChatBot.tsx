@@ -80,6 +80,20 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           return;
         } catch (error) {
           console.error('❌ Error generating business response:', error);
+          // Enhanced fallback with direct answer
+          const isWeekendQuestion = lowerInput.includes('weekend') || lowerInput.includes('saturday') || lowerInput.includes('sunday');
+          const fallbackResponse = isWeekendQuestion
+            ? `Yes! We're open on weekends.\n\n📅 **Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})`
+            : `**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n📍 ${formatAddress()}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})`;
+
+          const fallbackMessage: Message = {
+            role: "assistant",
+            content: fallbackResponse,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, fallbackMessage]);
+          setIsLoading(false);
+          return;
         }
       }
 
