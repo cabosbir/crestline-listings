@@ -351,7 +351,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
 
           if (query.includes('spanish')) {
             const spanishAgents = getAgentsByLanguage('Spanish');
-            agentResponse = `**Our Spanish-Speaking Agents:**\n\n`;
+            agentResponse = `Yes, we have ${spanishAgents.length} Spanish-speaking agents.\n\n`;
             agentResponse += spanishAgents.map(a =>
               `• **${a.name}** - ${a.title} (${a.yearsExperience} yrs) - ${a.phone}`
             ).join('\n');
@@ -390,7 +390,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
 
           if (query.includes('spanish') || query.includes('speaks') || query.includes('language')) {
             const spanishAgents = getAgentsByLanguage('Spanish');
-            agentResponse = `**Our Spanish-Speaking Agents:**\n\n`;
+            agentResponse = `Yes, we have ${spanishAgents.length} Spanish-speaking agents.\n\n`;
             agentResponse += spanishAgents.map(a =>
               `• **${a.name}** - ${a.title} (${a.yearsExperience} yrs) - ${a.phone}`
             ).join('\n');
