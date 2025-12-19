@@ -28,6 +28,34 @@ interface PropertyChatBotProps {
   fullPage?: boolean; // If true, render as full page instead of modal
 }
 
+// Helper function to detect and answer yes/no questions
+function enhanceYesNoResponse(query: string, response: string, context: { hasInfo: boolean }): string {
+  const lowerQuery = query.toLowerCase().trim();
+
+  // Detect yes/no question patterns
+  const yesNoPatterns = [
+    /^(do|does|is|are|can|will|would|could|should|have|has|did)\s/,
+    /\?$/  // ends with question mark
+  ];
+
+  const isYesNoQuestion = yesNoPatterns.some(pattern => pattern.test(lowerQuery));
+
+  if (!isYesNoQuestion) {
+    return response;
+  }
+
+  // If it's a yes/no question and we have info, prepend "Yes"
+  // If we don't have info or it's negative, prepend "No"
+  if (context.hasInfo) {
+    // Only add "Yes" if response doesn't already start with it
+    if (!response.toLowerCase().startsWith('yes')) {
+      return `Yes! ${response}`;
+    }
+  }
+
+  return response;
+}
+
 const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -265,14 +293,18 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         let businessResponse = "";
 
         if (parsedQuery.infoType === "office_hours") {
-          businessResponse = `**${COMPANY_INFO.name} Office Hours:**\n\n`;
-          businessResponse += `📅 Monday-Friday: ${COMPANY_INFO.officeHours.monday}\n`;
-          businessResponse += `📅 Saturday: ${COMPANY_INFO.officeHours.saturday}\n`;
-          businessResponse += `📅 Sunday: ${COMPANY_INFO.officeHours.sunday}\n\n`;
-          businessResponse += `📞 **Call anytime:** ${COMPANY_INFO.phone}\n`;
-          businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n\n`;
-          businessResponse += `We're located in downtown Cabo San Lucas, just steps from the Marina!\n\n`;
-          businessResponse += `Would you like to schedule a meeting or search for properties?`;
+          const query = parsedQuery.originalQuery.toLowerCase();
+
+          // Build base response
+          if (query.includes('weekend') || (query.includes('saturday') && query.includes('sunday'))) {
+            businessResponse = `We're open on weekends!\n\n📅 **Weekend Hours:**\nSaturday: ${COMPANY_INFO.officeHours.saturday}\nSunday: ${COMPANY_INFO.officeHours.sunday}\n\n`;
+          } else {
+            businessResponse = `**Office Hours:**\n\n📅 Monday-Sunday: ${COMPANY_INFO.officeHours.formatted}\n\n`;
+          }
+          businessResponse += `📞 **Call anytime:** ${COMPANY_INFO.phone}\n📧 **Email:** ${COMPANY_INFO.email}\n\nWould you like to schedule a meeting or search for properties?`;
+
+          // Enhance with yes/no if applicable
+          businessResponse = enhanceYesNoResponse(parsedQuery.originalQuery, businessResponse, { hasInfo: true });
         } else if (parsedQuery.infoType === "office_location") {
           businessResponse = `**${COMPANY_INFO.name} Office Location:**\n\n`;
           businessResponse += `📍 ${formatAddress()}\n\n`;
@@ -420,6 +452,9 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             agentResponse += `\n\n[View All ${TEAM_INFO.length} Agents](/team) | Call: ${COMPANY_INFO.phone}`;
           }
         }
+
+        // Enhance agent response with yes/no if applicable
+        agentResponse = enhanceYesNoResponse(parsedQuery.originalQuery, agentResponse, { hasInfo: agentResponse.length > 0 });
 
         const agentMessage: Message = {
           role: "assistant",
