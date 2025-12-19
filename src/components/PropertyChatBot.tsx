@@ -276,7 +276,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         } else if (parsedQuery.infoType === "office_location") {
           businessResponse = `**${COMPANY_INFO.name} Office Location:**\n\n`;
           businessResponse += `📍 ${formatAddress()}\n\n`;
-          businessResponse += `🗺️ **Get Directions:** ${COMPANY_INFO.address.googleMapsLink}\n\n`;
+          businessResponse += `🗺️ [**Get Directions on Google Maps**](${COMPANY_INFO.address.googleMapsLink})\n\n`;
           businessResponse += `We're conveniently located in the heart of Downtown Cabo San Lucas, just steps from the Marina. Easy to find and always ready to assist you!\n\n`;
           businessResponse += `📞 **Phone:** ${COMPANY_INFO.phone}\n`;
           businessResponse += `📧 **Email:** ${COMPANY_INFO.email}\n`;
@@ -550,7 +550,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         // User wants contact information
         const contactMessage: Message = {
           role: "assistant",
-          content: "**Get in Touch with Baja International Realty:**\n\n📞 **Call/WhatsApp:** +52 612 169 8328\n📧 **Email:** cabosbir@gmail.com\n🌐 **Website:** bircabo.com\n\n📅 **Schedule a Meeting:**\n👉 [Contact Form](/contact)\n\n💬 **Or continue chatting here!**\nI can help you search for properties right now. What are you looking for?",
+          content: "**Get in Touch with Baja International Realty:**\n\n📞 **Call/WhatsApp:** +52 612 169 8328\n📧 **Email:** cabosbir@gmail.com\n🌐 **Website:** [bircabo.com](https://bircabo.com)\n\n📅 **Schedule a Meeting:**\n👉 [Contact Form](/contact)\n\n💬 **Or continue chatting here!**\nI can help you search for properties right now. What are you looking for?",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, contactMessage]);
