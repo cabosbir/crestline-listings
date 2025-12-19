@@ -316,6 +316,34 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
       }
 
       if (parsedQuery.intent === "general_info") {
+        // FIRST: Check if this is actually a business/office question that was misclassified
+        const query = input.toLowerCase();
+        if (query.includes('parking') || query.includes('wifi') || query.includes('amenity') ||
+            query.includes('amenities') || query.includes('facilities') || query.includes('restroom')) {
+          // Route business facility questions to AI
+          try {
+            const businessResponse = await generateBusinessResponse(input);
+            const businessMessage: Message = {
+              role: "assistant",
+              content: businessResponse,
+              timestamp: new Date(),
+            };
+            setMessages((prev) => [...prev, businessMessage]);
+            setIsLoading(false);
+            return;
+          } catch (error) {
+            console.error('❌ Error generating business response:', error);
+            const fallbackMessage: Message = {
+              role: "assistant",
+              content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.`,
+              timestamp: new Date(),
+            };
+            setMessages((prev) => [...prev, fallbackMessage]);
+            setIsLoading(false);
+            return;
+          }
+        }
+
         // Check if we just gave this same response (prevent loops)
         const lastMessage = messages[messages.length - 1];
         const isRepeatingAreas = lastMessage.role === "assistant" &&
