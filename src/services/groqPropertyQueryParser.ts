@@ -43,7 +43,7 @@ export interface ParsedPropertyQuery {
   interpretation: string;
 
   // For non-search intents
-  infoType?: 'office' | 'agents' | 'areas' | 'process' | 'forms' | 'rental_investment' | 'buying_costs' | 'legal' | 'lifestyle' | 'comparison' | 'office_hours' | 'office_location' | 'company_history' | 'agent_info' | 'agent_specialization';
+  infoType?: 'office' | 'agents' | 'areas' | 'process' | 'forms' | 'rental_investment' | 'buying_costs' | 'legal' | 'lifestyle' | 'comparison' | 'office_hours' | 'office_location' | 'company_history' | 'why_work_with_us' | 'agent_info' | 'agent_specialization';
   recommendedAction?: string;
 
   // Enhanced query understanding
@@ -187,7 +187,10 @@ Charles Jones (30 yrs, Pedregal/Luxury Rentals) - English/Spanish - +1 858 964 4
 - "How do I get to your office?"
 - "Tell me about your company"
 - "Company history"
-→ Set intent: "business_info", infoType: "office_hours" | "office_location" | "company_history"
+- "Why should I work with you?"
+- "Why choose you?"
+- "What makes you different?"
+→ Set intent: "business_info", infoType: "office_hours" | "office_location" | "company_history" | "why_work_with_us"
 
 **AGENT_REQUEST** - Agent-specific questions:
 - "Who speaks Spanish?"

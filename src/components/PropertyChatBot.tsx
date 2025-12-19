@@ -13,7 +13,7 @@ import {
   ParsedPropertyQuery,
 } from "@/services/groqPropertyQueryParser";
 import { getAreaKnowledge, compareAreas, BUYING_PROCESS, OWNERSHIP_COSTS, MARKET_INSIGHTS, COMMON_FAQS } from "@/services/realEstateKnowledge";
-import { COMPANY_INFO, TEAM_INFO, getAgentByName, getAgentsByLanguage, getAgentsBySpecialization, formatOfficeHours, formatAddress } from "@/services/businessKnowledge";
+import { COMPANY_INFO, TEAM_INFO, WHY_WORK_WITH_US, getAgentByName, getAgentsByLanguage, getAgentsBySpecialization, formatOfficeHours, formatAddress } from "@/services/businessKnowledge";
 
 interface Message {
   role: "user" | "assistant" | "system";
@@ -295,6 +295,20 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           businessResponse += COMPANY_INFO.memberships.map(m => `• ${m}`).join('\n');
           businessResponse += `\n\n**Featured On:** ${COMPANY_INFO.mediaFeatures.join(', ')}\n\n`;
           businessResponse += `Ready to work with Cabo's #1 real estate agency?`;
+        } else if (parsedQuery.infoType === "why_work_with_us") {
+          businessResponse = `**Why Choose ${COMPANY_INFO.name}?**\n\n`;
+          businessResponse += `🏡 **${WHY_WORK_WITH_US.family.title}**\n`;
+          businessResponse += `${WHY_WORK_WITH_US.family.summary}\n\n`;
+          businessResponse += `🏆 **${WHY_WORK_WITH_US.experience.title}**\n`;
+          businessResponse += `${WHY_WORK_WITH_US.experience.summary}\n\n`;
+          businessResponse += `💡 **${WHY_WORK_WITH_US.innovation.title}**\n`;
+          businessResponse += `${WHY_WORK_WITH_US.innovation.summary}\n\n`;
+          businessResponse += `**Our Results:**\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.propertiesSold} properties sold\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.totalSalesVolume} in total sales\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.familiesServed} satisfied families\n`;
+          businessResponse += `• ${COMPANY_INFO.stats.combinedYearsExperience} combined expertise\n\n`;
+          businessResponse += `Ready to experience the BIR difference? [Contact us](/contact) or start searching properties now!`;
         } else {
           // Generic business info
           businessResponse = `**${COMPANY_INFO.name}** - Your trusted Cabo San Lucas real estate partner since the ${COMPANY_INFO.founded}!\n\n`;
