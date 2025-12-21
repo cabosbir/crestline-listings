@@ -376,7 +376,7 @@ const [filters, setFilters] = useState<FilterState>({
         console.log('  🚿 Min baths:', apiFilters.bathrooms);
       }
       
-      if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < 3) {
+      if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
         apiFilters.propertyTypes = filters.propertyTypes.join(',');
         console.log('  🏠 Property types:', apiFilters.propertyTypes);
       }
@@ -477,9 +477,9 @@ const [filters, setFilters] = useState<FilterState>({
     if (filters.minBeds && filters.minBeds !== "1+") params.append('beds', filters.minBeds);
     if (filters.minBaths && filters.minBaths !== "Any") params.append('baths', filters.minBaths);
     
-    // Only send propertyTypes if not the default 3
-    const defaultTypes = ["Condos", "Houses", "Land"];
-    const hasNonDefaultTypes = filters.propertyTypes.length !== defaultTypes.length || 
+    // Only send propertyTypes if not the default 2
+    const defaultTypes = ["Condos", "Houses"];
+    const hasNonDefaultTypes = filters.propertyTypes.length !== defaultTypes.length ||
                                !filters.propertyTypes.every(t => defaultTypes.includes(t));
     if (hasNonDefaultTypes) {
       params.append('propertyTypes', filters.propertyTypes.join(','));
