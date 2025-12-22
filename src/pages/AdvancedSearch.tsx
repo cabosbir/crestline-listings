@@ -369,37 +369,41 @@ const [filters, setFilters] = useState<FilterState>({
   // ✅ FIXED: Fetch preview whenever ANY filter changes
   useEffect(() => {
     console.log('🔥 useEffect FIRED! Current filters:', {
+      propertyTypes: filters.propertyTypes,
+      propertyTypesLength: filters.propertyTypes.length,
       zones: filters.zones,
       areas: filters.areas,
       communities: filters.communities,
       subdivisions: filters.subdivisions,
-      zonesLength: filters.zones.length,
-      areasLength: filters.areas.length,
-      communitiesLength: filters.communities.length
+      minBeds: filters.minBeds,
+      minBaths: filters.minBaths
     });
-    
+
     const debounce = setTimeout(() => {
       // Check if ANY meaningful filters are set
-      const hasLocationFilters = filters.zones.length > 0 || filters.areas.length > 0 || 
+      const hasLocationFilters = filters.zones.length > 0 || filters.areas.length > 0 ||
                                  filters.communities.length > 0 || filters.subdivisions.length > 0;
       const hasSearch = filters.mlsSearch.trim() !== "";
-      const hasPropertyTypeFilter = filters.propertyTypes.length > 0 && filters.propertyTypes.length < 3;
+      const hasPropertyTypeFilter = filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length;
       const hasPriceFilter = filters.minPrice !== "$50,000" || filters.maxPrice !== "$3 Million";
       const hasBedsFilter = filters.minBeds !== "1+";
       const hasBathsFilter = filters.minBaths !== "Any";
       const hasSpecialFilters = filters.sellerFinancing || filters.primaryView || filters.currentPrice;
-      
-      const hasAnyFilter = hasLocationFilters || hasSearch || hasPropertyTypeFilter || 
+
+      const hasAnyFilter = hasLocationFilters || hasSearch || hasPropertyTypeFilter ||
                           hasPriceFilter || hasBedsFilter || hasBathsFilter || hasSpecialFilters;
-      
+
       console.log('🎯 Filter check:', {
+        propertyTypes: filters.propertyTypes,
+        hasPropertyTypeFilter,
         hasLocationFilters,
         hasAnyFilter,
         willFetch: hasAnyFilter
       });
-      
+
       if (hasAnyFilter) {
         console.log('🔄 Filter changed - fetching preview...', {
+          propertyTypes: filters.propertyTypes,
           zones: filters.zones,
           areas: filters.areas,
           communities: filters.communities,
@@ -417,7 +421,7 @@ const [filters, setFilters] = useState<FilterState>({
   }, [
     // ✅ ALL filter dependencies - triggers on EVERY change
     filters.zones,
-    filters.areas, 
+    filters.areas,
     filters.communities,
     filters.subdivisions,
     filters.mlsSearch,
@@ -654,12 +658,21 @@ const [filters, setFilters] = useState<FilterState>({
   };
 
   const togglePropertyType = (type: string) => {
-    setFilters(prev => ({
-      ...prev,
-      propertyTypes: prev.propertyTypes.includes(type)
+    console.log(`🏠 Toggle Property Type: "${type}"`);
+    setFilters(prev => {
+      const newPropertyTypes = prev.propertyTypes.includes(type)
         ? prev.propertyTypes.filter(t => t !== type)
-        : [...prev.propertyTypes, type]
-    }));
+        : [...prev.propertyTypes, type];
+
+      console.log(`  Before: [${prev.propertyTypes.join(', ')}]`);
+      console.log(`  After: [${newPropertyTypes.join(', ')}]`);
+      console.log(`  Array reference changed: ${prev.propertyTypes !== newPropertyTypes}`);
+
+      return {
+        ...prev,
+        propertyTypes: newPropertyTypes
+      };
+    });
   };
 
   const toggleZone = (zone: string) => {
