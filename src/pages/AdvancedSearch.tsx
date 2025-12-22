@@ -474,13 +474,29 @@ const [filters, setFilters] = useState<FilterState>({
       
       // ✅ Check if ONLY Land is selected (Land parcels have 0 beds/baths)
       const isLandOnly = filters.propertyTypes.length === 1 && filters.propertyTypes[0] === "Land";
+      console.log('🔍 DEBUG Land Check:', {
+        propertyTypesArray: filters.propertyTypes,
+        propertyTypesLength: filters.propertyTypes.length,
+        firstType: filters.propertyTypes[0],
+        isLandOnly: isLandOnly
+      });
+
+      // ⚠️ CRITICAL: Send property type filter FIRST before bed/bath filters
+      if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
+        apiFilters.propertyTypes = filters.propertyTypes.join(',');
+        console.log('  🏠 Property types filter:', apiFilters.propertyTypes);
+      } else if (filters.propertyTypes.length === 0) {
+        console.warn('  ⚠️ No property types selected - API will return all types!');
+      } else {
+        console.log('  🏠 All property types selected - no filter needed');
+      }
 
       // Only apply bedroom filter if NOT searching for Land only
       if (filters.minBeds !== "Any" && !isLandOnly) {
         apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
         console.log('  🛏️ Min beds:', apiFilters.bedrooms);
       } else if (isLandOnly) {
-        console.log('  🏗️ Land-only search: Skipping bedroom filter');
+        console.log('  🏗️ Land-only search: Skipping bedroom filter (Land has 0 beds)');
       }
 
       // Only apply bathroom filter if NOT searching for Land only
@@ -488,12 +504,7 @@ const [filters, setFilters] = useState<FilterState>({
         apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
         console.log('  🚿 Min baths:', apiFilters.bathrooms);
       } else if (isLandOnly) {
-        console.log('  🏗️ Land-only search: Skipping bathroom filter');
-      }
-
-      if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
-        apiFilters.propertyTypes = filters.propertyTypes.join(',');
-        console.log('  🏠 Property types:', apiFilters.propertyTypes);
+        console.log('  🏗️ Land-only search: Skipping bathroom filter (Land has 0 baths)');
       }
       
       if (filters.status && filters.status !== "Active") {
