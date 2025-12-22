@@ -146,7 +146,7 @@ const [filters, setFilters] = useState<FilterState>({
 
   // Area → Community mapping
   const areaToCommunityMap: Record<string, string[]> = {
-    "CSL-Beach & Marina": ["CSL Beach", "CSL Marina", "CSL Near Bch & Marina"],
+    "CSL-Beach & Marina": ["CSL Beach", "CSL Marina", "CSL Near Bch & Marina", "Pedregal CSL"],
     "CSL-Centro": ["Centro", "Pedregal CSL"],
     "CSL-North": ["CSL North-East 19", "CSL North-West 19", "El Tezal-East", "El Tezal-West", "El Tezal-OceanSide"],
     "CSL Cor-Inland": ["Cabo del Sol-Inland", "Cabo Bello", "Chileno Bay Club", "Chileno/Montage-Inland", "El Tezal-East", "El Tezal-West"],
@@ -170,10 +170,116 @@ const [filters, setFilters] = useState<FilterState>({
 
   // Community → Subdivision mapping
   const communityToSubdivisionMap: Record<string, string[]> = {
+    "Above Isla Coronado": ["General"],
+    "Agua Verde": ["General"],
+    "Bahia Concepcion": ["General"],
+    "Bahía Asunción": [],
+    "Bay of Dreams": ["Bay of Dreams"],
+    "BayOfDreams/Ventanas": [
+      "Bay of Dreams",
+      "El Sargento",
+      "La Ventana",
+      "Madre Perla",
+      "San Bartolo"
+    ],
+    "Beach north": [
+      "Beach North Sub",
+      "General"
+    ],
+    "Bellavista": [
+      "Bellavista",
+      "Palmira By Alttus"
+    ],
+    "BuenaVista/Rancho Leonero": [
+      "Los Pinos",
+      "Mar y Sol Condos",
+      "Rancho Leonero"
+    ],
+    "BuenVsta/LosBarilles": [
+      "B.Vista/Barilles-Gen",
+      "Baja Martires",
+      "Buena Vista",
+      "Centro-Los Barriles",
+      "Los Barriles",
+      "Mar y Sol",
+      "Mar y Viento",
+      "Mision Buenavista",
+      "Pallisades",
+      "Primo Palmas",
+      "Rancho Leonero",
+      "Spa Buena Vista",
+      "Villas Miramar"
+    ],
+    "Cabo Bello/Santa Carmela": [
+      "Cabo Bello",
+      "Calafia Condos",
+      "Creta",
+      "Playa del Rey",
+      "Plaza Calafia",
+      "Santa Carmela"
+    ],
+    "Cabo del Sol": [
+      "Brisas",
+      "Buena Vista",
+      "Cove Club",
+      "El Peon",
+      "El Penon",
+      "La Riviera",
+      "Las Colinas",
+      "Las Posadas",
+      "Mar a Cielo",
+      "Park Hyatt",
+      "Puerta del Sol-CDSol",
+      "Vista Azul"
+    ],
+    "Cabo del Sol Viejo": ["General"],
+    "Cabo del Sol-Inland": ["Cabo del Sol-Inl Pro"],
+    "Cabo Real-Inland": [
+      "Bugambilias",
+      "Gardenias",
+      "Las Villas"
+    ],
+    "Cabo Real-Ocean Side": [
+      "Cabo Real O/Side:Gen",
+      "Casa del Mar",
+      "El Dorado Casitas",
+      "Las Ventanas"
+    ],
+    "Centro": [
+      "Altamirano 1020",
+      "Arua",
+      "Bravana Living",
+      "Centro",
+      "General",
+      "La Isla",
+      "Laiva",
+      "Lomas de Palmira",
+      "Marina Palmira",
+      "Morgan Residences",
+      "Ocean Oasis",
+      "Palmira By Alttus",
+      "Punto Norte",
+      "Residencial Coronado",
+      "Torre Bivalvia",
+      "Vista Cortes",
+      "White 12",
+      "Xantus Residences"
+    ],
+    "Centro- Cabo San Lucas": [],
     "Pedregal CSL": ["Pedregal"],
-    "Cabo Bello/Santa Carmela": ["Cabo Bello", "Santa Carmela"],
-    "Cabo del Sol": ["Cabo del Sol", "Cabo del Sol Viejo"],
-    "Cabo Real-Ocean Side": ["Cabo Real"],
+    "CSL Beach": [],
+    "CSL Marina": ["Marina", "Marina Sol"],
+    "CSL Near Bch & Marina": [
+      "Aisha Cabo Living",
+      "Bahia",
+      "CSL Near Bch &Mar:Gen",
+      "Carena",
+      "Coyote",
+      "Ekur",
+      "Marea Los Cabos",
+      "Marina",
+      "Marina Sol"
+    ],
     "Chileno Bay/Montage": ["Chileno Bay", "Montage Los Cabos"],
     "Diamante Cabo San Lucas": ["Diamante", "Dunes Cabo"],
     "Quivira": ["Quivira", "Pueblo Bonito Sunset Beach"],
@@ -366,16 +472,25 @@ const [filters, setFilters] = useState<FilterState>({
         console.log('  💰 Max price:', apiFilters.maxPrice);
       }
       
-      if (filters.minBeds !== "Any") {
+      // ✅ Check if ONLY Land is selected (Land parcels have 0 beds/baths)
+      const isLandOnly = filters.propertyTypes.length === 1 && filters.propertyTypes[0] === "Land";
+
+      // Only apply bedroom filter if NOT searching for Land only
+      if (filters.minBeds !== "Any" && !isLandOnly) {
         apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
         console.log('  🛏️ Min beds:', apiFilters.bedrooms);
+      } else if (isLandOnly) {
+        console.log('  🏗️ Land-only search: Skipping bedroom filter');
       }
-      
-      if (filters.minBaths !== "Any") {
+
+      // Only apply bathroom filter if NOT searching for Land only
+      if (filters.minBaths !== "Any" && !isLandOnly) {
         apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
         console.log('  🚿 Min baths:', apiFilters.bathrooms);
+      } else if (isLandOnly) {
+        console.log('  🏗️ Land-only search: Skipping bathroom filter');
       }
-      
+
       if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
         apiFilters.propertyTypes = filters.propertyTypes.join(',');
         console.log('  🏠 Property types:', apiFilters.propertyTypes);
