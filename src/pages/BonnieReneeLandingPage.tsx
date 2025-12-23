@@ -63,7 +63,7 @@ const agent = {
   phone: "+1 858-204-3115",
   email: "bonnie@bircabo.com",
   yearsExperience: 15,
-  propertiesSold: 200,
+  propertiesSold: 98,
   bio: "Born and raised in California, I bring a unique blend of cultural fluency and professional expertise to the world of real estate. Having lived in Mexico for over 35 years, I've developed deep roots and a strong understanding of both Baja and Mainland markets.",
   bio2: "With 25 years of hands-on experience in real estate, I've guided clients through residential, commercial, and investment opportunities across diverse regions. My bilingual skills allow me to seamlessly connect with clients in both English and Spanish, bridging cultures and building trust.",
   bio3: "I'm passionate about helping people discover the beauty and potential of Mexico—whether they're seeking a dream home, a vacation property, or a strategic investment. My California upbringing combined with decades of local experience gives me a perspective that's both international and deeply personal.",
