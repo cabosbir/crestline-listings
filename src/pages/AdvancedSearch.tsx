@@ -411,19 +411,70 @@ const [filters, setFilters] = useState<FilterState>({
     "Chileno Bay Club": [
       "Auberge Residences"
     ],
-    "Pedregal CSL": ["Pedregal"],
-    "CSL Beach": [],
-    "CSL Marina": ["Marina", "Marina Sol"],
+    "Pedregal CSL": [
+      "Andalaya",
+      "Bahia Mar",
+      "Blue Bay-Pedregal",
+      "Blue Moon",
+      "Cabo Viejo",
+      "Capella Pedregal",
+      "Cascadas",
+      "El RinconDel Pedrega",
+      "Luna Pedregal",
+      "Marina Side:General",
+      "Mistiq Pedregal Los Cabos",
+      "Monteluna",
+      "Montemar Pedregal",
+      "Pacific Side:General",
+      "Pedregal",
+      "Pedregal CSL",
+      "Pedregal Heights",
+      "Pedregal One",
+      "Pedregal Plaza",
+      "Pedregal Towers",
+      "Portofino",
+      "Santa Rita",
+      "The Five",
+      "The Mountain Club at Pedregal",
+      "The O Pedregal",
+      "The Resort at Pedregal",
+      "Waldorf Astoria Residences"
+    ],
+    "CSL Beach": [
+      "Bay View",
+      "CSL Near Bch &Mar:Gen",
+      "Hacienda CSL",
+      "Terrasol",
+      "Villa La Estancia"
+    ],
+    "CSL Marina": [
+      "CSL Marina:General",
+      "Marina",
+      "Marina Cabo Plaza",
+      "Marina Sol",
+      "Plaza Bonita",
+      "Plaza Nautica",
+      "Puerto Paraiso",
+      "Tesoro",
+      "The Paraiso Residences"
+    ],
     "CSL Near Bch & Marina": [
       "Aisha Cabo Living",
       "Bahia",
       "CSL Near Bch &Mar:Gen",
       "Carena",
+      "Centro-CSL South",
       "Coyote",
       "Ekur",
       "Marea Los Cabos",
       "Marina",
-      "Marina Sol"
+      "Marina Sol",
+      "One Medano",
+      "Oro Y Azul",
+      "Oro y Azul",
+      "Park Cabo Residences",
+      "Puerta Cabos Village",
+      "Villas del Sol"
     ],
     "Chileno Bay/Montage": [
       "Chileno Bay",
@@ -463,17 +514,730 @@ const [filters, setFilters] = useState<FilterState>({
       "Vista Los Suenos",
       "Vista Los Suenos- Tower 3"
     ],
-    "Diamante Cabo San Lucas": ["Diamante", "Dunes Cabo"],
-    "Quivira": ["Quivira", "Pueblo Bonito Sunset Beach"],
-    "Querencia-Ocean side": ["Querencia"],
-    "Querencia-Inland": ["Querencia"],
-    "Palmilla-Ocean Side": ["Palmilla", "One&Only Palmilla"],
-    "Palmilla-Inland": ["Palmilla"],
-    "Puerto Los Cabos": ["Puerto Los Cabos"],
-    "Costa Palmas": ["Costa Palmas", "Four Seasons Costa Palmas"],
-    "Rancho San Lucas": ["Rancho San Lucas", "Solmar"],
-    "El Tezal-East": ["Misiones"],
-    "Todos Santos": ["Todos Santos"],
+    "Comitan": [
+      "Comitan"
+    ],
+    "Conquista Agraria": [
+      "La Aguja"
+    ],
+    "Constitucion Community": [
+      "Olimpico",
+      "Puerto San Carlos"
+    ],
+    "Costa Azul Beach": [
+      "Costa Azul",
+      "El Zalate",
+      "La Jolla",
+      "La Residencia",
+      "Las Olas",
+      "Mira Vista",
+      "Mykonos",
+      "SJD-CostaAzulBch:Gen",
+      "Soleado"
+    ],
+    "CSL Country Club": [
+      "CSL C/Club Golf"
+    ],
+    "CSL North-East 19": [
+      "Arcos del Sol",
+      "Brisas del Pac East",
+      "Brisas del Pacifico E",
+      "CSL N-E of19:Genral",
+      "El Progreso",
+      "Lagunitas",
+      "Lomas del Sol",
+      "Lomas del Valle",
+      "Mesa Colorada",
+      "Misiones de Santa Fe",
+      "Palmas at Sunset Bch",
+      "Terranova"
+    ],
+    "CSL North-West 19": [
+      "4 de Marzo",
+      "Arcoiris",
+      "Auroras",
+      "Balcones",
+      "Bellaterra",
+      "Brisas del Pacifico W",
+      "BugambiliaBellaVista",
+      "CSL N,W of 1:General",
+      "Cabo Pacifica",
+      "Cangrejos",
+      "Colinas de Cabo Baja",
+      "Condominios CL II",
+      "Condominios Playas",
+      "Fracc Miranda",
+      "Fracc Paraiso",
+      "Hojazen",
+      "Jacarandas",
+      "Las Cabanas",
+      "Lomas de Brisas",
+      "Lomas del Faro",
+      "Lomas del Pacifico",
+      "Maralta",
+      "Master Plaza Cardones",
+      "Miramar",
+      "Palma Real",
+      "Palmitos Residencial",
+      "Plaza Elam",
+      "Portales",
+      "Portanova I",
+      "Residencial Las Brisas",
+      "Residencial Santa Barbara",
+      "Venados"
+    ],
+    "Danzante Bay": [
+      "Beach Estates",
+      "Beachfront Neighborhood",
+      "Canyon Neighborhood",
+      "Cardon Neighborhood",
+      "Cliffside Neighborhood",
+      "Mantarraya",
+      "Mountain Neighborhood"
+    ],
+    "Diamante Cabo San Lucas": [
+      "Beach Estates",
+      "Cantinas",
+      "Diamante",
+      "Dunes Residence Club",
+      "El Cardonal",
+      "Golf Villa",
+      "Golf Villas",
+      "Las Casas",
+      "Las Casitas",
+      "Las Casitas Diamante",
+      "Legacy Founders Estates",
+      "Ocean Residence Club",
+      "San Marcos",
+      "Sunset Hill"
+    ],
+    "Ejido La Purisima": [
+      "La Purisima"
+    ],
+    "Ejido Next South": [],
+    "Ejidos/ Comondu": [
+      "Ejido Tepentu"
+    ],
+    "El Aguajito": [],
+    "El Centenario": [
+      "Centenario- Centro",
+      "Coral Bay",
+      "El Centenario",
+      "Haciendas Palo Verde",
+      "Lomas del Centenario, Palo Verde",
+      "Real Centenario",
+      "Villas de Oasis",
+      "Villas del Centenario",
+      "Vista Dorada"
+    ],
+    "El Comitan": [
+      "El Comitan"
+    ],
+    "El Dorado": [
+      "El Dorado Casitas",
+      "El Dorado Oceanfront Estate Lots",
+      "El Dorado Oceanview Estate Lots",
+      "El Dorado Villas"
+    ],
+    "El Encanto & Laguna": [
+      "El Encanto",
+      "La Laguna",
+      "Laguna Hills",
+      "Laguna Spring"
+    ],
+    "El Jalito": [],
+    "El Jaral": [],
+    "El Mogote": [
+      "Paraiso del Mar"
+    ],
+    "El Rincon": [],
+    "El Sargento": [
+      "Amina Wind",
+      "El Sargento"
+    ],
+    "El Teso": [],
+    "Quivira": [
+      "Alvar",
+      "Club Villas",
+      "Coronado",
+      "Esperanza",
+      "Las Residencias",
+      "Las Villas",
+      "Mavila",
+      "Migaloo",
+      "Pueblo Bonito Sunset Beach",
+      "Quivira",
+      "Section 28- Ocean Residences"
+    ],
+    "Querencia-Ocean side": [
+      "Monte Cristo Estates",
+      "Querencia"
+    ],
+    "Querencia-Inland": [
+      "Querencia",
+      "Section 1- Las Colinas",
+      "Section 10- El Parque",
+      "Section 12- Las Cabanas",
+      "Section 13- El Lago",
+      "Section 14- El Campo",
+      "Section 15- El Cerrito",
+      "Section 16- Laderas",
+      "Section 18",
+      "Section 18- Horizontes",
+      "Section 19",
+      "Section 19- LaVista-LaLoma",
+      "Section 2",
+      "Section 2- El Rincon",
+      "Section 22F- La Montana",
+      "Section 24- El Retiro",
+      "Section 29- La Cresta",
+      "Section 3- El Valle",
+      "Section 4- Las Canadas",
+      "Section 6- Las Verandas",
+      "Section 7- Las Casitas",
+      "Section 9- Club Villas"
+    ],
+    "Palmilla-Ocean Side": [
+      "Caleta Loma",
+      "Espiritu del Mar",
+      "La Caleta",
+      "Oceana Alta",
+      "Oceano Alta",
+      "Oceano Baja",
+      "One&Only Palmilla",
+      "Palmilla",
+      "Palmilla Cove",
+      "Palmilla Norte",
+      "Punta Bella",
+      "Villas de Montana",
+      "Villas del Mar"
+    ],
+    "Palmilla-Inland": [
+      "Dunes Residence Club",
+      "Oasis Palmilla",
+      "Palmilla",
+      "Palmilla Canyon",
+      "Palmilla Dunes",
+      "Palmilla Estates",
+      "Palmilla Fairway",
+      "Palmilla Inland- General",
+      "Villas de Oro"
+    ],
+    "Puerto Los Cabos": [
+      "El Altillo",
+      "Fundadores",
+      "La Noria",
+      "North Enclaves Ritz Carlton",
+      "Puerto Los Cabos",
+      "West Enclave Ritz-Carlton"
+    ],
+    "Costa Palmas": [
+      "Costa Palmas Golf Residences",
+      "Costa Palmas Marina Residences",
+      "Four Seasons Residences"
+    ],
+    "Rancho San Lucas": [
+      "Norman Estates",
+      "Old Lighthouse Club Hacienda",
+      "Pacific Bay",
+      "Rancho San Lucas",
+      "The Villas-Rcho Sn Lucas"
+    ],
+    "El Tezal-East": [
+      "Altamar",
+      "Amalfi",
+      "Arcomar",
+      "Betanya",
+      "Cabo Costa",
+      "Cabo Costa Mirador",
+      "Casa Mex-Agaves",
+      "Casa Mex-Bogumbilias",
+      "Casa Mex-Las Flores",
+      "Casa Mex-Las Palmas",
+      "Casa Mexicana",
+      "Ciruelos",
+      "Condominios Kai",
+      "Cresta del Mar",
+      "Damiana Residences",
+      "El Tezal E;General",
+      "Eonia",
+      "Hermitage",
+      "La Mar",
+      "La Vista",
+      "Lumaria",
+      "Marazul",
+      "Maroma Los Cabos",
+      "Mistiq Los Cabos",
+      "Nahara Cabo Living",
+      "OR Cabo Boutique Residences",
+      "Oceana Wellness Residences",
+      "Optimus Residences",
+      "Paraiso del Tezal",
+      "Picacho",
+      "Plaza Las Olas",
+      "Puerta de Hierro",
+      "Puerta del Mar",
+      "Punta Arena",
+      "Rancho Par-El Cielito",
+      "Rancho Paraiso",
+      "Rancho Paraiso Ests",
+      "Santa Lucia",
+      "Santorini Residencial",
+      "Satus",
+      "Sierra Dorada",
+      "Solaria",
+      "Tamar",
+      "Terrazas las Fuentes",
+      "The Arc",
+      "Tramonti",
+      "Tramonti Paradiso",
+      "Vista Azul",
+      "Vista Bahia",
+      "Vista del Arco",
+      "Vistas del Tezal",
+      "Vistazul"
+    ],
+    "El Tezal-OceanSide": [
+      "El Tezal-OceanSide:General"
+    ],
+    "El Tezal-West": [],
+    "El Tule-Inland": [
+      "El Tule-Inland:General"
+    ],
+    "El Tule-Ocean Side": [
+      "ElTule-O/Side:General"
+    ],
+    "ElCardonal/N of Bariles": [
+      "Nrth of Barilles-Gen"
+    ],
+    "Elias Calles": [
+      "Elias Calles",
+      "Elias Calles-Gen"
+    ],
+    "Ensenada Blanca": [
+      "General"
+    ],
+    "Espiritu del Mar": [
+      "Espiritu del Mar",
+      "Remanso de Espiritu"
+    ],
+    "Esterito": [
+      "Esterito"
+    ],
+    "Fidepaz": [
+      "Fidepaz"
+    ],
+    "Fonatur Golf & Hills": [
+      "Fonatur",
+      "Fonatur Golf & Hills"
+    ],
+    "Forjadores SJD": [
+      "Forjadores SJD"
+    ],
+    "Gringo & Lito Hills": [
+      "Gringo Hill",
+      "Gringo/Lito General",
+      "Grngo&Lito Hills:Gen",
+      "Lito's Hill"
+    ],
+    "Hot Springs": [],
+    "Insurgentes Community": [],
+    "La Perla": [
+      "La Perla"
+    ],
+    "La Posada": [
+      "La Posada",
+      "La Posada Condos"
+    ],
+    "La Ribera": [
+      "Centro-La Ribera",
+      "La Ribera",
+      "La Ribera General",
+      "Residences of La Ribera"
+    ],
+    "La Ventana": [
+      "La Ventana",
+      "La Ventana Village"
+    ],
+    "Ladera San José": [
+      "Ladera Phase 1",
+      "Ladera San Jose- Fase 1"
+    ],
+    "LaPaz Beach Community": [
+      "LaPaz Beach Subdivision"
+    ],
+    "LaPaz Centro Community": [
+      "Centro"
+    ],
+    "LaPaz East": [
+      "LaPaz East"
+    ],
+    "LaPaz North Community": [],
+    "LaPaz West": [
+      "LaPaz West"
+    ],
+    "Ligui": [
+      "General"
+    ],
+    "Lopez Mateos": [
+      "Lopez Mateos",
+      "Lopez Mateos- General"
+    ],
+    "Loreto": [
+      "Loreto"
+    ],
+    "Loreto Bay": [
+      "Loreto Bay"
+    ],
+    "Los Planes": [
+      "Los Planes"
+    ],
+    "Magisterial / Infonavit": [
+      "General",
+      "Residencial UNO"
+    ],
+    "Maravilla": [
+      "El Cielo Homesites",
+      "Las Colinas Villas- Maravilla",
+      "Las Lomas- Maravilla",
+      "Las Olas- Maravilla",
+      "Las Playas Villas- Maravilla",
+      "Las Viudas Homesites",
+      "Montage Residences",
+      "Santa Maria Homesites"
+    ],
+    "Mesa Colorada": [],
+    "Migrino Area": [
+      "Migrino",
+      "Migrino-Gen",
+      "RanchoLasMargaritas",
+      "The Palm"
+    ],
+    "Miraflores/Santiago": [
+      "Mira & Santi General",
+      "Miraflores",
+      "Santiago"
+    ],
+    "Miramar": [
+      "General"
+    ],
+    "Misiones": [
+      "Misiones del Cabo",
+      "Montigny",
+      "The Cape Residences",
+      "The Shores"
+    ],
+    "Mulege": [
+      "General"
+    ],
+    "Nopolo": [
+      "General"
+    ],
+    "Nopolo Hills": [
+      "El Rincon A",
+      "El Rincon B",
+      "El Rincon C"
+    ],
+    "North Centro": [
+      "General"
+    ],
+    "North Loreto Bay": [
+      "General"
+    ],
+    "North Shore": [],
+    "Pedregal de La Paz": [],
+    "Pescadero/Cerritos": [
+      "Avalon",
+      "Brisa de Sal",
+      "Calla Lily",
+      "Cerritos",
+      "Cerritos 2097",
+      "Cerritos Dreams",
+      "Cerritos Sunrise",
+      "Cerritos-PacifCondos",
+      "Cerritos/Pesca-Genrl",
+      "Ciudad Cerritos",
+      "Desert Moon",
+      "Gallo 64",
+      "Gavilan Villas",
+      "Halo of Cerritos",
+      "Huerta Hermosa",
+      "Luna Pescadero",
+      "Oasis del Mar",
+      "Palm Beach",
+      "Pescadero",
+      "Pueblo Pescadero",
+      "Punta Lobos",
+      "Rancho Nuevo",
+      "Salara Residences",
+      "Salt Breeze",
+      "Serenity at Cerritos",
+      "Soleado",
+      "Surf Residences",
+      "Surfside Residences",
+      "The Cliff at Cerritos",
+      "The Grove",
+      "The Tequila Ranch",
+      "The View",
+      "Tortuga Cerritos",
+      "Villas de Cerritos Beach",
+      "Vistasol"
+    ],
+    "Pto. Escondido": [
+      "Tatamichin",
+      "Waicuri 1",
+      "Waicuri 2"
+    ],
+    "Puerta Bugambilias": [
+      "Marvista"
+    ],
+    "Punta Ballena": [
+      "Auberge Residences",
+      "Esperanza",
+      "Las Residencias",
+      "Las Villas",
+      "Punta Ballena"
+    ],
+    "Saddles/Sunset Bch Rd": [
+      "Agua Luna",
+      "Balmaceda",
+      "Breeze of Cabo",
+      "Cabo Pacific Residences",
+      "Cabo Peninsula Residences",
+      "Costa Mare",
+      "El Descanso",
+      "El Descanso II",
+      "El Descanso III",
+      "Fracc Lomas Del Cabo",
+      "HD III",
+      "HD IV",
+      "Lienzo Charro",
+      "Lunaterra",
+      "Lunaterra II",
+      "Luxotica II",
+      "Luxotica III",
+      "Luxotica IV",
+      "Migaloo",
+      "Miguel Herrera",
+      "Miro Los Cabos",
+      "Palma Blanca",
+      "Punto Pedregal",
+      "Quintas California",
+      "San Charbel",
+      "Sea Breeze",
+      "Sea Breeze II",
+      "Sunset",
+      "Sunset:General",
+      "Sunset Hills",
+      "Terra 192",
+      "Terra 194",
+      "Three Point Tower",
+      "Villa Dorada",
+      "Villas Emmanuel",
+      "Vista Mare",
+      "Vista Panorama"
+    ],
+    "San Bartolo": [
+      "San Bartolo"
+    ],
+    "San Cosme": [
+      "San Cosme Gen"
+    ],
+    "San Cristobal": [
+      "Rolling Hills",
+      "San Cristobal",
+      "San Cristobal-Gen"
+    ],
+    "San Juan de la Costa": [
+      "El Cajete",
+      "San Juan de la Costa"
+    ],
+    "San Juanico": [
+      "San Juanico"
+    ],
+    "San Pedro": [
+      "San Pedro"
+    ],
+    "Santa Rosalia": [
+      "General"
+    ],
+    "Santo Domingo": [],
+    "Second Town Name": [],
+    "SJD above Hwy 1": [
+      "Belposto",
+      "Chamizal",
+      "Chamizal EL",
+      "Chula Vista",
+      "Healios Consultorios",
+      "Jesus Castro Agundez",
+      "Macrolotes Cantares",
+      "Magisterial",
+      "Mauricio Castro",
+      "Rodas Residencial",
+      "SJD above 1:General",
+      "Vitai",
+      "Zarzal"
+    ],
+    "SJD Downtown": [
+      "1 Ro de Mayo",
+      "8 de Octubre",
+      "Centro-SJD",
+      "Residencial Coronado",
+      "SJD D/town:General"
+    ],
+    "SJD Marina": [
+      "Avita Living San Jose",
+      "Cabo Cortez",
+      "El Rincon-SJD Marina",
+      "La Choya",
+      "La Playita",
+      "One Marina Place",
+      "Portside Place",
+      "SJD Marina:General",
+      "Sendero San José",
+      "Tamarindos"
+    ],
+    "SJD North-E of 1": [
+      "Biznaga",
+      "Las Varedas",
+      "Las Veredas",
+      "Santa Rosa"
+    ],
+    "SJD North-W of 1": [
+      "Aguajito, EL",
+      "Airport",
+      "Ampliacion El Zacata",
+      "Ampliacion Zacatal",
+      "Castellana Residencial",
+      "Colinas de San Jose",
+      "El Rosarito",
+      "Hideaways",
+      "Llanes Residencial",
+      "Lomas del Rosarito",
+      "Luis Donaldo Colosio",
+      "Monte Bello Plus",
+      "Monte Real",
+      "SJD N,W of 1:General",
+      "San Jose Viejo",
+      "Santa Rosa",
+      "Torres San Jose",
+      "Vista Hermosa",
+      "Zacatal"
+    ],
+    "SJD-Beach": [
+      "Albaluz",
+      "Aura",
+      "Emma",
+      "La Jolla - Condos",
+      "Las Mananitas",
+      "Mar Adentro",
+      "Nolah",
+      "Punto NIma",
+      "Sampaquita",
+      "Serena Residences",
+      "Tortuga Bay",
+      "Viceroy Residences",
+      "Vidah",
+      "Viva"
+    ],
+    "South": [],
+    "South LaPaz Community": [],
+    "Todos Santos": [
+      "Ahorcadita",
+      "Bajaterra",
+      "Blue Bay-Uptown",
+      "Cardinal Living",
+      "Centro-Todos Santos",
+      "Cobalto",
+      "Coromuel",
+      "Dieciocho",
+      "El Posito",
+      "La Cachora",
+      "La Isla",
+      "La Maquina",
+      "La Pastora",
+      "La Poza",
+      "La Vibra",
+      "Las Brisas- Todos Santos",
+      "Las Brisas-Esencia",
+      "Las Tunas",
+      "Los Jardines",
+      "Mirador",
+      "Mirador San Lucas",
+      "Monte Sion",
+      "Palms Garden Residences",
+      "Playitas Norte",
+      "Roca Vista",
+      "San Sebastian",
+      "Santas and Santos",
+      "Sky Town",
+      "Todos Santos Colony",
+      "Todos Santos Nth-Gen",
+      "Todos Santos Town House",
+      "Todos Santos-General",
+      "Villas Mar de Sol",
+      "Villas de Todos Santos",
+      "Vistamar"
+    ],
+    "Todos Santos North": [
+      "Agua Blanca",
+      "Las Playitas",
+      "Todos Santos Nth-Gen"
+    ],
+    "Uptown/Border Rd": [
+      "Arenal",
+      "Bajaterra",
+      "Blue Bay-Uptown",
+      "Cardinal Living",
+      "Centro-CSL North",
+      "Cobalto",
+      "Coromuel",
+      "Dhoka Plaza Comercial",
+      "La Isla",
+      "Master Plaza Center 36",
+      "Mirador",
+      "Mirador San Lucas",
+      "Monte Sion",
+      "Roca Vista",
+      "Sky Town",
+      "Uptown:General"
+    ],
+    "Villas Gp. Development": [],
+    "Vinorama/Cabo Pulmo": [
+      "Boca del Salado",
+      "Cabo Pulmo",
+      "Cabo Pulmo Beach Resort",
+      "Castillo de Arena",
+      "Costa de Oro",
+      "La Linea",
+      "Las Barracas",
+      "Los Frailes",
+      "Pindojo",
+      "Vinora/CaboPulmo-Gen",
+      "Vinorama",
+      "Vinorama Estates",
+      "Vinoramas"
+    ],
+    "Zacatitos/PtaPerfcta": [
+      "Bahia Terranova",
+      "Nine Palms",
+      "Playa Tortuga",
+      "Punta Perfecta",
+      "Rancho Dos Ballenas",
+      "Rancho La Laguna",
+      "Rancho Los Amigos",
+      "Rancho Tortuga",
+      "San Luis",
+      "San Luis Nuevo",
+      "Shipwrecks",
+      "Vinorama Estates",
+      "Zacatit/PtaPerfc-Gen",
+      "Zacatitos",
+      "Zacaton"
+    ],
+    "Zaragoza": [
+      "General"
+    ],
   };
 
   const matchesUiSearch = (text: string) => {
