@@ -379,6 +379,38 @@ const [filters, setFilters] = useState<FilterState>({
       "Colonia El Manglito"
     ],
     "Centro- Cabo San Lucas": [],
+    "Centro- San Jose del Cabo": [],
+    "Cerro Colorado-Ocean": [
+      "Cabo Colo-Ocean:Gen",
+      "Cabo Colorado",
+      "Dunna",
+      "Las Terrazas",
+      "Palmilla Sur",
+      "Punta Bella",
+      "Rancho Cerro Colorado",
+      "Santarena"
+    ],
+    "CerroColorado-Inland": [
+      "Antigua",
+      "Cabo Colo-Inland:Gen",
+      "Colorado Hills",
+      "Dorado Hills",
+      "Harmonia",
+      "Ladera Phase 1",
+      "Ladera San Jose- Fase 1",
+      "Vista Colorada"
+    ],
+    "Chametla": [
+      "Chametia",
+      "Chametla",
+      "Las Haciendas",
+      "Marbella Residencial",
+      "Portobello"
+    ],
+    "Chileno Bay": [],
+    "Chileno Bay Club": [
+      "Auberge Residences"
+    ],
     "Pedregal CSL": ["Pedregal"],
     "CSL Beach": [],
     "CSL Marina": ["Marina", "Marina Sol"],
@@ -393,7 +425,44 @@ const [filters, setFilters] = useState<FilterState>({
       "Marina",
       "Marina Sol"
     ],
-    "Chileno Bay/Montage": ["Chileno Bay", "Montage Los Cabos"],
+    "Chileno Bay/Montage": [
+      "Chileno Bay",
+      "Montage Residences"
+    ],
+    "Chileno/Montage-Inland": [
+      "Chileno Inland-General"
+    ],
+    "Ciudad Constitución": [],
+    "Club Campestre": [
+      "Cora",
+      "Costarena",
+      "Hacienda Campestre",
+      "Hideaways",
+      "La Canada",
+      "La Canada II",
+      "La Cima",
+      "Larena",
+      "Los Valles",
+      "Montecitos",
+      "Privada del Lago",
+      "Privadas",
+      "Pueblo Campestre",
+      "Sendero San José",
+      "Solesta",
+      "Villas de México",
+      "Vista Hermosa",
+      "Vista Lagos",
+      "Wen Living"
+    ],
+    "Colina del Sol": [
+      "Alttus Homes",
+      "Alttus Sunset",
+      "Colina del Sol",
+      "Meraki",
+      "Vista Bahia (La Paz)",
+      "Vista Los Suenos",
+      "Vista Los Suenos- Tower 3"
+    ],
     "Diamante Cabo San Lucas": ["Diamante", "Dunes Cabo"],
     "Quivira": ["Quivira", "Pueblo Bonito Sunset Beach"],
     "Querencia-Ocean side": ["Querencia"],
