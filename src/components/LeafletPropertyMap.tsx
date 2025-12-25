@@ -1,5 +1,5 @@
 // src/components/LeafletPropertyMap.tsx - Free map with OpenStreetMap (no API key!)
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -39,26 +39,37 @@ interface LeafletPropertyMapProps {
   zoom?: number;
 }
 
-export const LeafletPropertyMap = ({ 
-  properties, 
-  center = { lat: 23.0545, lng: -109.7084 }, 
-  zoom = 11 
+export const LeafletPropertyMap = ({
+  properties,
+  center = { lat: 23.0545, lng: -109.7084 },
+  zoom = 11
 }: LeafletPropertyMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const navigate = useNavigate();
+  const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
     console.log('[LeafletMap] Component mounted, starting initialization');
     console.log('[LeafletMap] mapRef.current:', mapRef.current);
     console.log('[LeafletMap] Leaflet L available:', typeof L !== 'undefined');
 
-    // Initialize map with bundled Leaflet
-    initializeMap();
+    // Use setTimeout to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      console.log('[LeafletMap] Timeout fired, checking mapRef again');
+      console.log('[LeafletMap] mapRef.current after timeout:', mapRef.current);
+
+      if (mapRef.current) {
+        initializeMap();
+      } else {
+        console.error('[LeafletMap] mapRef.current still null after timeout!');
+      }
+    }, 0);
 
     return () => {
       console.log('[LeafletMap] Component unmounting, cleaning up map');
+      clearTimeout(timeoutId);
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
       }
@@ -76,6 +87,21 @@ export const LeafletPropertyMap = ({
 
     if (!mapRef.current) {
       console.error('[LeafletMap] mapRef.current is null, cannot initialize');
+      return;
+    }
+
+    // Check container dimensions
+    const rect = mapRef.current.getBoundingClientRect();
+    console.log('[LeafletMap] Container dimensions:', {
+      width: rect.width,
+      height: rect.height,
+      top: rect.top,
+      left: rect.left
+    });
+
+    if (rect.height === 0 || rect.width === 0) {
+      console.error('[LeafletMap] Container has zero dimensions! Map cannot initialize.');
+      console.error('[LeafletMap] This usually means the container is hidden or has no height set.');
       return;
     }
 
@@ -104,7 +130,8 @@ export const LeafletPropertyMap = ({
       console.log('[LeafletMap] Tile layer added');
 
       mapInstanceRef.current = map;
-      console.log('[LeafletMap] Map stored in ref, initialization complete');
+      setIsMapReady(true);
+      console.log('[LeafletMap] Map stored in ref, map ready state set to true');
 
       // Add markers after map is ready
       if (properties.length > 0) {
@@ -277,7 +304,7 @@ export const LeafletPropertyMap = ({
           background: white;
         }
       `}</style>
-      {!mapInstanceRef.current && (
+      {!isMapReady && (
         <div className="absolute inset-0 bg-secondary animate-pulse flex items-center justify-center z-50">
           <div className="text-center">
             <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4" />
