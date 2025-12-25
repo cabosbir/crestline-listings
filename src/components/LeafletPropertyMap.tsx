@@ -230,10 +230,18 @@ export const LeafletPropertyMap = ({
           background: white;
         }
       `}</style>
-      <div 
-        ref={mapRef} 
-        className="w-full h-[600px] rounded-xl border border-border shadow-lg"
-        style={{ minHeight: '600px' }}
+      {!mapInstanceRef.current && (
+        <div className="absolute inset-0 bg-secondary animate-pulse flex items-center justify-center z-50">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-muted rounded-full mx-auto mb-4" />
+            <p className="text-muted-foreground text-sm">Loading map...</p>
+          </div>
+        </div>
+      )}
+      <div
+        ref={mapRef}
+        className="w-full h-[50vh] md:h-[600px] lg:h-[calc(100vh-8rem)] rounded-none md:rounded-xl border-none md:border md:border-border shadow-none md:shadow-lg"
+        style={{ minHeight: '300px' }}
       />
     </>
   );

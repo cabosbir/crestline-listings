@@ -1747,48 +1747,49 @@ const [filters, setFilters] = useState<FilterState>({
 
       {/* Header Bar with AI Intelligence Indicator */}
       <div className="fixed top-16 left-0 right-0 bg-card border-b border-border z-40 shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-4 py-3 md:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto">
             <Button variant="ghost" size="sm" onClick={() => navigate('/properties')}>
-              <X className="w-4 h-4 mr-2" />
-              Close
+              <X className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Close</span>
             </Button>
-            <div>
-              <h1 className="text-xl font-bold">Advanced Property Search</h1>
-              <p className="text-sm text-muted-foreground">
+            <div className="flex-1 md:flex-none">
+              <h1 className="text-base md:text-xl font-bold truncate">Advanced Property Search</h1>
+              <p className="text-xs md:text-sm text-muted-foreground truncate">
                 {loading ? 'Searching...' : totalCount > 0 ? `${totalCount} properties found` : 'Select filters or search MLS'}
               </p>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleReset}>
+          <div className="flex gap-2 w-full md:w-auto">
+            <Button variant="outline" onClick={handleReset} size="sm" className="flex-1 md:flex-none">
               Reset
             </Button>
-            
+
             {/* 🆕 SMART BUTTON WITH TOOLTIP */}
-            <div className="relative group">
-              <Button 
-              onClick={handleSearch} 
+            <div className="relative group flex-1 md:flex-none">
+              <Button
+              onClick={handleSearch}
               disabled={totalCount === 0}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white w-full md:w-auto"
             >
-              <Search className="w-4 h-4 mr-2" />
-              View {totalCount} Results
+              <Search className="w-4 h-4 md:mr-2" />
+              <span className="hidden sm:inline">View</span> {totalCount}
             </Button>
-              
+
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="pt-32 flex h-screen">
+      <div className="pt-32 flex flex-col md:flex-row h-screen">
         {/* Left Sidebar - Filters */}
-        <div className="w-96 bg-card border-r border-border overflow-y-auto p-6 space-y-6 h-[calc(100vh-8rem)]">
+        <div className="w-full md:w-96 bg-card md:border-r border-border overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 h-[50vh] md:h-[calc(100vh-8rem)]">
           
           {/* MLS Search Bar */}
           <div className="sticky top-0 bg-card z-10 pb-4 -mt-2 border-b border-border">
-            <Label className="text-lg font-bold mb-3 block">Search MLS Database</Label>
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">Search MLS Database</Label>
             <form onSubmit={handleMlsSearch}>
               <div className="relative">
                 <Input
@@ -1821,7 +1822,7 @@ const [filters, setFilters] = useState<FilterState>({
                 value={uiSearchQuery}
                 onChange={(e) => setUiSearchQuery(e.target.value)}
                 placeholder="Filter zones, areas, communities..."
-                className="w-full pl-10 pr-10 text-sm"
+                className="w-full pl-10 pr-10 text-sm md:text-base py-2.5 md:py-2"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               {uiSearchQuery && (
@@ -1837,7 +1838,7 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Property Types */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">Property Type</Label>
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">Property Type</Label>
             <div className="space-y-2">
               {propertyTypes.map(type => (
                 <div key={type} className="flex items-center gap-2">
@@ -1854,11 +1855,11 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Status */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">Status</Label>
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">Status</Label>
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="w-full border border-border rounded px-3 py-2"
+              className="w-full border border-border rounded px-3 py-2.5 md:py-2 text-sm md:text-base"
             >
               <option>Active</option>
               <option>Pending</option>
@@ -1868,10 +1869,10 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Zones */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">
               Zone ({filters.zones.length} selected)
             </Label>
-            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-2 md:p-3">
               {filteredZones.map(zone => (
                 <div key={zone} className="flex items-center gap-2">
                   <Checkbox
@@ -1890,7 +1891,7 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Areas */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">
               Area ({filters.areas.length} selected)
             </Label>
             {filters.zones.length > 0 && (
@@ -1898,7 +1899,7 @@ const [filters, setFilters] = useState<FilterState>({
                 ✓ Showing areas for: {filters.zones.join(", ")}
               </p>
             )}
-            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-2 md:p-3">
               {filteredAreas.length > 0 ? (
                 filteredAreas.map(area => (
                   <div key={area} className="flex items-center gap-2">
@@ -1924,7 +1925,7 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Communities */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">
               Community ({filters.communities.length} selected)
             </Label>
             {(filters.zones.length > 0 || filters.areas.length > 0) && (
@@ -1932,7 +1933,7 @@ const [filters, setFilters] = useState<FilterState>({
                 ✓ Filtered by: {filters.areas.length > 0 ? filters.areas.join(", ") : filters.zones.join(", ")}
               </p>
             )}
-            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-2 md:p-3">
               {filteredCommunities.length > 0 ? (
                 filteredCommunities.map(community => (
                   <div key={community} className="flex items-center gap-2">
@@ -1958,7 +1959,7 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Subdivisions */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">
               Subdivision ({filters.subdivisions.length} selected)
             </Label>
             {(filters.zones.length > 0 || filters.areas.length > 0 || filters.communities.length > 0) && (
@@ -1972,7 +1973,7 @@ const [filters, setFilters] = useState<FilterState>({
                 }
               </p>
             )}
-            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-3">
+            <div className="max-h-48 overflow-y-auto space-y-2 border border-border rounded p-2 md:p-3">
               {filteredSubdivisions.length > 0 ? (
                 filteredSubdivisions.map(subdivision => (
                   <div key={subdivision} className="flex items-center gap-2">
@@ -1998,7 +1999,7 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Special Filter Checkboxes */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">Special Filters</Label>
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">Special Filters</Label>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Checkbox
@@ -2035,14 +2036,14 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Price Range */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">Price Range</Label>
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">Price Range</Label>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs text-muted-foreground mb-1 block">Min Price</Label>
                 <select
                   value={filters.minPrice}
                   onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                  className="w-full border border-border rounded px-3 py-2.5 md:py-2 text-sm md:text-base"
                 >
                   {priceOptions.map(price => (
                     <option key={price} value={price}>{price}</option>
@@ -2054,7 +2055,7 @@ const [filters, setFilters] = useState<FilterState>({
                 <select
                   value={filters.maxPrice}
                   onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                  className="w-full border border-border rounded px-3 py-2.5 md:py-2 text-sm md:text-base"
                 >
                   {priceOptions.map(price => (
                     <option key={price} value={price}>{price}</option>
@@ -2066,14 +2067,14 @@ const [filters, setFilters] = useState<FilterState>({
 
           {/* Beds & Baths */}
           <div>
-            <Label className="text-lg font-bold mb-3 block">Bedrooms & Bathrooms</Label>
+            <Label className="text-base md:text-lg font-bold mb-2 md:mb-3 block">Bedrooms & Bathrooms</Label>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs text-muted-foreground mb-1 block">Min Beds</Label>
                 <select
                   value={filters.minBeds}
                   onChange={(e) => setFilters({ ...filters, minBeds: e.target.value })}
-                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                  className="w-full border border-border rounded px-3 py-2.5 md:py-2 text-sm md:text-base"
                 >
                   {bedsOptions.map(beds => (
                     <option key={beds} value={beds}>{beds}</option>
@@ -2085,7 +2086,7 @@ const [filters, setFilters] = useState<FilterState>({
                 <select
                   value={filters.minBaths}
                   onChange={(e) => setFilters({ ...filters, minBaths: e.target.value })}
-                  className="w-full border border-border rounded px-3 py-2 text-sm"
+                  className="w-full border border-border rounded px-3 py-2.5 md:py-2 text-sm md:text-base"
                 >
                   {bathsOptions.map(baths => (
                     <option key={baths} value={baths}>{baths}</option>
@@ -2097,7 +2098,7 @@ const [filters, setFilters] = useState<FilterState>({
         </div>
 
         {/* Right Side - Live Map Preview */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative h-[50vh] md:h-auto">
           {(loading || aiOptimizing) && (
             <div className="absolute inset-0 bg-background/50 z-10 flex items-center justify-center">
               <div className="text-center">
