@@ -1,6 +1,8 @@
 // src/components/LeafletPropertyMap.tsx - Free map with OpenStreetMap (no API key!)
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 interface Property {
   id: string;
@@ -32,23 +34,8 @@ export const LeafletPropertyMap = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load Leaflet CSS
-    if (!document.querySelector('link[href*="leaflet"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      document.head.appendChild(link);
-    }
-
-    // Load Leaflet JS
-    if (!(window as any).L) {
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      script.onload = () => initializeMap();
-      document.head.appendChild(script);
-    } else {
-      initializeMap();
-    }
+    // Initialize map with bundled Leaflet
+    initializeMap();
 
     return () => {
       if (mapInstanceRef.current) {
@@ -64,17 +51,23 @@ export const LeafletPropertyMap = ({
   }, [properties]);
 
   const initializeMap = () => {
-    if (!mapRef.current || !(window as any).L) return;
+    if (!mapRef.current) return;
 
-    const L = (window as any).L;
+    // Create map with performance optimizations
+    const map = L.map(mapRef.current, {
+      preferCanvas: true,
+      zoomAnimation: false,
+      fadeAnimation: false,
+      markerZoomAnimation: false,
+    }).setView([center.lat, center.lng], zoom);
 
-    // Create map
-    const map = L.map(mapRef.current).setView([center.lat, center.lng], zoom);
-
-    // Add OpenStreetMap tiles (free!)
+    // Add OpenStreetMap tiles (free!) with performance optimizations
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       maxZoom: 19,
+      updateWhenIdle: true,
+      updateWhenZooming: false,
+      keepBuffer: 2,
     }).addTo(map);
 
     mapInstanceRef.current = map;
@@ -86,8 +79,7 @@ export const LeafletPropertyMap = ({
   };
 
   const updateMarkers = () => {
-    const L = (window as any).L;
-    if (!L || !mapInstanceRef.current) return;
+    if (!mapInstanceRef.current) return;
 
     // Clear existing markers
     markersRef.current.forEach(marker => marker.remove());
