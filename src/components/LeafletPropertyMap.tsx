@@ -4,6 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+// Fix Leaflet default icon paths for Vite bundler
+// This is a known issue: Vite doesn't handle Leaflet's default icon paths correctly
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
+
 interface Property {
   id: string;
   mlsNumber?: string;
@@ -34,10 +50,15 @@ export const LeafletPropertyMap = ({
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('[LeafletMap] Component mounted, starting initialization');
+    console.log('[LeafletMap] mapRef.current:', mapRef.current);
+    console.log('[LeafletMap] Leaflet L available:', typeof L !== 'undefined');
+
     // Initialize map with bundled Leaflet
     initializeMap();
 
     return () => {
+      console.log('[LeafletMap] Component unmounting, cleaning up map');
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
       }
@@ -51,41 +72,70 @@ export const LeafletPropertyMap = ({
   }, [properties]);
 
   const initializeMap = () => {
-    if (!mapRef.current) return;
+    console.log('[LeafletMap] initializeMap() called');
 
-    // Create map with performance optimizations
-    const map = L.map(mapRef.current, {
-      preferCanvas: true,
-      zoomAnimation: false,
-      fadeAnimation: false,
-      markerZoomAnimation: false,
-    }).setView([center.lat, center.lng], zoom);
+    if (!mapRef.current) {
+      console.error('[LeafletMap] mapRef.current is null, cannot initialize');
+      return;
+    }
 
-    // Add OpenStreetMap tiles (free!) with performance optimizations
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-      maxZoom: 19,
-      updateWhenIdle: true,
-      updateWhenZooming: false,
-      keepBuffer: 2,
-    }).addTo(map);
+    try {
+      console.log('[LeafletMap] Creating map instance with options');
 
-    mapInstanceRef.current = map;
+      // Create map with performance optimizations
+      const map = L.map(mapRef.current, {
+        preferCanvas: true,
+        zoomAnimation: false,
+        fadeAnimation: false,
+        markerZoomAnimation: false,
+      }).setView([center.lat, center.lng], zoom);
 
-    // Add markers after map is ready
-    if (properties.length > 0) {
-      updateMarkers();
+      console.log('[LeafletMap] Map instance created successfully');
+
+      // Add OpenStreetMap tiles (free!) with performance optimizations
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19,
+        updateWhenIdle: true,
+        updateWhenZooming: false,
+        keepBuffer: 2,
+      }).addTo(map);
+
+      console.log('[LeafletMap] Tile layer added');
+
+      mapInstanceRef.current = map;
+      console.log('[LeafletMap] Map stored in ref, initialization complete');
+
+      // Add markers after map is ready
+      if (properties.length > 0) {
+        console.log(`[LeafletMap] Adding ${properties.length} markers`);
+        updateMarkers();
+      } else {
+        console.log('[LeafletMap] No properties to add markers for');
+      }
+    } catch (error) {
+      console.error('[LeafletMap] Error during map initialization:', error);
+      console.error('[LeafletMap] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     }
   };
 
   const updateMarkers = () => {
-    if (!mapInstanceRef.current) return;
+    console.log('[LeafletMap] updateMarkers() called');
 
-    // Clear existing markers
-    markersRef.current.forEach(marker => marker.remove());
-    markersRef.current = [];
+    if (!mapInstanceRef.current) {
+      console.warn('[LeafletMap] Cannot update markers: map instance not ready');
+      return;
+    }
 
-    const bounds = L.latLngBounds([]);
+    try {
+      console.log(`[LeafletMap] Clearing ${markersRef.current.length} existing markers`);
+
+      // Clear existing markers
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+
+      const bounds = L.latLngBounds([]);
+      console.log(`[LeafletMap] Processing ${properties.length} properties for markers`);
 
     properties.forEach((property, index) => {
       if (!property.latitude || !property.longitude) return;
@@ -194,9 +244,14 @@ export const LeafletPropertyMap = ({
       bounds.extend([property.latitude, property.longitude]);
     });
 
-    // Fit map to show all markers
-    if (properties.length > 0) {
-      mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
+      // Fit map to show all markers
+      if (properties.length > 0) {
+        mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
+        console.log(`[LeafletMap] Fitted map bounds to show ${properties.length} markers`);
+      }
+    } catch (error) {
+      console.error('[LeafletMap] Error updating markers:', error);
+      console.error('[LeafletMap] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     }
   };
 
