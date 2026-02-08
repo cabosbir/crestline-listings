@@ -359,6 +359,29 @@ function buildLocationFilters({
 // FETCH HELPERS
 // ============================================================================
 
+async function fetchWithRetry(url: string, apiKey: string, maxRetries = 3): Promise<Response> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        Accept: 'application/json',
+      },
+    });
+
+    if (response.status === 429 && attempt < maxRetries - 1) {
+      const waitMs = (attempt + 1) * 2000; // 2s, 4s, 6s
+      console.log(`⏳ [Rate limit] 429 received, retrying in ${waitMs}ms (attempt ${attempt + 1}/${maxRetries})`);
+      await new Promise(resolve => setTimeout(resolve, waitMs));
+      continue;
+    }
+
+    return response;
+  }
+
+  throw new Error('Max retries exceeded');
+}
+
 async function fetchLimitedResultsFromUrl(urlObj: URL, limit: number, apiKey: string) {
   urlObj.searchParams.set('$top', String(limit));
   urlObj.searchParams.set('$skip', '0');
@@ -367,13 +390,7 @@ async function fetchLimitedResultsFromUrl(urlObj: URL, limit: number, apiKey: st
 
   console.log(`📡 [Limited] ${urlObj.toString()}`);
 
-  const response = await fetch(urlObj.toString(), {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      Accept: 'application/json',
-    },
-  });
+  const response = await fetchWithRetry(urlObj.toString(), apiKey);
 
   if (!response.ok) {
     throw new Error(`API returned ${response.status}`);
@@ -394,13 +411,7 @@ async function fetchAllResultsFromUrl(urlObj: URL, apiKey: string): Promise<any[
 
     console.log(`📡 [Page fetch] skip=${skip} ${urlObj.toString()}`);
 
-    const response = await fetch(urlObj.toString(), {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        Accept: 'application/json',
-      },
-    });
+    const response = await fetchWithRetry(urlObj.toString(), apiKey);
 
     if (!response.ok) {
       throw new Error(`API returned ${response.status}`);
@@ -658,14 +669,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    // Collect unique PropertyType values for debugging
+    const uniquePropertyTypes = [...new Set(results.map((r: any) => r.PropertyType).filter(Boolean))];
+
     console.log(`✅ [Result] ${results.length} listings`);
+    console.log(`🏷️ [PropertyTypes in results]: [${uniquePropertyTypes.join(', ')}]`);
 
     // return sanitized response
     return res.status(200).json({
       success: true,
       count: results.length,
       results,
-      filters: filterString
+      filters: filterString,
+      uniquePropertyTypes
     });
 
   } catch (err) {
