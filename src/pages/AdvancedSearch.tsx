@@ -1464,7 +1464,8 @@ const [filters, setFilters] = useState<FilterState>({
       }
 
       // 🆕 SUPERPOWER: Auto-discover and validate special filters with AI
-      if (filters.sellerFinancing || filters.primaryView || filters.currentPrice) {
+      // Skip special filters when doing MLS number search (exact match should ignore all other filters)
+      if (!isMlsNumberSearch && (filters.sellerFinancing || filters.primaryView || filters.currentPrice)) {
         console.log('🦸‍♂️ Discovering MLS field names for special filters...');
         
         // Discover fields if not already cached
