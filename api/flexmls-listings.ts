@@ -545,35 +545,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Property type - handle multiple selections
+    // Uses contains() for flexible matching (e.g., 'Condo' matches both 'Condo' and 'Condominium')
+    // Exception: 'Land' uses exact eq since it's a short word that could false-match
     if (propertyType && propertyType !== 'All') {
       console.log(`🏠 [Property Type] Raw input: "${propertyType}"`);
-      
-      const typeMap: Record<string, string> = {
-        'Condo': 'Condo',
-        'Condos': 'Condo',
-        'House': 'Residential',
-        'Houses': 'Residential',
-        'Land': 'Land',
-        'Commercial': 'Commercial',
-        'Fractional': 'Fractional',
-        'MultiFamily': 'Multi Family'
+
+      // Map UI labels to OData filter fragments
+      // 'Land' uses eq for precision; others use contains() for flexibility across MLS variations
+      const buildTypeFilter = (uiType: string): string => {
+        switch (uiType) {
+          case 'Condo':
+          case 'Condos':
+            return `contains(PropertyType,'Condo')`;  // matches Condo, Condominium
+          case 'House':
+          case 'Houses':
+            return `contains(PropertyType,'Resid')`;   // matches Residential
+          case 'Land':
+            return `PropertyType eq 'Land'`;            // exact match (works confirmed)
+          case 'Commercial':
+            return `contains(PropertyType,'Commerc')`;  // matches Commercial, Commercial Sale
+          case 'Fractional':
+            return `contains(PropertyType,'Fraction')`;
+          case 'MultiFamily':
+            return `(contains(PropertyType,'Multi') or contains(PropertyType,'multi'))`;
+          default:
+            return `PropertyType eq '${safeEscape(uiType)}'`;
+        }
       };
-      
-      // Handle multiple property types (comma-separated)
+
       const types = propertyType.split(',').map(t => t.trim()).filter(Boolean);
       console.log(`🏠 [Property Type] Parsed types: [${types.join(', ')}]`);
-      
+
       if (types.length === 1) {
-        const mapped = typeMap[types[0]] ?? types[0];
-        console.log(`🏠 [Property Type] Single type: ${types[0]} → ${mapped}`);
-        otherFilters.push(`PropertyType eq '${safeEscape(mapped)}'`);
+        const filter = buildTypeFilter(types[0]);
+        console.log(`🏠 [Property Type] Single type filter: ${filter}`);
+        otherFilters.push(filter);
       } else if (types.length > 1) {
-        // Multiple types - use OR logic
         const typeFilters = types
           .map(t => {
-            const mapped = typeMap[t] ?? t;
-            console.log(`🏠 [Property Type] Mapping: ${t} → ${mapped}`);
-            return `PropertyType eq '${safeEscape(mapped)}'`;
+            const filter = buildTypeFilter(t);
+            console.log(`🏠 [Property Type] Mapping: ${t} → ${filter}`);
+            return filter;
           })
           .join(' or ');
         console.log(`🏠 [Property Type] Final filter: (${typeFilters})`);
