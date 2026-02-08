@@ -467,12 +467,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const maxBaths = getStringOrNull(raw.maxBaths);
     
     // Property type can be single value, array, or comma-separated string
+    // Accept both 'propertyType' (singular) and 'propertyTypes' (plural) from frontend
     let propertyType: string | null = null;
-    if (raw.propertyType) {
-      if (Array.isArray(raw.propertyType)) {
-        propertyType = raw.propertyType.join(',');
-      } else if (typeof raw.propertyType === 'string') {
-        propertyType = raw.propertyType;
+    const rawPropertyType = raw.propertyType ?? raw.propertyTypes;
+    if (rawPropertyType) {
+      if (Array.isArray(rawPropertyType)) {
+        propertyType = rawPropertyType.join(',');
+      } else if (typeof rawPropertyType === 'string') {
+        propertyType = rawPropertyType;
       }
     }
     
@@ -579,10 +581,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    // Search - free text (safe)
+    // Search - detect MLS number pattern for exact match, otherwise free text
     if (search && search.trim() !== '') {
       const s = safeEscape(search.trim());
-      otherFilters.push(`(contains(UnparsedAddress,'${s}') or contains(PublicRemarks,'${s}') or contains(ListingId,'${s}'))`);
+      const mlsNumberPattern = /^\d{2}-\d{3,5}$/;
+
+      if (mlsNumberPattern.test(s)) {
+        // MLS number detected - use exact match on ListingId (contains() not supported on this field)
+        console.log(`🔍 [Search] MLS number detected: "${s}" - using exact ListingId match`);
+        otherFilters.push(`ListingId eq '${s}'`);
+      } else {
+        // General text search - search address and remarks
+        otherFilters.push(`(contains(UnparsedAddress,'${s}') or contains(PublicRemarks,'${s}'))`);
+      }
     }
 
     // Special flags

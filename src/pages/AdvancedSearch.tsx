@@ -1397,69 +1397,65 @@ const [filters, setFilters] = useState<FilterState>({
       
       // Build complete API filters
       const apiFilters: any = {};
-      
-      // ✅ Location filters - Use PLURAL to match flexMlsService.ts
-      if (filters.zones.length > 0) {
+
+      // 🔍 Detect MLS number pattern - if searching by MLS#, skip all other filters
+      const mlsNumberPattern = /^\d{2}-\d{3,5}$/;
+      const isMlsNumberSearch = mlsNumberPattern.test(filters.mlsSearch.trim());
+
+      if (isMlsNumberSearch) {
+        console.log(`🔍 MLS number detected: "${filters.mlsSearch.trim()}" - bypassing other filters for exact match`);
+      }
+
+      // ✅ Location filters - Skip when doing MLS number search
+      if (!isMlsNumberSearch && filters.zones.length > 0) {
         apiFilters.city = filters.zones.join(',');
         console.log('  📍 City filter:', apiFilters.city);
       }
-      if (filters.areas.length > 0) {
-        apiFilters.areas = filters.areas.join(',');  // ✅ FIXED: Changed to 'areas' (plural)
+      if (!isMlsNumberSearch && filters.areas.length > 0) {
+        apiFilters.areas = filters.areas.join(',');
         console.log('  📍 Area filter:', apiFilters.areas);
       }
-      if (filters.communities.length > 0 || filters.subdivisions.length > 0) {
-        apiFilters.communities = [...filters.communities, ...filters.subdivisions].join(',');  // ✅ FIXED: Changed to 'communities' (plural)
+      if (!isMlsNumberSearch && (filters.communities.length > 0 || filters.subdivisions.length > 0)) {
+        apiFilters.communities = [...filters.communities, ...filters.subdivisions].join(',');
         console.log('  📍 Community filter:', apiFilters.communities);
       }
-      
-      if (filters.minPrice !== "No Preference" && filters.minPrice !== "$50,000") {
+
+      if (!isMlsNumberSearch && filters.minPrice !== "No Preference" && filters.minPrice !== "$50,000") {
         apiFilters.minPrice = parsePrice(filters.minPrice);
         console.log('  💰 Min price:', apiFilters.minPrice);
       }
-      
-      if (filters.maxPrice !== "No Preference" && filters.maxPrice !== "$3 Million") {
+
+      if (!isMlsNumberSearch && filters.maxPrice !== "No Preference" && filters.maxPrice !== "$3 Million") {
         apiFilters.maxPrice = parsePrice(filters.maxPrice);
         console.log('  💰 Max price:', apiFilters.maxPrice);
       }
       
       // ✅ Check if ONLY Land is selected (Land parcels have 0 beds/baths)
       const isLandOnly = filters.propertyTypes.length === 1 && filters.propertyTypes[0] === "Land";
-      console.log('🔍 DEBUG Land Check:', {
-        propertyTypesArray: filters.propertyTypes,
-        propertyTypesLength: filters.propertyTypes.length,
-        firstType: filters.propertyTypes[0],
-        isLandOnly: isLandOnly
-      });
 
-      // ⚠️ CRITICAL: Send property type filter FIRST before bed/bath filters
-      if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
-        apiFilters.propertyTypes = filters.propertyTypes.join(',');
-        console.log('  🏠 Property types filter:', apiFilters.propertyTypes);
-      } else if (filters.propertyTypes.length === 0) {
-        console.warn('  ⚠️ No property types selected - API will return all types!');
-      } else {
-        console.log('  🏠 All property types selected - no filter needed');
-      }
+      // Skip property type, bed/bath, and status filters when searching by MLS number
+      if (!isMlsNumberSearch) {
+        if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
+          apiFilters.propertyTypes = filters.propertyTypes.join(',');
+          console.log('  🏠 Property types filter:', apiFilters.propertyTypes);
+        }
 
-      // Only apply bedroom filter if NOT searching for Land only
-      if (filters.minBeds !== "Any" && !isLandOnly) {
-        apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
-        console.log('  🛏️ Min beds:', apiFilters.bedrooms);
-      } else if (isLandOnly) {
-        console.log('  🏗️ Land-only search: Skipping bedroom filter (Land has 0 beds)');
-      }
+        // Only apply bedroom filter if NOT searching for Land only
+        if (filters.minBeds !== "Any" && !isLandOnly) {
+          apiFilters.bedrooms = parseInt(filters.minBeds.replace('+', ''));
+          console.log('  🛏️ Min beds:', apiFilters.bedrooms);
+        }
 
-      // Only apply bathroom filter if NOT searching for Land only
-      if (filters.minBaths !== "Any" && !isLandOnly) {
-        apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
-        console.log('  🚿 Min baths:', apiFilters.bathrooms);
-      } else if (isLandOnly) {
-        console.log('  🏗️ Land-only search: Skipping bathroom filter (Land has 0 baths)');
-      }
-      
-      if (filters.status && filters.status !== "Active") {
-        apiFilters.status = filters.status;
-        console.log('  📊 Status:', apiFilters.status);
+        // Only apply bathroom filter if NOT searching for Land only
+        if (filters.minBaths !== "Any" && !isLandOnly) {
+          apiFilters.bathrooms = parseInt(filters.minBaths.replace('+', ''));
+          console.log('  🚿 Min baths:', apiFilters.bathrooms);
+        }
+
+        if (filters.status && filters.status !== "Active") {
+          apiFilters.status = filters.status;
+          console.log('  📊 Status:', apiFilters.status);
+        }
       }
       
       if (filters.mlsSearch.trim()) {
