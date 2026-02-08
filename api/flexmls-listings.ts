@@ -544,53 +544,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!Number.isNaN(v)) otherFilters.push(`BathroomsFull le ${v}`);
     }
 
-    // Property type - handle multiple selections
-    // Uses contains() for flexible matching (e.g., 'Condo' matches both 'Condo' and 'Condominium')
-    // Exception: 'Land' uses exact eq since it's a short word that could false-match
+    // Property type - parsed here, filtered CLIENT-SIDE after fetch (like primaryView)
+    // OData contains() doesn't reliably match all FlexMLS PropertyType values
+    let requestedPropertyTypes: string[] | null = null;
     if (propertyType && propertyType !== 'All') {
-      console.log(`🏠 [Property Type] Raw input: "${propertyType}"`);
-
-      // Map UI labels to OData filter fragments
-      // 'Land' uses eq for precision; others use contains() for flexibility across MLS variations
-      const buildTypeFilter = (uiType: string): string => {
-        switch (uiType) {
-          case 'Condo':
-          case 'Condos':
-            return `contains(PropertyType,'Condo')`;  // matches Condo, Condominium
-          case 'House':
-          case 'Houses':
-            return `contains(PropertyType,'Resid')`;   // matches Residential
-          case 'Land':
-            return `PropertyType eq 'Land'`;            // exact match (works confirmed)
-          case 'Commercial':
-            return `contains(PropertyType,'Commerc')`;  // matches Commercial, Commercial Sale
-          case 'Fractional':
-            return `contains(PropertyType,'Fraction')`;
-          case 'MultiFamily':
-            return `(contains(PropertyType,'Multi') or contains(PropertyType,'multi'))`;
-          default:
-            return `PropertyType eq '${safeEscape(uiType)}'`;
-        }
-      };
-
-      const types = propertyType.split(',').map(t => t.trim()).filter(Boolean);
-      console.log(`🏠 [Property Type] Parsed types: [${types.join(', ')}]`);
-
-      if (types.length === 1) {
-        const filter = buildTypeFilter(types[0]);
-        console.log(`🏠 [Property Type] Single type filter: ${filter}`);
-        otherFilters.push(filter);
-      } else if (types.length > 1) {
-        const typeFilters = types
-          .map(t => {
-            const filter = buildTypeFilter(t);
-            console.log(`🏠 [Property Type] Mapping: ${t} → ${filter}`);
-            return filter;
-          })
-          .join(' or ');
-        console.log(`🏠 [Property Type] Final filter: (${typeFilters})`);
-        otherFilters.push(`(${typeFilters})`);
-      }
+      requestedPropertyTypes = propertyType.split(',').map(t => t.trim()).filter(Boolean);
+      console.log(`🏠 [Property Type] Will filter client-side for: [${requestedPropertyTypes.join(', ')}]`);
     }
 
     // Search - detect MLS number pattern for exact match, otherwise free text
@@ -651,6 +610,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       results = resp?.value ?? [];
     } else {
       results = await fetchAllResultsFromUrl(new URL(base.toString()), FLEXMLS_API_KEY);
+    }
+
+    // Client-side PropertyType filtering — more reliable than OData contains() on this field
+    if (requestedPropertyTypes && requestedPropertyTypes.length > 0 && Array.isArray(results)) {
+      // Log actual API values so we can see what FlexMLS returns
+      const uniqueTypes = [...new Set(results.map((r: any) => r.PropertyType).filter(Boolean))];
+      console.log(`🏠 [Property Type] Actual API values in results: [${uniqueTypes.join(', ')}]`);
+
+      const beforeCount = results.length;
+      results = results.filter((r: any) => {
+        const pt = (r.PropertyType || '').toLowerCase();
+        return requestedPropertyTypes!.some(t => {
+          switch (t) {
+            case 'Condo':
+            case 'Condos':
+              return pt.includes('condo');
+            case 'House':
+            case 'Houses':
+              return pt.includes('resid') || pt.includes('single') || pt.includes('house') || pt.includes('home') || pt.includes('detach');
+            case 'Land':
+              return pt === 'land' || pt.includes('lot');
+            case 'Commercial':
+              return pt.includes('commerc') || pt.includes('business');
+            case 'Fractional':
+              return pt.includes('fract');
+            case 'MultiFamily':
+              return pt.includes('multi') || pt.includes('income') || pt.includes('duplex');
+            default:
+              return pt.includes(t.toLowerCase());
+          }
+        });
+      });
+      console.log(`🏠 [Property Type] Client-side filter: ${beforeCount} → ${results.length}`);
     }
 
     // Client-side stronger primary view filter (optional) — keep as you previously had
