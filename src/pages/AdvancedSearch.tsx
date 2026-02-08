@@ -1435,7 +1435,13 @@ const [filters, setFilters] = useState<FilterState>({
 
       // Skip property type, bed/bath, and status filters when searching by MLS number
       if (!isMlsNumberSearch) {
-        if (filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
+        // Only send property type filter when user has changed from defaults
+        // Default ["Condos", "Houses"] should NOT filter (shows all types, matching pre-fix behavior)
+        const defaultTypes = ["Condos", "Houses"];
+        const isDefaultPropertyTypes = filters.propertyTypes.length === defaultTypes.length &&
+          filters.propertyTypes.every(t => defaultTypes.includes(t));
+
+        if (!isDefaultPropertyTypes && filters.propertyTypes.length > 0 && filters.propertyTypes.length < propertyTypes.length) {
           apiFilters.propertyTypes = filters.propertyTypes.join(',');
           console.log('  🏠 Property types filter:', apiFilters.propertyTypes);
         }
