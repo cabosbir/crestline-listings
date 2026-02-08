@@ -1516,10 +1516,19 @@ const [filters, setFilters] = useState<FilterState>({
 
       const mlsProperties: MLSProperty[] = await fetchListings(apiFilters);
       const converted = mlsProperties.map(convertMLSToPropertyCard).filter(p => p.latitude && p.longitude);
-      
+
       setPreviewProperties(converted);
       setTotalCount(mlsProperties.length);
-      
+
+      // 🏷️ DEBUG: Log PropertyType values from results so we can see what FlexMLS actually returns
+      const ptValues = [...new Set(mlsProperties.map((p: any) => p.PropertyType).filter(Boolean))];
+      console.log('🏷️ ===== PROPERTY TYPE DEBUG =====');
+      console.log('🏷️ Checkboxes selected:', filters.propertyTypes);
+      console.log('🏷️ Sent to API as:', apiFilters.propertyTypes || '(none - using defaults)');
+      console.log('🏷️ PropertyType values in results:', JSON.stringify(ptValues));
+      console.log('🏷️ Result count:', mlsProperties.length);
+      console.log('🏷️ =================================');
+
       console.log(`✅ Search complete: ${mlsProperties.length} total properties, ${converted.length} with coordinates for map`);
       
       if (mlsProperties.length === 0) {

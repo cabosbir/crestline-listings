@@ -145,6 +145,13 @@ export async function fetchListings(params?: {
     
     console.log('✅ Fetched listings:', data.results.length);
     console.log('📊 Total in MLS:', data.count || 'Unknown');
+
+    // 🏷️ DEBUG: Show the actual PropertyType values from FlexMLS API
+    if (data.uniquePropertyTypes) {
+      console.log('🏷️ ===== FLEXMLS PROPERTY TYPES =====');
+      console.log('🏷️ Unique PropertyType values:', JSON.stringify(data.uniquePropertyTypes));
+      console.log('🏷️ =====================================');
+    }
     
     // Cache all properties
     data.results.forEach((prop: MLSProperty) => {
