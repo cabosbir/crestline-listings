@@ -258,7 +258,10 @@ const FernandoLandingPage = () => {
 
         const birOnly = mlsData.filter((listing: any) => {
           const officeName = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
-          return officeName.includes('baja international realty');
+          // Log unique office names for debugging
+          const allOfficeNames = [...new Set(mlsData.map((l: any) => l.ListOfficeName || l.OfficeName || '').filter(Boolean))];
+          console.log('🏢 All office names in results:', JSON.stringify(allOfficeNames));
+          return officeName.includes('baja international');
         });
         console.log(`🏢 BIR office listings: ${birOnly.length} of ${mlsData.length} total`);
         const convertedListings = birOnly.map(convertMLSToPropertyCard);

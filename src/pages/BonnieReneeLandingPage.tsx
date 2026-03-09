@@ -343,7 +343,7 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'bonnie-renee-featured-api-data-v1';
+        const cacheKey = 'bonnie-renee-featured-api-data-v2';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -364,7 +364,10 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
         });
         const birOnly = mlsData.filter((listing: any) => {
           const officeName = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
-          return officeName.includes('baja international realty');
+          // Log unique office names for debugging
+          const allOfficeNames = [...new Set(mlsData.map((l: any) => l.ListOfficeName || l.OfficeName || '').filter(Boolean))];
+          console.log('🏢 All office names in results:', JSON.stringify(allOfficeNames));
+          return officeName.includes('baja international');
         });
         console.log(`🏢 BIR office listings: ${birOnly.length} of ${mlsData.length} total`);
         const convertedListings = birOnly.map(convertMLSToPropertyCard);
@@ -438,7 +441,7 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
           
           // Match Baja International Realty office
-          const officeMatch = listOfficeName.toLowerCase().includes('baja international realty');
+          const officeMatch = listOfficeName.toLowerCase().includes('baja international');
           
           return nameMatch || emailMatch || phoneMatch || officeMatch;
         });
