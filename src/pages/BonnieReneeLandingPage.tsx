@@ -363,7 +363,7 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
           city: 'Cabo San Lucas',
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'bonnie-renee-featured-shuffle-v1');
+        const shuffled = getShuffledListings(convertedListings, 'bonnie-renee-featured-shuffle-v2');
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));

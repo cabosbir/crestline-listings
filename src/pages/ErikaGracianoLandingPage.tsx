@@ -362,7 +362,7 @@ const ErikaLandingPage = () => {
           city: 'Cabo San Lucas',
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'erika-graciano-featured-shuffle-v1');
+        const shuffled = getShuffledListings(convertedListings, 'erika-graciano-featured-shuffle-v2');
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));

@@ -358,7 +358,7 @@ const MarisolLandingPage = () => {
           city: 'Cabo San Lucas',
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'marisol-featured-shuffle-v1');
+        const shuffled = getShuffledListings(convertedListings, 'marisol-featured-shuffle-v2');
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));

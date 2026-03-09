@@ -256,7 +256,7 @@ const BobLandingPage = () => {
           city: 'Cabo San Lucas',
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
+        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle-v2`);
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));
