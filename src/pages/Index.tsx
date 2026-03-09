@@ -197,9 +197,9 @@ const Index = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {teamMembers.map((member) => (
-              <Link to={`/team/${member.id}`} key={member.id}>
-                <AgentBioCard 
-                  {...member} 
+              <Link to={member.slug ? `/${member.slug}` : `/team/${member.id}`} key={member.id}>
+                <AgentBioCard
+                  {...member}
                   showStats={false}
                   landingPageSlug={member.slug}
                 />

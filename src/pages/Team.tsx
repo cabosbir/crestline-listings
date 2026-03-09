@@ -324,7 +324,12 @@ const Team = () => {
 
   const handleViewBio = useMemo(() => {
     return (agentId: number) => {
-      navigate(`/team/${agentId}`);
+      const agent = agents.find(a => a.id === agentId);
+      if (agent?.slug) {
+        navigate(`/${agent.slug}`);
+      } else {
+        navigate(`/team/${agentId}`);
+      }
     };
   }, [navigate]);
 
