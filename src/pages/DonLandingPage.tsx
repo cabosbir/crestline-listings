@@ -236,7 +236,7 @@ const DonLandingPage = () => {
       setIsLoadingFeatured(true);
 
       try {
-        const cacheKey = 'don-featured-api-data-v7';
+        const cacheKey = 'don-featured-api-data-v8';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -255,7 +255,7 @@ const DonLandingPage = () => {
           limit: 50,
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v7');
+        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v8');
 
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));
