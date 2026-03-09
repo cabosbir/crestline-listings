@@ -343,7 +343,7 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'bonnie-renee-featured-api-data-v2';
+        const cacheKey = 'bonnie-renee-featured-api-data-v3';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);

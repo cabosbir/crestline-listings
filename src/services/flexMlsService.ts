@@ -31,6 +31,15 @@ export interface MLSProperty {
     MediaURL: string;
     Order: number;
   }>;
+  ListAgentFullName?: string;
+  ListAgentName?: string;
+  AgentName?: string;
+  ListAgentEmail?: string;
+  AgentEmail?: string;
+  ListAgentPhone?: string;
+  AgentPhone?: string;
+  ListOfficeName?: string;
+  OfficeName?: string;
 }
 
 const propertyCache: Map<string, MLSProperty> = new Map();

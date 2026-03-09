@@ -182,7 +182,7 @@ const CharlesLandingPage = () => {
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(getInitialTab());
-  const [myListings, setMyListings] = useState(fallbackListings);
+  const [myListings, setMyListings] = useState<any[]>(fallbackListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
@@ -232,7 +232,7 @@ const CharlesLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = `${agent.slug}-featured-api-data`;
+        const cacheKey = `${agent.slug}-featured-api-data-v3`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -329,10 +329,12 @@ const CharlesLandingPage = () => {
           
           const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
-          
-          return nameMatch || emailMatch || phoneMatch;
+
+          const officeMatch = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase().includes('baja international');
+
+          return nameMatch || emailMatch || phoneMatch || officeMatch;
         });
-        
+
         console.log(`✅ Auto-detected ${agentListings.length} listings for ${agent.name}`);
         
         if (agentListings.length > 0) {
