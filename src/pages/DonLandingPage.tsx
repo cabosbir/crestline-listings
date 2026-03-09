@@ -236,34 +236,11 @@ const DonLandingPage = () => {
       setIsLoadingFeatured(true);
 
       try {
-        const cacheKey = 'don-featured-api-data-v8';
-        const cacheTimeKey = `${cacheKey}-time`;
-        const cached = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheTimeKey);
-
-        const now = Date.now();
-        const threeHours = 3 * 60 * 60 * 1000;
-
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
-          const cachedData = JSON.parse(cached);
-          setFeaturedListings(cachedData);
-          setIsLoadingFeatured(false);
-          return;
-        }
-
         const mlsData = await fetchListings({
           limit: 50,
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v8');
-
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(shuffled));
-          localStorage.setItem(cacheTimeKey, now.toString());
-        } catch (e) {
-          console.error('Error caching API data:', e);
-        }
-
+        const shuffled = [...convertedListings].sort(() => Math.random() - 0.5);
         setFeaturedListings(shuffled);
       } catch (error) {
         console.error('Failed to load featured listings:', error);
