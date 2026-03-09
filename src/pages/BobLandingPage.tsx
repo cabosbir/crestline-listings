@@ -234,7 +234,7 @@ const BobLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = `${agent.slug}-featured-api-data-v5`;
+        const cacheKey = `${agent.slug}-featured-api-data-v6`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -255,7 +255,7 @@ const BobLandingPage = () => {
           limit: 50,
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle-v3`);
+        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle-v4`);
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));

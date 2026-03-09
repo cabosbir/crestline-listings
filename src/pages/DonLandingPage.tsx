@@ -293,7 +293,7 @@ const DonLandingPage = () => {
   
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(getInitialTab());
-  const [myListings, setMyListings] = useState(fallbackListings);
+  const [myListings, setMyListings] = useState<any[]>(fallbackListings);
   const [featuredListings, setFeaturedListings] = useState([]);
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
@@ -342,7 +342,7 @@ const DonLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'don-featured-api-data-v5';
+        const cacheKey = 'don-featured-api-data-v6';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -361,7 +361,7 @@ const DonLandingPage = () => {
           limit: 50,
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v3');
+        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v4');
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));
