@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";  
-import { useLocation } from "react-router-dom"; 
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
@@ -23,15 +22,15 @@ const getWhatsAppLink = (phone: string, agentName: string) => {
 
 const getShuffledListings = (listings: any[], cacheKey: string) => {
   const cacheTimeKey = `${cacheKey}-time`;
-  
+
   if (typeof window === 'undefined') return listings;
-  
+
   const cached = localStorage.getItem(cacheKey);
   const cachedTime = localStorage.getItem(cacheTimeKey);
-  
+
   const now = Date.now();
   const threeHours = 3 * 60 * 60 * 1000;
-  
+
   if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
     try {
       return JSON.parse(cached);
@@ -39,16 +38,16 @@ const getShuffledListings = (listings: any[], cacheKey: string) => {
       console.error('Error parsing cached listings:', e);
     }
   }
-  
+
   const shuffled = [...listings].sort(() => Math.random() - 0.5);
-  
+
   try {
     localStorage.setItem(cacheKey, JSON.stringify(shuffled));
     localStorage.setItem(cacheTimeKey, now.toString());
   } catch (e) {
     console.error('Error saving to localStorage:', e);
   }
-  
+
   return shuffled;
 };
 
@@ -121,109 +120,6 @@ const fallbackListings = [
   },
 ];
 
-// Premium featured listings
-const premiumFeaturedListings = [
-  {
-    id: 1,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171689/20250903162058154584000000-o_1_dtusih.jpg",
-    price: "$29,900,000",
-    title: "La Montaña 7",
-    location: "San Jose Corridor",
-    beds: 6,
-    baths: 6,
-    sqft: "N/A",
-    mlsNumber: "25-1563",
-  },
-  {
-    id: 2,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171868/20241126184008646051000000-o_lv9fbu.jpg",
-    price: "$21,000,000",
-    title: "Espiritu del Mar, Casa Luna Escondida",
-    location: "San Jose Corridor",
-    beds: 10,
-    baths: 11,
-    sqft: "22,596 sq ft",
-    mlsNumber: "24-5344",
-  },
-  {
-    id: 3,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171913/20251030154706212946000000-o_erpyxt.jpg",
-    price: "$19,850,000",
-    title: "Casa R Caleta Palmilla, Beachfront",
-    location: "Caleta Palmilla",
-    beds: 7,
-    baths: 6,
-    sqft: "12,860 sq ft",
-    mlsNumber: "25-4826",
-  },
-  {
-    id: 4,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763171969/20251010184556773187000000-o_hq2fyv.jpg",
-    price: "$17,900,000",
-    title: "Casita 11, Casa Amore",
-    location: "San Jose Corridor",
-    beds: 5,
-    baths: 4,
-    sqft: "12,819 sq ft",
-    mlsNumber: "25-4958",
-  },
-  {
-    id: 5,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172032/20251010204002587235000000-o_xs4xu1.jpg",
-    price: "$15,900,000",
-    title: "Casita 10, Villa Laura",
-    location: "San Jose Corridor",
-    beds: 8,
-    baths: 8,
-    sqft: "10,874 sq ft",
-    mlsNumber: "25-4500",
-  },
-  {
-    id: 6,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172108/20250516213428349054000000-o_upkws3.jpg",
-    price: "$12,900,000",
-    title: "Hacienda 505",
-    location: "San Jose Corridor",
-    beds: 5,
-    baths: 5,
-    sqft: "N/A",
-    mlsNumber: "25-2623",
-  },
-  {
-    id: 7,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172188/20251107153452735555000000-o_lnsjug.jpg",
-    price: "$11,900,000",
-    title: "Estate Villa 496",
-    location: "San Jose Corridor",
-    beds: 5,
-    baths: 6,
-    sqft: "8,102 sq ft",
-    mlsNumber: "25-3280",
-  },
-  {
-    id: 8,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172532/20250520183535938188000000-o_hywmj2.jpg",
-    price: "$8,500,000",
-    title: "Casita 382",
-    location: "San Jose Corridor",
-    beds: 4,
-    baths: 4,
-    sqft: "5,724 sq ft",
-    mlsNumber: "25-2575",
-  },
-  {
-    id: 9,
-    image: "https://res.cloudinary.com/dgixosra8/image/upload/v1763172428/20251010043244963405000000-o_1_kexihr.jpg",
-    price: "$8,500,000",
-    title: "Casa Abejas",
-    location: "Palmilla",
-    beds: 7,
-    baths: 8,
-    sqft: "6,101 sq ft",
-    mlsNumber: "25-4970",
-  },
-];
-
 const testimonials = [
   {
     name: "Resort Development Group",
@@ -249,10 +145,8 @@ const DonLandingPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const location = useLocation();
   const canonicalUrl = 'https://www.bircabo.com/don';
-  
-  // ⭐ Initialize from saved state if returning
+
   const getInitialPage = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
@@ -271,7 +165,7 @@ const DonLandingPage = () => {
     }
     return 1;
   };
-  
+
   const getInitialTab = () => {
     if (typeof window !== 'undefined') {
       const returning = sessionStorage.getItem('returningFromProperty');
@@ -288,14 +182,14 @@ const DonLandingPage = () => {
         }
       }
     }
-    return false; // Default to "featured" for Don
+    return false;
   };
-  
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showMyListings, setShowMyListings] = useState(getInitialTab());
   const [myListings, setMyListings] = useState<any[]>(fallbackListings);
-  const [featuredListings, setFeaturedListings] = useState([]);
-  const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
+  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
   const [isLoadingMyListings, setIsLoadingMyListings] = useState(false);
   const [currentPage, setCurrentPage] = useState(getInitialPage());
 
@@ -340,36 +234,36 @@ const DonLandingPage = () => {
   useEffect(() => {
     const loadFeaturedListings = async () => {
       setIsLoadingFeatured(true);
-      
+
       try {
-        const cacheKey = 'don-featured-api-data-v6';
+        const cacheKey = 'don-featured-api-data-v5';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
-        
+
         const now = Date.now();
         const threeHours = 3 * 60 * 60 * 1000;
-        
+
         if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
           const cachedData = JSON.parse(cached);
           setFeaturedListings(cachedData);
           setIsLoadingFeatured(false);
           return;
         }
-        
-        const mlsData = await fetchListings({ 
+
+        const mlsData = await fetchListings({
           limit: 50,
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v4');
-        
+        const shuffled = getShuffledListings(convertedListings, 'don-featured-shuffle-v5');
+
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));
           localStorage.setItem(cacheTimeKey, now.toString());
         } catch (e) {
           console.error('Error caching API data:', e);
         }
-        
+
         setFeaturedListings(shuffled);
       } catch (error) {
         console.error('Failed to load featured listings:', error);
@@ -380,77 +274,66 @@ const DonLandingPage = () => {
     };
 
     loadFeaturedListings();
-  }, []); // Load once on mount
+  }, []);
 
-  // ==================== LOAD MY LISTINGS (AUTO DETECTION) ====================
+  // ==================== LOAD MY LISTINGS ====================
   useEffect(() => {
     const loadMyListings = async () => {
       if (!showMyListings) return;
-      
+
       setIsLoadingMyListings(true);
-      
+
       try {
         const CACHE_VERSION = 1;
         const cacheKey = `don-my-listings-auto-v${CACHE_VERSION}`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
-        
+
         const now = Date.now();
         const threeHours = 3 * 60 * 60 * 1000;
-        
+
         if (cached && cachedTime && (now - parseInt(cachedTime)) < threeHours) {
           const cachedData = JSON.parse(cached);
-          console.log(`✅ Using cached auto-detected listings (v${CACHE_VERSION}):`, cachedData.length);
           setMyListings(cachedData);
           setIsLoadingMyListings(false);
           return;
         }
-        
-        console.log('🤖 AUTO-DETECTING listings for Baja International Realty');
-        
-        const mlsData = await fetchListings({ 
+
+        const mlsData = await fetchListings({
           limit: 500,
           city: 'Cabo San Lucas'
         });
-        
-        console.log('🔍 Total API results:', mlsData.length);
-        
-        // Search for Don Weis OR Baja International Realty OR any BIR agent
+
         const agentListings = mlsData.filter(listing => {
           const listAgentName = listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '';
           const listAgentEmail = listing.ListAgentEmail || listing.AgentEmail || '';
           const listAgentPhone = listing.ListAgentPhone || listing.AgentPhone || '';
           const listOfficeName = listing.ListOfficeName || listing.OfficeName || '';
-          
-          // Match Don Weis specifically
-          const nameMatch = listAgentName.toLowerCase().includes('weis') || 
+
+          const nameMatch = listAgentName.toLowerCase().includes('weis') ||
                            listAgentName.toLowerCase().includes('don');
           const emailMatch = listAgentEmail.toLowerCase() === agentIdentifiers.email.toLowerCase();
           const cleanPhone = (phone: string) => phone.replace(/[^0-9]/g, '');
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
-          
-          // Match Baja International Realty office (must include "international" to avoid "House of Baja")
           const officeMatch = listOfficeName.toLowerCase().includes('baja international');
-          
+
           return nameMatch || emailMatch || phoneMatch || officeMatch;
         });
-        
-        console.log(`✅ Auto-detected ${agentListings.length} listings for Baja International Realty`);
-        
+
         const convertedListings = agentListings.map(convertMLSToPropertyCard);
         const finalListings = convertedListings.length > 0 ? convertedListings : fallbackListings;
-        
+
         try {
           localStorage.setItem(cacheKey, JSON.stringify(finalListings));
           localStorage.setItem(cacheTimeKey, now.toString());
         } catch (e) {
           console.error('Error caching my listings:', e);
         }
-        
+
         setMyListings(finalListings);
       } catch (error) {
-        console.error('Failed to auto-detect listings:', error);
+        console.error('Failed to load my listings:', error);
         setMyListings(fallbackListings);
       } finally {
         setIsLoadingMyListings(false);
@@ -475,14 +358,14 @@ const DonLandingPage = () => {
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
     const maxVisible = 7;
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
       pages.push(1);
-      
+
       if (currentPage <= 3) {
         pages.push(2, 3, 4);
         pages.push('ellipsis-end');
@@ -497,7 +380,7 @@ const DonLandingPage = () => {
         pages.push(totalPages);
       }
     }
-    
+
     return pages;
   };
 
@@ -505,8 +388,8 @@ const DonLandingPage = () => {
     <div className="min-h-screen">
       <Helmet>
         <title>Don Weis - Founder & Broker | Luxury Properties & Development Expert | Baja International Realty</title>
-        <meta 
-          name="description" 
+        <meta
+          name="description"
           content="Connect with Don Weis, Founder & Broker of Baja International Realty with 35 years experience. 2,200+ properties sold, $250M+ in personal sales. Pioneer of luxury real estate development in Cabo San Lucas since the 1980s."
         />
         <link rel="canonical" href={canonicalUrl} />
@@ -515,48 +398,29 @@ const DonLandingPage = () => {
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/don-weis.jpg" />
         <meta property="og:type" content="profile" />
-        
-        {/* Person Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
             "name": "Don Weis",
             "jobTitle": "Founder & Broker",
-            "worksFor": {
-              "@type": "Organization",
-              "name": "Baja International Realty",
-              "url": "https://www.bircabo.com",
-              "founder": {
-                "@type": "Person",
-                "name": "Don Weis"
-              }
-            },
+            "worksFor": { "@type": "Organization", "name": "Baja International Realty", "url": "https://www.bircabo.com" },
             "email": "Don@BIRCabo.com",
             "telephone": "+52 624 143 5555",
             "image": "https://www.bircabo.com/don-weis.jpg",
             "url": canonicalUrl,
-            "description": "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s with over $250 million in personal sales.",
-            "knowsAbout": ["Luxury Real Estate", "Development", "Resort Communities", "Land Acquisitions", "Cabo San Lucas", "Los Cabos", "Baja California Sur"],
-            "award": "Legendary Real Estate Pioneer"
           })}
         </script>
       </Helmet>
       <Navbar />
 
-      {/* ==================== BACK TO TEAM BUTTON ==================== */}
       <div className="container mx-auto px-4 pt-24">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/team')}
-          className="mb-4 hover:bg-secondary"
-        >
+        <Button variant="ghost" onClick={() => navigate('/team')} className="mb-4 hover:bg-secondary">
           <ChevronLeft className="mr-2 h-4 w-4" />
           Back to Team
         </Button>
       </div>
 
-      {/* ==================== WHATSAPP FLOATING BUTTON ==================== */}
       <a
         href={getWhatsAppLink(agent.phone, agent.name)}
         target="_blank"
@@ -575,29 +439,24 @@ const DonLandingPage = () => {
       {/* ==================== HERO SECTION ==================== */}
       <section className="relative pb-16 overflow-hidden" style={{ backgroundColor: 'white' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
-        
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1">
-              <img 
+              <img
                 src={agent.image}
                 alt={`${agent.name} - ${agent.title} at Baja International Realty`}
                 className="w-full max-w-md mx-auto rounded-2xl shadow-2xl object-cover"
               />
             </div>
-
             <div className="order-1 lg:order-2 text-center lg:text-left">
               <p className="text-lg mb-2 font-medium" style={{ color: '#d4af37' }}>Founder & Visionary Leader</p>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4" style={{ color: '#102f74' }}>
                 {agent.name}
               </h1>
-              <p className="text-xl md:text-2xl mb-6" style={{ color: '#666' }}>
-                {agent.title}
-              </p>
+              <p className="text-xl md:text-2xl mb-6" style={{ color: '#666' }}>{agent.title}</p>
               <p className="text-lg mb-8 max-w-xl mx-auto lg:mx-0" style={{ color: '#666' }}>
                 Specializing in {agent.specialization}
               </p>
-
               <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
@@ -608,27 +467,15 @@ const DonLandingPage = () => {
                   <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
-
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button 
-                  variant="default"
-                  size="lg"
-                  asChild
-                  style={{ backgroundColor: '#102f74', color: 'white' }}
-                  className="hover:opacity-90"
-                >
+                <Button variant="default" size="lg" asChild style={{ backgroundColor: '#102f74', color: 'white' }} className="hover:opacity-90">
                   <a href={`tel:${agent.phone}`}>
                     <Phone className="mr-2 h-5 w-5" />
                     Call {agent.name.split(' ')[0]} Now
                   </a>
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  style={{ borderColor: '#102f74', color: '#102f74' }}
-                  className="bg-transparent hover:bg-[#102f74] hover:text-white"
-                  onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
-                >
+                <Button variant="outline" size="lg" style={{ borderColor: '#102f74', color: '#102f74' }} className="bg-transparent hover:bg-[#102f74] hover:text-white"
+                  onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
                   <Mail className="mr-2 h-5 w-5" />
                   Send Message
                 </Button>
@@ -650,12 +497,11 @@ const DonLandingPage = () => {
               <p>{agent.bio4}</p>
               <p>{agent.bio5}</p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="text-center">
                 <Award className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
-                <h3 className="font-bold mb-2">Certifications</h3>
-                <div className="space-y-1">
+                <h3 className="font-bold mb-3">Certifications</h3>
+                <div className="space-y-2">
                   {agent.certifications.map((cert, index) => (
                     <div key={index} className="flex items-center justify-center gap-2">
                       <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: '#102f74' }} />
@@ -664,20 +510,18 @@ const DonLandingPage = () => {
                   ))}
                 </div>
               </div>
-
               <div className="text-center">
                 <Users className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
-                <h3 className="font-bold mb-2">Languages</h3>
+                <h3 className="font-bold mb-3">Languages</h3>
                 <div className="space-y-1">
                   {agent.languages.map((lang, index) => (
                     <div key={index} className="text-sm text-muted-foreground">{lang}</div>
                   ))}
                 </div>
               </div>
-
               <div className="text-center">
                 <Home className="h-12 w-12 mx-auto mb-4" style={{ color: '#102f74' }} />
-                <h3 className="font-bold mb-2">Specialization</h3>
+                <h3 className="font-bold mb-3">Specialization</h3>
                 <p className="text-sm text-muted-foreground">{agent.specialization}</p>
               </div>
             </div>
@@ -696,22 +540,15 @@ const DonLandingPage = () => {
               {showMyListings ? 'Landmark Properties' : 'Featured Listings'}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-              {showMyListings 
+              {showMyListings
                 ? 'Exclusive development opportunities and premier estates from Baja International Realty'
                 : 'Explore live properties from FlexMLS (refreshed every 3 hours)'}
             </p>
-
             <div className="flex justify-center gap-2 mb-8">
-              <Button
-                variant={showMyListings ? "luxury" : "outline"}
-                onClick={() => setShowMyListings(true)}
-              >
+              <Button variant={showMyListings ? "luxury" : "outline"} onClick={() => { setShowMyListings(true); setCurrentPage(1); }}>
                 My Listings ({myListings.length})
               </Button>
-              <Button
-                variant={!showMyListings ? "luxury" : "outline"}
-                onClick={() => setShowMyListings(false)}
-              >
+              <Button variant={!showMyListings ? "luxury" : "outline"} onClick={() => { setShowMyListings(false); setCurrentPage(1); }}>
                 Featured ({featuredListings.length})
               </Button>
             </div>
@@ -721,7 +558,7 @@ const DonLandingPage = () => {
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="h-12 w-12 animate-spin mb-4" style={{ color: '#102f74' }} />
               <p className="text-lg text-muted-foreground">
-                {showMyListings ? 'Auto-detecting agent listings...' : 'Loading featured properties...'}
+                {showMyListings ? 'Loading office listings...' : 'Loading featured properties...'}
               </p>
             </div>
           ) : (
@@ -731,61 +568,32 @@ const DonLandingPage = () => {
                   <PropertyCard key={property.id} {...property} currentPage={currentPage} />
                 ))}
               </div>
-
               {displayedListings.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-lg text-muted-foreground">No listings available at this time.</p>
                 </div>
               )}
-
-              {/* ==================== PAGINATION ==================== */}
               {totalPages > 1 && (
                 <div className="flex flex-col items-center gap-4 my-8">
                   <div className="text-sm text-muted-foreground">
                     Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, allListings.length)} of {allListings.length} properties
                   </div>
-                  
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="h-10 px-3"
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="h-10 px-3">
                       <ChevronLeft className="h-4 w-4" />
                       <span className="ml-1 hidden sm:inline">Previous</span>
                     </Button>
-                    
                     {getPageNumbers().map((page, index) => {
                       if (page === 'ellipsis-start' || page === 'ellipsis-end') {
-                        return (
-                          <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
-                            ...
-                          </span>
-                        );
+                        return <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">...</span>;
                       }
-                      
                       return (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "luxury" : "outline"}
-                          size="sm"
-                          onClick={() => handlePageChange(page as number)}
-                          className="h-10 w-10 p-0"
-                        >
+                        <Button key={page} variant={currentPage === page ? "luxury" : "outline"} size="sm" onClick={() => handlePageChange(page as number)} className="h-10 w-10 p-0">
                           {page}
                         </Button>
                       );
                     })}
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="h-10 px-3"
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="h-10 px-3">
                       <span className="mr-1 hidden sm:inline">Next</span>
                       <ChevronRight className="h-4 w-4" />
                     </Button>
@@ -794,12 +602,9 @@ const DonLandingPage = () => {
               )}
             </>
           )}
-
           <div className="text-center">
             <Link to="/properties">
-              <Button variant="luxury" size="lg">
-                View All Properties
-              </Button>
+              <Button variant="luxury" size="lg">View All Properties</Button>
             </Link>
           </div>
         </div>
@@ -809,7 +614,6 @@ const DonLandingPage = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Client Reviews</h2>
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {testimonials.map((testimonial, index) => (
               <div key={index} className="bg-secondary/30 p-6 rounded-xl">
@@ -836,13 +640,8 @@ const DonLandingPage = () => {
                 I will personally reach out to discuss your property goals.
               </p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              <a 
-                href={`tel:${agent.phone}`}
-                className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-              >
+              <a href={`tel:${agent.phone}`} className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
                   <Phone className="h-7 w-7 text-white" />
                 </div>
@@ -851,12 +650,7 @@ const DonLandingPage = () => {
                   <div className="text-xl font-bold text-white">{agent.phone}</div>
                 </div>
               </a>
-
-              <a 
-                href={`mailto:${agent.email}`}
-                className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60"
-                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
-              >
+              <a href={`mailto:${agent.email}`} className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
                   <Mail className="h-7 w-7 text-white" />
                 </div>
@@ -866,7 +660,6 @@ const DonLandingPage = () => {
                 </div>
               </a>
             </div>
-
             <div className="bg-white rounded-2xl p-8 md:p-12 text-center shadow-2xl">
               <div className="mb-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-900 to-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -879,43 +672,25 @@ const DonLandingPage = () => {
                   Select the right form for your needs and {agent.name.split(' ')[0]} will personally reach out.
                 </p>
               </div>
-
               <div className="relative max-w-md mx-auto">
-                <Button 
-                  size="lg"
-                  className="w-full h-16 px-12 text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105 flex items-center justify-between"
-                  style={{ backgroundColor: '#102f74', color: 'white' }}
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                >
+                <Button size="lg" className="w-full h-16 px-12 text-lg font-bold shadow-xl hover:shadow-2xl transition-all hover:scale-105 flex items-center justify-between" style={{ backgroundColor: '#102f74', color: 'white' }} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                   <span>📋 Select a Form</span>
                   <ChevronDown className={`w-5 h-5 ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </Button>
-
                 {isDropdownOpen && (
                   <div className="absolute w-full mt-2 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden z-10">
-                    <Link
-                      to={`/agents/${agent.slug}/new-client`}
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="block px-6 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100 text-left"
-                    >
+                    <Link to={`/agents/${agent.slug}/new-client`} onClick={() => setIsDropdownOpen(false)} className="block px-6 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100 text-left">
                       <div className="font-bold text-gray-900 text-lg mb-1">🏠 New Client Form</div>
                       <div className="text-sm text-gray-600">Looking to buy property in Cabo</div>
                     </Link>
-                    <Link
-                      to={`/agents/${agent.slug}/seller-evaluation`}
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="block px-6 py-4 hover:bg-gray-50 transition-colors text-left"
-                    >
+                    <Link to={`/agents/${agent.slug}/seller-evaluation`} onClick={() => setIsDropdownOpen(false)} className="block px-6 py-4 hover:bg-gray-50 transition-colors text-left">
                       <div className="font-bold text-gray-900 text-lg mb-1">💰 Property Evaluation</div>
                       <div className="text-sm text-gray-600">Get a free property valuation</div>
                     </Link>
                   </div>
                 )}
               </div>
-
-              <p className="text-sm text-gray-500 mt-6">
-                Takes only 2-3 minutes to complete • 100% confidential
-              </p>
+              <p className="text-sm text-gray-500 mt-6">Takes only 2-3 minutes to complete • 100% confidential</p>
             </div>
           </div>
         </div>
