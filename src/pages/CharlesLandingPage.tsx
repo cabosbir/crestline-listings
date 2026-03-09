@@ -249,14 +249,19 @@ const CharlesLandingPage = () => {
         
         console.log('🔄 Loading Featured Listings from API...');
         
-        const mlsData = await fetchListings({ 
-          limit: 50,
+        const mlsData = await fetchListings({
+          limit: 500,
           city: 'Cabo San Lucas',
         });
-        
+
         console.log('✅ Fetched featured listings:', mlsData.length);
-        
-        const convertedListings = mlsData.map(convertMLSToPropertyCard);
+
+        const birOnly = mlsData.filter((listing: any) => {
+          const officeName = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
+          return officeName.includes('baja international realty');
+        });
+        console.log(`🏢 BIR office listings: ${birOnly.length} of ${mlsData.length} total`);
+        const convertedListings = birOnly.map(convertMLSToPropertyCard);
         const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
         
         try {

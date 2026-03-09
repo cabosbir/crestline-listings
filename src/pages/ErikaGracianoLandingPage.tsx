@@ -358,11 +358,15 @@ const ErikaLandingPage = () => {
         }
         
         const mlsData = await fetchListings({ 
-          limit: 50,
+          limit: 500,
           city: 'Cabo San Lucas',
         });
-        
-        const convertedListings = mlsData.map(convertMLSToPropertyCard);
+        const birOnly = mlsData.filter((listing: any) => {
+          const officeName = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
+          return officeName.includes('baja international realty');
+        });
+        console.log(`🏢 BIR office listings: ${birOnly.length} of ${mlsData.length} total`);
+        const convertedListings = birOnly.map(convertMLSToPropertyCard);
         const shuffled = getShuffledListings(convertedListings, 'erika-graciano-featured-shuffle-v1');
         
         try {
@@ -433,9 +437,7 @@ const ErikaLandingPage = () => {
           const phoneMatch = cleanPhone(listAgentPhone) === cleanPhone(agentIdentifiers.phone);
           
           // Match Baja International Realty office
-          const officeMatch = (listOfficeName.toLowerCase().includes('baja') && 
-                              listOfficeName.toLowerCase().includes('international')) ||
-                             listOfficeName.toLowerCase().includes('baja international realty');
+          const officeMatch = listOfficeName.toLowerCase().includes('baja international realty');
           
           return nameMatch || emailMatch || phoneMatch || officeMatch;
         });
