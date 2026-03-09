@@ -342,7 +342,7 @@ const DonLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'don-featured-api-data-v3';
+        const cacheKey = 'don-featured-api-data-v4';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);

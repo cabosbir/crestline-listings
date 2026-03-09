@@ -339,7 +339,7 @@ const EdgarLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'edgar-featured-api-data-v3';
+        const cacheKey = 'edgar-featured-api-data-v4';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);

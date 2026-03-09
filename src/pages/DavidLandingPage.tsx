@@ -338,7 +338,7 @@ const DavidLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'david-featured-api-data-v3';
+        const cacheKey = 'david-featured-api-data-v4';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
