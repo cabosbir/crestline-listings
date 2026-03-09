@@ -250,21 +250,10 @@ const FernandoLandingPage = () => {
         console.log('🔄 Loading Featured Listings from API...');
         
         const mlsData = await fetchListings({
-          limit: 500,
+          limit: 50,
           city: 'Cabo San Lucas',
         });
-
-        console.log('✅ Fetched featured listings:', mlsData.length);
-
-        const birOnly = mlsData.filter((listing: any) => {
-          const officeName = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
-          // Log unique office names for debugging
-          const allOfficeNames = [...new Set(mlsData.map((l: any) => l.ListOfficeName || l.OfficeName || '').filter(Boolean))];
-          console.log('🏢 All office names in results:', JSON.stringify(allOfficeNames));
-          return officeName.includes('baja international');
-        });
-        console.log(`🏢 BIR office listings: ${birOnly.length} of ${mlsData.length} total`);
-        const convertedListings = birOnly.map(convertMLSToPropertyCard);
+        const convertedListings = mlsData.map(convertMLSToPropertyCard);
         const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle`);
         
         try {
