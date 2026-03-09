@@ -343,7 +343,7 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'bonnie-renee-featured-api-data-v4';
+        const cacheKey = 'bonnie-renee-featured-api-data-v5';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -360,10 +360,9 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
         
         const mlsData = await fetchListings({ 
           limit: 50,
-          city: 'Cabo San Lucas',
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'bonnie-renee-featured-shuffle-v2');
+        const shuffled = getShuffledListings(convertedListings, 'bonnie-renee-featured-shuffle-v3');
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));

@@ -232,7 +232,7 @@ const CharlesLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = `${agent.slug}-featured-api-data-v4`;
+        const cacheKey = `${agent.slug}-featured-api-data-v5`;
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -251,10 +251,9 @@ const CharlesLandingPage = () => {
         
         const mlsData = await fetchListings({
           limit: 50,
-          city: 'Cabo San Lucas',
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle-v2`);
+        const shuffled = getShuffledListings(convertedListings, `${agent.slug}-featured-shuffle-v3`);
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));

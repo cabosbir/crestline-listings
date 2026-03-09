@@ -338,7 +338,7 @@ const HectorLandingPage = () => {
       setIsLoadingFeatured(true);
       
       try {
-        const cacheKey = 'hector-featured-api-data-v4';
+        const cacheKey = 'hector-featured-api-data-v5';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
@@ -355,10 +355,9 @@ const HectorLandingPage = () => {
         
         const mlsData = await fetchListings({ 
           limit: 50,
-          city: 'Cabo San Lucas',
         });
         const convertedListings = mlsData.map(convertMLSToPropertyCard);
-        const shuffled = getShuffledListings(convertedListings, 'hector-featured-shuffle-v2');
+        const shuffled = getShuffledListings(convertedListings, 'hector-featured-shuffle-v3');
         
         try {
           localStorage.setItem(cacheKey, JSON.stringify(shuffled));
