@@ -691,7 +691,7 @@ const EdgarLandingPage = () => {
               {showMyListings ? 'Baja International Realty Portfolio' : 'Office Listings'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              {showMyListings ? 'My Listings' : 'Featured Listings'}
+              {showMyListings ? 'Landmark Properties' : 'Featured Listings'}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {showMyListings 

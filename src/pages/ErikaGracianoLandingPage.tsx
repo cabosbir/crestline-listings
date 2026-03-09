@@ -695,10 +695,10 @@ const ErikaLandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <p className="uppercase tracking-wider mb-2 font-medium" style={{ color: '#d4af37' }}>
-              {showMyListings ? 'Personal Portfolio' : 'Premium Properties'}
+              {showMyListings ? 'Baja International Realty Portfolio' : 'Premium Properties'}
             </p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              {showMyListings ? 'My Listings' : 'Featured Listings'}
+              {showMyListings ? 'Landmark Properties' : 'Featured Listings'}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {showMyListings 
