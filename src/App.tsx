@@ -35,6 +35,7 @@ import MarisolLandingPage from "./pages/MarisolLandingPage";
 import SusuLandingPage from "./pages/SusuLandingPage";
 import OfficeListings from "./pages/OfficeListings";
 import OfficeListingDetail from "./pages/OfficeListingDetail";
+import PacificoHeights from "./pages/PacificoHeights";
 import MarketReport from "./pages/MarketReport";
 import NewClientForm from "./pages/NewClientForm";
 import SellerEvaluationForm from "./pages/SellerEvaluationForm";
@@ -150,6 +151,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/office-listings" element={<OfficeListings />} />
           <Route path="/office-listings/:id" element={<OfficeListingDetail />} />
+          <Route path="/pacifico-heights" element={<PacificoHeights />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
             {/* Global Chat Modal - Available on ALL pages */}

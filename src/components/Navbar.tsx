@@ -20,6 +20,7 @@ const Navbar = () => {
 
   const propertyLinks = [
     { name: "View All Properties", href: "/search" },
+    { name: "Pacifico Heights", href: "/pacifico-heights" },
   ];
 
   const teamLinks: Array<{ name: string; href?: string; action?: string }> = [
