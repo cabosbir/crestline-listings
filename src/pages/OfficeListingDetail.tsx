@@ -136,6 +136,13 @@ const OfficeListingDetail = () => {
 
   const property = officeListingsData.find((p) => p.id === id);
 
+  const mlsImages: string[] = liveMLSData?.Media
+    ? [...liveMLSData.Media]
+        .sort((a: any, b: any) => (a.Order ?? 0) - (b.Order ?? 0))
+        .map((m: any) => m.MediaURL)
+        .filter(Boolean)
+    : [];
+
   const displayProperty = property && liveMLSData
     ? {
         ...property,
@@ -147,6 +154,7 @@ const OfficeListingDetail = () => {
           : property.sqft,
         address: liveMLSData.UnparsedAddress ?? property.address,
         description: liveMLSData.PublicRemarks ?? property.description,
+        images: mlsImages.length > 0 ? mlsImages : property.images,
       }
     : property;
 
