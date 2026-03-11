@@ -58,6 +58,7 @@ export async function fetchListings(params?: {
   limit?: number;
   search?: string;
   listingId?: string;
+  officeName?: string;
   sellerFinancing?: boolean;
   primaryView?: boolean;
   currentPrice?: boolean;
@@ -108,7 +109,8 @@ export async function fetchListings(params?: {
     if (params?.bedrooms) queryParams.append('bedrooms', params.bedrooms.toString());
     if (params?.bathrooms) queryParams.append('bathrooms', params.bathrooms.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
-    
+    if (params?.officeName) queryParams.append('officeName', params.officeName);
+
     // 🆕 SPECIAL FILTERS - Seller Financing (server-side)
     if (params?.sellerFinancing) {
       queryParams.append('sellerFinancing', 'true');

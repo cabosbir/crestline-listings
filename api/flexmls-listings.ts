@@ -489,6 +489,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
     
+    const officeName = getStringOrNull(raw.officeName);
     const sellerFinancing = parseBooleanQuery(raw.sellerFinancing);
     const primaryView = parseBooleanQuery(raw.primaryView);
     const currentPrice = parseBooleanQuery(raw.currentPrice);
@@ -576,6 +577,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // General text search - search address and remarks
         otherFilters.push(`(contains(UnparsedAddress,'${s}') or contains(PublicRemarks,'${s}'))`);
       }
+    }
+
+    // Office name filter
+    if (officeName) {
+      const o = safeEscape(officeName);
+      otherFilters.push(`contains(ListOfficeName,'${o}')`);
+      console.log(`🏢 [Office Filter] ${o}`);
     }
 
     // Special flags

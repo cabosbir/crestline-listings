@@ -10,21 +10,6 @@ const CACHE_KEY = "office-listings-auto-v1";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 
-function isBIRListing(listing: any): boolean {
-  const office = (
-    listing.ListOfficeName ||
-    listing.OfficeName ||
-    listing.ListingOffice ||
-    ""
-  ).toLowerCase();
-
-  return (
-    office.includes("baja international") ||
-    office.includes("bir cabo") ||
-    office.includes("bircabo")
-  );
-}
-
 const OfficeListings = () => {
   const [listings, setListings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,12 +29,10 @@ const OfficeListings = () => {
           return;
         }
 
-        // Fetch active listings — no location filter, get the full BIR portfolio
-        const mlsData = await fetchListings({ limit: 500 });
+        // Server-side office filter — fetches ALL active BIR listings (no limit)
+        const mlsData = await fetchListings({ officeName: "Baja International Realty" });
 
-        const officeListings = mlsData.filter(isBIRListing);
-
-        const converted = officeListings.map(convertMLSToPropertyCard);
+        const converted = mlsData.map(convertMLSToPropertyCard);
 
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(converted));
