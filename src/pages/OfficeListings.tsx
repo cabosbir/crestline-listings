@@ -6,7 +6,22 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-api-data-v1";
+// ─── ADD / REMOVE MLS numbers here to control which listings appear ───────────
+const OFFICE_MLS_NUMBERS = [
+  "25-4668",
+  "25-684",
+  "25-5877",
+  "25-1679",
+  "25-1684",
+  "24-2158",
+  "25-4323",
+  "25-5868",
+  "25-5698",
+  "25-4759",
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CACHE_KEY = "office-listings-api-data-v2";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 
@@ -29,21 +44,18 @@ const OfficeListings = () => {
           return;
         }
 
-        const mlsData = await fetchListings({ limit: 500 });
+        // Fetch each MLS number individually and collect results
+        const results = await Promise.all(
+          OFFICE_MLS_NUMBERS.map((mlsNum) =>
+            fetchListings({ search: mlsNum, limit: 1 }).then((data) =>
+              data.length > 0 ? data[0] : null
+            )
+          )
+        );
 
-        const officeListings = mlsData.filter((listing) => {
-          const officeName = (
-            listing.ListOfficeName ||
-            (listing as any).OfficeName ||
-            ""
-          ).toLowerCase();
-          return (
-            officeName.includes("baja international") ||
-            officeName.includes("bir cabo")
-          );
-        });
-
-        const converted = officeListings.map(convertMLSToPropertyCard);
+        const converted = results
+          .filter(Boolean)
+          .map((listing) => convertMLSToPropertyCard(listing!));
 
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(converted));
