@@ -7,67 +7,17 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v9";
+const CACHE_KEY = "office-listings-auto-v10";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 const ITEMS_PER_PAGE = 9;
 
-// Exact emails of every BIR agent — no false positives possible
-// Sourced from each agent's landing page agentIdentifiers.email
-const BIR_AGENT_EMAILS = new Set([
-  'don@bircabo.com',
-  'eaispuro80@gmail.com',        // Erika Aispuro
-  'erikag@bircabo.com',          // Erika Graciano
-  'robertvanpatten2@gmail.com',  // Bob Van Patten
-  'alfonso@bircabo.com',
-  'bonnie@bircabo.com',
-  'cabocharlie79@gmail.com',     // Charles Jones
-  'cozbi@bajainternationalrealty.com',
-  'david@bircabo.com',
-  'edgar@bircabo.com',
-  'fernando@bircabo.com',
-  'hector@bircabo.com',
-  'mtortricardi@gmail.com',      // Marisol Tort
-  'susu@bircabo.com',
-]);
-
-const cleanPhone = (p: string) => p.replace(/[^0-9]/g, '');
-
-// Exact phones as fallback (some agents may not have email in MLS)
-const BIR_AGENT_PHONES = new Set([
-  '18082266120',   // Alfonso
-  '18589644629',   // Bob Van Patten
-  '18582043115',   // Bob Van Patten alt
-  '526121205289',  // Cozbi
-  '526241276012',  // Don / Edgar alt
-  '526121698328',  // Fernando
-  '526241097909',  // Hector
-  '526241189512',  // Erika Aispuro
-  '526241435555',  // Don Weis
-  '526241572154',  // Erika Graciano
-  '526242114879',  // Marisol
-  '526242643896',  // Susu
-  '526243170297',  // Bonnie Renee
-  '526641888681',  // David Scott Piper
-  '526241358900',  // Charles Jones (cabocharlie)
-  '5216241276012', // Edgar alt (+52 1 624...)
-].map(cleanPhone));
-
+// Confirmed via live API: ALL BIR listings have ListOfficeName = "Baja International Realty"
+// Email/Phone are never returned by the MLS API — office name is the only reliable signal
 const isBIR = (listing: any) => {
-  // 1. Office name match (most reliable primary signal)
   const office = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
   const coOffice = (listing.CoListOfficeName || '').toLowerCase();
-  if (office.includes('baja international') || coOffice.includes('baja international')) return true;
-
-  // 2. Exact email match — no false positives (same method each agent page uses)
-  const email = (listing.ListAgentEmail || listing.AgentEmail || '').toLowerCase();
-  if (BIR_AGENT_EMAILS.has(email)) return true;
-
-  // 3. Exact phone match — fallback for when email is absent
-  const phone = cleanPhone(listing.ListAgentPhone || listing.AgentPhone || '');
-  if (phone && BIR_AGENT_PHONES.has(phone)) return true;
-
-  return false;
+  return office.includes('baja international') || coOffice.includes('baja international');
 };
 
 const OfficeListings = () => {
@@ -90,20 +40,21 @@ const OfficeListings = () => {
           return;
         }
 
-        // Parallel fetch per zone — each zone gets its own limit:500 pool
-        // Mirrors agent pages exactly (Erika/Don use city:'Cabo San Lucas' and get 12/11)
-        const [cslData, corridorData, sjdData, sjdCorrData, eastCapeData] = await Promise.all([
+        // Parallel fetch per zone — each gets its own pool so BIR listings aren't crowded out
+        // Pacific zone added: confirmed BIR listings #24-2158, #25-5868, #25-5698, #25-2566 live there
+        const [cslData, corridorData, sjdData, sjdCorrData, pacificData, eastCapeData] = await Promise.all([
           fetchListings({ limit: 500, city: 'Cabo San Lucas' }),
           fetchListings({ limit: 500, city: 'Cabo Corridor' }),
           fetchListings({ limit: 500, city: 'San Jose del Cabo' }),
           fetchListings({ limit: 200, city: 'San Jose Corridor' }),
+          fetchListings({ limit: 200, city: 'Pacific' }),
           fetchListings({ limit: 200, city: 'East Cape' }),
         ]);
 
         // Merge all zones and deduplicate by ListingKey
         const seen = new Set<string>();
         const merged: any[] = [];
-        for (const listing of [...cslData, ...corridorData, ...sjdData, ...sjdCorrData, ...eastCapeData]) {
+        for (const listing of [...cslData, ...corridorData, ...sjdData, ...sjdCorrData, ...pacificData, ...eastCapeData]) {
           if (!seen.has(listing.ListingKey)) {
             seen.add(listing.ListingKey);
             merged.push(listing);
