@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
+import { Button } from "@/components/ui/button";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
 const CACHE_KEY = "office-listings-auto-v7";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
+const ITEMS_PER_PAGE = 9;
 
 // Known BIR agent last names — catches listings where ListOfficeName is blank/different
 // Same technique agent landing pages use with nameMatch
@@ -29,6 +31,7 @@ const isBIR = (listing: any) => {
 const OfficeListings = () => {
   const [listings, setListings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const loadListings = async () => {
@@ -46,8 +49,7 @@ const OfficeListings = () => {
         }
 
         // Parallel fetch per zone — each zone gets its own limit:500 pool
-        // This mirrors exactly how agent pages work (Erika/Don use city:'Cabo San Lucas' and get 12/11)
-        // A single multi-zone call dilutes the limit and drops BIR listings out of the top-500
+        // Mirrors agent pages exactly (Erika/Don use city:'Cabo San Lucas' and get 12/11)
         const [cslData, corridorData, sjdData, sjdCorrData, eastCapeData] = await Promise.all([
           fetchListings({ limit: 500, city: 'Cabo San Lucas' }),
           fetchListings({ limit: 500, city: 'Cabo Corridor' }),
@@ -86,6 +88,46 @@ const OfficeListings = () => {
     loadListings();
   }, []);
 
+  // ==================== PAGINATION ====================
+  const totalPages = Math.ceil(listings.length / ITEMS_PER_PAGE);
+  const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+  const displayedListings = listings.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    document.querySelector('.listings-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 7;
+
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (currentPage <= 3) {
+        pages.push(2, 3, 4);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push('ellipsis-start');
+        pages.push(totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push('ellipsis-start');
+        pages.push(currentPage - 1, currentPage, currentPage + 1);
+        pages.push('ellipsis-end');
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
+
   return (
     <div className="min-h-screen">
       <Helmet>
@@ -97,7 +139,7 @@ const OfficeListings = () => {
       </Helmet>
       <Navbar />
 
-      <section className="pt-32 pb-24 bg-background">
+      <section className="listings-section pt-32 pb-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <p className="text-accent uppercase tracking-wider mb-2 font-medium">
@@ -127,15 +169,59 @@ const OfficeListings = () => {
             </div>
           ) : (
             <>
-              <p className="text-center text-sm text-muted-foreground mb-8">
-                {listings.length} active listing
-                {listings.length !== 1 ? "s" : ""}
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {listings.map((property) => (
-                  <PropertyCard key={property.id} {...property} />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                {displayedListings.map((property) => (
+                  <PropertyCard key={property.id} {...property} currentPage={currentPage} />
                 ))}
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex flex-col items-center gap-4 my-8">
+                  <div className="text-sm text-muted-foreground">
+                    Showing {indexOfFirstItem + 1}–{Math.min(indexOfLastItem, listings.length)} of {listings.length} properties
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="h-10 px-3"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      <span className="ml-1 hidden sm:inline">Previous</span>
+                    </Button>
+
+                    {getPageNumbers().map((page, index) => {
+                      if (page === 'ellipsis-start' || page === 'ellipsis-end') {
+                        return <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">...</span>;
+                      }
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handlePageChange(page as number)}
+                          className="h-10 w-10 p-0"
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="h-10 px-3"
+                    >
+                      <span className="mr-1 hidden sm:inline">Next</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
