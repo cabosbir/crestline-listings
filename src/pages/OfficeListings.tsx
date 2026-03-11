@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Card } from "@/components/ui/card";
@@ -65,6 +66,20 @@ const officeProperties = [
 ];
 
 const OfficeListings = () => {
+  const [liveMarinaPrice, setLiveMarinaPrice] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/flexmls-listings?search=25-4668&limit=1")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.results?.length > 0) {
+          const listing = data.results[0];
+          setLiveMarinaPrice(`$${Number(listing.ListPrice).toLocaleString()}`);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Helmet>
@@ -126,7 +141,11 @@ const OfficeListings = () => {
 
                     {/* Property details */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
-                      <div className="text-4xl font-bold mb-3">{property.price}</div>
+                      <div className="text-4xl font-bold mb-3">
+                        {property.id === "marina-cabo-plaza" && liveMarinaPrice
+                          ? liveMarinaPrice
+                          : property.price}
+                      </div>
 
                       <div className="flex items-center gap-4 mb-3 text-lg flex-wrap">
                         <div className="flex items-center gap-1.5">

@@ -115,12 +115,40 @@ const OfficeListingDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [liveMLSData, setLiveMLSData] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
 
+  useEffect(() => {
+    if (id === "marina-cabo-plaza") {
+      fetch("/api/flexmls-listings?search=25-4668&limit=1")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success && data.results?.length > 0) {
+            setLiveMLSData(data.results[0]);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [id]);
+
   const property = officeListingsData.find((p) => p.id === id);
+
+  const displayProperty = property && liveMLSData
+    ? {
+        ...property,
+        price: `$${Number(liveMLSData.ListPrice).toLocaleString()}`,
+        beds: liveMLSData.BedroomsTotal ?? property.beds,
+        baths: liveMLSData.BathroomsFull ?? property.baths,
+        sqft: liveMLSData.LivingArea
+          ? Number(liveMLSData.LivingArea).toFixed(2)
+          : property.sqft,
+        address: liveMLSData.UnparsedAddress ?? property.address,
+        description: liveMLSData.PublicRemarks ?? property.description,
+      }
+    : property;
 
   const nextImage = () => {
     if (property) {
@@ -177,10 +205,10 @@ const OfficeListingDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>{`${property.title} — ${property.price} | Baja International Realty`}</title>
+        <title>{`${displayProperty!.title} — ${displayProperty!.price} | Baja International Realty`}</title>
         <meta
           name="description"
-          content={`${property.title} for sale at ${property.price}. ${property.beds} bed, ${property.baths} bath, ${property.sqft} SF. MLS# ${property.mls}. ${property.description.substring(0, 120)}...`}
+          content={`${displayProperty!.title} for sale at ${displayProperty!.price}. ${displayProperty!.beds} bed, ${displayProperty!.baths} bath, ${displayProperty!.sqft} SF. MLS# ${displayProperty!.mls}. ${displayProperty!.description.substring(0, 120)}...`}
         />
       </Helmet>
 
@@ -204,8 +232,8 @@ const OfficeListingDetail = () => {
         <div className="container mx-auto px-4">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl" style={{ height: "500px" }}>
             <img
-              src={property.images[currentImageIndex]}
-              alt={`${property.title} — photo ${currentImageIndex + 1}`}
+              src={displayProperty!.images[currentImageIndex]}
+              alt={`${displayProperty!.title} — photo ${currentImageIndex + 1}`}
               className="w-full h-full object-cover transition-opacity duration-300"
               onError={(e) => {
                 e.currentTarget.src =
@@ -218,7 +246,7 @@ const OfficeListingDetail = () => {
               <span className="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
                 Active
               </span>
-              {property.onOffer && (
+              {displayProperty!.onOffer && (
                 <span className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg animate-pulse">
                   🔥 Price Reduced
                 </span>
@@ -227,13 +255,13 @@ const OfficeListingDetail = () => {
                 For Sale
               </span>
               <span className="bg-accent text-accent-foreground px-4 py-2 rounded-lg font-semibold shadow-lg">
-                MLS# {property.mls}
+                MLS# {displayProperty!.mls}
               </span>
             </div>
 
             {/* Image counter */}
             <div className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-semibold">
-              {currentImageIndex + 1} / {property.images.length}
+              {currentImageIndex + 1} / {displayProperty!.images.length}
             </div>
           </div>
 
@@ -245,7 +273,7 @@ const OfficeListingDetail = () => {
             </Button>
 
             <div className="flex gap-2">
-              {property.images.map((_, index) => (
+              {displayProperty!.images.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
@@ -267,7 +295,7 @@ const OfficeListingDetail = () => {
 
           {/* Thumbnails */}
           <div className="grid grid-cols-5 gap-4 mt-6">
-            {property.images.map((img, index) => (
+            {displayProperty!.images.map((img, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentImageIndex(index)}
@@ -300,11 +328,11 @@ const OfficeListingDetail = () => {
             <div className="lg:col-span-2">
               {/* Header */}
               <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold mb-3">{property.title}</h1>
-                <div className="text-4xl font-bold text-accent mb-4">{property.price}</div>
+                <h1 className="text-4xl md:text-5xl font-bold mb-3">{displayProperty!.title}</h1>
+                <div className="text-4xl font-bold text-accent mb-4">{displayProperty!.price}</div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-5 h-5 flex-shrink-0" />
-                  <span className="text-lg">{property.address}</span>
+                  <span className="text-lg">{displayProperty!.address}</span>
                 </div>
               </div>
 
@@ -313,17 +341,17 @@ const OfficeListingDetail = () => {
                 <div className="bg-secondary border border-border rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
                   <Bed className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <div className="text-sm text-muted-foreground">Bedrooms</div>
-                  <div className="text-2xl font-bold">{property.beds}</div>
+                  <div className="text-2xl font-bold">{displayProperty!.beds}</div>
                 </div>
                 <div className="bg-secondary border border-border rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
                   <Bath className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <div className="text-sm text-muted-foreground">Bathrooms</div>
-                  <div className="text-2xl font-bold">{property.baths}</div>
+                  <div className="text-2xl font-bold">{displayProperty!.baths}</div>
                 </div>
                 <div className="bg-secondary border border-border rounded-xl p-4 text-center hover:shadow-lg transition-shadow">
                   <Maximize className="w-6 h-6 mx-auto mb-2 text-accent" />
                   <div className="text-sm text-muted-foreground">Size</div>
-                  <div className="text-xl font-bold">{property.sqft} SF</div>
+                  <div className="text-xl font-bold">{displayProperty!.sqft} SF</div>
                 </div>
               </div>
 
@@ -331,7 +359,7 @@ const OfficeListingDetail = () => {
               <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-4">About This Property</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  {property.description}
+                  {displayProperty!.description}
                 </p>
               </div>
 
@@ -341,7 +369,7 @@ const OfficeListingDetail = () => {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   <div className="p-4 bg-secondary rounded-lg">
                     <div className="text-sm text-muted-foreground mb-1">MLS Number</div>
-                    <div className="font-semibold">{property.mls}</div>
+                    <div className="font-semibold">{displayProperty!.mls}</div>
                   </div>
                   <div className="p-4 bg-secondary rounded-lg">
                     <div className="text-sm text-muted-foreground mb-1">Status</div>
@@ -349,7 +377,7 @@ const OfficeListingDetail = () => {
                   </div>
                   <div className="p-4 bg-secondary rounded-lg">
                     <div className="text-sm text-muted-foreground mb-1">Size</div>
-                    <div className="font-semibold">{property.sqft} SF</div>
+                    <div className="font-semibold">{displayProperty!.sqft} SF</div>
                   </div>
                 </div>
               </div>
@@ -374,7 +402,7 @@ const OfficeListingDetail = () => {
 
                     <a
                       href={`https://wa.me/${PHONE.replace("+", "")}?text=${encodeURIComponent(
-                        `Hi! I'm interested in ${property.title} (MLS# ${property.mls}) listed at ${property.price}.`
+                        `Hi! I'm interested in ${displayProperty!.title} (MLS# ${displayProperty!.mls}) listed at ${displayProperty!.price}.`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -388,7 +416,7 @@ const OfficeListingDetail = () => {
                       </Button>
                     </a>
 
-                    <a href={`mailto:${EMAIL}?subject=${encodeURIComponent(`Inquiry: ${property.title} MLS# ${property.mls}`)}&body=${encodeURIComponent(`Hi, I'm interested in ${property.title} listed at ${property.price} (MLS# ${property.mls}). Please send me more information.`)}`} className="block">
+                    <a href={`mailto:${EMAIL}?subject=${encodeURIComponent(`Inquiry: ${displayProperty!.title} MLS# ${displayProperty!.mls}`)}&body=${encodeURIComponent(`Hi, I'm interested in ${displayProperty!.title} listed at ${displayProperty!.price} (MLS# ${displayProperty!.mls}). Please send me more information.`)}`} className="block">
                       <Button variant="outline" size="lg" className="w-full">
                         <Mail className="w-4 h-4 mr-2" />
                         Email Us
@@ -399,11 +427,11 @@ const OfficeListingDetail = () => {
                   <div className="border-t border-border pt-5 space-y-2 text-sm text-muted-foreground">
                     <div className="flex justify-between">
                       <span>MLS#</span>
-                      <span className="font-semibold text-foreground">{property.mls}</span>
+                      <span className="font-semibold text-foreground">{displayProperty!.mls}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Price</span>
-                      <span className="font-semibold text-foreground">{property.price}</span>
+                      <span className="font-semibold text-foreground">{displayProperty!.price}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Status</span>
