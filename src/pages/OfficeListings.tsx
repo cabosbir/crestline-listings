@@ -6,24 +6,24 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-// ─── ADD / REMOVE MLS numbers here to control which listings appear ───────────
-const OFFICE_MLS_NUMBERS = [
-  "25-4668",
-  "25-684",
-  "25-5877",
-  "25-1679",
-  "25-1684",
-  "24-2158",
-  "25-4323",
-  "25-5868",
-  "25-5698",
-  "25-4759",
-];
-// ─────────────────────────────────────────────────────────────────────────────
-
-const CACHE_KEY = "office-listings-api-data-v2";
+const CACHE_KEY = "office-listings-auto-v1";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
+
+function isBIRListing(listing: any): boolean {
+  const office = (
+    listing.ListOfficeName ||
+    listing.OfficeName ||
+    listing.ListingOffice ||
+    ""
+  ).toLowerCase();
+
+  return (
+    office.includes("baja international") ||
+    office.includes("bir cabo") ||
+    office.includes("bircabo")
+  );
+}
 
 const OfficeListings = () => {
   const [listings, setListings] = useState<any[]>([]);
@@ -44,18 +44,12 @@ const OfficeListings = () => {
           return;
         }
 
-        // Fetch each MLS number individually and collect results
-        const results = await Promise.all(
-          OFFICE_MLS_NUMBERS.map((mlsNum) =>
-            fetchListings({ search: mlsNum, limit: 1 }).then((data) =>
-              data.length > 0 ? data[0] : null
-            )
-          )
-        );
+        // Fetch active listings — no location filter, get the full BIR portfolio
+        const mlsData = await fetchListings({ limit: 500 });
 
-        const converted = results
-          .filter(Boolean)
-          .map((listing) => convertMLSToPropertyCard(listing!));
+        const officeListings = mlsData.filter(isBIRListing);
+
+        const converted = officeListings.map(convertMLSToPropertyCard);
 
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(converted));
@@ -115,7 +109,8 @@ const OfficeListings = () => {
           ) : (
             <>
               <p className="text-center text-sm text-muted-foreground mb-8">
-                {listings.length} active listing{listings.length !== 1 ? "s" : ""}
+                {listings.length} active listing
+                {listings.length !== 1 ? "s" : ""}
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {listings.map((property) => (
