@@ -7,17 +7,63 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v10";
+const CACHE_KEY = "office-listings-auto-v11";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 const ITEMS_PER_PAGE = 9;
 
-// Confirmed via live API: ALL BIR listings have ListOfficeName = "Baja International Realty"
-// Email/Phone are never returned by the MLS API — office name is the only reliable signal
+// Primary: office name (confirmed via live API — all BIR listings have this)
+// Fallback: exact email + phone per agent landing page (catches edge cases)
+const BIR_AGENT_EMAILS = new Set([
+  'don@bircabo.com',
+  'eaispuro80@gmail.com',
+  'erikag@bircabo.com',
+  'robertvanpatten2@gmail.com',
+  'alfonso@bircabo.com',
+  'bonnie@bircabo.com',
+  'cabocharlie79@gmail.com',
+  'cozbi@bajainternationalrealty.com',
+  'david@bircabo.com',
+  'edgar@bircabo.com',
+  'fernando@bircabo.com',
+  'hector@bircabo.com',
+  'mtortricardi@gmail.com',
+  'susu@bircabo.com',
+]);
+
+const cleanPhone = (p: string) => p.replace(/[^0-9]/g, '');
+
+const BIR_AGENT_PHONES = new Set([
+  '18082266120',
+  '18589644629',
+  '18582043115',
+  '526121205289',
+  '526241276012',
+  '526121698328',
+  '526241097909',
+  '526241189512',
+  '526241435555',
+  '526241572154',
+  '526242114879',
+  '526242643896',
+  '526243170297',
+  '526641888681',
+  '526241358900',
+  '5216241276012',
+].map(cleanPhone));
+
 const isBIR = (listing: any) => {
   const office = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
   const coOffice = (listing.CoListOfficeName || '').toLowerCase();
-  return office.includes('baja international') || coOffice.includes('baja international');
+  if (office.includes('baja international') || coOffice.includes('baja international')) return true;
+
+  const email = (listing.ListAgentEmail || listing.AgentEmail || '').toLowerCase();
+  if (email && BIR_AGENT_EMAILS.has(email)) return true;
+
+  const phone = cleanPhone(listing.ListAgentPhone || listing.AgentPhone || '');
+  if (phone && BIR_AGENT_PHONES.has(phone)) return true;
+
+  return false;
 };
 
 const OfficeListings = () => {
