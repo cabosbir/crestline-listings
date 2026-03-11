@@ -7,14 +7,32 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v7";
+const CACHE_KEY = "office-listings-auto-v8";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 const ITEMS_PER_PAGE = 9;
 
 // Known BIR agent last names — catches listings where ListOfficeName is blank/different
 // Same technique agent landing pages use with nameMatch
-const BIR_AGENT_NAMES = ['weis', 'aispuro', 'van patten', 'vanpatten', 'graciano', 'diaz', 'molina', 'espinoza', 'campos'];
+// All BIR agent identifiers — last names or first-name keywords matching each landing page's nameMatch
+const BIR_AGENT_NAMES = [
+  'weis',       // Don Weis
+  'aispuro',    // Erika Aispuro
+  'graciano',   // Erika Graciano
+  'van patten', // Bob Van Patten
+  'vanpatten',  // Bob Van Patten (no space variant)
+  'puente',     // Alfonso Puente
+  'bonnie',     // Bonnie Renee G.
+  'renee',      // Bonnie Renee G.
+  'jones',      // Charles Jones
+  'sanchez',    // Cozbi Sanchez
+  'piper',      // David Scott Piper
+  'pacheco',    // Edgar Pacheco
+  'cabrera',    // Fernando Cabrera
+  'mendoza',    // Hector Mendoza
+  'tort',       // Marisol Tort
+  'vieira',     // Susu Vieira
+];
 
 const isBIR = (listing: any) => {
   const office = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
