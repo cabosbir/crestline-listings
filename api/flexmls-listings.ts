@@ -579,10 +579,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    // Office name filter
+    // Office name filter — checks listing office AND co-listing office
     if (officeName) {
       const o = safeEscape(officeName);
-      otherFilters.push(`contains(ListOfficeName,'${o}')`);
+      otherFilters.push(
+        `(contains(ListOfficeName,'${o}') or contains(CoListOfficeName,'${o}'))`
+      );
       console.log(`🏢 [Office Filter] ${o}`);
     }
 
