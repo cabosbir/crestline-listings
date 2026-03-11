@@ -7,43 +7,67 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v8";
+const CACHE_KEY = "office-listings-auto-v9";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 const ITEMS_PER_PAGE = 9;
 
-// Known BIR agent last names — catches listings where ListOfficeName is blank/different
-// Same technique agent landing pages use with nameMatch
-// All BIR agent identifiers — last names or first-name keywords matching each landing page's nameMatch
-const BIR_AGENT_NAMES = [
-  'weis',       // Don Weis
-  'aispuro',    // Erika Aispuro
-  'graciano',   // Erika Graciano
-  'van patten', // Bob Van Patten
-  'vanpatten',  // Bob Van Patten (no space variant)
-  'puente',     // Alfonso Puente
-  'bonnie',     // Bonnie Renee G.
-  'renee',      // Bonnie Renee G.
-  'jones',      // Charles Jones
-  'sanchez',    // Cozbi Sanchez
-  'piper',      // David Scott Piper
-  'pacheco',    // Edgar Pacheco
-  'cabrera',    // Fernando Cabrera
-  'mendoza',    // Hector Mendoza
-  'tort',       // Marisol Tort
-  'vieira',     // Susu Vieira
-];
+// Exact emails of every BIR agent — no false positives possible
+// Sourced from each agent's landing page agentIdentifiers.email
+const BIR_AGENT_EMAILS = new Set([
+  'don@bircabo.com',
+  'eaispuro80@gmail.com',        // Erika Aispuro
+  'erikag@bircabo.com',          // Erika Graciano
+  'robertvanpatten2@gmail.com',  // Bob Van Patten
+  'alfonso@bircabo.com',
+  'bonnie@bircabo.com',
+  'cabocharlie79@gmail.com',     // Charles Jones
+  'cozbi@bajainternationalrealty.com',
+  'david@bircabo.com',
+  'edgar@bircabo.com',
+  'fernando@bircabo.com',
+  'hector@bircabo.com',
+  'mtortricardi@gmail.com',      // Marisol Tort
+  'susu@bircabo.com',
+]);
+
+const cleanPhone = (p: string) => p.replace(/[^0-9]/g, '');
+
+// Exact phones as fallback (some agents may not have email in MLS)
+const BIR_AGENT_PHONES = new Set([
+  '18082266120',   // Alfonso
+  '18589644629',   // Bob Van Patten
+  '18582043115',   // Bob Van Patten alt
+  '526121205289',  // Cozbi
+  '526241276012',  // Don / Edgar alt
+  '526121698328',  // Fernando
+  '526241097909',  // Hector
+  '526241189512',  // Erika Aispuro
+  '526241435555',  // Don Weis
+  '526241572154',  // Erika Graciano
+  '526242114879',  // Marisol
+  '526242643896',  // Susu
+  '526243170297',  // Bonnie Renee
+  '526641888681',  // David Scott Piper
+  '526241358900',  // Charles Jones (cabocharlie)
+  '5216241276012', // Edgar alt (+52 1 624...)
+].map(cleanPhone));
 
 const isBIR = (listing: any) => {
+  // 1. Office name match (most reliable primary signal)
   const office = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
   const coOffice = (listing.CoListOfficeName || '').toLowerCase();
-  const agentName = (listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '').toLowerCase();
-  const coAgentName = (listing.CoListAgentFullName || '').toLowerCase();
+  if (office.includes('baja international') || coOffice.includes('baja international')) return true;
 
-  const officeMatch = office.includes('baja international') || coOffice.includes('baja international');
-  const agentMatch = BIR_AGENT_NAMES.some(n => agentName.includes(n) || coAgentName.includes(n));
+  // 2. Exact email match — no false positives (same method each agent page uses)
+  const email = (listing.ListAgentEmail || listing.AgentEmail || '').toLowerCase();
+  if (BIR_AGENT_EMAILS.has(email)) return true;
 
-  return officeMatch || agentMatch;
+  // 3. Exact phone match — fallback for when email is absent
+  const phone = cleanPhone(listing.ListAgentPhone || listing.AgentPhone || '');
+  if (phone && BIR_AGENT_PHONES.has(phone)) return true;
+
+  return false;
 };
 
 const OfficeListings = () => {
