@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v4";
+const CACHE_KEY = "office-listings-auto-v5";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 
@@ -29,8 +29,12 @@ const OfficeListings = () => {
           return;
         }
 
-        // Fetch a large batch of active listings, then filter client-side by office name
-        const mlsData = await fetchListings({ limit: 500 });
+        // Fetch from all Los Cabos zones (same approach as Don's landing page)
+        // then filter client-side by office name — server-side contains() on ListOfficeName is unreliable
+        const mlsData = await fetchListings({
+          limit: 500,
+          city: 'Cabo San Lucas,Cabo Corridor,San Jose del Cabo,San Jose Corridor,East Cape,La Paz'
+        });
 
         const birListings = mlsData.filter((listing: any) => {
           const listOfficeName = listing.ListOfficeName || listing.OfficeName || '';
