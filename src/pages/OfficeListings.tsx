@@ -6,9 +6,15 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v5";
+const CACHE_KEY = "office-listings-auto-v6";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
+
+const isBIR = (listing: any) => {
+  const office = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
+  const coOffice = (listing.CoListOfficeName || '').toLowerCase();
+  return office.includes('baja international') || coOffice.includes('baja international');
+};
 
 const OfficeListings = () => {
   const [listings, setListings] = useState<any[]>([]);
@@ -29,22 +35,29 @@ const OfficeListings = () => {
           return;
         }
 
-        // Fetch from all Los Cabos zones (same approach as Don's landing page)
-        // then filter client-side by office name — server-side contains() on ListOfficeName is unreliable
-        const mlsData = await fetchListings({
-          limit: 500,
-          city: 'Cabo San Lucas,Cabo Corridor,San Jose del Cabo,San Jose Corridor,East Cape,La Paz'
-        });
+        // Parallel fetch per zone — each zone gets its own limit:500 pool
+        // This mirrors exactly how agent pages work (Erika/Don use city:'Cabo San Lucas' and get 12/11)
+        // A single multi-zone call dilutes the limit and drops BIR listings out of the top-500
+        const [cslData, corridorData, sjdData, sjdCorrData, eastCapeData] = await Promise.all([
+          fetchListings({ limit: 500, city: 'Cabo San Lucas' }),
+          fetchListings({ limit: 500, city: 'Cabo Corridor' }),
+          fetchListings({ limit: 500, city: 'San Jose del Cabo' }),
+          fetchListings({ limit: 200, city: 'San Jose Corridor' }),
+          fetchListings({ limit: 200, city: 'East Cape' }),
+        ]);
 
-        const birListings = mlsData.filter((listing: any) => {
-          const listOfficeName = listing.ListOfficeName || listing.OfficeName || '';
-          const coListOfficeName = listing.CoListOfficeName || '';
-          return (
-            listOfficeName.toLowerCase().includes('baja international') ||
-            coListOfficeName.toLowerCase().includes('baja international')
-          );
-        });
+        // Merge all zones and deduplicate by ListingKey
+        const seen = new Set<string>();
+        const merged: any[] = [];
+        for (const listing of [...cslData, ...corridorData, ...sjdData, ...sjdCorrData, ...eastCapeData]) {
+          if (!seen.has(listing.ListingKey)) {
+            seen.add(listing.ListingKey);
+            merged.push(listing);
+          }
+        }
 
+        // Filter client-side for BIR office — same technique as agent landing pages
+        const birListings = merged.filter(isBIR);
         const converted = birListings.map(convertMLSToPropertyCard);
 
         try {
