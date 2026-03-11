@@ -33,6 +33,8 @@ import FernandoLandingPage from "./pages/FernandoLandingPage";
 import HectorLandingPage from "./pages/HectorLandingPage";
 import MarisolLandingPage from "./pages/MarisolLandingPage";
 import SusuLandingPage from "./pages/SusuLandingPage";
+import OfficeListings from "./pages/OfficeListings";
+import OfficeListingDetail from "./pages/OfficeListingDetail";
 import MarketReport from "./pages/MarketReport";
 import NewClientForm from "./pages/NewClientForm";
 import SellerEvaluationForm from "./pages/SellerEvaluationForm";
@@ -146,6 +148,8 @@ const App = () => (
           <Route path="/agents/susu" element={<SusuLandingPage />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/office-listings" element={<OfficeListings />} />
+          <Route path="/office-listings/:id" element={<OfficeListingDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
             {/* Global Chat Modal - Available on ALL pages */}

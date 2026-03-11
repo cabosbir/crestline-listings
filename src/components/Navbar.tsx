@@ -62,6 +62,14 @@ const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Office Listings Link */}
+            <Link
+              to="/office-listings"
+              className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-heading text-lg"
+            >
+              Office Listings
+            </Link>
+
             {/* Team Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-heading text-lg outline-none">
@@ -156,6 +164,15 @@ const Navbar = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Office Listings in Mobile */}
+              <Link
+                to="/office-listings"
+                className="text-foreground hover:text-accent transition-fast font-heading text-lg px-2"
+                onClick={() => setIsOpen(false)}
+              >
+                Office Listings
+              </Link>
 
               {/* Team Section in Mobile */}
               <div className="px-2">
