@@ -6,14 +6,24 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v6";
+const CACHE_KEY = "office-listings-auto-v7";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
+
+// Known BIR agent last names — catches listings where ListOfficeName is blank/different
+// Same technique agent landing pages use with nameMatch
+const BIR_AGENT_NAMES = ['weis', 'aispuro', 'van patten', 'vanpatten', 'graciano', 'diaz', 'molina', 'espinoza', 'campos'];
 
 const isBIR = (listing: any) => {
   const office = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
   const coOffice = (listing.CoListOfficeName || '').toLowerCase();
-  return office.includes('baja international') || coOffice.includes('baja international');
+  const agentName = (listing.ListAgentFullName || listing.ListAgentName || listing.AgentName || '').toLowerCase();
+  const coAgentName = (listing.CoListAgentFullName || '').toLowerCase();
+
+  const officeMatch = office.includes('baja international') || coOffice.includes('baja international');
+  const agentMatch = BIR_AGENT_NAMES.some(n => agentName.includes(n) || coAgentName.includes(n));
+
+  return officeMatch || agentMatch;
 };
 
 const OfficeListings = () => {

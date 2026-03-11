@@ -40,6 +40,8 @@ export interface MLSProperty {
   AgentPhone?: string;
   ListOfficeName?: string;
   OfficeName?: string;
+  CoListOfficeName?: string;
+  CoListAgentFullName?: string;
 }
 
 const propertyCache: Map<string, MLSProperty> = new Map();
