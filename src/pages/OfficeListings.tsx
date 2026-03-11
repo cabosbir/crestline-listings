@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import PropertyCard from "@/components/PropertyCard";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v3";
+const CACHE_KEY = "office-listings-auto-v4";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 
@@ -29,10 +29,19 @@ const OfficeListings = () => {
           return;
         }
 
-        // Server-side office filter — fetches ALL active BIR listings (no limit)
-        const mlsData = await fetchListings({ officeName: "Baja International" });
+        // Fetch a large batch of active listings, then filter client-side by office name
+        const mlsData = await fetchListings({ limit: 500 });
 
-        const converted = mlsData.map(convertMLSToPropertyCard);
+        const birListings = mlsData.filter((listing: any) => {
+          const listOfficeName = listing.ListOfficeName || listing.OfficeName || '';
+          const coListOfficeName = listing.CoListOfficeName || '';
+          return (
+            listOfficeName.toLowerCase().includes('baja international') ||
+            coListOfficeName.toLowerCase().includes('baja international')
+          );
+        });
+
+        const converted = birListings.map(convertMLSToPropertyCard);
 
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(converted));
