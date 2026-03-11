@@ -19,6 +19,7 @@ const officeListingsData = [
     baths: 0,
     sqft: "421.58",
     mls: "25-4668",
+    onOffer: true,
     images: [
       "/paseo-de-la-marina-1.jpg",
       "/paseo-de-la-marina-2.jpg",
@@ -213,10 +214,15 @@ const OfficeListingDetail = () => {
             />
 
             {/* Badges */}
-            <div className="absolute top-4 left-4 flex gap-2">
+            <div className="absolute top-4 left-4 flex gap-2 flex-wrap">
               <span className="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
                 Active
               </span>
+              {property.onOffer && (
+                <span className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold shadow-lg animate-pulse">
+                  🔥 Price Reduced
+                </span>
+              )}
               <span className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
                 For Sale
               </span>

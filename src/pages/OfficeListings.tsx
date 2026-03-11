@@ -16,6 +16,7 @@ const officeProperties = [
     sqft: "421.58",
     mls: "25-4668",
     image: "/paseo-de-la-marina-1.jpg",
+    onOffer: true,
   },
   {
     id: "rivieri-positano",
@@ -102,10 +103,15 @@ const OfficeListings = () => {
                     />
 
                     {/* Purple Active badge — top left */}
-                    <div className="absolute top-4 left-4 z-10">
+                    <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                       <span className="bg-purple-600 text-white px-4 py-1.5 rounded text-sm font-semibold shadow-lg">
                         Active
                       </span>
+                      {property.onOffer && (
+                        <span className="bg-orange-500 text-white px-4 py-1.5 rounded text-sm font-bold shadow-lg animate-pulse">
+                          🔥 Price Reduced
+                        </span>
+                      )}
                     </div>
 
                     {/* Red diagonal FOR SALE ribbon — top right */}
