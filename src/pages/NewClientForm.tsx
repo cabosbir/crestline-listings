@@ -39,7 +39,7 @@ const agentsData = {
   erika: {
     id: 2,
     name: "Erika Aispuro",
-    email: "eaispuro80@gmail.com",
+    email: "erika@bircabo.com",
     phone: "+52 624 109 7909"
   },
   hector: {

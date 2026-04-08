@@ -168,7 +168,7 @@ export const TEAM_INFO: AgentInfo[] = [
     yearsExperience: 8,
     propertiesSold: 60,
     phone: "+52 624 109 7909",
-    email: "eaispuro80@gmail.com",
+    email: "erika@bircabo.com",
     slug: "erika",
     languages: ["English", "Spanish"],
     certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],

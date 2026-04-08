@@ -7,7 +7,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { fetchListings, convertMLSToPropertyCard } from "@/services/flexMlsService";
 
-const CACHE_KEY = "office-listings-auto-v11";
+const CACHE_KEY = "office-listings-auto-v16";
 const CACHE_TIME_KEY = `${CACHE_KEY}-time`;
 const CACHE_TTL = 3 * 60 * 60 * 1000; // 3 hours
 const ITEMS_PER_PAGE = 9;
@@ -16,7 +16,7 @@ const ITEMS_PER_PAGE = 9;
 // Fallback: exact email + phone per agent landing page (catches edge cases)
 const BIR_AGENT_EMAILS = new Set([
   'don@bircabo.com',
-  'eaispuro80@gmail.com',
+  'erika@bircabo.com',
   'erikag@bircabo.com',
   'robertvanpatten2@gmail.com',
   'alfonso@bircabo.com',
@@ -52,7 +52,16 @@ const BIR_AGENT_PHONES = new Set([
   '5216241276012',
 ].map(cleanPhone));
 
+const FORCED_MLS_IDS = new Set([
+  "25-3710", "25-4668", "25-4085", "25-5868", "26-1009",
+  "24-2158", "25-4323", "25-5698", "25-4759", "25-4760",
+  "24-1981", "24-5127", "25-5877", "25-1679", "25-3174",
+  "24-4467", "25-2477", "25-2566",
+]);
+
 const isBIR = (listing: any) => {
+  if (FORCED_MLS_IDS.has(listing.ListingId)) return true;
+
   const office = (listing.ListOfficeName || listing.OfficeName || '').toLowerCase();
   const coOffice = (listing.CoListOfficeName || '').toLowerCase();
   if (office.includes('baja international') || coOffice.includes('baja international')) return true;
@@ -107,9 +116,32 @@ const OfficeListings = () => {
           }
         }
 
-        // Filter client-side for BIR office — same technique as agent landing pages
+        // Filter client-side for BIR office
         const birListings = merged.filter(isBIR);
-        const converted = birListings.map(convertMLSToPropertyCard);
+
+        // Find which forced MLS IDs are missing from results and fetch them individually
+        const foundIds = new Set(birListings.map((l: any) => l.ListingId));
+        const missingIds = [...FORCED_MLS_IDS].filter(id => !foundIds.has(id));
+
+        if (missingIds.length > 0) {
+          const missingFetches = await Promise.all(
+            missingIds.map(id => fetchListings({ search: id, limit: 1, allowInactive: true }))
+          );
+          const foundKeys = new Set(birListings.map((l: any) => l.ListingKey));
+          for (const results of missingFetches) {
+            for (const l of results) {
+              if (!foundKeys.has(l.ListingKey)) {
+                birListings.push(l);
+                foundKeys.add(l.ListingKey);
+              }
+            }
+          }
+        }
+
+        const converted = birListings.map((l: any) => ({
+          ...convertMLSToPropertyCard(l),
+          onOffer: l.ListingId === "25-4668"
+        }));
 
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(converted));
