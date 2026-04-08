@@ -116,6 +116,7 @@ const agents = [
     id: 9,
     slug: "susu",
     name: "Susu Vieira",
+    active: false,
     title: "Luxury Real Estate",
     specialization: "Staging and Design",
     image: "/fotos%20de%20agentes/susu-vieira.jpg",
@@ -222,6 +223,7 @@ const agents = [
     id: 13,
     slug: "charles-jones",
     name: "Charles Jones",
+    active: false,
     title: "Luxury Property Specialist",
     specialization: "Pedregal & Luxury Vacation Rentals",
     image: "/fotos%20de%20agentes/charles-jones.jpg",
@@ -457,7 +459,7 @@ const Team = () => {
                   msOverflowStyle: 'none',
                 }}
               >
-                {agents.map((agent) => (
+                {agents.filter(agent => agent.active !== false).map((agent) => (
                   <div key={agent.id} className="flex-shrink-0 w-[320px]">
                     <AgentBioCard
                       name={agent.name}
