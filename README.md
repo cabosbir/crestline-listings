@@ -161,4 +161,4 @@ For questions or support, contact:
 
 ## License
 
-© 2025 Baja International Realty. All rights reserved.
+© 2025 Baja International Realty. All rights reserved._
