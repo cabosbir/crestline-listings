@@ -228,8 +228,8 @@ const agents = [
     image: "/fotos%20de%20agentes/humberto-escoto.jpeg",
     phone: "+52 624 147 7708",
     email: "humberto@bircabo.com",
-    yearsExperience: 1,
-    propertiesSold: 0,
+    yearsExperience: 15,
+    propertiesSold: 148,
     bio: "Dedicated real estate advisor specializing in luxury properties in Cabo San Lucas.",
     certifications: ["MLS Member"],
     languages: ["English", "Spanish"]
