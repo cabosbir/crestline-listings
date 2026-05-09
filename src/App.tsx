@@ -31,6 +31,7 @@ import ErikaLandingPage from "./pages/ErikaLandingPage";
 import ErikaGracianoLandingPage from "./pages/ErikaGracianoLandingPage";
 import FernandoLandingPage from "./pages/FernandoLandingPage";
 import HectorLandingPage from "./pages/HectorLandingPage";
+import HumbertoLandingPage from "./pages/HumbertoLandingPage";
 import MarisolLandingPage from "./pages/MarisolLandingPage";
 import SusuLandingPage from "./pages/SusuLandingPage";
 import OfficeListings from "./pages/OfficeListings";
@@ -129,6 +130,7 @@ const App = () => (
           <Route path="/erika-graciano" element={<ErikaGracianoLandingPage />} />
           <Route path="/fernando-cabrera" element={<FernandoLandingPage />} />
           <Route path="/hector" element={<HectorLandingPage />} />
+          <Route path="/humberto" element={<HumbertoLandingPage />} />
           <Route path="/marisol" element={<MarisolLandingPage />} />
           <Route path="/susu" element={<SusuLandingPage />} />
 
@@ -145,6 +147,7 @@ const App = () => (
           <Route path="/agents/erika-graciano" element={<ErikaGracianoLandingPage />} />
           <Route path="/agents/fernando-cabrera" element={<FernandoLandingPage />} />
           <Route path="/agents/hector" element={<HectorLandingPage />} />
+          <Route path="/agents/humberto" element={<HumbertoLandingPage />} />
           <Route path="/agents/marisol" element={<MarisolLandingPage />} />
           <Route path="/agents/susu" element={<SusuLandingPage />} />
 
