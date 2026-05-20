@@ -207,6 +207,7 @@ const agents = [
   {
   id: 15,
   slug: "bonnie-renee",
+  active: false,
   name: "Bonnie Renee G.",
   title: "Senior Real Estate Advisor",
   specialization: "Residential, Commercial & Investment Properties",
