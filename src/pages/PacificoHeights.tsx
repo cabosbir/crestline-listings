@@ -20,16 +20,6 @@ const HERO_IMAGES = [
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&h=900&fit=crop";
 
-const isPacificoHeights = (listing: any) => {
-  const address = (listing.UnparsedAddress || '').toLowerCase();
-  const subdivision = (listing.SubdivisionName || '').toLowerCase();
-  const community = (listing.Community || '').toLowerCase();
-  return (
-    address.includes('pacifico heights') ||
-    subdivision.includes('pacifico heights') ||
-    community.includes('pacifico heights')
-  );
-};
 
 const PacificoHeights = () => {
   const [listings, setListings] = useState<any[]>([]);
@@ -62,9 +52,8 @@ const PacificoHeights = () => {
           return;
         }
 
-        const mlsData = await fetchListings({ limit: 500, city: 'Pacific' });
-        const filtered = mlsData.filter(isPacificoHeights);
-        const converted = filtered.map(convertMLSToPropertyCard);
+        const mlsData = await fetchListings({ subdivisions: 'Pacifico Heights', limit: 500 });
+        const converted = mlsData.map(convertMLSToPropertyCard);
 
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(converted));
