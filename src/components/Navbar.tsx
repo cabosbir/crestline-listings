@@ -21,6 +21,7 @@ const Navbar = () => {
   const propertyLinks = [
     { name: "View All Properties", href: "/search" },
     { name: "Pacifico Heights", href: "/pacifico-heights" },
+    { name: "Cabo Homes", href: "https://cabo-homes.com/" },
   ];
 
   const teamLinks: Array<{ name: string; href?: string; action?: string }> = [
@@ -52,12 +53,23 @@ const Navbar = () => {
               <DropdownMenuContent align="start" className="w-56">
                 {propertyLinks.map((link) => (
                   <DropdownMenuItem key={link.name} asChild>
-                    <Link
-                      to={link.href}
-                      className="cursor-pointer w-full font-heading"
-                    >
-                      {link.name}
-                    </Link>
+                    {link.href.startsWith("http") ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="cursor-pointer w-full font-heading"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="cursor-pointer w-full font-heading"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -154,14 +166,27 @@ const Navbar = () => {
                 <div className="text-foreground font-heading text-lg mb-2">Properties</div>
                 <div className="flex flex-col space-y-2 pl-4">
                   {propertyLinks.map((link) => (
-                    <Link
-                      key={link.name}
-                      to={link.href}
-                      className="text-muted-foreground hover:text-accent transition-fast font-heading"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
+                    link.href.startsWith("http") ? (
+                      <a
+                        key={link.name}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-accent transition-fast font-heading"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        key={link.name}
+                        to={link.href}
+                        className="text-muted-foreground hover:text-accent transition-fast font-heading"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </Link>
+                    )
                   ))}
                 </div>
               </div>
