@@ -22,6 +22,7 @@ const Navbar = () => {
     { name: "View All Properties", href: "/search" },
     { name: "Pacifico Heights", href: "/pacifico-heights" },
     { name: "Cabo Homes", href: "https://cabo-homes.com/" },
+    { name: "Cabo Condos", href: "https://cabo-condos.com/" },
   ];
 
   const teamLinks: Array<{ name: string; href?: string; action?: string }> = [
