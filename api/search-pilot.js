@@ -2,6 +2,23 @@ import {createHmac, timingSafeEqual} from 'node:crypto';
 
 export const fields = ['ListingKey','ListingId','UnparsedAddress','City','MLSAreaMajor','Address_co_Community2','SubdivisionName','PropertyType','StandardStatus','ListPrice','BedroomsTotal','BathroomsTotalDecimal','BathroomsFull','Latitude','Longitude','General_sp_Description_co_AC_sp_SqFt','General_sp_Description_co_Primary_sp_View','General_sp_Description_co_Seller_sp_Financing_sp_Offered','ListOfficeName','PublicRemarks','InternetAddressDisplayYN','InternetEntireListingDisplayYN','ModificationTimestamp'];
 const sign = (value, key) => createHmac('sha256', key).update(value).digest('base64url');
+export function buildRequest(endpoint, query) {
+  const url=new URL(endpoint), light=query.mode==='inventory';
+  let filter="StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false";
+  if(query.keys!==undefined){
+    if(typeof query.keys!=='string')throw new Error('Invalid keys');
+    const keys=query.keys.split(',');
+    if(!keys.length||keys.length>24||keys.some(k=>!/^\d{1,40}$/.test(k)))throw new Error('Invalid keys');
+    filter+=` and (${keys.map(k=>`ListingKey eq '${k}'`).join(' or ')})`;
+  }
+  url.searchParams.set('$filter',filter);
+  url.searchParams.set('$select',(light?fields.filter(k=>k!=='PublicRemarks'):fields).join(','));
+  if(!light)url.searchParams.set('$expand','Media');
+  url.searchParams.set('$top',light?'1000':'24');
+  url.searchParams.set('$count','true');
+  url.searchParams.set('$orderby',light?'ListingKey asc':'ModificationTimestamp desc');
+  return url;
+}
 export function encodeCursor(url, key, expires = Date.now()+15*60*1000) {
   const body=Buffer.from(JSON.stringify({url,expires})).toString('base64url');
   return `${body}.${sign(body,key)}`;
@@ -36,15 +53,7 @@ export default async function handler(req,res) {
     endpoint=new URL(`${base.replace(/\/$/,'')}/Property`);
     if(endpoint.protocol!=='https:')throw new Error('Invalid endpoint');
     if(req.query.cursor)url=decodeCursor(req.query.cursor,key,endpoint);
-    else {
-      url=new URL(endpoint);
-      url.searchParams.set('$filter',"StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false");
-      url.searchParams.set('$select',fields.join(','));
-      url.searchParams.set('$expand','Media');
-      url.searchParams.set('$top','100');
-      url.searchParams.set('$count','true');
-      url.searchParams.set('$orderby','ListingKey asc');
-    }
+    else url=buildRequest(endpoint,req.query);
   } catch {return res.status(400).json({error:'This inventory request has expired or is invalid. Reload to start again.'});}
   try {
     const response=await fetch(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal:AbortSignal.timeout(24000),redirect:'error'});
