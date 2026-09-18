@@ -1,12 +1,67 @@
 import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates} from './bir-pilot-search.mjs';
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
+if(new URLSearchParams(location.search).get('check-email')==='1'){
+ const check=document.createElement('p');check.id='email-connection-check';check.setAttribute('role','status');check.style.cssText='padding:20px;background:#fff3cd';check.textContent='Checking the email connection without sending a message…';document.querySelector('.notice').after(check);
+ fetch('/api/search-pilot?mode=email-check',{cache:'no-store'}).then(async response=>{if(!response.ok)throw new Error('Connection check unavailable');return response.json();}).then(result=>{check.textContent=`${result.message} Connection status: ${result.status}`;}).catch(()=>{check.textContent='The connection check could not finish.';});
+}
 let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
 const detailsCache=new Map();
+const galleryCache=new Map(),galleryRequests=new Map(),photoPositions=new Map();
 const style=document.createElement('style');
 style.textContent='.leaflet-tooltip.cluster-number{background:transparent;border:0;box-shadow:none;color:#fff;font-weight:700;font-size:12px}.leaflet-tooltip.cluster-number:before{display:none}.photo-placeholder{height:180px;background:#e5ece7;display:grid;place-items:center;color:#44605e;font-size:14px}.page-info{align-self:center;font-size:14px}#inquiry textarea{min-height:100px;width:100%;padding:10px;border:1px solid #b9cbc6;font:inherit}#inquiry .contact-options{display:flex;gap:15px;flex-wrap:wrap;margin:16px 0}@media(max-width:760px){#cards{grid-template-columns:1fr}.bar{flex-wrap:wrap;gap:10px}.layout aside{padding:18px}#inquiry{max-height:90vh;overflow:auto}.steps{flex-wrap:wrap}}';
 document.head.append(style);
+style.textContent+='.photo-viewer{position:relative;background:#e5ece7}.photo-viewer .photo{display:block;cursor:zoom-in;margin:0}.photo-arrow{position:absolute;top:72px;padding:4px 12px;background:#ffffffed;color:#183d49;font-size:26px;border:0;box-shadow:0 1px 5px #0004}.photo-prev{left:8px}.photo-next{right:8px}.photo-caption{margin:0;padding:6px 10px;font-size:12px;background:#fff}.photo-count{position:absolute;right:8px;bottom:36px;background:#183d49e8;color:white;border:0;padding:4px 8px;font-size:12px}.listing-title{border:0;padding:0;text-align:left;font:inherit;color:inherit;background:none;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}.listing-title:hover{background:none;color:#12666a}#listing-gallery{width:96vw;max-width:1200px;max-height:94vh;padding:20px}#listing-gallery .gallery-heading{display:flex;justify-content:space-between;align-items:start;gap:18px}#listing-gallery .photo{width:100%;height:65vh;object-fit:contain;cursor:default;background:#142b31}#listing-gallery .photo-arrow{top:45%}.photo-thumbnails{display:flex;overflow-x:auto;gap:8px;padding:10px;background:white}.photo-thumbnails button{padding:2px;flex:none;border:2px solid transparent}.photo-thumbnails button[aria-current=true]{border-color:#12666a}.photo-thumbnails img{width:85px;height:60px;object-fit:cover;display:block}.gallery-facts{line-height:1.6}.photo-viewer button:disabled{opacity:.5;cursor:wait}@media(max-width:760px){#listing-gallery{width:98vw;padding:12px}#listing-gallery .photo{height:48vh}.gallery-heading h2{font-size:20px}}';
+async function fetchGallery(p){
+ if(galleryCache.has(p.ListingKey))return galleryCache.get(p.ListingKey);
+ if(!galleryRequests.has(p.ListingKey))galleryRequests.set(p.ListingKey,(async()=>{
+  const response=await fetch('/api/search-pilot?mode=gallery&keys='+encodeURIComponent(p.ListingKey),{cache:'no-store'});
+  if(!response.ok)throw new Error('Photos could not load. Please try again.');
+  const data=await response.json(),listing=data.results?.find(row=>row.ListingKey===p.ListingKey);
+  if(!listing||!Array.isArray(listing.Media))throw new Error('This listing is unavailable. Reload the search for current availability.');
+  galleryCache.set(p.ListingKey,listing);return listing;
+ })().finally(()=>galleryRequests.delete(p.ListingKey)));
+ return galleryRequests.get(p.ListingKey);
+}
+function photoViewer(p,large=false){
+ const box=document.createElement('div');box.className='photo-viewer';box.setAttribute('aria-label','Property photos');
+ const image=document.createElement('img');image.className='photo';image.loading='lazy';image.alt=p.UnparsedAddress||'Property';
+ const prev=document.createElement('button'),next=document.createElement('button'),count=document.createElement('button'),caption=document.createElement('p');
+ prev.className='photo-arrow photo-prev';prev.textContent='‹';prev.setAttribute('aria-label','Previous photo');next.className='photo-arrow photo-next';next.textContent='›';next.setAttribute('aria-label','Next photo');count.className='photo-count';caption.className='photo-caption';caption.setAttribute('role','status');
+ const thumbs=document.createElement('div');thumbs.className='photo-thumbnails';
+ let full=galleryCache.get(p.ListingKey),photos=full?.Media||p.Media||[],position=photoPositions.get(p.ListingKey)||0,busy=false;
+ function draw(){
+  position=photos.length?((position%photos.length)+photos.length)%photos.length:0;
+  if(photos.length){image.src=photos[position].MediaURL;image.hidden=false;image.alt=`${p.UnparsedAddress||'Property'} — photo ${position+1}`;}else{image.removeAttribute('src');image.hidden=true;}
+  count.textContent=full?(photos.length?`${position+1} / ${photos.length}`:'No photos'):'View all photos';
+  caption.textContent=photos[position]?.caption||(full?'':'Use arrows to browse photos');
+  prev.disabled=next.disabled=busy||(!!full&&photos.length<2);photoPositions.set(p.ListingKey,position);
+  if(large&&full){thumbs.replaceChildren();photos.forEach((photo,index)=>{const button=document.createElement('button');button.type='button';button.setAttribute('aria-label',`Show photo ${index+1}`);button.setAttribute('aria-current',String(position===index));const thumb=document.createElement('img');thumb.src=photo.MediaURL;thumb.alt='';thumb.loading='lazy';button.append(thumb);button.onclick=()=>{position=index;draw();};thumbs.append(button);});}
+ }
+ async function move(delta){
+  if(busy)return;busy=true;prev.disabled=next.disabled=true;
+  try{if(!full){caption.textContent='Loading all photos…';full=await fetchGallery(p);photos=full.Media;}position+=delta;draw();}
+  catch(error){caption.textContent=error.message;}
+  finally{busy=false;prev.disabled=next.disabled=!!full&&photos.length<2;}
+ }
+ prev.onclick=()=>move(-1);next.onclick=()=>move(1);count.onclick=()=>large?move(0):openListing(p);
+ if(!large){image.tabIndex=0;image.setAttribute('role','button');image.setAttribute('aria-label','Open full property gallery');image.onclick=()=>openListing(p);image.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openListing(p);}};}
+ box.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft'?-1:1);}});
+ let touchX;box.addEventListener('touchstart',event=>{touchX=event.touches[0]?.clientX;},{passive:true});box.addEventListener('touchend',event=>{const end=event.changedTouches[0]?.clientX;if(touchX!=null&&end!=null&&Math.abs(end-touchX)>50)move(end<touchX?1:-1);touchX=null;},{passive:true});
+ image.onerror=()=>{caption.textContent='This photo could not load. Try the next photo.';};
+ box.append(image,prev,next,count,caption);if(large)box.append(thumbs);draw();if(large&&!full)move(0);return box;
+}
+const listingDialog=document.createElement('dialog');listingDialog.id='listing-gallery';document.body.append(listingDialog);
+function openListing(p){
+ const heading=document.createElement('div');heading.className='gallery-heading';const title=document.createElement('h2');title.textContent=p.UnparsedAddress||'Property';const back=document.createElement('button');back.textContent='Back to results';back.onclick=()=>listingDialog.close();heading.append(title,back);
+ const facts=document.createElement('p');facts.className='gallery-facts';facts.textContent=`${money(p.ListPrice)} · ${p.PropertyType} · ${p.BedroomsTotal??'—'} bedrooms · ${p.BathroomsTotalDecimal??p.BathroomsFull??'—'} baths · MLS ${p.ListingId}`;
+ const remarks=document.createElement('p');remarks.textContent=p.PublicRemarks||'Loading property description…';
+ const office=document.createElement('p');office.textContent=`Listed by ${p.ListOfficeName||'MLS member office'}`;
+ const inquireButton=document.createElement('button');inquireButton.textContent='Ask about this property';inquireButton.onclick=()=>inquire(p);
+ listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,office,inquireButton);listingDialog.showModal();
+ fetchGallery(p).then(row=>{remarks.textContent=row.PublicRemarks||'No description supplied.';}).catch(error=>{remarks.textContent=error.message;});
+}
 const filterToggle=document.createElement('button');filterToggle.className='mobile-filter-toggle';filterToggle.textContent='Show search filters';filterToggle.setAttribute('aria-expanded','false');filterToggle.setAttribute('aria-controls','filters');$('filters').before(filterToggle);
 filterToggle.onclick=()=>{const open=document.querySelector('aside').classList.toggle('filters-open');filterToggle.textContent=open?'Hide search filters':'Show search filters';filterToggle.setAttribute('aria-expanded',String(open));};
 style.textContent+='.mobile-filter-toggle{display:none}@media(max-width:760px){.mobile-filter-toggle{display:block;margin:10px 0}aside:not(.filters-open) #filters,aside:not(.filters-open) .steps,aside:not(.filters-open) .fine{display:none}.intro{margin-bottom:8px}}';
@@ -73,10 +128,11 @@ function renderCards(loadDetails=true){
   const cached=detailsCache.get(original.ListingKey),p={...original,...cached};
   const card=document.createElement('article');card.className='card';
   const url=p.Media?.[0]?.MediaURL;
-  if(url && /^https:\/\//.test(url)){const image=document.createElement('img');image.src=url;image.alt=p.UnparsedAddress||'Property';image.loading='lazy';image.className='photo';card.append(image);}
+  if(url && /^https:\/\//.test(url)){card.append(photoViewer(p));}
   else{const placeholder=document.createElement('div');placeholder.className='photo-placeholder';placeholder.textContent=cached?'Photo not available':'Loading photo…';card.append(placeholder);}
   const content=document.createElement('div');content.className='content';
   for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '—'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '—'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId} · Listed by ${p.ListOfficeName||'MLS member office'}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
+  const title=content.querySelector('h2'),titleButton=document.createElement('button');titleButton.className='listing-title';titleButton.textContent=title.textContent;titleButton.onclick=()=>openListing(p);title.replaceChildren(titleButton);
   const detail=document.createElement('details'),summary=document.createElement('summary'),remarks=document.createElement('p');summary.textContent='Property description';remarks.textContent=p.PublicRemarks||(cached?'No description supplied.':'Loading description…');remarks.className='meta';detail.append(summary,remarks);content.append(detail);
   const button=document.createElement('button');button.className='inquiry';button.textContent='Ask about this property';button.onclick=()=>inquire(p);content.append(button);card.append(content);$('cards').append(card);
  }
