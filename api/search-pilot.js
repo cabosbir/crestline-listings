@@ -1,0 +1,63 @@
+import {createHmac, timingSafeEqual} from 'node:crypto';
+
+export const fields = ['ListingKey','ListingId','UnparsedAddress','City','MLSAreaMajor','Address_co_Community2','SubdivisionName','PropertyType','StandardStatus','ListPrice','BedroomsTotal','BathroomsTotalDecimal','BathroomsFull','Latitude','Longitude','General_sp_Description_co_AC_sp_SqFt','General_sp_Description_co_Primary_sp_View','General_sp_Description_co_Seller_sp_Financing_sp_Offered','ListOfficeName','PublicRemarks','InternetAddressDisplayYN','InternetEntireListingDisplayYN','ModificationTimestamp'];
+const sign = (value, key) => createHmac('sha256', key).update(value).digest('base64url');
+export function encodeCursor(url, key, expires = Date.now()+15*60*1000) {
+  const body=Buffer.from(JSON.stringify({url,expires})).toString('base64url');
+  return `${body}.${sign(body,key)}`;
+}
+export function decodeCursor(cursor, key, endpoint) {
+  if(typeof cursor!=='string'||cursor.length>12000)throw new Error('Invalid cursor');
+  const [body,signature,...extra]=cursor.split('.');
+  const expected=Buffer.from(sign(body||'',key)), supplied=Buffer.from(signature||'');
+  if(extra.length||expected.length!==supplied.length||!timingSafeEqual(expected,supplied))throw new Error('Invalid cursor');
+  const data=JSON.parse(Buffer.from(body,'base64url').toString());
+  const url=new URL(data.url), base=new URL(endpoint);
+  if(!Number.isFinite(data.expires)||data.expires<Date.now()||url.origin!==base.origin||url.pathname!==base.pathname||url.username||url.password)throw new Error('Invalid cursor');
+  return url;
+}
+export function publicListing(row) {
+  if(row.StandardStatus!=='Active'||row.InternetEntireListingDisplayYN===false)return null;
+  const result=Object.fromEntries(fields.filter(k=>k in row).map(k=>[k,row[k]]));
+  if(row.InternetAddressDisplayYN===false){
+    result.UnparsedAddress='Address available on request';
+    result.Latitude=null;result.Longitude=null;
+  }
+  result.Media=Array.isArray(row.Media)?row.Media.filter(m=>typeof m.MediaURL==='string'&&m.MediaURL.startsWith('https://')).slice(0,1).map(m=>({MediaURL:m.MediaURL})):[];
+  return result;
+}
+export default async function handler(req,res) {
+  res.setHeader('Cache-Control','no-store');
+  if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Method not allowed'});}
+  const key=process.env.FLEXMLS_API_KEY, base=process.env.FLEXMLS_BASE_URL;
+  if(!key||!base)return res.status(503).json({error:'The preview listing connection is not configured.'});
+  let endpoint,url;
+  try {
+    endpoint=new URL(`${base.replace(/\/$/,'')}/Property`);
+    if(endpoint.protocol!=='https:')throw new Error('Invalid endpoint');
+    if(req.query.cursor)url=decodeCursor(req.query.cursor,key,endpoint);
+    else {
+      url=new URL(endpoint);
+      url.searchParams.set('$filter',"StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false");
+      url.searchParams.set('$select',fields.join(','));
+      url.searchParams.set('$expand','Media');
+      url.searchParams.set('$top','100');
+      url.searchParams.set('$count','true');
+      url.searchParams.set('$orderby','ListingKey asc');
+    }
+  } catch {return res.status(400).json({error:'This inventory request has expired or is invalid. Reload to start again.'});}
+  try {
+    const response=await fetch(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal:AbortSignal.timeout(24000),redirect:'error'});
+    if(!response.ok)return res.status(response.status===429?429:502).json({error:`The listing provider could not complete this page (status ${response.status}). Reload to retry.`});
+    const data=await response.json();
+    if(!Array.isArray(data.value))throw new Error('Invalid provider response');
+    let next=null;
+    if(data['@odata.nextLink']){
+      const nextURL=new URL(data['@odata.nextLink'],endpoint);
+      if(nextURL.origin!==endpoint.origin||nextURL.pathname!==endpoint.pathname||nextURL.username||nextURL.password)throw new Error('Invalid provider continuation');
+      next=encodeCursor(nextURL.toString(),key);
+    }
+    const total=Number(data['@odata.count']);
+    return res.status(200).json({results:data.value.map(publicListing).filter(Boolean),received:data.value.length,total:Number.isSafeInteger(total)&&total>=0?total:null,next,fetchedAt:new Date().toISOString()});
+  } catch {return res.status(502).json({error:'The listing provider did not finish this page. Reload to retry; partial inventory is not shown as complete.'});}
+}
