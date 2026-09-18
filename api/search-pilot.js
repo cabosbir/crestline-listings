@@ -8,7 +8,7 @@ export function buildRequest(endpoint, query) {
   let filter="StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false";
   if(query.group!==undefined){
     if(!light)throw new Error('Invalid group');
-    const groups={houses:"PropertyType eq 'Houses'",condos:"PropertyType eq 'Condos'",land:"PropertyType eq 'Land'",other:"(PropertyType eq null or (PropertyType ne 'Houses' and PropertyType ne 'Condos' and PropertyType ne 'Land'))"};
+    const groups={budget:'ListPrice lt 250000',mid:'ListPrice ge 250000 and ListPrice lt 500000',upper:'ListPrice ge 500000 and ListPrice lt 1000000',other:'ListPrice ge 1000000 or ListPrice eq null'};
     if(!Object.hasOwn(groups,query.group))throw new Error('Invalid group');
     filter+=` and (${groups[query.group]})`;
   }
