@@ -25,3 +25,14 @@ export async function loadInventory(fetchPage, onProgress=()=>{}) {
   if(total===null||received!==total||records.size!==total)throw new Error('The feed did not return the expected public inventory. Totals have not been verified.');
   return {results:[...records.values()],fetchedAt};
 }
+
+export async function loadGroupedInventory(fetchPage,onProgress=()=>{}){
+  const groups=['houses','condos','land','other'],progress=new Map();
+  const results=await Promise.all(groups.map(group=>loadInventory(cursor=>fetchPage(cursor,group),(loaded,total)=>{
+    progress.set(group,{loaded,total});
+    onProgress([...progress.values()].reduce((sum,p)=>sum+p.loaded,0),progress.size===groups.length&&[...progress.values()].every(p=>p.total!==null)?[...progress.values()].reduce((sum,p)=>sum+p.total,0):null);
+  })));
+  const rows=results.flatMap(page=>page.results);
+  if(new Set(rows.map(row=>row.ListingKey)).size!==rows.length)throw new Error('Inventory changed between groups. Reload to retry.');
+  return {results:rows,fetchedAt:results.map(page=>page.fetchedAt).sort()[0]};
+}
