@@ -1,7 +1,7 @@
 import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates} from './bir-pilot-search.mjs';
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
-document.querySelector('.intro').textContent='Start with any location you know, including a subdivision. The other location fields are optional.';
+document.querySelector('.intro').textContent='Start with a zone, then narrow your search by area, community and subdivision. Each choice narrows the options below it. If you already know the subdivision you want, select it directly.';
 document.querySelector('.steps').hidden=true;
 for(const key of locationFields)document.querySelector(`label[for="${key}"]`).textContent=document.querySelector(`label[for="${key}"]`).textContent.replace(/^\d+\.\s*/, '');
 $('MLSAreaMajor').nextElementSibling.textContent='Choose any area, or select a zone to narrow the list.';
