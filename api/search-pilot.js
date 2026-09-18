@@ -5,6 +5,8 @@ const sign = (value, key) => createHmac('sha256', key).update(value).digest('bas
 const communityFields=['Address_co_Community2','General_sp_Description_co_Community3','Location_sp_Taxes_sp_Legal_co_Community4'];
 export function buildRequest(endpoint, query) {
   const url=new URL(endpoint), light=query.mode==='inventory';
+  const gallery=query.mode==='gallery';
+  if(gallery&&(typeof query.keys!=='string'||!/^\d{1,40}$/.test(query.keys)))throw new Error('Gallery requires one listing');
   let filter="StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false";
   if(query.group!==undefined){
     if(!light)throw new Error('Invalid group');
@@ -20,8 +22,8 @@ export function buildRequest(endpoint, query) {
   }
   url.searchParams.set('$filter',filter);
   url.searchParams.set('$select',[...(light?fields.filter(k=>k!=='PublicRemarks'):fields),...communityFields.slice(1)].join(','));
-  if(!light)url.searchParams.set('$expand','Media($top=1)');
-  url.searchParams.set('$top',light?'1000':'24');
+  if(!light)url.searchParams.set('$expand',gallery?'Media':'Media($top=1)');
+  url.searchParams.set('$top',light?'1000':gallery?'1':'24');
   url.searchParams.set('$count','true');
   url.searchParams.set('$orderby',light?'ListingKey asc':'ModificationTimestamp desc');
   return url;
@@ -40,7 +42,7 @@ export function decodeCursor(cursor, key, endpoint) {
   if(!Number.isFinite(data.expires)||data.expires<Date.now()||url.origin!==base.origin||url.pathname!==base.pathname||url.username||url.password)throw new Error('Invalid cursor');
   return url;
 }
-export function publicListing(row) {
+export function publicListing(row,fullPhotos=false) {
   if(row.StandardStatus!=='Active'||row.InternetEntireListingDisplayYN===false)return null;
   const result=Object.fromEntries(fields.filter(k=>k in row).map(k=>[k,row[k]]));
   result.Address_co_Community2=communityFields.map(k=>row[k]).find(v=>typeof v==='string'&&v.trim()&&!/^\*+$/.test(v))||null;
@@ -48,13 +50,21 @@ export function publicListing(row) {
     result.UnparsedAddress='Address available on request';
     result.Latitude=null;result.Longitude=null;
   }
-  result.Media=Array.isArray(row.Media)?row.Media.filter(m=>typeof m.MediaURL==='string'&&m.MediaURL.startsWith('https://')).slice(0,1).map(m=>({MediaURL:m.MediaURL})):[];
+  const photos=Array.isArray(row.Media)?row.Media.filter(m=>(!m.MediaCategory||m.MediaCategory==='Photo')&&(!m.Permission||(Array.isArray(m.Permission)?m.Permission.includes('Public'):m.Permission==='Public'))&&typeof m.MediaURL==='string'&&m.MediaURL.startsWith('https://')).sort((a,b)=>(Number(a.Order)||0)-(Number(b.Order)||0)):[];
+  result.Media=(fullPhotos?photos:photos.slice(0,1)).map(m=>({MediaURL:m.MediaURL,caption:typeof m.ShortDescription==='string'?m.ShortDescription:''}));
   return result;
 }
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   if(req.method==='POST')return handleInquiry(req,res);
   if(req.method!=='GET'){res.setHeader('Allow','GET, POST');return res.status(405).json({error:'Method not allowed'});}
+  if(req.query.mode==='email-check'){
+    if(process.env.VERCEL_ENV!=='preview')return res.status(404).json({error:'Not found'});
+    let transport;
+    try{transport=await mailTransport();await transport.verify();return res.status(200).json({status:'connected',message:'The email server accepted the configured login. No message was sent.'});}
+    catch(error){return res.status(200).json({status:mailErrorCode(error),message:'The email connection check failed. No message was sent.'});}
+    finally{transport?.close();}
+  }
   const key=process.env.FLEXMLS_API_KEY, base=process.env.FLEXMLS_BASE_URL;
   if(!key||!base)return res.status(503).json({error:'The preview listing connection is not configured.'});
   let endpoint,url;
@@ -69,6 +79,7 @@ export default async function handler(req,res) {
     if(!response.ok)return res.status(response.status===429?429:502).json({error:`The listing provider could not complete this page (status ${response.status}). Reload to retry.`});
     const data=await response.json();
     if(!Array.isArray(data.value))throw new Error('Invalid provider response');
+    if(req.query.mode==='gallery'&&data.value.some(row=>row['Media@odata.nextLink']))throw new Error('Incomplete photo gallery');
     let next=null;
     if(data['@odata.nextLink']){
       const nextURL=new URL(data['@odata.nextLink'],endpoint);
@@ -76,7 +87,7 @@ export default async function handler(req,res) {
       next=encodeCursor(nextURL.toString(),key);
     }
     const total=Number(data['@odata.count']);
-    return res.status(200).json({results:data.value.map(publicListing).filter(Boolean),received:data.value.length,total:Number.isSafeInteger(total)&&total>=0?total:null,next,fetchedAt:new Date().toISOString()});
+    return res.status(200).json({results:data.value.map(row=>publicListing(row,req.query.mode==='gallery')).filter(Boolean),received:data.value.length,total:Number.isSafeInteger(total)&&total>=0?total:null,next,fetchedAt:new Date().toISOString()});
   } catch {return res.status(502).json({error:'The listing provider did not finish this page. Reload to retry; partial inventory is not shown as complete.'});}
 }
 
@@ -92,9 +103,15 @@ export function inquiryMessage(body,from){
   if(!values.name||!values.message||!/^\S+@[^\s@]+\.[^\s@]+$/.test(values.email)||/[\r\n]/.test(values.email)||!/^\d{2}-\d{1,10}$/.test(values.listingId))throw new Error('Please provide your name, a valid email, and a question.');
   return {from,to:'don@bircabo.com',replyTo:values.email,subject:`BIR property inquiry - MLS ${values.listingId}`,text:`New property inquiry from the BIR search preview\n\nName: ${values.name}\nEmail: ${values.email}\nPhone: ${values.phone||'Not provided'}\nMLS: ${values.listingId}\nProperty: ${values.address}\n\n${values.message}\n\nProperty reference supplied by the visitor; confirm current availability in FLEX.`};
 }
-async function deliverInquiry(message){
+async function mailTransport(){
   const {default:nodemailer}=await import('nodemailer');
-  const transport=nodemailer.createTransport({service:'gmail',auth:{user:process.env.OFFICE_EMAIL,pass:process.env.OFFICE_APP_PASSWORD},connectionTimeout:10000,greetingTimeout:10000,socketTimeout:15000});
+  return nodemailer.createTransport({service:'gmail',auth:{user:process.env.OFFICE_EMAIL,pass:process.env.OFFICE_APP_PASSWORD},connectionTimeout:10000,greetingTimeout:10000,socketTimeout:15000});
+}
+export function mailErrorCode(error){
+  return ['EAUTH','ECONNECTION','ETIMEDOUT','ESOCKET','EDNS','EENVELOPE','EMESSAGE','ERR_MODULE_NOT_FOUND'].includes(error?.code)?error.code:'EMAIL_SERVICE_ERROR';
+}
+async function deliverInquiry(message){
+  const transport=await mailTransport();
   try {const result=await transport.sendMail(message);if(!result.accepted?.some(address=>String(address).toLowerCase()==='don@bircabo.com'))throw new Error('Not accepted');}
   finally {transport.close();}
 }
@@ -116,5 +133,5 @@ export async function handleInquiry(req,res,send=deliverInquiry){
   if(bucket.count>=5||inquiryLimits.size>1000)return res.status(429).json({error:'Too many attempts. Please wait a few minutes or use the email link.'});
   bucket.count++;inquiryLimits.set(ip,bucket);
   try{await send(message);return res.status(200).json({success:true});}
-  catch{return res.status(502).json({error:'We could not confirm your inquiry was sent. Please contact Don using the email or call link below.'});}
+  catch(error){console.error('Preview inquiry failed:',mailErrorCode(error));return res.status(502).json({error:'We could not confirm your inquiry was sent. Please contact Don using the email or call link below.'});}
 }
