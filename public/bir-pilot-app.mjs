@@ -175,15 +175,22 @@ try{
   $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices…`;
  }).catch(()=>{});
  const fetchInventoryPage=async (cursor,group)=>{
+  for(let attempt=0;attempt<4;attempt++){
    const response=await fetch('/api/search-pilot'+(cursor?'?cursor='+encodeURIComponent(cursor):'?mode=inventory'+(group?'&group='+group:'')),{cache:'no-store'});
    const page=await response.json();
+   if(response.status===429&&attempt<3){
+    const seconds=Math.max(Number(response.headers.get('Retry-After'))||0,[15,30,60][attempt]);
+    $('timestamp').textContent=`The listing service is busy. Retrying this page in ${seconds} seconds; your search will continue automatically.`;
+    await new Promise(resolve=>setTimeout(resolve,seconds*1000));
+    continue;
+   }
    if(!response.ok)throw new Error(page.error||'Listing data unavailable');
    return page;
+  }
  };
  const progress=(loaded,total)=>{if(!matches.length)$('count').textContent=`Preparing search: ${loaded.toLocaleString()}${total===null?'':` of ${total.toLocaleString()}`} listings…`;};
- let data,loadingMethod='parallel';
- try{data=await loadGroupedInventory(fetchInventoryPage,progress);}
- catch{loadingMethod='standard';$('timestamp').textContent='Retrying the complete inventory connection…';data=await loadInventory(cursor=>fetchInventoryPage(cursor),progress);}
+ const loadingMethod='standard';
+ const data=await loadInventory(cursor=>fetchInventoryPage(cursor),progress);
  rows=data.results;
  ready=true;
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
@@ -195,6 +202,6 @@ try{
  if(window.L){map=L.map('map').setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();
-}catch(error){failed=true;$('count').textContent='Complete search unavailable';$('timestamp').textContent='Any properties shown are only the first page. Reload to retry loading the complete filters and map.';$('message').textContent=error.message;}
+}catch(error){failed=true;$('count').textContent='Complete search unavailable';$('timestamp').textContent='The listing service could not finish loading. Any properties shown are only the first page; complete filters and counts are unavailable.';$('message').textContent=error.message;const retry=document.createElement('button');retry.type='button';retry.textContent='Retry loading properties';retry.onclick=()=>window.location.reload();$('timestamp').after(retry);}
 
 
