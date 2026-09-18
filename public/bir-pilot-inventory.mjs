@@ -27,7 +27,7 @@ export async function loadInventory(fetchPage, onProgress=()=>{}) {
 }
 
 export async function loadGroupedInventory(fetchPage,onProgress=()=>{}){
-  const groups=['houses','condos','land','other'],progress=new Map();
+  const groups=['budget','mid','upper','other'],progress=new Map();
   const results=await Promise.all(groups.map(group=>loadInventory(cursor=>fetchPage(cursor,group),(loaded,total)=>{
     progress.set(group,{loaded,total});
     onProgress([...progress.values()].reduce((sum,p)=>sum+p.loaded,0),progress.size===groups.length&&[...progress.values()].every(p=>p.total!==null)?[...progress.values()].reduce((sum,p)=>sum+p.total,0):null);
