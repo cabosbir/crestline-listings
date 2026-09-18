@@ -1,6 +1,11 @@
 import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates} from './bir-pilot-search.mjs';
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
+document.querySelector('.intro').textContent='Start with any location you know, including a subdivision. The other location fields are optional.';
+document.querySelector('.steps').hidden=true;
+for(const key of locationFields)document.querySelector(`label[for="${key}"]`).textContent=document.querySelector(`label[for="${key}"]`).textContent.replace(/^\d+\.\s*/, '');
+$('MLSAreaMajor').nextElementSibling.textContent='Choose any area, or select a zone to narrow the list.';
+$('SubdivisionName').nextElementSibling.textContent='Know the subdivision? Choose it directly. No other location is required.';
 if(new URLSearchParams(location.search).get('check-email')==='1'){
  const check=document.createElement('p');check.id='email-connection-check';check.setAttribute('role','status');check.style.cssText='padding:20px;background:#fff3cd';check.textContent='Checking the email connection without sending a message…';document.querySelector('.notice').after(check);
  fetch('/api/search-pilot?mode=email-check',{cache:'no-store'}).then(async response=>{if(!response.ok)throw new Error('Connection check unavailable');return response.json();}).then(result=>{check.textContent=`${result.message} Connection status: ${result.status}`;}).catch(()=>{check.textContent='The connection check could not finish.';});
@@ -104,7 +109,7 @@ function options(id,values,value){const select=$(id);select.replaceChildren(new 
 function syncLocations(){
  for(const [index,key] of locationFields.entries()){
   options(key,locationOptions(rows,filters,key),filters[key]);
-  $(key).disabled=index>0 && !filters[locationFields[index-1]];
+  $(key).disabled=false;
  }
  document.querySelectorAll('.step').forEach((el,index)=>el.classList.toggle('active',index===0 || filters[locationFields[index-1]]));
 }
