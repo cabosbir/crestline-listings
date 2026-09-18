@@ -1,5 +1,5 @@
 import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates} from './bir-pilot-search.mjs';
-import {loadGroupedInventory} from './bir-pilot-inventory.mjs';
+import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
 let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
@@ -118,12 +118,16 @@ try{
   $('mapnote').textContent='The complete map and location filters are loading.';
   $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices…`;
  }).catch(()=>{});
- const data=await loadGroupedInventory(async (cursor,group)=>{
-   const response=await fetch('/api/search-pilot'+(cursor?'?cursor='+encodeURIComponent(cursor):'?mode=inventory&group='+group),{cache:'no-store'});
+ const fetchInventoryPage=async (cursor,group)=>{
+   const response=await fetch('/api/search-pilot'+(cursor?'?cursor='+encodeURIComponent(cursor):'?mode=inventory'+(group?'&group='+group:'')),{cache:'no-store'});
    const page=await response.json();
    if(!response.ok)throw new Error(page.error||'Listing data unavailable');
    return page;
- },(loaded,total)=>{if(!matches.length)$('count').textContent=`Preparing search: ${loaded.toLocaleString()}${total===null?'':` of ${total.toLocaleString()}`} listings…`;});
+ };
+ const progress=(loaded,total)=>{if(!matches.length)$('count').textContent=`Preparing search: ${loaded.toLocaleString()}${total===null?'':` of ${total.toLocaleString()}`} listings…`;};
+ let data,loadingMethod='parallel';
+ try{data=await loadGroupedInventory(fetchInventoryPage,progress);}
+ catch{loadingMethod='standard';$('timestamp').textContent='Retrying the complete inventory connection…';data=await loadInventory(cursor=>fetchInventoryPage(cursor),progress);}
  rows=data.results;
  ready=true;
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
@@ -131,6 +135,7 @@ try{
  controls.forEach(el=>el.disabled=false);
  options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),'');options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
  $('timestamp').textContent=`All filters ready in ${((performance.now()-started)/1000).toFixed(1)} seconds. ${rows.length.toLocaleString()} public active listings checked ${new Date(data.fetchedAt).toLocaleTimeString()}. Includes Reservations Only; reload for updates.`;
+ $('timestamp').dataset.loadingMethod=loadingMethod;
  if(window.L){map=L.map('map').setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();
