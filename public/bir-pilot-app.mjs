@@ -1,5 +1,5 @@
 import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates} from './bir-pilot-search.mjs';
-import {loadInventory} from './bir-pilot-inventory.mjs';
+import {loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
 let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
@@ -14,10 +14,31 @@ const previous=document.createElement('button');previous.textContent='Previous';
 const pageInfo=document.createElement('span');pageInfo.className='page-info';$('more').after(pageInfo);
 previous.onclick=()=>{shown=Math.max(24,shown-24);renderCards();$('cards').scrollIntoView({block:'start'});};
 const inquiryNote=$('inquiry').querySelector('p:not(#property-context)');
-inquiryNote.textContent='Ask Don about this property. Your email draft will include its MLS number and your question.';
+inquiryNote.textContent='Send Don your question. The property and MLS number are included automatically.';
+const inquiryForm=document.createElement('form');inquiryForm.id='inquiry-form';$('email').before(inquiryForm);
+style.textContent+='#inquiry{max-height:90vh;overflow:auto}';
+for(const [id,label,type,required,max] of [['contact-name','Your name','text',true,100],['contact-email','Your email','email',true,254],['contact-phone','Phone (optional)','tel',false,50]]){
+ const l=document.createElement('label');l.htmlFor=id;l.textContent=label;
+ const input=document.createElement('input');input.id=id;input.type=type;input.required=required;input.maxLength=max;input.autocomplete=type==='text'?'name':type;inquiryForm.append(l,input);
+}
 const questionLabel=document.createElement('label');questionLabel.htmlFor='inquiry-question';questionLabel.textContent='What would you like to know?';
 const question=document.createElement('textarea');question.id='inquiry-question';question.placeholder='Availability, a showing, financing, or another question…';
-$('email').before(questionLabel,question);
+question.required=true;question.maxLength=3000;inquiryForm.append(questionLabel,question);
+const trap=document.createElement('input');trap.name='website';trap.tabIndex=-1;trap.autocomplete='off';trap.setAttribute('aria-hidden','true');trap.style.cssText='position:absolute;left:-10000px';inquiryForm.append(trap);
+const sendButton=document.createElement('button');sendButton.type='submit';sendButton.textContent='Send inquiry';sendButton.style.marginTop='16px';inquiryForm.append(sendButton);
+const inquiryStatus=document.createElement('p');inquiryStatus.setAttribute('role','status');inquiryForm.append(inquiryStatus);
+$('email').textContent='Or email Don';
+inquiryForm.onsubmit=async event=>{
+ event.preventDefault();if(!selectedProperty||sendButton.disabled)return;
+ sendButton.disabled=true;$('close').disabled=true;sendButton.textContent='Sending…';inquiryStatus.textContent='';
+ try{
+  const response=await fetch('/api/search-pilot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('contact-name').value,email:$('contact-email').value,phone:$('contact-phone').value,message:question.value,website:trap.value,listingId:String(selectedProperty.ListingId),address:selectedProperty.UnparsedAddress||''})});
+  const result=await response.json();if(!response.ok||!result.success)throw new Error(result.error||'We could not confirm your inquiry was sent. Please use the email or call link.');
+  inquiryStatus.textContent='Thank you. Your inquiry has been submitted to Don.';sendButton.textContent='Inquiry submitted';
+ }catch(error){inquiryStatus.textContent=error.message||'Unable to confirm delivery. Please use the email or call link.';sendButton.disabled=false;sendButton.textContent='Send inquiry';}
+ finally{$('close').disabled=false;}
+};
+$('inquiry').addEventListener('cancel',event=>{if($('close').disabled)event.preventDefault();});
 const contactOptions=document.createElement('div');contactOptions.className='contact-options';
 const callLink=document.createElement('a');callLink.href='tel:+526241296245';callLink.textContent='Call Don';contactOptions.append(callLink);$('email').after(contactOptions);
 let selectedProperty;
@@ -44,7 +65,7 @@ function renderMap(){
  }
  $('mapnote').textContent=`${mapped.length.toLocaleString()} of ${matches.length.toLocaleString()} matches have map coordinates. Numbered circles group nearby properties; click to zoom in.`;
 }
-function inquire(p){selectedProperty=p;question.value='';$('property-context').textContent=`${p.UnparsedAddress} · MLS ${p.ListingId} · ${money(p.ListPrice)}`;updateInquiry();$('inquiry').showModal();question.focus();}
+function inquire(p){selectedProperty=p;question.value='';inquiryStatus.textContent='';sendButton.disabled=false;sendButton.textContent='Send inquiry';$('property-context').textContent=`${p.UnparsedAddress} · MLS ${p.ListingId} · ${money(p.ListPrice)}`;updateInquiry();$('inquiry').showModal();$('contact-name').focus();}
 function renderCards(loadDetails=true){
  const version=++detailVersion,visible=matches.slice(shown-24,shown);
  $('cards').replaceChildren();
@@ -97,8 +118,8 @@ try{
   $('mapnote').textContent='The complete map and location filters are loading.';
   $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices…`;
  }).catch(()=>{});
- const data=await loadInventory(async cursor=>{
-   const response=await fetch('/api/search-pilot'+(cursor?'?cursor='+encodeURIComponent(cursor):'?mode=inventory'),{cache:'no-store'});
+ const data=await loadGroupedInventory(async (cursor,group)=>{
+   const response=await fetch('/api/search-pilot'+(cursor?'?cursor='+encodeURIComponent(cursor):'?mode=inventory&group='+group),{cache:'no-store'});
    const page=await response.json();
    if(!response.ok)throw new Error(page.error||'Listing data unavailable');
    return page;
