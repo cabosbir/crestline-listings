@@ -2,6 +2,7 @@ import {createHmac, timingSafeEqual} from 'node:crypto';
 
 export const fields = ['ListingKey','ListingId','UnparsedAddress','City','MLSAreaMajor','Address_co_Community2','SubdivisionName','PropertyType','StandardStatus','ListPrice','BedroomsTotal','BathroomsTotalDecimal','BathroomsFull','Latitude','Longitude','General_sp_Description_co_AC_sp_SqFt','General_sp_Description_co_Primary_sp_View','General_sp_Description_co_Seller_sp_Financing_sp_Offered','ListOfficeName','PublicRemarks','InternetAddressDisplayYN','InternetEntireListingDisplayYN','ModificationTimestamp'];
 const sign = (value, key) => createHmac('sha256', key).update(value).digest('base64url');
+const communityFields=['Address_co_Community2','General_sp_Description_co_Community3','Location_sp_Taxes_sp_Legal_co_Community4'];
 export function buildRequest(endpoint, query) {
   const url=new URL(endpoint), light=query.mode==='inventory';
   let filter="StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false";
@@ -12,7 +13,7 @@ export function buildRequest(endpoint, query) {
     filter+=` and (${keys.map(k=>`ListingKey eq '${k}'`).join(' or ')})`;
   }
   url.searchParams.set('$filter',filter);
-  url.searchParams.set('$select',(light?fields.filter(k=>k!=='PublicRemarks'):fields).join(','));
+  url.searchParams.set('$select',[...(light?fields.filter(k=>k!=='PublicRemarks'):fields),...communityFields.slice(1)].join(','));
   if(!light)url.searchParams.set('$expand','Media');
   url.searchParams.set('$top',light?'1000':'24');
   url.searchParams.set('$count','true');
@@ -36,6 +37,7 @@ export function decodeCursor(cursor, key, endpoint) {
 export function publicListing(row) {
   if(row.StandardStatus!=='Active'||row.InternetEntireListingDisplayYN===false)return null;
   const result=Object.fromEntries(fields.filter(k=>k in row).map(k=>[k,row[k]]));
+  result.Address_co_Community2=communityFields.map(k=>row[k]).find(v=>typeof v==='string'&&v.trim()&&!/^\*+$/.test(v))||null;
   if(row.InternetAddressDisplayYN===false){
     result.UnparsedAddress='Address available on request';
     result.Latitude=null;result.Longitude=null;
