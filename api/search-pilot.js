@@ -95,6 +95,21 @@ export async function buildSnapshot(endpoint,key,fetcher=fetch) {
   if(Buffer.byteLength(JSON.stringify(snapshot))>4000000)throw new Error('Inventory exceeds safe response size');
   return snapshot;
 }
+export async function storedSnapshot(fetcher=fetch,now=Date.now) {
+  const response=await fetcher('https://inventory.bircabo.com/',{signal:AbortSignal.timeout(3500),redirect:'error',headers:{Accept:'application/json'}});
+  if(!response.ok)throw new Error('Stored inventory unavailable');
+  const body=await response.text();
+  if(Buffer.byteLength(body)>4000000)throw new Error('Stored inventory too large');
+  const data=JSON.parse(body),age=now()-Date.parse(data.fetchedAt);
+  if(data.complete!==true||!Number.isSafeInteger(data.total)||data.total<0||data.total>20000||!Array.isArray(data.results)||data.results.length!==data.total||!Number.isFinite(age)||age< -60000||age>=300000)throw new Error('Stored inventory invalid or expired');
+  const keys=new Set();
+  const results=data.results.map(row=>{
+    const clean=publicListing(row);
+    if(!clean?.ListingKey||keys.has(clean.ListingKey))throw new Error('Stored inventory invalid');
+    keys.add(clean.ListingKey);return clean;
+  });
+  return {results,total:data.total,complete:true,fetchedAt:data.fetchedAt};
+}
 let snapshotIdentity='',getSnapshot;
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
@@ -115,11 +130,18 @@ export default async function handler(req,res) {
       if(endpoint.protocol!=='https:')throw new Error('Invalid endpoint');
       const identity=sign(endpoint.toString(),key);
       if(identity!==snapshotIdentity){snapshotIdentity=identity;getSnapshot=createInventoryCache(()=>buildSnapshot(endpoint,key));}
-      const data=await getSnapshot();
+      // Refresh jobs read the provider; visitors normally read the persistent copy.
+      // Keep its original checked timestamp, even when the file was copied later.
+      let data,source='provider';
+      if(req.query.source!=='refresh'){
+        try{data=await storedSnapshot();source='stored';}catch{/* existing provider fallback */}
+      }
+      if(!data)data=await getSnapshot();
       const age=Math.max(0,Math.ceil((Date.now()-Date.parse(data.fetchedAt))/1000));
       if(age>=300)throw new Error('Inventory expired');
       const fresh=Math.max(0,120-age),stale=300-age-fresh;
       res.setHeader('Cache-Control','public, max-age=0, must-revalidate');
+      res.setHeader('X-BIR-Inventory-Source',source);
       res.setHeader('Vercel-CDN-Cache-Control',`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`);
       return res.status(200).json(data);
     }catch{
