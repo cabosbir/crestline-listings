@@ -43,6 +43,7 @@ import SellerEvaluationForm from "./pages/SellerEvaluationForm";
 import FilterTrainingDashboard from "./pages/FilterTrainingDashboard"; // 🧠 NEW: AI Filter Training
 import NotFound from "./pages/NotFound";
 
+function LivePropertySearch() { useEffect(() => { window.location.replace("/property-search.html" + window.location.search); }, []); return <p>Opening property search...</p>; }
 const queryClient = new QueryClient();
 
 // ScrollToTop component - scrolls to top on route change
@@ -90,7 +91,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/properties" element={<Properties />} />
-          <Route path="/search" element={<AdvancedSearch />} /> {/* 🔥 NEW: Full-page search */}
+          <Route path="/search" element={<LivePropertySearch />} /> {/* 🔥 NEW: Full-page search */}
           <Route path="/ai-search" element={<AIPropertySearch />} /> {/* 🤖 NEW: AI property search */}
           <Route path="/properties/map" element={<PropertiesMap />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
