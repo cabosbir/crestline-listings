@@ -2,13 +2,13 @@ import {defaults, locationFields, changeLocation, locationOptions, filterListing
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
 document.querySelector('.intro').textContent='Start with a zone, then narrow your search by area, community and subdivision. Each choice narrows the options below it. If you already know the subdivision you want, select it directly.';
-document.querySelector('.steps').hidden=true;
+document.querySelector('.steps').remove();
 for(const key of locationFields)document.querySelector(`label[for="${key}"]`).textContent=document.querySelector(`label[for="${key}"]`).textContent.replace(/^\d+\.\s*/, '');
 $('MLSAreaMajor').nextElementSibling.textContent='Choose any area, or select a zone to narrow the list.';
 $('SubdivisionName').nextElementSibling.textContent='Know the subdivision? Choose it directly. No other location is required.';
 if(new URLSearchParams(location.search).get('check-email')==='1'){
  const check=document.createElement('p');check.id='email-connection-check';check.setAttribute('role','status');check.style.cssText='padding:20px;background:#fff3cd';check.textContent='Checking the email connection without sending a message…';document.querySelector('.notice').after(check);
- fetch('/api/search-pilot?mode=email-check',{cache:'no-store'}).then(async response=>{if(!response.ok)throw new Error('Connection check unavailable');return response.json();}).then(result=>{check.textContent=`${result.message} Connection status: ${result.status}`;}).catch(()=>{check.textContent='The connection check could not finish.';});
+ fetch('/api/search-pilot?mode=email-check',{}).then(async response=>{if(!response.ok)throw new Error('Connection check unavailable');return response.json();}).then(result=>{check.textContent=`${result.message} Connection status: ${result.status}`;}).catch(()=>{check.textContent='The connection check could not finish.';});
 }
 let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
@@ -21,7 +21,7 @@ style.textContent+='.photo-viewer{position:relative;background:#e5ece7}.photo-vi
 async function fetchGallery(p){
  if(galleryCache.has(p.ListingKey))return galleryCache.get(p.ListingKey);
  if(!galleryRequests.has(p.ListingKey))galleryRequests.set(p.ListingKey,(async()=>{
-  const response=await fetch('/api/search-pilot?mode=gallery&keys='+encodeURIComponent(p.ListingKey),{cache:'no-store'});
+  const response=await fetch('/api/search-pilot?mode=gallery&keys='+encodeURIComponent(p.ListingKey),{});
   if(!response.ok)throw new Error('Photos could not load. Please try again.');
   const data=await response.json(),listing=data.results?.find(row=>row.ListingKey===p.ListingKey);
   if(!listing||!Array.isArray(listing.Media))throw new Error('This listing is unavailable. Reload the search for current availability.');
@@ -144,7 +144,7 @@ function renderCards(loadDetails=true){
  $('more').textContent='Next 24 properties';$('more').hidden=!ready||shown>=matches.length;previous.hidden=!ready||shown<=24;$('empty').hidden=matches.length>0;
  pageInfo.textContent=matches.length?`${shown-23}–${Math.min(shown,matches.length)}${ready?' of '+matches.length.toLocaleString():''}`:'';
  const missing=visible.filter(p=>!detailsCache.has(p.ListingKey)).map(p=>p.ListingKey);
- if(loadDetails&&missing.length)fetch('/api/search-pilot?keys='+encodeURIComponent(missing.join(',')),{cache:'no-store'}).then(async response=>{if(!response.ok)throw new Error('Details unavailable');return response.json();}).then(data=>{
+ if(loadDetails&&missing.length)fetch('/api/search-pilot?keys='+encodeURIComponent(missing.join(',')),{}).then(async response=>{if(!response.ok)throw new Error('Details unavailable');return response.json();}).then(data=>{
    if(!Array.isArray(data.results))throw new Error('Invalid details');
    for(const p of data.results)detailsCache.set(p.ListingKey,{Media:p.Media,PublicRemarks:p.PublicRemarks});
    for(const key of missing)if(!detailsCache.has(key))detailsCache.set(key,{Media:[],PublicRemarks:'This property is no longer available from the feed. Reload the search for current availability.'});
@@ -167,11 +167,15 @@ $('filters').addEventListener('input',e=>{
 $('clear-location').onclick=()=>{filters={...filters,...Object.fromEntries(locationFields.map(k=>[k,'']))};syncLocations();shown=24;render();$('message').textContent='Location cleared. Price, bedrooms and other filters kept.';};
 $('filters').addEventListener('reset',e=>{e.preventDefault();filters=defaults();for(const [k,v] of Object.entries(filters)){if(k==='financing')$(k).checked=false;else $(k).value=v;}syncLocations();shown=24;render();$('message').textContent='All filters cleared.';});
 $('sort').onchange=()=>{shown=24;render();};$('more').onclick=()=>{shown+=24;renderCards();$('cards').scrollIntoView({block:'start'});};$('close').onclick=()=>$('inquiry').close();
+const alternateSearch=document.createElement('p');
+const alternateLink=document.createElement('a');alternateLink.href='/idx-search';alternateLink.textContent='Open standard FLEX search';alternateLink.className='action';
+alternateSearch.append(alternateLink);$('timestamp').after(alternateSearch);
+const slowNotice=setTimeout(()=>{if(!ready&&!failed)$('message').textContent='Taking longer than expected. You can use standard FLEX search while this loads.';},4000);
 try{
  const controls=[...document.querySelectorAll('#filters input,#filters select,#filters button,#sort')];
  controls.forEach(el=>el.disabled=true);
  const started=performance.now();
- const firstPage=fetch('/api/search-pilot?mode=first',{cache:'no-store'}).then(async response=>{if(!response.ok)throw new Error('Initial results unavailable');return response.json();}).then(data=>{
+ const firstPage=fetch('/api/search-pilot?mode=first',{}).then(async response=>{if(!response.ok)throw new Error('Initial results unavailable');return response.json();}).then(data=>{
   if(ready||failed)return;
   matches=data.results;
   for(const p of matches)detailsCache.set(p.ListingKey,{Media:p.Media,PublicRemarks:p.PublicRemarks});
@@ -179,25 +183,15 @@ try{
   $('mapnote').textContent='The complete map and location filters are loading.';
   $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices…`;
  }).catch(()=>{});
- const fetchInventoryPage=async (cursor,group)=>{
-  for(let attempt=0;attempt<4;attempt++){
-   const response=await fetch('/api/search-pilot'+(cursor?'?cursor='+encodeURIComponent(cursor):'?mode=inventory'+(group?'&group='+group:'')),{cache:'no-store'});
-   const page=await response.json();
-   if(response.status===429&&attempt<3){
-    const seconds=Math.max(Number(response.headers.get('Retry-After'))||0,[15,30,60][attempt]);
-    $('timestamp').textContent=`The listing service is busy. Retrying this page in ${seconds} seconds; your search will continue automatically.`;
-    await new Promise(resolve=>setTimeout(resolve,seconds*1000));
-    continue;
-   }
-   if(!response.ok)throw new Error(page.error||'Listing data unavailable');
-   return page;
-  }
- };
- const progress=(loaded,total)=>{if(!matches.length)$('count').textContent=`Preparing search: ${loaded.toLocaleString()}${total===null?'':` of ${total.toLocaleString()}`} listings…`;};
- const loadingMethod='standard';
- const data=await loadInventory(cursor=>fetchInventoryPage(cursor),progress);
+ const loadingMethod='shared-snapshot';
+ const response=await fetch('/api/search-pilot?mode=snapshot');
+ const data=await response.json();
+ if(!response.ok)throw new Error(data.error||'The property search is temporarily unavailable.');
+ const age=Date.now()-Date.parse(data.fetchedAt);
+ if(data.complete!==true||!Array.isArray(data.results)||data.results.length!==data.total||new Set(data.results.map(p=>p.ListingKey)).size!==data.total||!Number.isFinite(age)||age>300000||age< -60000)throw new Error('A current complete inventory is not available. Please use standard FLEX search.');
+ $('timestamp').dataset.cacheStatus=response.headers.get('x-vercel-cache')||'unknown';
  rows=data.results;
- ready=true;
+ ready=true;clearTimeout(slowNotice);$('message').textContent='';
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
  rows=rows.filter(p=>p.StandardStatus==='Active'&&p.InternetEntireListingDisplayYN!==false);
  controls.forEach(el=>el.disabled=false);
@@ -207,6 +201,6 @@ try{
  if(window.L){map=L.map('map').setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();
-}catch(error){failed=true;$('count').textContent='Complete search unavailable';$('timestamp').textContent='The listing service could not finish loading. Any properties shown are only the first page; complete filters and counts are unavailable.';$('message').textContent=error.message;const retry=document.createElement('button');retry.type='button';retry.textContent='Retry loading properties';retry.onclick=()=>window.location.reload();$('timestamp').after(retry);}
+}catch(error){failed=true;clearTimeout(slowNotice);$('count').textContent='Complete search unavailable';$('timestamp').textContent='Please use standard FLEX search below. Any properties shown here are only the first page.';$('message').textContent=error.message;}
 
 
