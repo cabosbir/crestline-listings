@@ -141,7 +141,7 @@ function renderMap(){
    const box=document.createElement('div');box.className='map-property-choices';
    const heading=document.createElement('strong');heading.textContent=`${group.length} properties at this location`;box.append(heading);
    for(const p of group){const button=document.createElement('button');button.textContent=`${money(p.ListPrice)} · ${p.UnparsedAddress} · MLS ${p.ListingId}`;button.onclick=()=>{map.closePopup();openListing({...p,...detailsCache.get(p.ListingKey)},true);};box.append(button);}
-   marker.bindPopup(box,{maxWidth:300}).openPopup();
+   L.popup({maxWidth:300}).setLatLng([lat,lng]).setContent(box).openOn(map);
   });
  }
  $('mapnote').textContent=`${mapped.length.toLocaleString()} of ${matches.length.toLocaleString()} matches have map coordinates. Click a price to explore a property. Groups zoom in; overlapping properties remain individually selectable.`;
