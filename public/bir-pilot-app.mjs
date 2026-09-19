@@ -58,15 +58,24 @@ function photoViewer(p,large=false){
  box.append(image,prev,next,count,caption);if(large)box.append(thumbs);draw();if(large&&!full)move(0);return box;
 }
 const listingDialog=document.createElement('dialog');listingDialog.id='listing-gallery';document.body.append(listingDialog);
-function openListing(p){
- const heading=document.createElement('div');heading.className='gallery-heading';const title=document.createElement('h2');title.textContent=p.UnparsedAddress||'Property';const back=document.createElement('button');back.textContent='Back to results';back.onclick=()=>listingDialog.close();heading.append(title,back);
+function openListing(p,fromMap=false){
+ if(listingDialog.open)listingDialog.close();
+ listingDialog.classList.toggle('map-listing',fromMap);
+ listingDialog.setAttribute('aria-label','Property details');
+ const heading=document.createElement('div');heading.className='gallery-heading';const title=document.createElement('h2');title.textContent=p.UnparsedAddress||'Property';const back=document.createElement('button');back.textContent=fromMap?'Back to map':'Back to results';back.onclick=()=>listingDialog.close();heading.append(title,back);
+ if(fromMap){const expand=document.createElement('button');expand.textContent='Expand listing';expand.onclick=()=>openListing(p);heading.append(expand);}
  const facts=document.createElement('p');facts.className='gallery-facts';facts.textContent=`${money(p.ListPrice)} · ${p.PropertyType} · ${p.BedroomsTotal??'—'} bedrooms · ${p.BathroomsTotalDecimal??p.BathroomsFull??'—'} baths · MLS ${p.ListingId}`;
  const remarks=document.createElement('p');remarks.textContent=p.PublicRemarks||'Loading property description…';
  const office=document.createElement('p');office.textContent=`Listed by ${p.ListOfficeName||'MLS member office'}`;
  const inquireButton=document.createElement('button');inquireButton.textContent='Ask about this property';inquireButton.onclick=()=>inquire(p);
- listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,office,inquireButton);listingDialog.showModal();
+ listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,office,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
  fetchGallery(p).then(row=>{remarks.textContent=row.PublicRemarks||'No description supplied.';}).catch(error=>{remarks.textContent=error.message;});
 }
+
+const mapWrap=document.createElement('div');mapWrap.className='map-workspace';$('map').before(mapWrap);mapWrap.append($('map'),listingDialog);
+listingDialog.addEventListener('keydown',event=>{if(event.key==='Escape'&&listingDialog.classList.contains('map-listing'))listingDialog.close();});
+style.textContent+=`.map-workspace{position:relative}#map{height:620px;max-height:75vh}.price-marker{background:none;border:0}.map-price{display:block;white-space:nowrap;text-align:center;background:#fff;color:#123e4b;border:1px solid #537874;border-radius:6px;padding:5px 7px;font-size:12px;font-weight:750;box-shadow:0 2px 5px #0003}.price-marker:hover .map-price,.price-marker:focus .map-price{background:#12666a;color:#fff;border-color:#fff}.map-property-choices{max-height:260px;overflow:auto}.map-property-choices button{display:block;width:100%;margin-top:8px;text-align:left;font-size:13px}#listing-gallery.map-listing{position:absolute;inset:10px auto 10px 10px;margin:0;width:43%;min-width:310px;max-width:480px;max-height:calc(100% - 20px);padding:16px;z-index:500;overflow:auto;box-shadow:0 5px 24px #0004}#listing-gallery.map-listing .gallery-heading{flex-wrap:wrap;gap:8px}#listing-gallery.map-listing h2{font-size:21px;margin:0;width:100%}#listing-gallery.map-listing .photo{height:240px}#listing-gallery.map-listing .gallery-facts{font-size:14px}.map-listing .photo-thumbnails img{width:65px;height:48px}@media(max-width:760px){#map{height:480px;max-height:70vh}#listing-gallery.map-listing{position:fixed;inset:0;width:100%;min-width:0;max-width:none;max-height:100dvh;height:100dvh;border-radius:0;z-index:1500}#listing-gallery.map-listing .photo{height:42vh}}`;
+
 const filterToggle=document.createElement('button');filterToggle.className='mobile-filter-toggle';filterToggle.textContent='Show search filters';filterToggle.setAttribute('aria-expanded','false');filterToggle.setAttribute('aria-controls','filters');$('filters').before(filterToggle);
 filterToggle.onclick=()=>{const open=document.querySelector('aside').classList.toggle('filters-open');filterToggle.textContent=open?'Hide search filters':'Show search filters';filterToggle.setAttribute('aria-expanded',String(open));};
 style.textContent+='.mobile-filter-toggle{display:none}@media(max-width:760px){.mobile-filter-toggle{display:block;margin:10px 0}aside:not(.filters-open) #filters,aside:not(.filters-open) .steps,aside:not(.filters-open) .fine{display:none}.intro{margin-bottom:8px}}';
@@ -113,18 +122,31 @@ function syncLocations(){
  }
  document.querySelectorAll('.step').forEach((el,index)=>el.classList.toggle('active',index===0 || filters[locationFields[index-1]]));
 }
+function mapPrice(value){
+ if(value==null||!Number.isFinite(Number(value)))return 'Ask price';
+ const n=Number(value);return n>=1000000?'$'+Number((n/1000000).toFixed(2))+'M':n>=1000?'$'+Number((n/1000).toFixed(1))+'K':money(n);
+}
 function renderMap(){
  if(!map)return;
- layer.clearLayers(); const mapped=matches.filter(coordinates),groups=new Map();
- for(const p of mapped){const point=map.project([p.Latitude,p.Longitude],map.getZoom());const key=`${Math.floor(point.x/64)}:${Math.floor(point.y/64)}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);}
+ layer.clearLayers();const mapped=matches.filter(coordinates),groups=new Map();
+ for(const p of mapped){const point=map.project([p.Latitude,p.Longitude],map.getZoom());const key=`${Math.floor(point.x/75)}:${Math.floor(point.y/42)}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(p);}
  for(const group of groups.values()){
   const lat=group.reduce((n,p)=>n+p.Latitude,0)/group.length,lng=group.reduce((n,p)=>n+p.Longitude,0)/group.length;
-  const marker=L.circleMarker([lat,lng],{radius:group.length>1?Math.min(23,11+Math.log2(group.length)):7,color:'#fff',weight:2,fillColor:'#bc6956',fillOpacity:.94}).addTo(layer);
-  if(group.length>1){marker.bindTooltip(String(group.length),{permanent:true,direction:'center',className:'cluster-number'});marker.on('click',()=>map.setView([lat,lng],Math.min(map.getZoom()+2,19)));}
-  else{const p=group[0],box=document.createElement('div');box.textContent=`${money(p.ListPrice)} · ${p.UnparsedAddress} · MLS ${p.ListingId}`;marker.bindPopup(box);}
+  const label=document.createElement('span');label.className='map-price';label.textContent=group.length===1?mapPrice(group[0].ListPrice):group.length+' listings';
+  const title=group.length===1?`${money(group[0].ListPrice)} · ${group[0].UnparsedAddress} · MLS ${group[0].ListingId}`:`${group.length} properties. Click to explore.`;
+  const marker=L.marker([lat,lng],{icon:L.divIcon({html:label,className:'price-marker',iconSize:[76,30],iconAnchor:[38,30]}),title,keyboard:true}).addTo(layer);
+  marker.on('click',()=>{
+   if(group.length===1){openListing({...group[0],...detailsCache.get(group[0].ListingKey)},true);return;}
+   if(map.getZoom()<18){map.setView([lat,lng],Math.min(map.getZoom()+2,19));return;}
+   const box=document.createElement('div');box.className='map-property-choices';
+   const heading=document.createElement('strong');heading.textContent=`${group.length} properties at this location`;box.append(heading);
+   for(const p of group){const button=document.createElement('button');button.textContent=`${money(p.ListPrice)} · ${p.UnparsedAddress} · MLS ${p.ListingId}`;button.onclick=()=>{map.closePopup();openListing({...p,...detailsCache.get(p.ListingKey)},true);};box.append(button);}
+   marker.bindPopup(box,{maxWidth:300}).openPopup();
+  });
  }
- $('mapnote').textContent=`${mapped.length.toLocaleString()} of ${matches.length.toLocaleString()} matches have map coordinates. Numbered circles group nearby properties; click to zoom in.`;
+ $('mapnote').textContent=`${mapped.length.toLocaleString()} of ${matches.length.toLocaleString()} matches have map coordinates. Click a price to explore a property. Groups zoom in; overlapping properties remain individually selectable.`;
 }
+
 function inquire(p){selectedProperty=p;question.value='';inquiryStatus.textContent='';sendButton.disabled=false;sendButton.textContent='Send inquiry';$('property-context').textContent=`${p.UnparsedAddress} · MLS ${p.ListingId} · ${money(p.ListPrice)}`;updateInquiry();$('inquiry').showModal();$('contact-name').focus();}
 function renderCards(loadDetails=true){
  const version=++detailVersion,visible=matches.slice(shown-24,shown);
