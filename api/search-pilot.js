@@ -54,6 +54,48 @@ export function publicListing(row,fullPhotos=false) {
   result.Media=(fullPhotos?photos:photos.slice(0,1)).map(m=>({MediaURL:m.MediaURL,caption:typeof m.ShortDescription==='string'?m.ShortDescription:''}));
   return result;
 }
+// Cache only a complete, validated public snapshot. Never cache partial results.
+export function createInventoryCache(load, now=Date.now) {
+  let cached=null,pending=null,retryAt=0;
+  return async()=>{
+    if(cached&&now()-cached.savedAt<60000)return cached.data;
+    if(pending)return pending;
+    if(now()<retryAt)throw new Error('Inventory cooling down');
+    pending=Promise.resolve().then(load).then(data=>{cached={data,savedAt:now()};retryAt=0;return data;}).catch(error=>{retryAt=now()+30000;throw error;}).finally(()=>{pending=null;});
+    return pending;
+  };
+}
+export async function buildSnapshot(endpoint,key,fetcher=fetch) {
+  const signal=AbortSignal.timeout(25000), rows=new Map(),seen=new Set();
+  let url=buildRequest(endpoint,{mode:'inventory'}),total=null,received=0;
+  const startedAt=new Date().toISOString();
+  for(let page=0;url&&page<200;page++){
+    const address=url.toString();
+    if(seen.has(address))throw new Error('Repeated inventory page');
+    seen.add(address);
+    const response=await fetcher(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal,redirect:'error'});
+    if(!response.ok)throw new Error('Inventory provider unavailable');
+    const data=await response.json(),count=data['@odata.count']===undefined?total:data['@odata.count'];
+    if(!Array.isArray(data.value)||!Number.isSafeInteger(count)||count<0||count>20000||(total!==null&&total!==count))throw new Error('Invalid inventory count');
+    total=count;received+=data.value.length;
+    for(const row of data.value){
+      const clean=publicListing(row);
+      if(!clean?.ListingKey||rows.has(clean.ListingKey))throw new Error('Invalid or repeated public listing');
+      rows.set(clean.ListingKey,clean);
+    }
+    url=null;
+    if(data['@odata.nextLink']){
+      url=new URL(data['@odata.nextLink'],endpoint);
+      const base=new URL(endpoint);
+      if(!data.value.length||url.origin!==base.origin||url.pathname!==base.pathname||url.username||url.password)throw new Error('Invalid inventory continuation');
+    }
+  }
+  if(url||total===null||received!==total||rows.size!==total)throw new Error('Incomplete inventory');
+  const snapshot={results:[...rows.values()],total,complete:true,fetchedAt:startedAt};
+  if(Buffer.byteLength(JSON.stringify(snapshot))>4000000)throw new Error('Inventory exceeds safe response size');
+  return snapshot;
+}
+let snapshotIdentity='',getSnapshot;
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   if(req.method==='POST')return handleInquiry(req,res);
@@ -67,6 +109,24 @@ export default async function handler(req,res) {
   }
   const key=process.env.FLEXMLS_API_KEY, base=process.env.FLEXMLS_BASE_URL;
   if(!key||!base)return res.status(503).json({error:'The preview listing connection is not configured.'});
+  if(req.query.mode==='snapshot'){
+    try{
+      const endpoint=new URL(`${base.replace(/\/$/,'')}/Property`);
+      if(endpoint.protocol!=='https:')throw new Error('Invalid endpoint');
+      const identity=sign(endpoint.toString(),key);
+      if(identity!==snapshotIdentity){snapshotIdentity=identity;getSnapshot=createInventoryCache(()=>buildSnapshot(endpoint,key));}
+      const data=await getSnapshot();
+      const age=Math.max(0,Math.ceil((Date.now()-Date.parse(data.fetchedAt))/1000));
+      if(age>=300)throw new Error('Inventory expired');
+      const fresh=Math.max(0,120-age),stale=300-age-fresh;
+      res.setHeader('Cache-Control','public, max-age=0, must-revalidate');
+      res.setHeader('Vercel-CDN-Cache-Control',`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`);
+      return res.status(200).json(data);
+    }catch{
+      res.setHeader('Retry-After','30');
+      return res.status(503).json({error:'Property search is temporarily unavailable. Please use the standard FLEX search.'});
+    }
+  }
   let endpoint,url;
   try {
     endpoint=new URL(`${base.replace(/\/$/,'')}/Property`);
@@ -87,6 +147,10 @@ export default async function handler(req,res) {
       next=encodeCursor(nextURL.toString(),key);
     }
     const total=Number(data['@odata.count']);
+    if(!req.query.cursor&&req.query.mode!=='inventory'){
+      res.setHeader('Cache-Control','public, max-age=0, must-revalidate');
+      res.setHeader('Vercel-CDN-Cache-Control','public, s-maxage=30, stale-while-revalidate=30');
+    }
     return res.status(200).json({results:data.value.map(row=>publicListing(row,req.query.mode==='gallery')).filter(Boolean),received:data.value.length,total:Number.isSafeInteger(total)&&total>=0?total:null,next,fetchedAt:new Date().toISOString()});
   } catch {return res.status(502).json({error:'The listing provider did not finish this page. Reload to retry; partial inventory is not shown as complete.'});}
 }
