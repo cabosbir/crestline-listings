@@ -190,6 +190,7 @@ try{
  const age=Date.now()-Date.parse(data.fetchedAt);
  if(data.complete!==true||!Array.isArray(data.results)||data.results.length!==data.total||new Set(data.results.map(p=>p.ListingKey)).size!==data.total||!Number.isFinite(age)||age>300000||age< -60000)throw new Error('A current complete inventory is not available. Please use standard FLEX search.');
  $('timestamp').dataset.cacheStatus=response.headers.get('x-vercel-cache')||'unknown';
+ $('timestamp').dataset.inventorySource=response.headers.get('x-bir-inventory-source')||'unknown';
  rows=data.results;
  ready=true;clearTimeout(slowNotice);$('message').textContent='';
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
