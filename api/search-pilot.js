@@ -74,7 +74,7 @@ export async function buildSnapshot(endpoint,key,fetcher=fetch) {
     if(seen.has(address))throw new Error('Repeated inventory page');
     seen.add(address);
     const response=await fetcher(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal,redirect:'error'});
-    if(!response.ok)throw new Error('Inventory provider unavailable');
+    if(!response.ok)throw new Error(`Inventory provider unavailable (HTTP ${response.status})`);
     const data=await response.json(),count=data['@odata.count']===undefined?total:data['@odata.count'];
     if(!Array.isArray(data.value)||!Number.isSafeInteger(count)||count<0||count>20000||(total!==null&&total!==count))throw new Error('Invalid inventory count');
     total=count;received+=data.value.length;
@@ -144,9 +144,10 @@ export default async function handler(req,res) {
       res.setHeader('X-BIR-Inventory-Source',source);
       res.setHeader('Vercel-CDN-Cache-Control',`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`);
       return res.status(200).json(data);
-    }catch{
+    }catch(error){
+      console.error('Inventory refresh failed',error?.name,error?.message);
       res.setHeader('Retry-After','30');
-      return res.status(503).json({error:'Property search is temporarily unavailable. Please use the standard FLEX search.'});
+      return res.status(503).json({error:'Property search is temporarily unavailable. Please use the standard FLEX search.',diagnostic:process.env.VERCEL_ENV==='preview'?error?.message:undefined});
     }
   }
   let endpoint,url;
