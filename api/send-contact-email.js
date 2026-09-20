@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import {checkFormSubmission} from './contact.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -18,6 +19,9 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const rejected=checkFormSubmission(req,'contact');
+  if(rejected){if(rejected.status===429)res.setHeader('Retry-After','600');return res.status(rejected.status).json({success:false,error:rejected.error});}
 
   try {
     const { name, email, phone, inquiryType, propertyType, preferredAgent, agentEmail, message } = req.body;
