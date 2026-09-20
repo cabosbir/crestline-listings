@@ -29,6 +29,7 @@ const Contact = () => {
     message: ''
   });
 
+  const [website, setWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
 
@@ -78,6 +79,7 @@ const Contact = () => {
         },
         body: JSON.stringify({
           ...formData,
+          website,
           agentEmail, // Include agent email for routing
         })
       });
@@ -281,6 +283,7 @@ const Contact = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border border-border shadow-elegant">
+                <div aria-hidden="true" style={{position:'absolute',left:'-10000px',width:1,height:1,overflow:'hidden'}}><label>Leave this field empty<input name="website" value={website} onChange={e=>setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" /></label></div>
                 <h2 className="text-2xl font-bold text-foreground mb-6">Send Us a General Message</h2>
                 
                 {submitStatus === 'success' && (
