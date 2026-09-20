@@ -21,7 +21,7 @@ export function buildRequest(endpoint, query) {
     filter+=` and (${keys.map(k=>`ListingKey eq '${k}'`).join(' or ')})`;
   }
   url.searchParams.set('$filter',filter);
-  url.searchParams.set('$select',[...(light?fields.filter(k=>k!=='PublicRemarks'):fields),...communityFields.slice(1)].join(','));
+  if(!gallery)url.searchParams.set('$select',[...(light?fields.filter(k=>k!=='PublicRemarks'):fields),...communityFields.slice(1)].join(','));
   if(!light)url.searchParams.set('$expand',gallery?'Media':'Media($top=1)');
   url.searchParams.set('$top',light?'1000':gallery?'1':'24');
   url.searchParams.set('$count','true');
@@ -42,6 +42,36 @@ export function decodeCursor(cursor, key, endpoint) {
   if(!Number.isFinite(data.expires)||data.expires<Date.now()||url.origin!==base.origin||url.pathname!==base.pathname||url.username||url.password)throw new Error('Invalid cursor');
   return url;
 }
+
+// Only explicitly approved property-fact categories leave the server.
+// A gallery request loads one record; the full inventory stays lightweight.
+export function propertyDetails(row) {
+ const groups=new Map();
+ const add=(group,label,value)=>{
+  if(value===null||value===undefined||value===''||typeof value==='object'&&!Array.isArray(value))return;
+  if(Array.isArray(value)){if(value.some(v=>typeof v!=='string'&&typeof v!=='number'))return;value=value.join(', ');}
+  if(typeof value!=='string'&&typeof value!=='number'&&typeof value!=='boolean')return;
+  if(typeof value==='string'&&(!value.trim()||/^\*+$/.test(value)))return;
+  if(!groups.has(group))groups.set(group,[]);
+  const list=groups.get(group);if(!list.some(x=>x.label===label))list.push({label,value:typeof value==='boolean'?(value?'Yes':'No'):value});
+ };
+ const standard={YearBuilt:'Year built',LotSizeSquareMeters:'Lot size (m²)',LotSizeSquareFeet:'Lot size (sq ft)',LotSizeAcres:'Lot size (acres)',LotSizeDimensions:'Lot dimensions',LivingArea:'Living area',LivingAreaUnits:'Living area units',BuildingAreaTotal:'Building area',BuildingAreaUnits:'Building area units',Stories:'Stories',GarageSpaces:'Garage spaces',CarportSpaces:'Carport spaces',BathroomsHalf:'Half bathrooms',Furnished:'Furnished',ArchitecturalStyle:'Style',ConstructionMaterials:'Construction materials',Cooling:'Cooling',Heating:'Heating',Appliances:'Appliances',PoolFeatures:'Pool',PatioAndPorchFeatures:'Patios and decks',WaterSource:'Water',Sewer:'Sewer',Utilities:'Utilities',View:'Views',AssociationFee:'HOA fee',AssociationFeeFrequency:'HOA fee frequency',AssociationAmenities:'Community amenities'};
+ for(const [key,label] of Object.entries(standard))add('Property facts',label,row[key]);
+ const categories=new Set(['Amenities','Common Amenities','Appliances','Devices','Road Type','Title','Electricity','Water','Sewage','HOA Info','Construction','Const.','Flooring','Flooring Types']);
+ const general=new Set(['Construction','Total SqFt','Total M2','AC M2','AC SqFt','Decks/Patios M2','Decks/Patios SqFt','Lot M2','Lot Dimensions','Total Bedrooms','FullBaths','1/2Baths','Year Built','Furnished','Style','Primary View','Secondary View','Garage Stalls','Carport','Mstr Plan Community','Seller Financing Offered?','Seller Financing Offered','Ocean Front Meters']);
+ const decode=s=>s.replaceAll('_sp_',' ').replaceAll('_co_',':').replaceAll('_sl_','/').replaceAll('_fs_','/').replaceAll('_qm_','?').replaceAll('_dot_','.');
+ for(const [key,value] of Object.entries(row)){
+  if(!key.includes('_co_')||/private|confidential|showing|lockbox|password|contact|agent|office|owner/i.test(key))continue;
+  const [encodedGroup,...parts]=key.split('_co_'),group=decode(encodedGroup),label=decode(parts.join('_co_'));
+  if(group==='General Description'&&general.has(label))add('Property facts',label,value);
+  else if(categories.has(group)&&label.length<100){
+   if(value===false||value===null||value==='')continue;
+   add(group,label,value);
+  }
+ }
+ return [...groups].map(([heading,items])=>({heading,items}));
+}
+
 export function publicListing(row,fullPhotos=false) {
   if(row.StandardStatus!=='Active'||row.InternetEntireListingDisplayYN===false)return null;
   const result=Object.fromEntries(fields.filter(k=>k in row).map(k=>[k,row[k]]));
@@ -52,6 +82,7 @@ export function publicListing(row,fullPhotos=false) {
   }
   const photos=Array.isArray(row.Media)?row.Media.filter(m=>(!m.MediaCategory||m.MediaCategory==='Photo')&&(!m.Permission||(Array.isArray(m.Permission)?m.Permission.includes('Public'):m.Permission==='Public'))&&typeof m.MediaURL==='string'&&m.MediaURL.startsWith('https://')).sort((a,b)=>(Number(a.Order)||0)-(Number(b.Order)||0)):[];
   result.Media=(fullPhotos?photos:photos.slice(0,1)).map(m=>({MediaURL:m.MediaURL,caption:typeof m.ShortDescription==='string'?m.ShortDescription:''}));
+  if(fullPhotos)result.PropertyDetails=propertyDetails(row);
   return result;
 }
 // Cache only a complete, validated public snapshot. Never cache partial results.
