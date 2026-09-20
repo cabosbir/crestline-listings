@@ -63,9 +63,9 @@ let savedProperties=[];
 try{const value=JSON.parse(localStorage.getItem(savedKey)||'[]');if(Array.isArray(value))savedProperties=value.filter(p=>p&&typeof p.key==='string'&&/^\d{1,40}$/.test(p.key)&&typeof p.mls==='string').slice(0,500);}catch{}
 const savedBar=document.createElement('div');savedBar.className='saved-bar';
 const savedOpen=document.createElement('button');savedOpen.type='button';savedOpen.className='saved-primary';
-const savedNote=document.createElement('p');savedNote.textContent='Click Save property on any listing you like. Open Saved & Compare to review your favorites and compare up to three side by side. No signup required. Favorites stay saved in this browser; clearing browser data removes them.';
+const savedNote=document.createElement('p');savedNote.innerHTML='<strong>Keep your favorites. Compare your choices.</strong><span>Click <b>Save property</b> on any listing, then open <b>Saved &amp; Compare</b> to review your favorites and compare up to three side by side.</span><small>No signup required. Favorites stay saved in this browser; clearing browser data removes them.</small>';
 const savedStatus=document.createElement('p');savedStatus.setAttribute('role','status');savedStatus.className='saved-status';
-savedBar.append(savedOpen,savedNote,savedStatus);document.querySelector('.notice').after(savedBar);
+const resultActions=document.createElement('div');resultActions.className='result-actions';count.before(resultActions);resultActions.append(count,savedOpen);savedBar.append(savedNote,savedStatus);document.querySelector('main .bar').after(savedBar);
 const savedDialog=document.createElement('dialog');savedDialog.className='saved-dialog';savedDialog.setAttribute('aria-label','Saved properties');document.body.append(savedDialog);
 function refreshSaveButtons(){
  savedOpen.textContent=`\u2665 Saved & Compare (${savedProperties.length})`;
@@ -324,3 +324,5 @@ try{
 
 
 style.textContent+='#listing-gallery .gallery-heading button{border:2px solid #b45309;background:#fff7ed;color:#78350f;font-weight:700;flex-shrink:0}#listing-gallery .gallery-heading button:hover{background:#ffedd5;border-color:#92400e}#listing-gallery .gallery-heading button:focus-visible{outline:3px solid #12666a;outline-offset:3px}';
+
+style.textContent+='main{min-width:0}.result-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;flex:1}.saved-bar{margin:0 0 14px;padding:16px 20px;border:1px solid #b8d5cf;border-left:5px solid #12666a;border-radius:7px;background:#edf6f2}.saved-bar p{font-size:18px;line-height:1.5;margin:0}.saved-bar p>strong{display:block;font-size:21px;color:#124e52;margin-bottom:5px}.saved-bar p>span{display:block}.saved-bar small{display:block;font-size:14px;margin-top:8px;color:#425d59}@media(max-width:760px){.result-actions{flex:0 0 100%;width:100%;justify-content:center;text-align:center;gap:12px}.result-actions .saved-primary{width:100%}.saved-bar{padding:14px}.saved-bar p{font-size:17px}.saved-bar p>strong{font-size:20px}}';
