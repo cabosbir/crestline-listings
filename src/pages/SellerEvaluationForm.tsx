@@ -108,6 +108,7 @@ interface ImageFile {
 const SellerEvaluationForm = () => {
   const { toast } = useToast();
   const { agentSlug } = useParams<{ agentSlug?: string }>();
+  const [website, setWebsite] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<ImageFile[]>([]);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
@@ -268,6 +269,7 @@ const SellerEvaluationForm = () => {
 
       const submissionData = {
         // Seller info
+        website,
         sellerName: `${formData.firstName} ${formData.lastName}`,
         sellerEmail: formData.personalEmail,
         sellerPhone: formData.cellPhone,
@@ -420,6 +422,7 @@ const SellerEvaluationForm = () => {
           <p className="text-center text-sm text-gray-500 mb-8">Agent: {agent.name}</p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+                <div aria-hidden="true" style={{position:'absolute',left:'-10000px',width:1,height:1,overflow:'hidden'}}><label>Leave this field empty<input name="website" value={website} onChange={e=>setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" /></label></div>
             {/* Personal Information */}
             <div className="border-t pt-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Contact Information</h2>
