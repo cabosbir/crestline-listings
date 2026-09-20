@@ -66,9 +66,8 @@ function openListing(p,fromMap=false){
  if(fromMap){const expand=document.createElement('button');expand.textContent='Expand listing';expand.onclick=()=>openListing(p);heading.append(expand);}
  const facts=document.createElement('p');facts.className='gallery-facts';facts.textContent=`${money(p.ListPrice)} · ${p.PropertyType} · ${p.BedroomsTotal??'—'} bedrooms · ${p.BathroomsTotalDecimal??p.BathroomsFull??'—'} baths · MLS ${p.ListingId}`;
  const remarks=document.createElement('p');remarks.textContent=p.PublicRemarks||'Loading property description…';
- const office=document.createElement('p');office.textContent=`Listed by ${p.ListOfficeName||'MLS member office'}`;
  const inquireButton=document.createElement('button');inquireButton.textContent='Ask about this property';inquireButton.onclick=()=>inquire(p);
- listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,office,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
+ listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
  fetchGallery(p).then(row=>{remarks.textContent=row.PublicRemarks||'No description supplied.';}).catch(error=>{remarks.textContent=error.message;});
 }
 
@@ -158,7 +157,7 @@ function renderCards(loadDetails=true){
   if(url && /^https:\/\//.test(url)){card.append(photoViewer(p));}
   else{const placeholder=document.createElement('div');placeholder.className='photo-placeholder';placeholder.textContent=cached?'Photo not available':'Loading photo…';card.append(placeholder);}
   const content=document.createElement('div');content.className='content';
-  for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '—'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '—'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId} · Listed by ${p.ListOfficeName||'MLS member office'}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
+  for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '—'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '—'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
   const title=content.querySelector('h2'),titleButton=document.createElement('button');titleButton.className='listing-title';titleButton.textContent=title.textContent;titleButton.onclick=()=>openListing(p);title.replaceChildren(titleButton);
   const detail=document.createElement('details'),summary=document.createElement('summary'),remarks=document.createElement('p');summary.textContent='Property description';remarks.textContent=p.PublicRemarks||(cached?'No description supplied.':'Loading description…');remarks.className='meta';detail.append(summary,remarks);content.append(detail);
   const button=document.createElement('button');button.className='inquiry';button.textContent='Ask about this property';button.onclick=()=>inquire(p);content.append(button);card.append(content);$('cards').append(card);
