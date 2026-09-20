@@ -54,8 +54,8 @@
   
   <!-- Search Pages -->
   <url>
-    <loc>https://www.bircabo.com/search</loc>
-    <lastmod>2025-12-13</lastmod>
+    <loc>https://www.bircabo.com/property-search.html</loc>
+    <lastmod>2026-09-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -133,7 +133,7 @@
   </url>
   
   <url>
-    <loc>https://www.bircabo.com/erika-aispuro</loc>
+    <loc>https://www.bircabo.com/erika</loc>
     <lastmod>2025-12-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -147,7 +147,7 @@
   </url>
   
   <url>
-    <loc>https://www.bircabo.com/fernando</loc>
+    <loc>https://www.bircabo.com/fernando-cabrera</loc>
     <lastmod>2025-12-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
