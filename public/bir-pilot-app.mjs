@@ -57,6 +57,44 @@ function photoViewer(p,large=false){
  image.onerror=()=>{caption.textContent='This photo could not load. Try the next photo.';};
  box.append(image,prev,next,count,caption);if(large)box.append(thumbs);draw();if(large&&!full)move(0);return box;
 }
+// Saved choices contain identifiers only, never cached listing descriptions or photos.
+const savedKey='bir-saved-properties-v1';
+let savedProperties=[];
+try{const value=JSON.parse(localStorage.getItem(savedKey)||'[]');if(Array.isArray(value))savedProperties=value.filter(p=>p&&typeof p.key==='string'&&/^\d{1,40}$/.test(p.key)&&typeof p.mls==='string').slice(0,500);}catch{}
+const savedBar=document.createElement('div');savedBar.className='saved-bar';
+const savedOpen=document.createElement('button');savedOpen.type='button';
+const savedNote=document.createElement('p');savedNote.textContent='Save favorites without signing up. Saved on this browser only; clearing browser data removes them.';
+const savedStatus=document.createElement('p');savedStatus.setAttribute('role','status');savedStatus.className='saved-status';
+savedBar.append(savedOpen,savedNote,savedStatus);document.querySelector('.notice').after(savedBar);
+const savedDialog=document.createElement('dialog');savedDialog.className='saved-dialog';savedDialog.setAttribute('aria-label','Saved properties');document.body.append(savedDialog);
+function refreshSaveButtons(){
+ savedOpen.textContent=`\u2665 Saved properties (${savedProperties.length})`;
+ document.querySelectorAll('button[data-save-key]').forEach(button=>{const selected=savedProperties.some(p=>p.key===button.dataset.saveKey);button.textContent=selected?'\u2665 Saved':'\u2661 Save property';button.setAttribute('aria-pressed',String(selected));});
+}
+function toggleSaved(p){
+ const key=String(p.ListingKey),selected=savedProperties.some(item=>item.key===key);
+ if(!selected&&savedProperties.length>=500){savedStatus.textContent='Your saved list is full. Remove a property before adding another.';return;}
+ const next=selected?savedProperties.filter(item=>item.key!==key):[...savedProperties,{key,mls:String(p.ListingId||'')}];
+ try{localStorage.setItem(savedKey,JSON.stringify(next));}catch{savedStatus.textContent='This browser could not save your change. Please allow site storage and try again.';return;}
+ savedProperties=next;refreshSaveButtons();savedStatus.textContent=selected?'Property removed from your saved list.':'Property saved on this browser. No signup or marketing emails.';
+ if(savedDialog.open)renderSaved();
+}
+function saveButton(p){const button=document.createElement('button');button.type='button';button.className='save-property';button.dataset.saveKey=String(p.ListingKey);const selected=savedProperties.some(item=>item.key===String(p.ListingKey));button.textContent=selected?'\u2665 Saved':'\u2661 Save property';button.setAttribute('aria-pressed',String(selected));button.onclick=()=>toggleSaved(p);return button;}
+function renderSaved(){
+ savedDialog.replaceChildren();const heading=document.createElement('div');heading.className='saved-heading';const title=document.createElement('h2');title.textContent=`Saved properties (${savedProperties.length})`;const close=document.createElement('button');close.textContent='Back to search';close.onclick=()=>savedDialog.close();heading.append(title,close);savedDialog.append(heading);
+ const note=document.createElement('p');note.textContent='Your saved list is independent of your search filters. Saved on this browser only.';savedDialog.append(note);
+ if(!savedProperties.length){const empty=document.createElement('p');empty.textContent='No saved properties yet. Tap the heart on any property to keep it here.';savedDialog.append(empty);return;}
+ for(const saved of savedProperties){
+  const row=rows.find(p=>String(p.ListingKey)===saved.key),card=document.createElement('article');card.className='saved-item';
+  if(row){const title=document.createElement('h3');title.textContent=row.UnparsedAddress||'Property';const facts=document.createElement('p');facts.textContent=`${money(row.ListPrice)} · ${row.PropertyType} · MLS ${row.ListingId}`;const open=document.createElement('button');open.textContent='View property';open.onclick=()=>{savedDialog.close();openListing({...row,...detailsCache.get(row.ListingKey)});};card.append(title,facts,open);}
+  else{const text=document.createElement('p');text.textContent=ready?`MLS ${saved.mls}: no longer in the current public search. Contact Don to check its status.`:`MLS ${saved.mls}: current availability has not loaded yet.`;card.append(text);}
+  const remove=document.createElement('button');remove.textContent='Remove from saved';remove.onclick=()=>toggleSaved({ListingKey:saved.key,ListingId:saved.mls});card.append(remove);savedDialog.append(card);
+ }
+}
+savedOpen.onclick=()=>{renderSaved();savedDialog.showModal();};refreshSaveButtons();
+window.addEventListener('storage',event=>{if(event.key!==savedKey&&event.key!==null)return;try{const value=JSON.parse(event.newValue||'[]');if(!Array.isArray(value))return;savedProperties=value.filter(p=>p&&typeof p.key==='string'&&/^\d{1,40}$/.test(p.key)&&typeof p.mls==='string').slice(0,500);refreshSaveButtons();if(savedDialog.open)renderSaved();}catch{}});
+style.textContent+='.saved-bar{padding:14px 24px;border-bottom:1px solid #d4dfdc;background:#f1f6f3}.saved-bar p{margin:7px 0;font-size:13px}.saved-status:empty{display:none}.save-property{margin:8px 8px 8px 0;color:#12666a}.save-property[aria-pressed=true]{background:#12666a;color:white}.saved-dialog{width:92vw;max-width:850px;max-height:90vh;overflow:auto;padding:24px;border:1px solid #c5d4ce;border-radius:12px}.saved-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.saved-item{padding:16px 0;border-top:1px solid #d4dfdc}.saved-item button{margin-right:12px}.saved-item h3{margin:6px 0}@media(max-width:760px){.saved-dialog{padding:14px}.saved-heading{align-items:start}.saved-heading h2{font-size:21px}}';
+
 const listingDialog=document.createElement('dialog');listingDialog.id='listing-gallery';document.body.append(listingDialog);
 function openListing(p,fromMap=false){
  if(listingDialog.open)listingDialog.close();
@@ -68,7 +106,7 @@ function openListing(p,fromMap=false){
  const remarks=document.createElement('p');remarks.textContent=p.PublicRemarks||'Loading property description...';
  const details=document.createElement('section');details.className='property-details';details.textContent='Loading property details...';
  const inquireButton=document.createElement('button');inquireButton.textContent='Ask about this property';inquireButton.onclick=()=>inquire(p);
- listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,details,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
+ listingDialog.replaceChildren(heading,facts,saveButton(p),photoViewer(p,true),remarks,details,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
  fetchGallery(p).then(row=>{remarks.textContent=row.PublicRemarks||'No description supplied.';renderPropertyDetails(details,row.PropertyDetails);}).catch(error=>{remarks.textContent=error.message;details.textContent='Property details could not load. Close and reopen this property to retry.';});
 }
 
@@ -175,7 +213,7 @@ function renderCards(loadDetails=true){
   const url=p.Media?.[0]?.MediaURL;
   if(url && /^https:\/\//.test(url)){card.append(photoViewer(p));}
   else{const placeholder=document.createElement('div');placeholder.className='photo-placeholder';placeholder.textContent=cached?'Photo not available':'Loading photo...';card.append(placeholder);}
-  const content=document.createElement('div');content.className='content';
+  const content=document.createElement('div');content.className='content';content.append(saveButton(p));
   for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '-'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '-'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
   const title=content.querySelector('h2'),titleButton=document.createElement('button');titleButton.className='listing-title';titleButton.textContent=title.textContent;titleButton.onclick=()=>openListing(p);title.replaceChildren(titleButton);
   const detail=document.createElement('details'),summary=document.createElement('summary'),remarks=document.createElement('p');summary.textContent='Property description';remarks.textContent=p.PublicRemarks||(cached?'No description supplied.':'Loading description...');remarks.className='meta';detail.append(summary,remarks);content.append(detail);
@@ -241,7 +279,7 @@ try{
  $('timestamp').dataset.loadingMethod=loadingMethod;
  if(window.L){map=L.map('map',{zoomControl:false}).setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);L.control.zoom({position:'topright'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
- render();
+ render();if(savedDialog.open)renderSaved();
 }catch(error){failed=true;clearTimeout(slowNotice);$('count').textContent='Complete search unavailable';$('timestamp').textContent='Please use standard FLEX search below. Any properties shown here are only the first page.';$('message').textContent=error.message;}
 
 
