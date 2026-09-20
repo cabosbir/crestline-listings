@@ -180,9 +180,15 @@ const Hero = () => {
       >
         <h1 
           ref={headingRef}
+          aria-label="Baja International Realty"
           className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24 px-2"
         >
-          {splitText('BAJA INTERNATIONAL REALTY')}
+          {['BAJA', 'INTERNATIONAL', 'REALTY'].map((word, index) => (
+            <span key={word} className="block whitespace-nowrap sm:inline-block">
+              {index > 0 && <span className="hidden sm:inline">{'\u00A0'}</span>}
+              {splitText(word)}
+            </span>
+          ))}
         </h1>
         <p 
           ref={subtitleRef}
