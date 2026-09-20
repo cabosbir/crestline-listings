@@ -85,14 +85,20 @@ export function publicListing(row,fullPhotos=false) {
   if(fullPhotos)result.PropertyDetails=propertyDetails(row);
   return result;
 }
+// Carry provider throttling through the refresh worker without exposing response bodies.
+export function retrySeconds(value, fallback=30, now=Date.now()) {
+  const text=String(value??'').trim();
+  const seconds=/^\d+$/.test(text)?Number(text):text?Math.ceil((Date.parse(text)-now)/1000):NaN;
+  return Number.isFinite(seconds)&&seconds>0?Math.min(86400,Math.ceil(seconds)):fallback;
+}
 // Cache only a complete, validated public snapshot. Never cache partial results.
 export function createInventoryCache(load, now=Date.now) {
   let cached=null,pending=null,retryAt=0;
   return async()=>{
     if(cached&&now()-cached.savedAt<60000)return cached.data;
     if(pending)return pending;
-    if(now()<retryAt)throw new Error('Inventory cooling down');
-    pending=Promise.resolve().then(load).then(data=>{cached={data,savedAt:now()};retryAt=0;return data;}).catch(error=>{retryAt=now()+30000;throw error;}).finally(()=>{pending=null;});
+    if(now()<retryAt)throw Object.assign(new Error('Inventory cooling down'),{retryAfter:Math.max(1,Math.ceil((retryAt-now())/1000))});
+    pending=Promise.resolve().then(load).then(data=>{cached={data,savedAt:now()};retryAt=0;return data;}).catch(error=>{retryAt=now()+retrySeconds(error?.retryAfter,30)*1000;throw error;}).finally(()=>{pending=null;});
     return pending;
   };
 }
@@ -105,7 +111,7 @@ export async function buildSnapshot(endpoint,key,fetcher=fetch) {
     if(seen.has(address))throw new Error('Repeated inventory page');
     seen.add(address);
     const response=await fetcher(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal,redirect:'error'});
-    if(!response.ok)throw new Error(`Inventory provider unavailable (HTTP ${response.status})`);
+    if(!response.ok)throw Object.assign(new Error(`Inventory provider unavailable (HTTP ${response.status})`),{retryAfter:retrySeconds(response.headers?.get('retry-after'),response.status===429?300:30)});
     const data=await response.json(),count=data['@odata.count']===undefined?total:data['@odata.count'];
     if(!Array.isArray(data.value)||!Number.isSafeInteger(count)||count<0||count>20000||(total!==null&&total!==count))throw new Error('Invalid inventory count');
     total=count;received+=data.value.length;
@@ -198,7 +204,7 @@ export default async function handler(req,res) {
       const identity=sign(endpoint.toString(),key);
       if(identity!==snapshotIdentity){
         snapshotIdentity=identity;getSnapshot=createInventoryCache(()=>buildSnapshot(endpoint,key));
-        getVisitorInventory=createVisitorInventory(()=>storedSnapshot(),()=>getSnapshot(),Date.now,error=>{
+        getVisitorInventory=createVisitorInventory(()=>storedSnapshot(),async()=>{throw Object.assign(new Error('Waiting for scheduled inventory refresh'),{retryAfter:30});},Date.now,error=>{
           // Only known categories are logged; never provider URLs or credentials.
           const reason=error?.name==='TimeoutError'?'storage-timeout':/HTTP 503/.test(error?.message)?'storage-no-current-copy':/expired/.test(error?.message)?'storage-expired':'storage-read-failed';
           console.warn('Inventory stored-copy fallback',reason);
@@ -213,7 +219,7 @@ export default async function handler(req,res) {
       return res.status(200).json(data);
     }catch(error){
       console.error('Inventory refresh failed',error?.name,error?.message);
-      res.setHeader('Retry-After','30');
+      res.setHeader('Retry-After',String(retrySeconds(error?.retryAfter,30)));
       return res.status(503).json({error:'Property search is temporarily unavailable. Please use the standard FLEX search.',diagnostic:process.env.VERCEL_ENV==='preview'?error?.message:undefined});
     }
   }
