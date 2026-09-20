@@ -79,7 +79,7 @@ function renderPropertyDetails(target,groups){
  if(!Array.isArray(groups)||!groups.length){const note=document.createElement('p');note.textContent='Additional details have not been supplied in the public listing feed.';target.append(note);return;}
  for(const group of groups){
   const section=document.createElement('section'),heading=document.createElement('h4'),list=document.createElement('dl');heading.textContent=group.heading;
-  for(const item of group.items){const label=document.createElement('dt'),value=document.createElement('dd');label.textContent=item.label;value.textContent=typeof item.value==='number'?item.value.toLocaleString('en-US'):String(item.value);list.append(label,value);}
+  for(const item of group.items){const label=document.createElement('dt'),value=document.createElement('dd');if(item.value==='Select One')continue;label.textContent=({AC:'Air-conditioned', 'AC M2':'Indoor area (m²)','AC SqFt':'Indoor area (sq ft)','Lot M2':'Lot size (m²)','Total M2':'Total area (m²)','Mstr Plan Community':'Master-planned community','Dues Amount2':'HOA dues','Dues Period2':'Payment period'})[item.label]||item.label;value.textContent=typeof item.value==='number'&&!/year/i.test(item.label)?item.value.toLocaleString('en-US'):String(item.value);list.append(label,value);}
   section.append(heading,list);target.append(section);
  }
 }
