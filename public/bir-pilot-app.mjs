@@ -322,3 +322,5 @@ try{
 }catch(error){failed=true;alternateSearch.hidden=false;clearTimeout(slowNotice);$('count').textContent='Complete search unavailable';$('timestamp').textContent='Please use standard FLEX search below. Any properties shown here are only the first page.';$('message').textContent=error.message;}
 
 
+
+style.textContent+='#listing-gallery .gallery-heading button{border:2px solid #b45309;background:#fff7ed;color:#78350f;font-weight:700;flex-shrink:0}#listing-gallery .gallery-heading button:hover{background:#ffedd5;border-color:#92400e}#listing-gallery .gallery-heading button:focus-visible{outline:3px solid #12666a;outline-offset:3px}';
