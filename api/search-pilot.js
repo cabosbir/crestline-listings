@@ -128,7 +128,7 @@ export async function buildSnapshot(endpoint,key,fetcher=fetch) {
 }
 export async function storedSnapshot(fetcher=fetch,now=Date.now) {
   const response=await fetcher('https://inventory.bircabo.com/',{signal:AbortSignal.timeout(3500),redirect:'error',headers:{Accept:'application/json'}});
-  if(!response.ok)throw new Error('Stored inventory unavailable');
+  if(!response.ok)throw new Error(`Stored inventory unavailable (HTTP ${response.status})`);
   const body=await response.text();
   if(Buffer.byteLength(body)>4000000)throw new Error('Stored inventory too large');
   const data=JSON.parse(body),age=now()-Date.parse(data.fetchedAt);
@@ -141,7 +141,43 @@ export async function storedSnapshot(fetcher=fetch,now=Date.now) {
   });
   return {results,total:data.total,complete:true,fetchedAt:data.fetchedAt};
 }
-let snapshotIdentity='',getSnapshot;
+// Reuse a validated copy during brief storage interruptions, but never extend
+// its original five-minute lifetime. Concurrent visitors share the same work.
+export function createVisitorInventory(loadStored,loadProvider,now=Date.now,report=()=>{}) {
+  let cached=null,pending=null,retryAt=0;
+  const age=data=>now()-Date.parse(data?.fetchedAt);
+  const usable=data=>Number.isFinite(age(data))&&age(data)>=-60000&&age(data)<300000;
+  return async()=>{
+    if(cached&&usable(cached.data)&&age(cached.data)<120000)return {...cached,source:'memory'};
+    if(pending)return pending;
+    if(now()<retryAt){
+      if(cached&&usable(cached.data))return {...cached,source:'memory'};
+      throw new Error('Inventory cooling down');
+    }
+    pending=(async()=>{
+      try{
+        const data=await loadStored();
+        if(!usable(data))throw new Error('Stored inventory expired');
+        return cached={data,source:'stored'};
+      }catch(error){
+        report(error);
+        if(cached&&usable(cached.data)){retryAt=now()+15000;return {...cached,source:'memory'};}
+        const data=await loadProvider();
+        if(!usable(data))throw new Error('Inventory expired');
+        return cached={data,source:'provider'};
+      }
+    })().catch(error=>{retryAt=now()+30000;throw error;}).finally(()=>{pending=null;});
+    return pending;
+  };
+}
+export function snapshotCacheHeaders(data,refresh,now=Date.now){
+  const age=Math.max(0,Math.ceil((now()-Date.parse(data.fetchedAt))/1000));
+  if(!Number.isFinite(age)||age>=300)throw new Error('Inventory expired');
+  if(refresh)return {'Cache-Control':'no-store','Vercel-CDN-Cache-Control':'no-store'};
+  const fresh=Math.max(0,120-age),stale=300-age-fresh;
+  return {'Cache-Control':'public, max-age=0, must-revalidate','Vercel-CDN-Cache-Control':`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`};
+}
+let snapshotIdentity='',getSnapshot,getVisitorInventory;
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   if(req.method==='POST')return handleInquiry(req,res);
@@ -160,20 +196,20 @@ export default async function handler(req,res) {
       const endpoint=new URL(`${base.replace(/\/$/,'')}/Property`);
       if(endpoint.protocol!=='https:')throw new Error('Invalid endpoint');
       const identity=sign(endpoint.toString(),key);
-      if(identity!==snapshotIdentity){snapshotIdentity=identity;getSnapshot=createInventoryCache(()=>buildSnapshot(endpoint,key));}
+      if(identity!==snapshotIdentity){
+        snapshotIdentity=identity;getSnapshot=createInventoryCache(()=>buildSnapshot(endpoint,key));
+        getVisitorInventory=createVisitorInventory(()=>storedSnapshot(),()=>getSnapshot(),Date.now,error=>{
+          // Only known categories are logged; never provider URLs or credentials.
+          const reason=error?.name==='TimeoutError'?'storage-timeout':/HTTP 503/.test(error?.message)?'storage-no-current-copy':/expired/.test(error?.message)?'storage-expired':'storage-read-failed';
+          console.warn('Inventory stored-copy fallback',reason);
+        });
+      }
       // Refresh jobs read the provider; visitors normally read the persistent copy.
       // Keep its original checked timestamp, even when the file was copied later.
-      let data,source='provider';
-      if(req.query.source!=='refresh'){
-        try{data=await storedSnapshot();source='stored';}catch{/* existing provider fallback */}
-      }
-      if(!data)data=await getSnapshot();
-      const age=Math.max(0,Math.ceil((Date.now()-Date.parse(data.fetchedAt))/1000));
-      if(age>=300)throw new Error('Inventory expired');
-      const fresh=Math.max(0,120-age),stale=300-age-fresh;
-      res.setHeader('Cache-Control','public, max-age=0, must-revalidate');
+      const refresh=req.query.source==='refresh';
+      const {data,source}=refresh?{data:await getSnapshot(),source:'provider'}:await getVisitorInventory();
+      for(const [name,value] of Object.entries(snapshotCacheHeaders(data,refresh)))res.setHeader(name,value);
       res.setHeader('X-BIR-Inventory-Source',source);
-      res.setHeader('Vercel-CDN-Cache-Control',`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`);
       return res.status(200).json(data);
     }catch(error){
       console.error('Inventory refresh failed',error?.name,error?.message);
