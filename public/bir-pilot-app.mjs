@@ -7,7 +7,7 @@ for(const key of locationFields)document.querySelector(`label[for="${key}"]`).te
 $('MLSAreaMajor').nextElementSibling.textContent='Choose any area, or select a zone to narrow the list.';
 $('SubdivisionName').nextElementSibling.textContent='Know the subdivision? Choose it directly. No other location is required.';
 if(new URLSearchParams(location.search).get('check-email')==='1'){
- const check=document.createElement('p');check.id='email-connection-check';check.setAttribute('role','status');check.style.cssText='padding:20px;background:#fff3cd';check.textContent='Checking the email connection without sending a message…';document.querySelector('.notice').after(check);
+ const check=document.createElement('p');check.id='email-connection-check';check.setAttribute('role','status');check.style.cssText='padding:20px;background:#fff3cd';check.textContent='Checking the email connection without sending a message...';document.querySelector('.notice').after(check);
  fetch('/api/search-pilot?mode=email-check',{}).then(async response=>{if(!response.ok)throw new Error('Connection check unavailable');return response.json();}).then(result=>{check.textContent=`${result.message} Connection status: ${result.status}`;}).catch(()=>{check.textContent='The connection check could not finish.';});
 }
 let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
@@ -38,7 +38,7 @@ function photoViewer(p,large=false){
  let full=galleryCache.get(p.ListingKey),photos=full?.Media||p.Media||[],position=photoPositions.get(p.ListingKey)||0,busy=false;
  function draw(){
   position=photos.length?((position%photos.length)+photos.length)%photos.length:0;
-  if(photos.length){image.src=photos[position].MediaURL;image.hidden=false;image.alt=`${p.UnparsedAddress||'Property'} — photo ${position+1}`;}else{image.removeAttribute('src');image.hidden=true;}
+  if(photos.length){image.src=photos[position].MediaURL;image.hidden=false;image.alt=`${p.UnparsedAddress||'Property'} - photo ${position+1}`;}else{image.removeAttribute('src');image.hidden=true;}
   count.textContent=full?(photos.length?`${position+1} / ${photos.length}`:'No photos'):'View all photos';
   caption.textContent=photos[position]?.caption||(full?'':'Use arrows to browse photos');
   prev.disabled=next.disabled=busy||(!!full&&photos.length<2);photoPositions.set(p.ListingKey,position);
@@ -46,7 +46,7 @@ function photoViewer(p,large=false){
  }
  async function move(delta){
   if(busy)return;busy=true;prev.disabled=next.disabled=true;
-  try{if(!full){caption.textContent='Loading all photos…';full=await fetchGallery(p);photos=full.Media;}position+=delta;draw();}
+  try{if(!full){caption.textContent='Loading all photos...';full=await fetchGallery(p);photos=full.Media;}position+=delta;draw();}
   catch(error){caption.textContent=error.message;}
   finally{busy=false;prev.disabled=next.disabled=!!full&&photos.length<2;}
  }
@@ -64,12 +64,26 @@ function openListing(p,fromMap=false){
  listingDialog.setAttribute('aria-label','Property details');
  const heading=document.createElement('div');heading.className='gallery-heading';const title=document.createElement('h2');title.textContent=p.UnparsedAddress||'Property';const back=document.createElement('button');back.textContent=fromMap?'Back to map':'Back to results';back.onclick=()=>listingDialog.close();heading.append(title,back);
  if(fromMap){const expand=document.createElement('button');expand.textContent='Expand listing';expand.onclick=()=>openListing(p);heading.append(expand);}
- const facts=document.createElement('p');facts.className='gallery-facts';facts.textContent=`${money(p.ListPrice)} · ${p.PropertyType} · ${p.BedroomsTotal??'—'} bedrooms · ${p.BathroomsTotalDecimal??p.BathroomsFull??'—'} baths · MLS ${p.ListingId}`;
- const remarks=document.createElement('p');remarks.textContent=p.PublicRemarks||'Loading property description…';
+ const facts=document.createElement('p');facts.className='gallery-facts';facts.textContent=`${money(p.ListPrice)} · ${p.PropertyType} · ${p.BedroomsTotal??'-'} bedrooms · ${p.BathroomsTotalDecimal??p.BathroomsFull??'-'} baths · MLS ${p.ListingId}`;
+ const remarks=document.createElement('p');remarks.textContent=p.PublicRemarks||'Loading property description...';
+ const details=document.createElement('section');details.className='property-details';details.textContent='Loading property details...';
  const inquireButton=document.createElement('button');inquireButton.textContent='Ask about this property';inquireButton.onclick=()=>inquire(p);
- listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
- fetchGallery(p).then(row=>{remarks.textContent=row.PublicRemarks||'No description supplied.';}).catch(error=>{remarks.textContent=error.message;});
+ listingDialog.replaceChildren(heading,facts,photoViewer(p,true),remarks,details,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
+ fetchGallery(p).then(row=>{remarks.textContent=row.PublicRemarks||'No description supplied.';renderPropertyDetails(details,row.PropertyDetails);}).catch(error=>{remarks.textContent=error.message;details.textContent='Property details could not load. Close and reopen this property to retry.';});
 }
+
+
+function renderPropertyDetails(target,groups){
+ target.replaceChildren();
+ const title=document.createElement('h3');title.textContent='Property details';target.append(title);
+ if(!Array.isArray(groups)||!groups.length){const note=document.createElement('p');note.textContent='Additional details have not been supplied in the public listing feed.';target.append(note);return;}
+ for(const group of groups){
+  const section=document.createElement('section'),heading=document.createElement('h4'),list=document.createElement('dl');heading.textContent=group.heading;
+  for(const item of group.items){const label=document.createElement('dt'),value=document.createElement('dd');label.textContent=item.label;value.textContent=typeof item.value==='number'?item.value.toLocaleString('en-US'):String(item.value);list.append(label,value);}
+  section.append(heading,list);target.append(section);
+ }
+}
+style.textContent+='.property-details{margin:24px 0}.property-details section{border-top:1px solid #d4dfdc;padding:10px 0}.property-details h4{margin:8px 0}.property-details dl{display:grid;grid-template-columns:minmax(120px,1fr) 2fr;gap:8px 20px;margin:12px 0}.property-details dt{font-weight:600}.property-details dd{margin:0;overflow-wrap:anywhere}';
 
 const mapWrap=document.createElement('div');mapWrap.className='map-workspace';$('map').before(mapWrap);mapWrap.append($('map'),listingDialog);
 listingDialog.addEventListener('keydown',event=>{if(event.key==='Escape'&&listingDialog.classList.contains('map-listing'))listingDialog.close();});
@@ -90,7 +104,7 @@ for(const [id,label,type,required,max] of [['contact-name','Your name','text',tr
  const input=document.createElement('input');input.id=id;input.type=type;input.required=required;input.maxLength=max;input.autocomplete=type==='text'?'name':type;inquiryForm.append(l,input);
 }
 const questionLabel=document.createElement('label');questionLabel.htmlFor='inquiry-question';questionLabel.textContent='What would you like to know?';
-const question=document.createElement('textarea');question.id='inquiry-question';question.placeholder='Availability, a showing, financing, or another question…';
+const question=document.createElement('textarea');question.id='inquiry-question';question.placeholder='Availability, a showing, financing, or another question...';
 question.required=true;question.maxLength=3000;inquiryForm.append(questionLabel,question);
 const trap=document.createElement('input');trap.name='website';trap.tabIndex=-1;trap.autocomplete='off';trap.setAttribute('aria-hidden','true');trap.style.cssText='position:absolute;left:-10000px';inquiryForm.append(trap);
 const sendButton=document.createElement('button');sendButton.type='submit';sendButton.textContent='Send inquiry';sendButton.style.marginTop='16px';inquiryForm.append(sendButton);
@@ -98,7 +112,7 @@ const inquiryStatus=document.createElement('p');inquiryStatus.setAttribute('role
 $('email').textContent='Or email Don';
 inquiryForm.onsubmit=async event=>{
  event.preventDefault();if(!selectedProperty||sendButton.disabled)return;
- sendButton.disabled=true;$('close').disabled=true;sendButton.textContent='Sending…';inquiryStatus.textContent='';
+ sendButton.disabled=true;$('close').disabled=true;sendButton.textContent='Sending...';inquiryStatus.textContent='';
  try{
   const response=await fetch('/api/search-pilot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('contact-name').value,email:$('contact-email').value,phone:$('contact-phone').value,message:question.value,website:trap.value,listingId:String(selectedProperty.ListingId),address:selectedProperty.UnparsedAddress||''})});
   const result=await response.json();if(!response.ok||!result.success)throw new Error(result.error||'We could not confirm your inquiry was sent. Please use the email or call link.');
@@ -124,6 +138,11 @@ function syncLocations(){
 function mapPrice(value){
  if(value==null||!Number.isFinite(Number(value)))return 'Ask price';
  const n=Number(value);return n>=1000000?'$'+Number((n/1000000).toFixed(2))+'M':n>=1000?'$'+Number((n/1000).toFixed(1))+'K':money(n);
+}
+function fitLocationMap(){
+ if(!map)return;
+ const points=matches.filter(coordinates).map(p=>[p.Latitude,p.Longitude]);
+ if(points.length)map.fitBounds(points,{padding:[45,45],maxZoom:16});
 }
 function renderMap(){
  if(!map)return;
@@ -155,15 +174,15 @@ function renderCards(loadDetails=true){
   const card=document.createElement('article');card.className='card';
   const url=p.Media?.[0]?.MediaURL;
   if(url && /^https:\/\//.test(url)){card.append(photoViewer(p));}
-  else{const placeholder=document.createElement('div');placeholder.className='photo-placeholder';placeholder.textContent=cached?'Photo not available':'Loading photo…';card.append(placeholder);}
+  else{const placeholder=document.createElement('div');placeholder.className='photo-placeholder';placeholder.textContent=cached?'Photo not available':'Loading photo...';card.append(placeholder);}
   const content=document.createElement('div');content.className='content';
-  for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '—'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '—'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
+  for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '-'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '-'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
   const title=content.querySelector('h2'),titleButton=document.createElement('button');titleButton.className='listing-title';titleButton.textContent=title.textContent;titleButton.onclick=()=>openListing(p);title.replaceChildren(titleButton);
-  const detail=document.createElement('details'),summary=document.createElement('summary'),remarks=document.createElement('p');summary.textContent='Property description';remarks.textContent=p.PublicRemarks||(cached?'No description supplied.':'Loading description…');remarks.className='meta';detail.append(summary,remarks);content.append(detail);
+  const detail=document.createElement('details'),summary=document.createElement('summary'),remarks=document.createElement('p');summary.textContent='Property description';remarks.textContent=p.PublicRemarks||(cached?'No description supplied.':'Loading description...');remarks.className='meta';detail.append(summary,remarks);content.append(detail);
   const button=document.createElement('button');button.className='inquiry';button.textContent='Ask about this property';button.onclick=()=>inquire(p);content.append(button);card.append(content);$('cards').append(card);
  }
  $('more').textContent='Next 24 properties';$('more').hidden=!ready||shown>=matches.length;previous.hidden=!ready||shown<=24;$('empty').hidden=matches.length>0;
- pageInfo.textContent=matches.length?`${shown-23}–${Math.min(shown,matches.length)}${ready?' of '+matches.length.toLocaleString():''}`:'';
+ pageInfo.textContent=matches.length?`${shown-23}-${Math.min(shown,matches.length)}${ready?' of '+matches.length.toLocaleString():''}`:'';
  const missing=visible.filter(p=>!detailsCache.has(p.ListingKey)).map(p=>p.ListingKey);
  if(loadDetails&&missing.length)fetch('/api/search-pilot?keys='+encodeURIComponent(missing.join(',')),{}).then(async response=>{if(!response.ok)throw new Error('Details unavailable');return response.json();}).then(data=>{
    if(!Array.isArray(data.results))throw new Error('Invalid details');
@@ -183,10 +202,10 @@ $('filters').addEventListener('input',e=>{
  const key=e.target.name;if(!(key in filters))return;
  if(locationFields.includes(key)){filters=changeLocation(filters,key,e.target.value);syncLocations();$('message').textContent='Location choices below this level cleared. Other filters kept.';}
  else{filters={...filters,[key]:key==='financing'?e.target.checked:e.target.value};$('message').textContent='';}
- shown=24;render();
+ shown=24;render();if(locationFields.includes(key))fitLocationMap();
 });
-$('clear-location').onclick=()=>{filters={...filters,...Object.fromEntries(locationFields.map(k=>[k,'']))};syncLocations();shown=24;render();$('message').textContent='Location cleared. Price, bedrooms and other filters kept.';};
-$('filters').addEventListener('reset',e=>{e.preventDefault();filters=defaults();for(const [k,v] of Object.entries(filters)){if(k==='financing')$(k).checked=false;else $(k).value=v;}syncLocations();shown=24;render();$('message').textContent='All filters cleared.';});
+$('clear-location').onclick=()=>{filters={...filters,...Object.fromEntries(locationFields.map(k=>[k,'']))};syncLocations();shown=24;render();fitLocationMap();$('message').textContent='Location cleared. Price, bedrooms and other filters kept.';};
+$('filters').addEventListener('reset',e=>{e.preventDefault();filters=defaults();for(const [k,v] of Object.entries(filters)){if(k==='financing')$(k).checked=false;else $(k).value=v;}syncLocations();shown=24;render();fitLocationMap();$('message').textContent='All filters cleared.';});
 $('sort').onchange=()=>{shown=24;render();};$('more').onclick=()=>{shown+=24;renderCards();$('cards').scrollIntoView({block:'start'});};$('close').onclick=()=>$('inquiry').close();
 const alternateSearch=document.createElement('p');
 const alternateLink=document.createElement('a');alternateLink.href='/idx-search';alternateLink.textContent='Open standard FLEX search';alternateLink.className='action';
@@ -202,7 +221,7 @@ try{
   for(const p of matches)detailsCache.set(p.ListingKey,{Media:p.Media,PublicRemarks:p.PublicRemarks});
   renderCards(false);$('count').textContent=`${Number(data.total).toLocaleString()} properties · first ${matches.length} shown`;
   $('mapnote').textContent='The complete map and location filters are loading.';
-  $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices…`;
+  $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices...`;
  }).catch(()=>{});
  const loadingMethod='shared-snapshot';
  const response=await fetch('/api/search-pilot?mode=snapshot');
