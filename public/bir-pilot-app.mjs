@@ -284,10 +284,10 @@ $('filters').addEventListener('input',e=>{
 $('clear-location').onclick=()=>{filters={...filters,...Object.fromEntries(locationFields.map(k=>[k,'']))};syncLocations();shown=24;render();fitLocationMap();$('message').textContent='Location cleared. Price, bedrooms and other filters kept.';};
 $('filters').addEventListener('reset',e=>{e.preventDefault();filters=defaults();for(const [k,v] of Object.entries(filters)){if(k==='financing')$(k).checked=false;else $(k).value=v;}syncLocations();shown=24;render();fitLocationMap();$('message').textContent='All filters cleared.';});
 $('sort').onchange=()=>{shown=24;render();};$('more').onclick=()=>{shown+=24;renderCards();$('cards').scrollIntoView({block:'start'});};$('close').onclick=()=>$('inquiry').close();
-const alternateSearch=document.createElement('p');
+const alternateSearch=document.createElement('p');alternateSearch.hidden=true;
 const alternateLink=document.createElement('a');alternateLink.href='/idx-search';alternateLink.textContent='Open standard FLEX search';alternateLink.className='action';
 alternateSearch.append(alternateLink);$('timestamp').after(alternateSearch);
-const slowNotice=setTimeout(()=>{if(!ready&&!failed)$('message').textContent='Taking longer than expected. You can use standard FLEX search while this loads.';},4000);
+const slowNotice=setTimeout(()=>{if(!ready&&!failed)$('message').textContent='Taking longer than expected. Your search is still loading.';},4000);
 try{
  const controls=[...document.querySelectorAll('#filters input,#filters select,#filters button,#sort')];
  controls.forEach(el=>el.disabled=true);
@@ -319,6 +319,6 @@ try{
  if(window.L){map=L.map('map',{zoomControl:false}).setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);L.control.zoom({position:'topright'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();if(savedDialog.open)renderSaved();
-}catch(error){failed=true;clearTimeout(slowNotice);$('count').textContent='Complete search unavailable';$('timestamp').textContent='Please use standard FLEX search below. Any properties shown here are only the first page.';$('message').textContent=error.message;}
+}catch(error){failed=true;alternateSearch.hidden=false;clearTimeout(slowNotice);$('count').textContent='Complete search unavailable';$('timestamp').textContent='Please use standard FLEX search below. Any properties shown here are only the first page.';$('message').textContent=error.message;}
 
 
