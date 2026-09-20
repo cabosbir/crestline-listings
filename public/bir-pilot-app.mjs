@@ -63,7 +63,7 @@ let savedProperties=[];
 try{const value=JSON.parse(localStorage.getItem(savedKey)||'[]');if(Array.isArray(value))savedProperties=value.filter(p=>p&&typeof p.key==='string'&&/^\d{1,40}$/.test(p.key)&&typeof p.mls==='string').slice(0,500);}catch{}
 const savedBar=document.createElement('div');savedBar.className='saved-bar';
 const savedOpen=document.createElement('button');savedOpen.type='button';savedOpen.className='saved-primary';
-const savedNote=document.createElement('p');savedNote.innerHTML='<strong>Keep your favorites. Compare your choices.</strong><span>Click <b>Save property</b> on any listing, then open <b>Saved &amp; Compare</b> to review your favorites and compare up to three side by side.</span><small>No signup required. Favorites stay saved in this browser; clearing browser data removes them.</small>';
+const savedNote=document.createElement('p');savedNote.innerHTML='<strong>Keep your favorites. Compare your choices.</strong><span>Click <b>Save property</b> (up to 50) on any listing, then open <b>Saved &amp; Compare</b> to review your favorites and compare up to three side by side.</span><small>No signup required. Favorites stay saved in this browser; clearing browser data removes them.</small>';
 const savedStatus=document.createElement('p');savedStatus.setAttribute('role','status');savedStatus.className='saved-status';
 const resultActions=document.createElement('div');resultActions.className='result-actions';count.before(resultActions);resultActions.append(count,savedOpen);savedBar.append(savedNote,savedStatus);document.querySelector('main .bar').after(savedBar);
 const savedDialog=document.createElement('dialog');savedDialog.className='saved-dialog';savedDialog.setAttribute('aria-label','Saved properties');document.body.append(savedDialog);
@@ -73,7 +73,7 @@ function refreshSaveButtons(){
 }
 function toggleSaved(p){
  const key=String(p.ListingKey),selected=savedProperties.some(item=>item.key===key);
- if(!selected&&savedProperties.length>=500){savedStatus.textContent='Your saved list is full. Remove a property before adding another.';return;}
+ if(!selected&&savedProperties.length>=50){savedStatus.textContent='You can save up to 50 properties. Remove a saved property before adding another.';return;}
  const next=selected?savedProperties.filter(item=>item.key!==key):[...savedProperties,{key,mls:String(p.ListingId||'')}];
  try{localStorage.setItem(savedKey,JSON.stringify(next));}catch{savedStatus.textContent='This browser could not save your change. Please allow site storage and try again.';return;}
  savedProperties=next;refreshSaveButtons();savedStatus.textContent=selected?'Property removed from your saved list.':'Property saved on this browser. No signup or marketing emails.';
