@@ -84,7 +84,7 @@ function renderSaved(){
  compareKeys=compareKeys.filter(key=>savedProperties.some(p=>p.key===key)&&rows.some(p=>String(p.ListingKey)===key));
  savedDialog.replaceChildren();const heading=document.createElement('div');heading.className='saved-heading';const title=document.createElement('h2');title.textContent=`Saved & Compare (${savedProperties.length})`;const close=document.createElement('button');close.textContent='Back to search';close.onclick=()=>savedDialog.close();heading.append(title,close);savedDialog.append(heading);
  const note=document.createElement('p');note.textContent='Your saved list is independent of your search filters. Saved on this browser only.';savedDialog.append(note);
- if(!savedProperties.length){const empty=document.createElement('p');empty.textContent='No saved properties yet. Tap the heart on any property to keep it here.';savedDialog.append(empty);return;}
+ if(!savedProperties.length){const empty=document.createElement('p');empty.textContent='No saved properties yet. Click Save property on any listing to keep it here.';savedDialog.append(empty);return;}
  const compareBar=document.createElement('div');compareBar.className='compare-controls';const compareHelp=document.createElement('p');compareHelp.textContent='Choose two or three properties to compare side by side.';const compareStart=document.createElement('button');compareStart.textContent=`Compare selected (${compareKeys.length}/3)`;compareStart.disabled=compareKeys.length<2;compareStart.onclick=openComparison;compareBar.append(compareHelp,compareStart);savedDialog.append(compareBar);
  for(const saved of savedProperties){
   const row=rows.find(p=>String(p.ListingKey)===saved.key),card=document.createElement('article');card.className='saved-item';
