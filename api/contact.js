@@ -1,4 +1,47 @@
 import nodemailer from 'nodemailer';
+// Lightweight safeguards for the legacy contact and seller forms.
+// Limits are per warm server instance; this is not a global bot firewall.
+const formAttempts=new Map();
+export function checkFormSubmission(req,kind,now=Date.now()){
+  const fail=(status,error)=>({status,error});
+  let origin;
+  try{origin=new URL(req.headers.origin);}catch{return fail(403,'Please submit this form from our website.');}
+  if(origin.protocol!=='https:'||origin.host!==req.headers.host)return fail(403,'Please submit this form from our website.');
+  if(!/^application\/json(?:;|$)/i.test(req.headers['content-type']||''))return fail(415,'Please submit this form from our website.');
+  const body=req.body;
+  if(!body||typeof body!=='object'||Array.isArray(body))return fail(400,'Please check the form and try again.');
+  if(body.website!==undefined&&(typeof body.website!=='string'||body.website.trim()))return fail(400,'We could not verify this submission. Please contact our office directly.');
+  const name=kind==='seller'?body.sellerName:body.name,email=kind==='seller'?body.sellerEmail:body.email;
+  if(typeof name!=='string'||name.trim().length<2||name.length>160||/[<>\r\n]/.test(name))return fail(400,'Please enter your name.');
+  // Reject long random mixed-case tokens, not ordinary names or non-Latin names.
+  const randomToken=name.split(/\s+/).some(word=>/^[A-Za-z]{16,}$/.test(word)&&(word.match(/(?=[a-z][A-Z]|[A-Z][a-z])/g)||[]).length>=8);
+  if(randomToken)return fail(400,'Please check your name and try again, or contact our office directly.');
+  if(typeof email!=='string'||email.length>254||!/^\S+@[^\s@]+\.[^\s@]+$/.test(email)||/[<>\r\n,;]/.test(email))return fail(400,'Please enter a valid email address.');
+  const message=kind==='seller'?body.propertyAddress:body.message;
+  if(typeof message!=='string'||message.trim().length<3||message.length>6000)return fail(400,kind==='seller'?'Please enter the property address.':'Please enter your message (up to 6,000 characters).');
+  const phone=kind==='seller'?body.sellerPhone:body.phone;
+  if(phone!==undefined&&(typeof phone!=='string'||phone.length>60||/[<>\r\n]/.test(phone)))return fail(400,'Please check your phone number.');
+  if(kind==='seller'&&(!phone||!phone.trim()))return fail(400,'Please enter your phone number.');
+  if(body.agentEmail){
+    const allowed=new Set(['robertvanpatten2@gmail.com','erika80@gmail.com','alfonso@bircabo.com','cozbi@bajainternationalrealty.com','hector@bircabo.com','charles@bircabo.com','mtortricardi@gmail.com','david@bircabo.com','susu@bircabo.com','edgar@bircabo.com','erikagraciano@bircabo.com','don@bircabo.com','fernando@bircabo.com','erika@bircabo.com','bonnie@bircabo.com','erikag@bircabo.com','cabocharlie79@gmail.com','info@bircabo.com']);
+    if(typeof body.agentEmail!=='string'||!allowed.has(body.agentEmail.toLowerCase()))return fail(400,'Please select an agent from the website.');
+  }
+  // Prevent submitted markup being embedded in office/client notification emails.
+  for(const [key,value] of Object.entries(body)){
+    if(key==='images')continue;
+    if(typeof value==='string'&&(value.length>6000||/<\/?[a-z][^>]*>/i.test(value)))return fail(400,'Please use plain text in the form.');
+  }
+  const address=String(req.headers['x-forwarded-for']||'').split(',')[0].trim();
+  if(address){
+    for(const [key,value] of formAttempts)if(value.until<=now)formAttempts.delete(key);
+    if(formAttempts.size>10000)formAttempts.clear();
+    const entry=formAttempts.get(address)||{count:0,until:now+600000};
+    if(entry.count>=8)return fail(429,'Too many requests. Please wait a few minutes or contact our office directly.');
+    entry.count++;formAttempts.set(address,entry);
+  }
+  return null;
+}
+
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -18,6 +61,9 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const rejected=checkFormSubmission(req,'contact');
+  if(rejected){if(rejected.status===429)res.setHeader('Retry-After','600');return res.status(rejected.status).json({success:false,error:rejected.error});}
 
   try {
     const { name, email, phone, inquiryType, propertyType, preferredAgent, agentEmail, message } = req.body;
