@@ -75,6 +75,8 @@ export function propertyDetails(row) {
 export function publicListing(row,fullPhotos=false) {
   if(row.StandardStatus!=='Active'||row.InternetEntireListingDisplayYN===false)return null;
   const result=Object.fromEntries(fields.filter(k=>k in row).map(k=>[k,row[k]]));
+  // Keep the verified corridor area in its zone when a listing has an inconsistent City.
+  if(result.MLSAreaMajor==='CSL-Corr. Oceanside'&&result.City==='Cabo San Lucas')result.City='Cabo Corridor';
   result.Address_co_Community2=communityFields.map(k=>row[k]).find(v=>typeof v==='string'&&v.trim()&&!/^\*+$/.test(v))||null;
   if(row.InternetAddressDisplayYN===false){
     result.UnparsedAddress='Address available on request';
