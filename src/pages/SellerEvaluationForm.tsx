@@ -125,7 +125,7 @@ const SellerEvaluationForm = () => {
     date: new Date().toLocaleDateString('en-CA'),
     lastName: "",
     firstName: "",
-    cellPhone: "",
+    valuationPreference: "preliminary",
     personalEmail: "",
     
     // Agent Selection
@@ -279,7 +279,7 @@ const SellerEvaluationForm = () => {
         website,
         sellerName: `${formData.firstName} ${formData.lastName}`,
         sellerEmail: formData.personalEmail,
-        sellerPhone: formData.cellPhone,
+        valuationPreference: formData.valuationPreference,
         
         // Property details
         propertyAddress: `${formData.locationType.toUpperCase()}: ${formData.locationName.trim()}`,
@@ -329,7 +329,7 @@ const SellerEvaluationForm = () => {
 
       toast({
         title: "Form Submitted Successfully! ✓",
-        description: `Thank you! ${finalAgent.name} will contact you soon with your free property evaluation.`,
+        description: formData.valuationPreference==='preliminary' ? 'Thank you! We will email your preliminary valuation. No sales follow-up unless you ask.' : 'Thank you! An agent will email you about a more detailed valuation.',
       });
 
       // Reset form
@@ -337,7 +337,7 @@ const SellerEvaluationForm = () => {
         date: new Date().toLocaleDateString('en-CA'),
         lastName: "",
         firstName: "",
-        cellPhone: "",
+        valuationPreference: "preliminary",
         personalEmail: "",
         preferredAgentSlug: "",
         preferredAgentName: "",
@@ -458,17 +458,7 @@ const SellerEvaluationForm = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
-                <div>
-                  <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Cell Phone:</Label>
-                  <Input
-                    type="tel"
-                    value={formData.cellPhone}
-                    onChange={(e) => setFormData({...formData, cellPhone: e.target.value})}
-                    required
-                    className="w-full"
-                    placeholder="+52 624 XXX XXXX"
-                  />
-                </div>
+
                 <div>
                   <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Email Address:</Label>
                   <Input
@@ -480,6 +470,19 @@ const SellerEvaluationForm = () => {
                   />
                 </div>
               </div>
+
+              <fieldset className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <legend className="font-semibold text-gray-800 px-1">How would you like your valuation?</legend>
+                <label className="flex items-start gap-3 mb-4 cursor-pointer">
+                  <input type="radio" name="valuation-preference" value="preliminary" checked={formData.valuationPreference==='preliminary'} onChange={()=>setFormData({...formData,valuationPreference:'preliminary'})} className="mt-1 shrink-0" />
+                  <span><strong>Preliminary valuation by email only</strong><span className="block text-sm text-gray-700 mt-1">Send me an initial estimate based on the information I provide. No sales follow-up unless I ask.</span></span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input type="radio" name="valuation-preference" value="detailed" checked={formData.valuationPreference==='detailed'} onChange={()=>setFormData({...formData,valuationPreference:'detailed'})} className="mt-1 shrink-0" />
+                  <span><strong>I'm open to contact for a more detailed valuation</strong><span className="block text-sm text-gray-700 mt-1">An agent may email me to ask questions and discuss the next steps.</span></span>
+                </label>
+                <p className="text-sm text-gray-600 mt-3">No phone number needed. This request does not sign you up for marketing. An initial estimate may need more information before it can be refined.</p>
+              </fieldset>
 
               {/* Preferred Agent Selection */}
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -754,7 +757,7 @@ const SellerEvaluationForm = () => {
                 {isSubmitting ? 'Submitting...' : 'Request Free Property Evaluation'}
               </Button>
               <p className="text-xs text-center text-gray-500 mt-3">
-                By submitting this form, you agree to be contacted by Baja International Realty regarding your property evaluation.
+                We will use your information to respond to your valuation request according to the preference you selected.
               </p>
             </div>
           </form>
