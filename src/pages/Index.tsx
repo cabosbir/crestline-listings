@@ -298,14 +298,8 @@ const Index = () => {
           <p className="text-blue-900 font-semibold mb-2">Understanding Buying</p>
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">How do I buy property in Cabo San Lucas?</h2>
           <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Start with how you want to use your property, the location and your total budget. Explore listings, compare your favorites and take time to understand ownership and the costs before making an offer.</p>
-          <ol className="grid sm:grid-cols-3 gap-5 my-8 list-none">
-            {[
-              ['1. Find the right fit', 'Compare homes, condos or land. Look beyond the photos at access, community rules, upkeep and everyday convenience.'],
-              ['2. Check before you commit', 'Review the title, property documents, condition and offer terms with your agent and qualified closing professionals.'],
-              ['3. Plan your closing', 'Confirm the ownership structure, written closing-cost estimate, payment arrangements and the steps needed to complete and register the purchase.'],
-            ].map(([title, body]) => <li key={title} className="rounded-xl border border-border p-6"><h3 className="text-xl font-bold mb-3">{title}</h3><p className="text-muted-foreground leading-relaxed">{body}</p></li>)}
-          </ol>
-          <div className="space-y-3">
+
+          <div className="space-y-3 mt-8">
             <details open className="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6">
               <summary className="cursor-pointer text-xl font-bold text-blue-950">Can Americans or Canadians buy property in Mexico?</summary>
               <p className="mt-4 leading-relaxed text-slate-700">Yes. Foreign buyers can purchase residential property in Cabo through a Mexican bank trust called a fideicomiso. Because Cabo is in Mexico’s coastal restricted zone, this differs from holding direct title: the bank acts as trustee and the buyer is the beneficiary. Confirm the appropriate arrangement for the specific property before buying.</p>
