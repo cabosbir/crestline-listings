@@ -514,20 +514,9 @@ const SellerEvaluationForm = () => {
                     className="w-full p-2 border border-gray-300 rounded-md"
                   >
                     <option value="">No Preference - Office Will Assign</option>
-                  <option value="alfonso">Alfonso Puente</option>
-                  <option value="bob">Bob Van Patten</option>
-                  <option value="erika-graciano">Erika Graciano</option>
-                  <option value="charles-jones">Charles Jones</option>
-                  <option value="cozbi">Cozbi Sanchez</option>
-                  <option value="david">David Scott Piper</option>
-                  <option value="don">Don Weis</option>
-                  <option value="edgar">Edgar Pacheco</option>
-                  <option value="erika">Erika Aispuro</option>
-                  <option value="fernando-cabrera">Fernando Cabrera</option>
-                  <option value="bonnie-renee">Bonnie Renee G.</option>
-                  <option value="hector">Hector Mendoza</option>
-                  <option value="marisol">Marisol Tort</option>
-                  <option value="susu">Susu Vieira</option>
+                    <option value="don">Don Weis</option>
+                    <option value="bob">Bob Van Patten</option>
+                    <option value="alfonso">Alfonso Puente</option>
                   </select>
                 )}
               </div>
