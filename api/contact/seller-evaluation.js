@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     const {
       sellerName,
       sellerEmail,
-      sellerPhone,
+      valuationPreference,
       propertyAddress,
       propertyCity,
       propertyState,
@@ -59,12 +59,17 @@ export default async function handler(req, res) {
     } = req.body;
 
     // Validate required fields
-    if (!sellerName || !sellerEmail || !sellerPhone || !propertyAddress) {
+    if (!sellerName || !sellerEmail || !propertyAddress) {
       return res.status(400).json({ 
         success: false, 
         error: 'Missing required fields' 
       });
     }
+
+    // Missing preferences default to the least intrusive option for older clients.
+    const preliminary = valuationPreference !== 'detailed';
+    const preferenceLabel = preliminary ? 'Preliminary valuation by email only — no sales follow-up unless requested' : 'Open to email contact for a more detailed valuation';
+    const nextStep = preliminary ? 'Email an initial estimate based on the supplied information. Explain any limitations. Do not call or send sales follow-up unless the owner asks.' : 'Email the owner to clarify the property details and discuss a more detailed valuation.';
 
     // Validate email configuration
     if (!process.env.OFFICE_APP_PASSWORD) {
@@ -135,10 +140,9 @@ export default async function handler(req, res) {
         
         <div class="content">
           <div class="section">
-            <h2>👤 Seller Information</h2>
+            <h2>👤 Seller Information</h2><p><strong>OWNER PREFERENCE: ${preferenceLabel}</strong></p><p>Do not add this owner to marketing lists.</p>
             <div class="info-row"><div class="info-label">Name:</div><div class="info-value">${sellerName}</div></div>
             <div class="info-row"><div class="info-label">Email:</div><div class="info-value"><a href="mailto:${sellerEmail}">${sellerEmail}</a></div></div>
-            <div class="info-row"><div class="info-label">Phone:</div><div class="info-value"><a href="tel:${sellerPhone}">${sellerPhone}</a></div></div>
             <div class="info-row"><div class="info-label">Submission Date:</div><div class="info-value">${submissionDate}</div></div>
           </div>
           
@@ -183,9 +187,8 @@ export default async function handler(req, res) {
           
           <div class="alert-box">
             <p style="font-weight: bold; color: #991b1b;">⚠️ Action Required:</p>
-            <p>${agentName ? `${agentName}, please` : 'Please'} contact this seller within 24 hours to schedule a property evaluation.</p>
+            <p>${nextStep}</p>
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #fecaca;">
-              <p style="margin: 5px 0;">📞 <a href="tel:${sellerPhone}" style="color: #dc2626;">${sellerPhone}</a></p>
               <p style="margin: 5px 0;">📧 <a href="mailto:${sellerEmail}" style="color: #dc2626;">Reply to seller</a></p>
             </div>
           </div>
@@ -236,15 +239,15 @@ export default async function handler(req, res) {
           
           <p style="font-size: 16px;">
             Thank you for requesting a free property evaluation from ${agentName || 'Baja International Realty'}! 
-            We've received your submission and ${agentName ? `<strong>${agentName}</strong> will` : 'our team will'} contact you within 24 hours.
+            We've received your request. Your preference: <strong>${preferenceLabel}</strong>. This request does not subscribe you to marketing.
           </p>
           
           <div class="info-box">
             <h3 style="margin-top: 0; color: #1e40af; font-size: 18px;">What Happens Next?</h3>
             <p style="margin: 10px 0;">✅ We'll review your property details carefully</p>
-            <p style="margin: 10px 0;">📞 ${agentName ? `${agentName} will` : 'Our team will'} contact you within 24 hours</p>
-            <p style="margin: 10px 0;">🏡 Schedule an in-person property evaluation</p>
-            <p style="margin: 10px 0;">💰 Receive a comprehensive market analysis and pricing strategy</p>
+            <p style="margin: 10px 0;">${preliminary ? "We will email an initial estimate based on the details you supplied. No sales follow-up unless you ask." : "An agent will email you to ask questions and discuss the next steps."}</p>
+            ${!preliminary ? '<p style="margin: 10px 0;">An in-person evaluation can be arranged if you would like one.</p>' : ''}
+            <p style="margin: 10px 0;">An initial estimate may need more information before it can be refined.</p>
           </div>
           
           <div class="contact-box">
@@ -285,9 +288,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: agentName
-        ? `Thank you! ${agentName} will contact you within 24 hours with your property evaluation.`
-        : 'Thank you! We\'ll contact you within 24 hours with your property evaluation.'
+      message: preliminary ? 'Thank you! We will email your preliminary valuation, with no sales follow-up unless requested.' : 'Thank you! An agent will email you about a more detailed valuation.'
     });
 
   } catch (error) {
