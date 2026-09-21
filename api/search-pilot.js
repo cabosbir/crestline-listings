@@ -233,7 +233,10 @@ export default async function handler(req,res) {
   } catch {return res.status(400).json({error:'This inventory request has expired or is invalid. Reload to start again.'});}
   try {
     const response=await fetch(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal:AbortSignal.timeout(24000),redirect:'error'});
-    if(!response.ok)return res.status(response.status===429?429:502).json({error:`The listing provider could not complete this page (status ${response.status}). Reload to retry.`});
+    if(!response.ok){
+      res.setHeader('Retry-After',String(retrySeconds(response.headers?.get('retry-after'),response.status===429?300:30)));
+      return res.status(response.status===429?429:502).json({error:`The listing provider could not complete this page (status ${response.status}). Reload to retry.`});
+    }
     const data=await response.json();
     if(!Array.isArray(data.value))throw new Error('Invalid provider response');
     if(req.query.mode==='gallery'&&data.value.some(row=>row['Media@odata.nextLink']))throw new Error('Incomplete photo gallery');
