@@ -73,13 +73,7 @@ const PropertyCard = ({
     if (!imgError) {
       setImgError(true);
 
-      const fallbacks = [
-        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop'
-      ];
-
-      setImgSrc(fallbacks[Math.floor(Math.random() * fallbacks.length)]);
+      setImgSrc('data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#e7edf1"/><text x="50%" y="40%" text-anchor="middle" fill="#334155" font-family="sans-serif" font-size="28">Photo unavailable</text></svg>'));
     }
   };
 
@@ -116,7 +110,7 @@ const PropertyCard = ({
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
         <div className="text-4xl font-bold mb-3">{price}</div>
 
-        <div className="flex items-center gap-4 mb-3 text-lg">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-base sm:text-lg">
           <div className="flex items-center gap-1.5">
             <Bed className="w-5 h-5" />
             <span className="font-semibold">{beds} Beds</span>
@@ -129,7 +123,7 @@ const PropertyCard = ({
             <span className="font-semibold">{baths} Baths</span>
           </div>
 
-          {formattedSqft !== "N/A" && (
+          {Number(formattedSqft.replace(/,/g, "")) > 0 && (
             <>
               <span className="text-white/60">•</span>
               <div className="flex items-center gap-1.5">
