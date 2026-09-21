@@ -169,6 +169,16 @@ const communityWeather: Record<string, { seasons: [string, string][]; living: st
   },
 };
 
+const communityActivities: Record<string, string> = {
+  'cabo-san-lucas': 'The cooler months make marina walks, golf and time on a terrace easier to fit into the middle of the day. In summer, plan walks and exercise early, with shaded lunches or an indoor break during the hottest hours. For fishing and boat trips, use the day’s wind and sea forecast; sunshine on land does not guarantee calm water.',
+  'san-jose-del-cabo': 'Mild winter and spring weather suits exploring the historic center, gallery visits and outdoor dining. As summer heats up, mornings and evenings become more appealing for walking, while shade and air conditioning matter during the afternoon. A covered patio can extend the hours you spend outside, and a light layer helps with cooler evening dinners in winter.',
+  'los-cabos-corridor': 'Golf, beach walks and outdoor meals can fit comfortably into more of the day during the cooler season. Summer favors early tee times, shaded pool areas and a break from midday sun. Check how exposed a terrace is before planning year-round outdoor dining. For swimming or snorkeling, follow local beach flags and conditions rather than assuming a sheltered-looking bay is always safe.',
+  'east-cape': 'Winter winds are a draw for kiteboarding and windsurfing around Los Barriles, but the same winds can interrupt fishing, snorkeling and small-boat outings. In hot weather, early starts make shore walks and outdoor chores more comfortable. A sheltered patio offers a useful alternative on windy days. After heavy rain, check road conditions before heading to a remote beach or property.',
+  'pacific-south': 'Pacific airflow can make a shaded terrace pleasant, but an exposed outdoor dining area may need wind protection, particularly in cooler months. Plan beach walks around wind and sun, and compare how a patio feels in the morning and late afternoon. The ocean view is part of the appeal; swimming suitability is a separate question, and some Pacific beaches have dangerous surf and currents.',
+  'pacific-north': 'The ocean’s moderating influence can suit outdoor meals, gardening and walks, although wind exposure changes the experience from one property to another. Cooler evenings often call for a layer. In late-summer heat and humidity, shift errands and exercise earlier. Surfing depends on the break, swell and ability; a popular surf beach is not automatically suitable for casual swimming.',
+  'la-paz': 'Winter and the milder transition months favor malecón walks, cycling and outdoor dining. During the very hot summer, daily routines often work better with early errands, an afternoon break and evening waterfront time. Shade, cooling and a comfortable place to sleep become important home features. For kayaking, snorkeling and island trips, choose the day around wind, sea conditions and local operator advice.',
+};
+
 const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -349,6 +359,7 @@ const Index = () => {
                       <dl className="mt-4 space-y-4">
                         {communityWeather[community.id].seasons.map(([season, description]) => <div key={season}><dt className="font-bold text-slate-900">{season}</dt><dd className="mt-1 text-slate-700 leading-relaxed">{description}</dd></div>)}
                       </dl>
+                      <p className="mt-4 text-slate-700 leading-relaxed"><strong>Lifestyle &amp; activities:</strong> {communityActivities[community.id]}</p>
                       <p className="mt-4 text-slate-700 leading-relaxed"><strong>What this means for living here:</strong> {communityWeather[community.id].living}</p>
                       <p className="mt-4 text-sm text-slate-600 leading-relaxed">Typical seasonal patterns, not a forecast. Neighborhood exposure, elevation and the individual home can change how the weather feels. <a href={communityWeather[community.id].source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{communityWeather[community.id].sourceName} (opens a new tab)</a>.</p>
                     </section>
