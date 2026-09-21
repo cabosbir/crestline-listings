@@ -41,8 +41,13 @@ const communityGuides = [
   {
     id: 'east-cape', title: 'East Cape', subtitle: 'Sea of Cortez scenery and room to explore',
     intro: 'The East Cape, also known as Cabo del Este, follows the Sea of Cortez beyond San José del Cabo toward Cabo Pulmo and the wider eastern coast. Beaches, fishing and outdoor exploration are central to its appeal. This is a broad region rather than a single neighborhood, and the distance from established services varies greatly between locations.',
+    searchSteps: [
+      'Open the MLS search, click Clear location, then select East Cape in Zone to explore the listings grouped there.',
+      'Use Area and Community to narrow the results, or clear the location and go directly to a known Subdivision. Check the map position of each property rather than relying only on its MLS label.',
+      'Compare the actual route to San José del Cabo or the nearest town, along with access to shopping and medical services. The East Cape zone is a search grouping, not a promise that every property offers the same lifestyle or convenience.',
+    ],
     paragraphs: [
-      'East Cape real estate attracts buyers who put a high value on the coastal setting and are willing to look beyond the two main towns. A home near an established community and a more secluded coastal property can offer very different daily routines. Decide how much driving, maintenance and planning you are comfortable with before narrowing your search.',
+      'East Cape real estate attracts buyers who put a high value on the coastal setting and are willing to look beyond the two main towns. A home near an established community and a more secluded coastal property can offer very different daily routines. We cover these differences within one East Cape guide: the MLS zone name alone does not tell you how remote a property feels or how convenient everyday services will be. Decide how much driving, maintenance and planning you are comfortable with before narrowing your search.',
       'For each property, confirm road access, water supply, electricity, internet and the practical route to groceries and medical services. If you are considering land, investigate permitted uses and the cost and availability of connecting services before setting a building budget. Visit the exact location and ask about seasonal road conditions. The right fit depends on the individual property, not just an East Cape label.',
     ],
   },
