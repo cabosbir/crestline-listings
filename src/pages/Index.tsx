@@ -320,12 +320,40 @@ const Index = () => {
               <p className="mt-4 text-muted-foreground leading-relaxed">Closing costs in Cabo can be higher than buyers initially expect. A major part is the property acquisition tax, known as ISABI: Los Cabos has a 3% rate, applied to the applicable taxable value. Notary fees, public registration, appraisals and certificates also contribute. For foreign buyers using a new fideicomiso, the trust permit, bank setup and first annual trust fee add to the upfront cost.</p>
               <h3 className="mt-6 text-lg font-bold">Real closing-cost examples</h3>
               <p className="mt-3 text-muted-foreground leading-relaxed">These three new-trust estimates, prepared by Loyalty Consulting on September 21, 2026, illustrate how costs can vary with the purchase price. All amounts are in US dollars.</p>
-              <div className="mt-4 overflow-x-auto rounded-lg border border-border">
-                <table className="w-full text-left text-sm sm:text-base">
-                  <caption className="sr-only">Sample closing costs for purchases using a new trust, September 2026</caption>
-                  <thead className="bg-blue-50 text-blue-950"><tr><th scope="col" className="p-3">Purchase price</th><th scope="col" className="p-3">Estimated closing costs</th><th scope="col" className="p-3">Share of price</th></tr></thead>
-                  <tbody><tr className="border-t"><th scope="row" className="p-3 font-semibold">$300,000</th><td className="p-3">$19,534</td><td className="p-3">6.51%</td></tr><tr className="border-t"><th scope="row" className="p-3 font-semibold">$750,000</th><td className="p-3">$39,339</td><td className="p-3">5.25%</td></tr><tr className="border-t"><th scope="row" className="p-3 font-semibold">$1,500,000</th><td className="p-3">$73,169</td><td className="p-3">4.88%</td></tr></tbody>
-                </table>
+              <p className="mt-4 font-semibold text-blue-950">Click a purchase price below to see the full breakdown. You can open more than one to compare.</p>
+              <div className="mt-4 space-y-3">
+                {[
+                  { price: '$300,000', total: '$19,534', share: '6.51%', appraisal: '$360', certificates: '$543', tax: '$9,300', registry: '$1,320', taxes: '$10,620', notary: ['$2,500', '$2,900'], closing: ['$2,000', '$2,320'], expenses: ['$350', '$406'], services: ['$4,850', '$5,626'], advance: '$6,014' },
+                  { price: '$750,000', total: '$39,339', share: '5.25%', appraisal: '$900', certificates: '$1,083', tax: '$23,250', registry: '$3,300', taxes: '$26,550', notary: ['$4,875', '$5,655'], closing: ['$2,500', '$2,900'], expenses: ['$350', '$406'], services: ['$7,725', '$8,961'], advance: '$7,134' },
+                  { price: '$1,500,000', total: '$73,169', share: '4.88%', appraisal: '$1,800', certificates: '$1,983', tax: '$46,500', registry: '$6,600', taxes: '$53,100', notary: ['$9,275', '$10,759'], closing: ['$3,500', '$4,060'], expenses: ['$450', '$522'], services: ['$13,225', '$15,341'], advance: '$9,310' },
+                ].map(estimate => (
+                  <details key={estimate.price} className="group rounded-lg border-2 border-blue-200 bg-white">
+                    <summary className="cursor-pointer rounded-lg bg-blue-50 p-4 text-blue-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-900">
+                      <span className="font-bold text-lg">{estimate.price} purchase</span>
+                      <span className="block mt-1">Estimated closing costs: <strong>{estimate.total}</strong> · {estimate.share} of price</span>
+                      <span className="block mt-2 font-semibold underline group-open:hidden">View full breakdown</span>
+                      <span className="hidden mt-2 font-semibold underline group-open:block">Close breakdown</span>
+                    </summary>
+                    <div className="p-4 sm:p-5 text-slate-700">
+                      <p className="text-sm">Good faith estimate · New trust · September 21, 2026 · All amounts in USD</p>
+                      {[
+                        { title: 'Bank fees', rows: [['New trust permit (SRE)', '$1,585'], ['Acceptance by trustee bank', '$580'], ["First year’s management fee", '$580']], total: '$2,745' },
+                        { title: 'Certificates and appraisal', rows: [['Certificate of no liens', '$43'], ['Manifestation', '$10'], ['Certificate of no property-tax debt', '$100'], ['Certificate of no water debt', '$30'], ['Government appraisal', estimate.appraisal]], total: estimate.certificates },
+                        { title: 'Taxes and public registration', rows: [['Acquisition tax (ISABI), as quoted', estimate.tax], ['Public Registry fee', estimate.registry]], total: estimate.taxes },
+                      ].map(section => (
+                        <section key={section.title} className="mt-5">
+                          <h4 className="font-bold text-blue-950">{section.title}</h4>
+                          <dl className="mt-2 divide-y divide-slate-100">{section.rows.map(([label, amount]) => <div key={label} className="flex justify-between gap-4 py-2"><dt>{label}</dt><dd className="shrink-0 tabular-nums">{amount}</dd></div>)}<div className="flex justify-between gap-4 py-2 font-bold"><dt>Subtotal</dt><dd>{section.total}</dd></div></dl>
+                        </section>
+                      ))}
+                      <h4 className="mt-5 font-bold text-blue-950">Service fees and 16% IVA</h4>
+                      <div className="mt-2 overflow-x-auto"><table className="w-full text-left text-sm sm:text-base"><caption className="sr-only">Service fees for a {estimate.price} purchase</caption><thead><tr className="border-b"><th scope="col" className="py-2 pr-3">Service</th><th scope="col" className="p-2 text-right">Before IVA</th><th scope="col" className="py-2 pl-3 text-right">With IVA</th></tr></thead><tbody>{[['Notary public', ...estimate.notary], ['Promissory agreement & closing service', ...estimate.closing], ['Expenses', ...estimate.expenses], ['Service subtotal', ...estimate.services]].map(([label, base, amount]) => <tr key={label} className="border-b last:font-bold"><th scope="row" className="py-2 pr-3 font-inherit">{label}</th><td className="p-2 text-right whitespace-nowrap">{base}</td><td className="py-2 pl-3 text-right whitespace-nowrap">{amount}</td></tr>)}</tbody></table></div>
+                      <p className="mt-5 flex justify-between gap-4 rounded-lg bg-blue-50 p-3 font-bold text-blue-950"><span>Total estimated closing costs</span><span className="shrink-0">{estimate.total}</span></p>
+                      <p className="mt-3"><strong>Advance payment shown on estimate:</strong> {estimate.advance}. This is shown separately and has not been added to the total above. Confirm payment timing and how the advance is credited with your closing provider.</p>
+                      <p className="mt-3 text-sm leading-relaxed">Transcribed from Loyalty Consulting’s estimate, prepared by Lic. Jose Eduardo Garibay Perez. Amounts are estimates subject to change, including exchange-rate changes; the provider states that final amounts are supplied after registration. Some payment receipts may be issued in the seller’s name while the property remains registered to the seller. This sample is for information only and does not authorize payments or engage a closing provider.</p>
+                    </div>
+                  </details>
+                ))}
               </div>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">Illustrative estimates, not fixed quotes. Totals reproduce the preparer’s figures; the acquisition-tax amounts in these samples equal 3.1% of the stated prices, so that calculation needs clarification in your individual quote. Costs depend on the taxable value, exchange rate, trust arrangement and services required. Confirm whether escrow, inspections, title insurance or financing costs apply and are included.</p>
               <p className="mt-4 text-muted-foreground leading-relaxed">Some charges are fixed or do not rise in direct proportion to the price, which can make closing costs a smaller percentage on a higher-priced purchase. Ask us for a written, itemized estimate for the property you are considering.</p>
