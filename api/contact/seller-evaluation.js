@@ -144,21 +144,17 @@ export default async function handler(req, res) {
           
           <div class="section">
             <h2>🏠 Property Details</h2>
-            <div class="info-row"><div class="info-label">Address:</div><div class="info-value">${propertyAddress}</div></div>
-            <div class="info-row"><div class="info-label">City:</div><div class="info-value">${propertyCity || 'Not provided'}</div></div>
-            <div class="info-row"><div class="info-label">State:</div><div class="info-value">${propertyState || 'Not provided'}</div></div>
-            <div class="info-row"><div class="info-label">Zip Code:</div><div class="info-value">${propertyZip || 'Not provided'}</div></div>
+            <div class="info-row"><div class="info-label">Location:</div><div class="info-value">${propertyAddress}</div></div>
             <div class="info-row"><div class="info-label">Property Type:</div><div class="info-value">${propertyType || 'Not specified'}</div></div>
             <div class="info-row"><div class="info-label">Bedrooms:</div><div class="info-value">${bedrooms || 'Not specified'}</div></div>
             <div class="info-row"><div class="info-label">Bathrooms:</div><div class="info-value">${bathrooms || 'Not specified'}</div></div>
-            <div class="info-row"><div class="info-label">Square Footage:</div><div class="info-value">${squareFootage || 'Not specified'}</div></div>
-            <div class="info-row"><div class="info-label">Lot Size:</div><div class="info-value">${lotSize || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Estimated home / building size:</div><div class="info-value">${squareFootage || 'Not specified'}</div></div>
+            <div class="info-row"><div class="info-label">Estimated lot size:</div><div class="info-value">${lotSize || 'Not specified'}</div></div>
             <div class="info-row"><div class="info-label">Year Built:</div><div class="info-value">${yearBuilt || 'Not specified'}</div></div>
           </div>
           
           <div class="section">
             <h2>💼 Selling Information</h2>
-            <div class="info-row"><div class="info-label">Currently Occupied:</div><div class="info-value">${currentlyOccupied || 'Not specified'}</div></div>
             <div class="info-row"><div class="info-label">Desired Timeframe:</div><div class="info-value">${desiredTimeframe || 'Not specified'}</div></div>
             <div class="info-row"><div class="info-label">Expected Price:</div><div class="info-value">${expectedPrice || 'Not specified'}</div></div>
             <div class="info-row"><div class="info-label">Reason for Selling:</div><div class="info-value">${reasonForSelling || 'Not provided'}</div></div>
@@ -166,7 +162,7 @@ export default async function handler(req, res) {
           
           ${recentUpgrades ? `
           <div class="section">
-            <h2>🔧 Recent Upgrades/Renovations</h2>
+            <h2>🔧 Recent Upgrades, Renovations or Other Information</h2>
             <p style="white-space: pre-wrap;">${recentUpgrades}</p>
           </div>
           ` : ''}
