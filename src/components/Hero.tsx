@@ -1,231 +1,33 @@
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { TextPlugin } from "gsap/TextPlugin";
+import { ArrowRight, BookOpen, Home, MapPin, Search } from "lucide-react";
 
-gsap.registerPlugin(ScrollTrigger, TextPlugin);
-
-const Hero = () => {
-  const heroRef = useRef(null);
-  const contentRef = useRef(null);
-  const videoRef = useRef(null);
-  const video2Ref = useRef(null);
-  const headingRef = useRef(null);
-  const subtitleRef = useRef(null);
-
-
-  useEffect(() => {
-    const video1 = videoRef.current;
-    const video2 = video2Ref.current;
-
-    // Crossfade logic for seamless looping
-    const handleTimeUpdate = () => {
-      const timeLeft = video1.duration - video1.currentTime;
-      
-      // Start crossfade 1 second before video ends
-      if (timeLeft < 1 && timeLeft > 0) {
-        const opacity = 1 - timeLeft;
-        video2.style.opacity = opacity;
-        
-        // Start video2 if not playing
-        if (video2.paused) {
-          video2.currentTime = 0;
-          video2.play();
-        }
-      }
-    };
-
-    const handleVideo1Ended = () => {
-      video1.currentTime = 0;
-      video1.play();
-      video2.style.opacity = 0;
-    };
-
-    if (video1 && video2) {
-      video1.addEventListener('timeupdate', handleTimeUpdate);
-      video1.addEventListener('ended', handleVideo1Ended);
-    }
-
-    const ctx = gsap.context(() => {
-      // Parallax effect on video container
-      gsap.to(heroRef.current.querySelector('.video-container'), {
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
-        scale: 1.2,
-        ease: "none",
-      });
-
-      // Fade out content as you scroll down
-      gsap.to(contentRef.current, {
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
-        opacity: 0,
-        y: -100,
-        ease: "none",
-      });
-
-      // Dimmer effect - text starts dim and brightens up letter by letter
-      const headingLetters = headingRef.current.querySelectorAll('.letter');
-      gsap.from(headingLetters, {
-        opacity: 0.2,
-        filter: "brightness(0.3)",
-        stagger: 0.04,
-        duration: 0.8,
-        ease: "power2.out",
-        delay: 0.3,
-      });
-
-      // Subtitle dimmer effect
-      gsap.from(subtitleRef.current, {
-        opacity: 0.2,
-        filter: "brightness(0.3)",
-        duration: 1.2,
-        ease: "power2.out",
-        delay: 0.5,
-      });
-
-      // Subtle continuous floating animation on heading
-      gsap.to(headingRef.current, {
-        y: -10,
-        duration: 3,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-        delay: 1.8,
-      });
-
-      // Glowing text effect (subtle pulse)
-      gsap.to(headingRef.current, {
-        textShadow: "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4)",
-        duration: 2,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-        delay: 2.5,
-      });
-
-    }, heroRef);
-
-    return () => {
-      ctx.revert();
-      if (video1) {
-        video1.removeEventListener('timeupdate', handleTimeUpdate);
-        video1.removeEventListener('ended', handleVideo1Ended);
-      }
-    };
-  }, []);
-
-  // Split text into individual letters for animation
-  const splitText = (text) => {
-    return text.split('').map((char, index) => (
-      <span key={index} className="letter inline-block" style={{ display: 'inline-block' }}>
-        {char === ' ' ? '\u00A0' : char}
-      </span>
-    ));
-  };
-
-  return (
-    <section 
-      ref={heroRef}
-      className="relative h-screen flex items-center justify-center overflow-hidden"
-    >
-      {/* Background Video with Crossfade - OPTIMIZED */}
-      <div className="absolute inset-0 z-0">
-        <div className="video-container absolute inset-0 w-full h-full">
-          {/* Primary video - OPTIMIZED: preload="metadata" loads faster */}
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/BIR.mp4" type="video/mp4" />
-          </video>
-          {/* Secondary video for crossfade - OPTIMIZED: preload="none" saves bandwidth */}
-          <video
-            ref={video2Ref}
-            muted
-            playsInline
-            preload="none"
-            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-            style={{ opacity: 0 }}
-          >
-            <source src="/BIR.mp4" type="video/mp4" />
-          </video>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
-      </div>
-
-      {/* Content */}
-      <div 
-        ref={contentRef}
-        className="relative z-10 container mx-auto px-4 sm:px-6 text-center"
-      >
-        <h1 
-          ref={headingRef}
-          aria-label="Baja International Realty"
-          className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight mt-16 md:mt-24 px-2"
-        >
-          {['BAJA', 'INTERNATIONAL', 'REALTY'].map((word, index) => (
-            <span key={word} className="block whitespace-nowrap sm:inline-block">
-              {index > 0 && <span className="hidden sm:inline">{'\u00A0'}</span>}
-              {splitText(word)}
-            </span>
-          ))}
-        </h1>
-        <p 
-          ref={subtitleRef}
-          className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-12 max-w-4xl mx-auto px-4"
-        >
-          Discover Your Dream Property in Cabo San Lucas & Baja California Sur
-        </p>
-
-        {/* Call to Action Button */}
-        <div className="flex justify-center items-center px-4">
-          <Button
-            asChild
-            size="lg"
-            className="h-12 sm:h-14 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-8 sm:px-12 rounded-lg transition-all duration-300 shadow-2xl hover:shadow-blue-900/50 text-base sm:text-lg"
-          >
-            <a href="/property-search.html"><Search className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />Search Cabo MLS</a>
-          </Button>
-        </div>
-
-        <p className="mt-4 text-white text-sm sm:text-base">No signup required. Save favorites and compare properties at your own pace.</p>
-
-        {/* Key Features */}
-        <div className="mt-10 md:mt-16 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto px-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-5 md:p-6 border border-white/20">
-            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">1850+</div>
-            <div className="text-white/90 text-xs sm:text-sm md:text-base">Properties Sold</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-5 md:p-6 border border-white/20">
-            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">$800M+</div>
-            <div className="text-white/90 text-xs sm:text-sm md:text-base">In Sales</div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <svg className="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </div>
-      </div>
-    </section>
-  );
-};
+const Hero = () => (
+  <section className="relative overflow-hidden bg-slate-950 pt-28 pb-10 sm:pt-36 sm:pb-16">
+    <video autoPlay muted loop playsInline preload="metadata" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover motion-reduce:hidden">
+      <source src="/BIR.mp4" type="video/mp4" />
+    </video>
+    <div className="absolute inset-0 bg-slate-950/70" />
+    <div className="relative container mx-auto px-4 sm:px-6 max-w-6xl">
+      <p className="text-white/90 font-semibold tracking-wide text-sm sm:text-base mb-3">Baja International Realty · Local experience since 1987</p>
+      <h1 className="text-white text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight max-w-3xl">Find your place in Cabo.</h1>
+      <p className="text-white/90 text-lg sm:text-xl mt-4 max-w-2xl">Search freely. Understand your options. Get local help when you’re ready.</p>
+      <nav aria-label="What would you like to do?" className="mt-7 sm:mt-9 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <a href="/property-search.html" className="sm:col-span-3 flex items-center justify-between gap-4 rounded-xl bg-white p-5 sm:p-7 text-blue-950 shadow-lg hover:bg-blue-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
+          <span className="flex items-center gap-4"><Search className="h-8 w-8 shrink-0" aria-hidden="true" /><span><span className="block text-2xl sm:text-3xl font-bold">Search Properties</span><span className="block mt-1 text-base sm:text-lg">Cabo MLS search · No signup required</span></span></span>
+          <ArrowRight className="h-7 w-7 shrink-0" aria-hidden="true" />
+        </a>
+        {[
+          { href: '#buying-in-cabo', title: 'Understanding Buying', note: 'Ownership, steps and costs', Icon: BookOpen },
+          { href: '#selling-in-cabo', title: 'Understanding Selling', note: 'Pricing, preparation and closing', Icon: Home },
+          { href: '#cabo-communities', title: 'Explore Cabo Communities', note: 'Find a location that fits your life', Icon: MapPin },
+        ].map(({ href, title, note, Icon }) => (
+          <a key={href} href={href} className="flex items-center gap-3 rounded-xl border border-white/60 bg-slate-950/70 p-4 sm:p-5 text-white hover:bg-blue-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
+            <Icon className="h-6 w-6 shrink-0" aria-hidden="true" /><span><span className="block text-lg sm:text-xl font-bold leading-snug">{title}</span><span className="block mt-1 text-sm text-white/90">{note}</span></span>
+          </a>
+        ))}
+      </nav>
+      <p className="mt-5 text-white text-base">Save favorites and compare properties at your own pace. No account needed to search.</p>
+    </div>
+  </section>
+);
 
 export default Hero;
