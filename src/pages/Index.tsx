@@ -27,15 +27,15 @@ const Index = () => {
       setLoading(true);
       try {
         // ⭐ CACHE IMPLEMENTATION - Check cache first for faster loading
-        const cacheKey = 'homepage-featured-v1';
+        const cacheKey = 'homepage-featured-v2';
         const cacheTimeKey = `${cacheKey}-time`;
         const cached = localStorage.getItem(cacheKey);
         const cachedTime = localStorage.getItem(cacheTimeKey);
         
         const now = Date.now();
-        const twentyFourHours = 24 * 60 * 60 * 1000; // Extended cache for better performance
+        const cacheLifetime = 2 * 60 * 1000; // Recheck current featured listings after two minutes.
         
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < twentyFourHours) {
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < cacheLifetime) {
           console.log('✅ Using cached featured properties');
           const cachedData = JSON.parse(cached);
           setFeaturedProperties(cachedData);
@@ -117,7 +117,7 @@ const Index = () => {
         <title>Cabo San Lucas Real Estate | Luxury Homes & Condos for Sale | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Browse 4,500+ luxury properties in Cabo San Lucas & Los Cabos. Oceanfront villas, beachfront condos, investment properties. Expert team since 1987. MLS member." 
+          content="Explore Cabo San Lucas and Los Cabos real estate. Search public MLS listings without signup, save favorites, compare properties, and get local help when ready." 
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
@@ -134,13 +134,13 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <p className="text-accent uppercase tracking-wider mb-2 font-medium">
-              Handpicked Selection
+              Explore the Market
             </p>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Featured Properties
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore our curated collection of the finest luxury oceanfront properties available
+              A selection of MLS listings across Baja California Sur. Use our Cabo MLS search to find the location and property that suit you.
             </p>
           </div>
 
@@ -151,7 +151,7 @@ const Index = () => {
             </div>
           ) : featuredProperties.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4">No properties available at the moment.</p>
+              <p className="text-muted-foreground mb-4">Featured properties could not be loaded. You can still open the full MLS search.</p>
               <Link to="/search">
                 <Button variant="outline">View All Properties</Button>
               </Link>
