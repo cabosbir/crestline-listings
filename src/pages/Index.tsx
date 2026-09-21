@@ -55,9 +55,11 @@ const communityGuides = [
     id: 'pacific-south', title: 'Cabo San Lucas — Pacific Side', subtitle: 'Pedregal to Rolling Hills · Pacific living with Cabo close by',
     intro: 'From Pedregal to Rolling Hills, Cabo’s Pacific side offers an ocean-facing lifestyle with convenient access to Cabo San Lucas shopping, medical care, restaurants and everyday services. Based on our decades of experience living here, we group this stretch together because of how people use and enjoy it—not because it follows one MLS boundary. The particular neighborhood, access road and distance into town still make a difference.',
     searchSteps: [
-      'Open the MLS search and click Clear location so earlier choices do not hide the places you want. Your price and other preferences stay selected.',
-      'For Pedregal, choose Pedregal CSL in Community. For Rolling Hills, choose Rolling Hills directly in Subdivision; you do not need to select a zone or area first.',
-      'Explore other neighborhoods between those landmarks on the map, or choose a known community or subdivision by name. Clear location before switching to another part of the coast. One MLS area will not necessarily cover this whole guide.',
+      'Cabo’s Pacific side is spread across several MLS search categories, which can make it harder to find everything in one search. Try the three routes below separately, clicking Clear location before switching routes. Your price and other preferences stay selected.',
+      'For Pedregal: Zone → Cabo San Lucas; Area → CSL-Beach & Marina; Community → Pedregal CSL.',
+      'For the Sunset Beach road area: Zone → Cabo San Lucas; Area → CSL-Centro; Community → Saddles/Sunset Bch Rd. Use the map to focus on listings closest to the Pacific coast within this community.',
+      'For the Pacific coast beyond town: Zone → Pacific; Area → Pacific South. This MLS area extends farther than our Cabo Pacific Side guide. Use the map to explore properties closest to Cabo, or choose a Community to focus on a specific location.',
+      'Already know the subdivision? You can choose it directly. For example, clear the location and select Rolling Hills in Subdivision without choosing a zone or area first.',
     ],
     paragraphs: [
       'When comparing Pacific-side Cabo real estate, look at the particular community and the property’s position within it. Elevation, the approach road and surrounding development can change the experience substantially. Compare time spent driving into Cabo with the setting you gain at home, and visit the route rather than relying on a quoted number of minutes.',
