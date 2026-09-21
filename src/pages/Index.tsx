@@ -72,6 +72,19 @@ const communityGuides = [
       'Check the property’s road, water supply, power and internet individually, and consider the driving involved in your normal routine. Todos Santos and El Pescadero are in La Paz municipality; that does not mean living in La Paz city. Our guide uses The Palm as a recognizable starting landmark, not a surveyed municipal boundary. Confirm the jurisdiction and services for the particular property during your review.',
     ],
   },
+  {
+    id: 'la-paz', title: 'La Paz', subtitle: 'Bayfront living, the malecón and a city to call home',
+    intro: 'La Paz offers another way to enjoy Baja California Sur: life around a broad bay, a waterfront malecón and an established city. The promenade is a natural gathering place for walks and time outdoors, while the Sea of Cortez adds opportunities for boating, snorkeling and exploring. For buyers, the appeal is combining a coastal setting with the routines of everyday city life.',
+    paragraphs: [
+      'When comparing La Paz homes and condos for sale, begin with the setting you want. Living near the malecón and downtown is different from choosing a residential neighborhood farther from the waterfront or a property around the wider bay. Consider access to shopping, medical appointments and the places you will visit regularly, along with parking, noise and how much you expect to drive.',
+      'Separate a bay view from beach access when looking at listings. Popular beaches such as Balandra and El Tecolote are outings beyond the downtown waterfront, so check the actual route from each property. Visit at different times of day, review water and internet arrangements, and ask what condominium or community fees include. This guide focuses on La Paz city and its surroundings; the much larger municipality also includes places far from the city, including Todos Santos.',
+    ],
+    searchSteps: [
+      'Open the MLS search, click Clear location, then select La Paz in Zone.',
+      'For properties in the city, choose La Paz City in Area. Leave Area at Any if you want to explore the wider La Paz zone, then narrow by Community or Subdivision.',
+      'Check each listing on the map to confirm its position relative to the city and bay. The La Paz zone covers more than the city itself.',
+    ],
+  },
 ];
 
 const Index = () => {
@@ -237,8 +250,8 @@ const Index = () => {
       <section id="cabo-communities" className="scroll-mt-24 py-14 sm:py-20 bg-background">
         <div className="container mx-auto px-4 max-w-6xl">
             <p className="text-blue-900 font-semibold mb-2">Explore Our Communities</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Find your community in Los Cabos, the East Cape or the Pacific coast</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Where should you buy in Cabo? Start with the way you want to live. Explore these six areas, from the two towns and the Tourist Corridor to the East Cape and Pacific coast. Each guide introduces the setting and the practical details worth comparing before choosing a home, condo or lot.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Explore communities in Los Cabos, La Paz and beyond</h2>
+            <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Where should you buy in Baja California Sur? Start with the way you want to live. Explore these seven areas, from Cabo San Lucas and San José del Cabo to the Tourist Corridor, East Cape, Pacific coast and La Paz. Each guide introduces the setting and the practical details worth comparing before choosing a home, condo or lot.</p>
             <p className="mt-5 rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 leading-relaxed">Based on our decades of experience living here, these guides group places by lifestyle and location. Names in the MLS search filters may differ. The two Pacific guides below include tips to help you find the right properties.</p>
             <div className="grid md:grid-cols-2 gap-5 my-8 items-start">
               {communityGuides.map(community => (
