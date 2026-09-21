@@ -19,7 +19,7 @@ const Navbar = () => {
   ];
 
   const propertyLinks = [
-    { name: "View All Properties", href: "/search" },
+    { name: "Cabo MLS Search", href: "/property-search.html" },
     { name: "Pacifico Heights", href: "/pacifico-heights" },
     { name: "Cabo Homes", href: "https://cabo-homes.com/" },
     { name: "Cabo Condos", href: "https://cabo-condos.com/" },
@@ -54,10 +54,10 @@ const Navbar = () => {
               <DropdownMenuContent align="start" className="w-56">
                 {propertyLinks.map((link) => (
                   <DropdownMenuItem key={link.name} asChild>
-                    {link.href.startsWith("http") ? (
+                    {(link.href.startsWith("http") || link.href.endsWith(".html")) ? (
                       <a
                         href={link.href}
-                        target="_blank"
+                        target={link.href.startsWith("http") ? "_blank" : undefined}
                         rel="noopener noreferrer"
                         className="cursor-pointer w-full font-heading"
                       >
@@ -167,11 +167,11 @@ const Navbar = () => {
                 <div className="text-foreground font-heading text-lg mb-2">Properties</div>
                 <div className="flex flex-col space-y-2 pl-4">
                   {propertyLinks.map((link) => (
-                    link.href.startsWith("http") ? (
+                    (link.href.startsWith("http") || link.href.endsWith(".html")) ? (
                       <a
                         key={link.name}
                         href={link.href}
-                        target="_blank"
+                        target={link.href.startsWith("http") ? "_blank" : undefined}
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-accent transition-fast font-heading"
                         onClick={() => setIsOpen(false)}
