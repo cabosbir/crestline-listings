@@ -302,7 +302,8 @@ const Index = () => {
           <div className="space-y-3 mt-8">
             <details open className="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6">
               <summary className="cursor-pointer text-xl font-bold text-blue-950">Can Americans or Canadians buy property in Mexico?</summary>
-              <p className="mt-4 leading-relaxed text-slate-700">Yes. Foreign buyers can purchase residential property in Cabo through a Mexican bank trust called a fideicomiso. Because Cabo is in Mexico’s coastal restricted zone, this differs from holding direct title: the bank acts as trustee and the buyer is the beneficiary. Confirm the appropriate arrangement for the specific property before buying.</p>
+              <p className="mt-4 leading-relaxed text-slate-700">Yes. Americans and Canadians have successfully purchased Mexican properties through a Mexican bank trust called a fideicomiso for decades, including since the late 1980s. Because Cabo is in Mexico’s coastal restricted zone, this differs from holding direct title: the bank acts as trustee and the buyer is the beneficiary. Confirm the appropriate arrangement for the specific property before buying.</p>
+              <p className="mt-4 leading-relaxed text-slate-700">Another milestone came in January 2002, when Stewart opened its Mexican subsidiary, Stewart Title Guaranty de México. It was the first Mexican title insurance underwriter licensed by Mexico’s Comisión Nacional de Seguros y Fianzas (CNSF) to issue title insurance policies in Mexico.</p>
               <a className="inline-block mt-4 text-blue-900 underline font-semibold" href="https://www.caborealestatepros.com/fideicomiso-basics-for-foreign-ownership-los-cabos-real-property.html" target="_blank" rel="noopener noreferrer">Read about foreign ownership on Pros (opens a new tab)</a>
             </details>
             <details className="rounded-xl border border-border p-5 sm:p-6">
