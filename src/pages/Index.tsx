@@ -96,6 +96,79 @@ const communityGuides = [
   },
 ];
 
+const communityWeather: Record<string, { seasons: [string, string][]; living: string; source: string; sourceName: string }> = {
+  'cabo-san-lucas': {
+    seasons: [
+      ['Winter · December–February', 'Generally mild days and cooler evenings; bring a light layer for dinner outdoors.'],
+      ['Spring · March–May', 'Mostly dry, with increasing daytime warmth. An exposed terrace can feel quite different from a sheltered street.'],
+      ['Summer · June–August', 'Hotter days and warmer nights, with humidity increasing into late summer.'],
+      ['Fall · September–November', 'September can remain hot and humid, with rain or tropical storms; conditions usually become more comfortable later in fall.'],
+    ],
+    living: 'At Land’s End, exposure matters. Compare the marina and bay setting with a Pacific-facing hillside rather than treating all of Cabo as one microclimate. Visit the outdoor spaces at the times you expect to use them.',
+    source: 'https://www.visitloscabos.travel/plan/useful-information/weather/', sourceName: 'Los Cabos seasonal weather',
+  },
+  'san-jose-del-cabo': {
+    seasons: [
+      ['Winter · December–February', 'Mild afternoons and cooler nights suit time outdoors.'],
+      ['Spring · March–May', 'Dry weather and rising temperatures make shade increasingly welcome.'],
+      ['Summer · June–August', 'Expect heat and increasing humidity; check how well bedrooms cool overnight.'],
+      ['Fall · September–November', 'Early fall retains summer heat and storm potential, followed by gradually cooler, drier weather.'],
+    ],
+    living: 'A downtown courtyard, an inland home and an open coastal balcony offer different exposure to sun and moving air. Compare the exact setting, not just a forecast for San José or its airport. Trees, shade and ventilation can change how comfortable a home feels.',
+    source: 'https://www.visitloscabos.travel/plan/useful-information/', sourceName: 'Los Cabos climate overview',
+  },
+  'los-cabos-corridor': {
+    seasons: [
+      ['Winter · December–February', 'Mild days, with cooler evenings on open terraces.'],
+      ['Spring · March–May', 'Generally dry and warming; compare sheltered patios with exposed viewpoints.'],
+      ['Summer · June–August', 'Hotter and increasingly humid. Ocean views do not remove the need for shade and cooling.'],
+      ['Fall · September–November', 'Summer warmth can linger through early fall, with rain and tropical-storm potential before the seasonal cooldown.'],
+    ],
+    living: 'The Corridor is a long coastal stretch, not one uniform climate. Hills, coves and building orientation affect wind and sun exposure. Check morning and afternoon conditions at the property; a breezy balcony and a sheltered pool area may feel different within the same development.',
+    source: 'https://www.visitloscabos.travel/plan/useful-information/weather/', sourceName: 'Los Cabos seasonal weather',
+  },
+  'east-cape': {
+    seasons: [
+      ['Winter · December–February', 'Milder temperatures, but northerly winds can be a major part of coastal life. Around Los Barriles, the wind-sports season extends through March.'],
+      ['Spring · March–May', 'Temperatures rise as winter gives way to summer; windy days can still affect beach and boating plans.'],
+      ['Summer · June–August', 'Hot days and warm coastal water; humidity builds later in summer. Plan outdoor errands for cooler hours.'],
+      ['Fall · September–November', 'Early fall can be hot and humid with storm-related rain. Later fall brings cooler conditions and the return of the winter wind pattern.'],
+    ],
+    living: 'The southern East Cape and the coast farther north do not share identical wind exposure. A sheltered site may feel very different from an open beach. Ask about the property’s seasonal breezes and how access roads handle heavy rain.',
+    source: 'https://www.visitloscabos.travel/places-to-visit/surroundings/los-barriles/', sourceName: 'East Cape winter winds',
+  },
+  'pacific-south': {
+    seasons: [
+      ['Winter · December–February', 'Ocean-exposed properties can feel cool and breezy, especially after sunset.'],
+      ['Spring · March–May', 'Pacific influence can soften the heat; a protected patio and an open hillside can feel noticeably different.'],
+      ['Summer · June–August', 'Coastal airflow may provide relief, but summer still brings heat and increasing humidity.'],
+      ['Fall · September–November', 'Late-summer warmth and storm-related rain can continue into early fall; evenings generally cool as winter approaches.'],
+    ],
+    living: 'From Pedregal to Rolling Hills, the direction a home faces and its shelter from ocean winds matter. Do not assume every Pacific-side property is equally cool. Compare wind protection, afternoon sun and comfortable outdoor seating at the individual home.',
+    source: 'https://www.visitloscabos.travel/plan/useful-information/', sourceName: 'Regional climate background',
+  },
+  'pacific-north': {
+    seasons: [
+      ['Winter · December–February', 'Generally mild days with cool nights; ocean exposure can make evenings feel chilly.'],
+      ['Spring · March–May', 'The Pacific moderates temperatures along this coast. Open sites may feel breezier than sheltered locations farther inland.'],
+      ['Summer · June–August', 'Ocean moderation remains important, but heat and humidity still increase toward late summer.'],
+      ['Fall · September–November', 'Late summer and early fall bring much of the region’s storm-related rainfall, followed by a gradual return to cooler conditions.'],
+    ],
+    living: 'The Palm, Migrino, Elías Calles, Pescadero, Cerritos and Todos Santos are not interchangeable microclimates. The Pacific’s moderating influence is documented around Todos Santos and El Pescadero; how much a particular home benefits depends on exposure and distance inland. Visit in more than one season if possible.',
+    source: 'https://todossantos.csusystem.edu/wp-content/uploads/sites/11/2025/11/community-needs-assessment-2020-ACS.pdf', sourceName: 'Todos Santos & El Pescadero climate study (PDF)',
+  },
+  'la-paz': {
+    seasons: [
+      ['Winter · December–February', 'Generally dry, comfortable days and noticeably cooler nights. Breezy waterfront evenings may call for a jacket.'],
+      ['Spring · March–May', 'Usually very dry, with daytime heat building substantially toward May.'],
+      ['Summer · June–August', 'A long, very hot season with warm nights and rising humidity. Shade and effective air conditioning matter for everyday comfort.'],
+      ['Fall · September–November', 'September remains hot and humid and is a wetter part of the year. Heat and humidity generally ease through October and November.'],
+    ],
+    living: 'La Paz city has a different seasonal feel from the Pacific coast near Todos Santos, even though both are in the same municipality. Check airflow, west-facing windows and afternoon shade at each property rather than relying on the municipality’s name.',
+    source: 'https://weatherspark.com/y/2800/Average-Weather-in-La-Paz-Mexico-Year-Round', sourceName: 'La Paz seasonal climate',
+  },
+};
+
 const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -271,6 +344,14 @@ const Index = () => {
                   <details className="mt-4 group">
                     <summary className="cursor-pointer text-blue-900 font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-900"><span className="group-open:hidden">Read more about {community.title}</span><span className="hidden group-open:inline">Show less about {community.title}</span></summary>
                     {community.paragraphs.map(paragraph => <p key={paragraph} className="mt-4 text-slate-700 leading-relaxed">{paragraph}</p>)}
+                    <section aria-label={`Weather and seasons in ${community.title}`} className="mt-6 rounded-lg border border-amber-200 bg-amber-50/60 p-4 sm:p-5">
+                      <h4 className="text-xl font-bold text-slate-900">Weather &amp; seasons</h4>
+                      <dl className="mt-4 space-y-4">
+                        {communityWeather[community.id].seasons.map(([season, description]) => <div key={season}><dt className="font-bold text-slate-900">{season}</dt><dd className="mt-1 text-slate-700 leading-relaxed">{description}</dd></div>)}
+                      </dl>
+                      <p className="mt-4 text-slate-700 leading-relaxed"><strong>What this means for living here:</strong> {communityWeather[community.id].living}</p>
+                      <p className="mt-4 text-sm text-slate-600 leading-relaxed">Typical seasonal patterns, not a forecast. Neighborhood exposure, elevation and the individual home can change how the weather feels. <a href={communityWeather[community.id].source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{communityWeather[community.id].sourceName} (opens a new tab)</a>.</p>
+                    </section>
                     {community.searchSteps && <div className="mt-5 rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-5">
                       <h4 className="text-lg font-bold text-blue-950">How to search for properties in this area</h4>
                       <ol className="mt-3 list-decimal pl-5 space-y-3 text-slate-700 leading-relaxed">{community.searchSteps.map(step => <li key={step}>{step}</li>)}</ol>
