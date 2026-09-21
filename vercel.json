@@ -39,5 +39,22 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/search",
+      "destination": "/property-search.html",
+      "permanent": true
+    },
+    {
+      "source": "/erika-aispuro",
+      "destination": "/erika",
+      "permanent": true
+    },
+    {
+      "source": "/fernando",
+      "destination": "/fernando-cabrera",
+      "permanent": true
+    }
   ]
 }
