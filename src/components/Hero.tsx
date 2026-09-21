@@ -18,7 +18,7 @@ const Hero = () => (
         {[
           { href: '#buying-in-cabo', title: 'Understanding Buying', note: 'Ownership, steps and costs', Icon: BookOpen },
           { href: '#selling-in-cabo', title: 'Understanding Selling', note: 'Pricing, preparation and closing', Icon: Home },
-          { href: '#cabo-communities', title: 'Explore Our Communities', note: 'Los Cabos, East Cape & the Pacific coast', Icon: MapPin },
+          { href: '#cabo-communities', title: 'Explore Our Communities', note: 'Los Cabos, La Paz & beyond', Icon: MapPin },
         ].map(({ href, title, note, Icon }) => (
           <a key={href} href={href} className="flex items-center gap-3 rounded-xl border border-white/60 bg-slate-950/70 p-4 sm:p-5 text-white hover:bg-blue-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
             <Icon className="h-6 w-6 shrink-0" aria-hidden="true" /><span><span className="block text-lg sm:text-xl font-bold leading-snug">{title}</span><span className="block mt-1 text-sm text-white/90">{note}</span></span>
