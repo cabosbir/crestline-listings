@@ -12,7 +12,7 @@ const Hero = () => (
       <p className="text-white/90 text-lg sm:text-xl mt-4 max-w-2xl">Search freely. Understand your options. Get local help when you’re ready.</p>
       <nav aria-label="What would you like to do?" className="mt-7 sm:mt-9 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <a href="/property-search.html" className="sm:col-span-3 flex items-center justify-between gap-4 rounded-xl bg-white p-5 sm:p-7 text-blue-950 shadow-lg hover:bg-blue-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
-          <span className="flex items-center gap-4"><Search className="h-8 w-8 shrink-0" aria-hidden="true" /><span><span className="block text-2xl sm:text-3xl font-bold">Search Properties</span><span className="block mt-1 text-base sm:text-lg">Cabo MLS search · No signup required</span></span></span>
+          <span className="flex items-center gap-3 sm:gap-4 min-w-0"><Search className="hidden sm:block h-8 w-8 shrink-0" aria-hidden="true" /><span><span className="block text-2xl sm:text-3xl font-bold">Search Properties</span><span className="block mt-2 text-base sm:text-lg leading-relaxed">Search Cabo MLS. Save favorites and compare properties at your own pace—<strong>no signup required.</strong></span></span></span>
           <ArrowRight className="h-7 w-7 shrink-0" aria-hidden="true" />
         </a>
         {[
@@ -25,7 +25,6 @@ const Hero = () => (
           </a>
         ))}
       </nav>
-      <p className="mt-5 text-white text-base">Save favorites and compare properties at your own pace. No account needed to search.</p>
     </div>
   </section>
 );
