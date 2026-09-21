@@ -538,16 +538,19 @@ const SellerEvaluationForm = () => {
               <h2 className="text-xl font-bold text-gray-800 mb-4">Property Information</h2>
               
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 mb-4">
-                <p className="text-gray-700 mb-4">Choose your SUBDIVISION to tell us where your property is. Not in a subdivision? Choose COMMUNITY instead. No street address is needed.</p>
-                <Label htmlFor="location-type" className="font-semibold block mb-2">Locate your property by</Label>
-                <select id="location-type" value={formData.locationType} onChange={e=>setFormData({...formData,locationType:e.target.value,locationName:""})} className="w-full min-w-0 rounded-md border p-3 bg-white mb-4">
-                  <option value="subdivision">SUBDIVISION</option>
-                  <option value="community">COMMUNITY — not in a subdivision</option>
+                <p className="text-gray-700 mb-4">Choose your SUBDIVISION from the FLEX list below.</p>
+                <Label htmlFor="property-subdivision" className="font-semibold block mb-2">SUBDIVISION</Label>
+                <select id="property-subdivision" value={formData.locationType==='subdivision'?formData.locationName:''} required={!formData.locationName} onChange={e=>setFormData({...formData,locationType:'subdivision',locationName:e.target.value})} className="w-full min-w-0 max-w-full rounded-md border p-3 bg-white mb-5">
+                  <option value="">Choose a SUBDIVISION</option>
+                  {evaluationLocations.subdivision.map(name=><option key={name} value={name}>{name}</option>)}
                 </select>
-                <Label htmlFor="property-location" className="font-semibold block mb-2">{formData.locationType.toUpperCase()} *</Label>
-                <Input id="property-location" list="evaluation-locations" value={formData.locationName} onChange={e=>setFormData({...formData,locationName:e.target.value})} required maxLength={250} placeholder={"Type or choose a "+formData.locationType} aria-describedby="location-help" className="bg-white" />
-                <datalist id="evaluation-locations">{evaluationLocations[formData.locationType as keyof typeof evaluationLocations].map(name=><option key={name} value={name} />)}</datalist>
-                <p id="location-help" className="text-sm text-gray-600 mt-2">Start typing to find names from our FLEX listing inventory. If yours is missing, enter its name and nearby town. You can add directions or landmarks below.</p>
+                <p id="community-help" className="text-gray-700 mb-3">If your property is not in a subdivision, choose a COMMUNITY.</p>
+                <Label htmlFor="property-community" className="font-semibold block mb-2">COMMUNITY</Label>
+                <select id="property-community" value={formData.locationType==='community'?formData.locationName:''} aria-describedby="community-help" onChange={e=>setFormData({...formData,locationType:'community',locationName:e.target.value})} className="w-full min-w-0 max-w-full rounded-md border p-3 bg-white">
+                  <option value="">Choose a COMMUNITY</option>
+                  {evaluationLocations.community.map(name=><option key={name} value={name}>{name}</option>)}
+                </select>
+                <p className="text-sm text-gray-600 mt-2">Choose one location. The town and area beside each name help you find the right place.</p>
               </div>
 
               {/* Property Type */}
