@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -9,7 +8,6 @@ import { TextPlugin } from "gsap/TextPlugin";
 gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
 const Hero = () => {
-  const navigate = useNavigate();
   const heroRef = useRef(null);
   const contentRef = useRef(null);
   const videoRef = useRef(null);
@@ -17,9 +15,6 @@ const Hero = () => {
   const headingRef = useRef(null);
   const subtitleRef = useRef(null);
 
-  const handleSearchClick = () => {
-    navigate('/search');
-  };
 
   useEffect(() => {
     const video1 = videoRef.current;
@@ -200,14 +195,15 @@ const Hero = () => {
         {/* Call to Action Button */}
         <div className="flex justify-center items-center px-4">
           <Button
-            onClick={handleSearchClick}
+            asChild
             size="lg"
             className="h-12 sm:h-14 bg-blue-900 hover:bg-blue-800 text-white font-semibold px-8 sm:px-12 rounded-lg transition-all duration-300 shadow-2xl hover:shadow-blue-900/50 text-base sm:text-lg"
           >
-            <Search className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-            Search Properties
+            <a href="/property-search.html"><Search className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />Search Cabo MLS</a>
           </Button>
         </div>
+
+        <p className="mt-4 text-white text-sm sm:text-base">No signup required. Save favorites and compare properties at your own pace.</p>
 
         {/* Key Features */}
         <div className="mt-10 md:mt-16 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 max-w-2xl mx-auto px-4">
