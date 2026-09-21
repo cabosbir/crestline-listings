@@ -21,7 +21,7 @@ export function checkFormSubmission(req,kind,now=Date.now()){
   if(typeof message!=='string'||message.trim().length<3||message.length>6000)return fail(400,kind==='seller'?'Please enter the property address.':'Please enter your message (up to 6,000 characters).');
   const phone=kind==='seller'?body.sellerPhone:body.phone;
   if(phone!==undefined&&(typeof phone!=='string'||phone.length>60||/[<>\r\n]/.test(phone)))return fail(400,'Please check your phone number.');
-  if(kind==='seller'&&(!phone||!phone.trim()))return fail(400,'Please enter your phone number.');
+  if(kind==='seller'&&body.valuationPreference!==undefined&&!['preliminary','detailed'].includes(body.valuationPreference))return fail(400,'Please choose your valuation preference.');
   if(body.agentEmail){
     const allowed=new Set(['robertvanpatten2@gmail.com','erika80@gmail.com','alfonso@bircabo.com','cozbi@bajainternationalrealty.com','hector@bircabo.com','charles@bircabo.com','mtortricardi@gmail.com','david@bircabo.com','susu@bircabo.com','edgar@bircabo.com','erikagraciano@bircabo.com','don@bircabo.com','fernando@bircabo.com','erika@bircabo.com','bonnie@bircabo.com','erikag@bircabo.com','cabocharlie79@gmail.com','info@bircabo.com']);
     if(typeof body.agentEmail!=='string'||!allowed.has(body.agentEmail.toLowerCase()))return fail(400,'Please select an agent from the website.');
