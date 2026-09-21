@@ -301,11 +301,11 @@ try{
   $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices...`;
  }).catch(()=>{});
  const loadingMethod='shared-snapshot';
- const response=await fetch('/api/search-pilot?mode=snapshot');
+ const response=await fetch('/api/search-pilot?mode=snapshot',{signal:AbortSignal.timeout(12000)});
  const data=await response.json();
  if(!response.ok)throw new Error(data.error||'The property search is temporarily unavailable.');
  const age=Date.now()-Date.parse(data.fetchedAt);
- if(data.complete!==true||!Array.isArray(data.results)||data.results.length!==data.total||new Set(data.results.map(p=>p.ListingKey)).size!==data.total||!Number.isFinite(age)||age>300000||age< -60000)throw new Error('A current complete inventory is not available. Please use standard FLEX search.');
+ if(data.complete!==true||!Array.isArray(data.results)||data.results.length!==data.total||new Set(data.results.map(p=>p.ListingKey)).size!==data.total||!Number.isFinite(age)||age>=3600000||age< -60000)throw new Error('A current complete inventory is not available. Please use standard FLEX search.');
  $('timestamp').dataset.cacheStatus=response.headers.get('x-vercel-cache')||'unknown';
  $('timestamp').dataset.inventorySource=response.headers.get('x-bir-inventory-source')||'unknown';
  rows=data.results;
@@ -316,6 +316,7 @@ try{
  options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),'');options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
  $('timestamp').textContent=`All filters ready in ${((performance.now()-started)/1000).toFixed(1)} seconds. ${rows.length.toLocaleString()} public active listings checked ${new Date(data.fetchedAt).toLocaleTimeString()}. Includes Reservations Only; reload for updates.`;
  $('timestamp').dataset.loadingMethod=loadingMethod;
+ if(age>=300000)$('message').textContent='The latest inventory update is delayed. You can keep searching the last verified listings; see the checked time below. Prices and availability may have changed. Reload for an update.';
  if(window.L){map=L.map('map',{zoomControl:false}).setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);L.control.zoom({position:'topright'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();if(savedDialog.open)renderSaved();
