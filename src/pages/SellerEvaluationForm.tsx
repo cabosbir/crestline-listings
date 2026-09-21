@@ -156,7 +156,6 @@ const SellerEvaluationForm = () => {
     recentUpgrades: "",
     
     // Additional Information
-    additionalDetails: ""
   });
 
   // Image upload handler
@@ -298,7 +297,6 @@ const SellerEvaluationForm = () => {
         desiredTimeframe: formData.desiredTimeframe,
         expectedPrice: formData.expectedPrice,
         recentUpgrades: formData.recentUpgrades,
-        additionalDetails: formData.additionalDetails,
         
         // Images
         images: imageAttachments,
@@ -360,7 +358,6 @@ const SellerEvaluationForm = () => {
         desiredTimeframe: "",
         expectedPrice: "",
         recentUpgrades: "",
-        additionalDetails: ""
       });
 
       // Clean up image previews
@@ -734,17 +731,6 @@ const SellerEvaluationForm = () => {
                   <p className="text-sm text-gray-600 mt-2">Processing images...</p>
                 </div>
               )}
-            </div>
-
-            {/* Additional Details */}
-            <div className="border-t pt-6">
-              <Label className="text-sm font-semibold text-gray-700 mb-2 block uppercase">Additional Details / Notes:</Label>
-              <Textarea
-                value={formData.additionalDetails}
-                onChange={(e) => setFormData({...formData, additionalDetails: e.target.value})}
-                className="w-full min-h-[120px]"
-                placeholder="Any additional information you'd like to share about your property..."
-              />
             </div>
 
             {/* Submit Button */}
