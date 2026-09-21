@@ -13,6 +13,57 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
+const communityGuides = [
+  {
+    id: 'cabo-san-lucas', title: 'Cabo San Lucas', subtitle: 'Marina life, beaches and everyday convenience',
+    intro: 'Cabo San Lucas brings together the marina, Médano Beach, restaurants and the dramatic coastline around Land’s End. It is a natural starting point for buyers who want an active setting and convenient access to things to do. The town also extends well beyond its visitor center, so the experience changes considerably from one neighborhood to another.',
+    paragraphs: [
+      'When exploring Cabo San Lucas homes and condos for sale, think about how you will spend an ordinary day. Would you rather walk to dinner and the marina, or have more separation from the busiest streets? An elevated view can be appealing, but it may come with a steeper drive and less walkability.',
+      'Visit at different times of day to compare traffic, activity and noise. Check the actual route to the beach, parking, grocery shopping and any services you use regularly. For a condominium, review the building’s upkeep, shared amenities and rules as carefully as the unit itself. Cabo can suit very different lifestyles; choosing the right neighborhood matters as much as choosing the property.',
+    ],
+  },
+  {
+    id: 'san-jose-del-cabo', title: 'San José del Cabo', subtitle: 'Historic character, art and coastal living',
+    intro: 'San José del Cabo offers a different introduction to Los Cabos: a historic center, a traditional plaza and an arts district with galleries, local work and places to eat. Beyond downtown, the coastline and marina add another side to the area. Buyers can explore a town-centered lifestyle while comparing residential settings farther from the historic streets.',
+    paragraphs: [
+      'A search for San José del Cabo real estate should begin with the kind of setting you prefer. Being close to galleries and restaurants is a different experience from choosing a coastal or golf-oriented community. Consider whether this will be your everyday home, a seasonal retreat or a property you intend to visit several times a year.',
+      'Compare the routes to shopping, the airport and your favorite activities rather than relying on distances on a map. Ask what community fees include, which amenities are available to owners and what access actually comes with the property. The historic town, coastline and surrounding neighborhoods each deserve a visit before you decide which feels most like home.',
+    ],
+  },
+  {
+    id: 'los-cabos-corridor', title: 'Los Cabos Tourist Corridor', subtitle: 'Between Cabo San Lucas and San José del Cabo',
+    intro: 'The Los Cabos Tourist Corridor connects Cabo San Lucas and San José del Cabo along the Sea of Cortez. Often called the Cabo–San José Corridor, this coastal stretch combines desert scenery, ocean views, resorts and golf. It is worth exploring if you want a residential base between the two towns rather than in either town center.',
+    paragraphs: [
+      'For buyers comparing Los Cabos Corridor homes and condos, the specific community makes a major difference. A property on the ocean side of the highway has a different approach and setting from one in the hills. Compare the actual entrance, driving route, beach access and the amenities included with ownership.',
+      'Do not assume a nearby resort, golf course or beach club is included: ask about membership, access and additional charges. Think about which town you will visit more often and test that drive at the times you would normally travel. Ocean views and proximity to a beach do not necessarily mean a short walk to the sand. Choose the setting for the way you plan to live, not only the view from the terrace.',
+    ],
+  },
+  {
+    id: 'east-cape', title: 'East Cape', subtitle: 'Sea of Cortez scenery and room to explore',
+    intro: 'The East Cape, also known as Cabo del Este, follows the Sea of Cortez beyond San José del Cabo toward Cabo Pulmo and the wider eastern coast. Beaches, fishing and outdoor exploration are central to its appeal. This is a broad region rather than a single neighborhood, and the distance from established services varies greatly between locations.',
+    paragraphs: [
+      'East Cape real estate attracts buyers who put a high value on the coastal setting and are willing to look beyond the two main towns. A home near an established community and a more secluded coastal property can offer very different daily routines. Decide how much driving, maintenance and planning you are comfortable with before narrowing your search.',
+      'For each property, confirm road access, water supply, electricity, internet and the practical route to groceries and medical services. If you are considering land, investigate permitted uses and the cost and availability of connecting services before setting a building budget. Visit the exact location and ask about seasonal road conditions. The right fit depends on the individual property, not just an East Cape label.',
+    ],
+  },
+  {
+    id: 'pacific-south', title: 'Pacific South: Cabo to Rolling Hills', subtitle: 'Cabo’s Pacific side · Our Lower South guide area',
+    intro: 'Our Pacific South guide covers the Pacific side of Cabo San Lucas north toward Rolling Hills. This area offers a different coastal outlook from the marina and the Sea of Cortez, while keeping Cabo as the main reference point for shopping, services and activities. Rolling Hills itself is an elevated Pacific-facing community, illustrating the open ocean outlook that draws buyers to this side.',
+    paragraphs: [
+      'When comparing Pacific-side Cabo real estate, look at the particular community and the property’s position within it. Elevation, the approach road and surrounding development can change the experience substantially. Compare time spent driving into Cabo with the setting you gain at home, and visit the route rather than relying on a quoted number of minutes.',
+      'Ask about water arrangements, road maintenance, community fees and access to shared facilities. For a lot, review building rules and available services before comparing prices with a completed home. An ocean view does not establish beach access or swimming conditions. We use Cabo to Rolling Hills as a practical browsing area; individual subdivisions and MLS location labels may describe the same coast differently.',
+    ],
+  },
+  {
+    id: 'pacific-north', title: 'Pacific North: The Palm to Todos Santos', subtitle: 'KM 93 north toward Pescadero & Todos Santos · Our Upper South guide area',
+    intro: 'This Pacific coast guide starts at The Palm near KM 93 on Highway 19 and continues north toward Todos Santos. It includes the Pescadero and Cerritos area and the approach to Todos Santos, a Pueblo Mágico known for its historic streets, arts and creative community. This is a broader coastal region with several distinct places to live, not one continuous neighborhood.',
+    paragraphs: [
+      'Buyers exploring Todos Santos, Pescadero and Cerritos real estate may be drawn to the combination of coastal scenery, surfing and a smaller-town setting. Compare being close to the town’s restaurants and galleries with living nearer a beach or in a more rural location. The day-to-day tradeoffs can be more important than a similar asking price.',
+      'Check the property’s road, water supply, power and internet individually, and consider the driving involved in your normal routine. Todos Santos and El Pescadero are in La Paz municipality; that does not mean living in La Paz city. Our guide uses The Palm as a recognizable starting landmark, not a surveyed municipal boundary. Confirm the jurisdiction and services for the particular property during your review.',
+    ],
+  },
+];
+
 const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,15 +226,21 @@ const Index = () => {
 
       <section id="cabo-communities" className="scroll-mt-24 py-14 sm:py-20 bg-background">
         <div className="container mx-auto px-4 max-w-6xl">
-          <p className="text-blue-900 font-semibold mb-2">Explore Cabo Communities</p>
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Where should I buy property in Los Cabos?</h2>
-          <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Start with the life you want here. Compare access to town, beaches, everyday services and the places you’ll visit most. Two properties with similar views can feel very different day to day.</p>
-          <div className="grid sm:grid-cols-3 gap-5 my-8">
-            {[
-              ['Cabo San Lucas', 'Explore the marina, town neighborhoods and nearby communities. Consider how close you want to be to restaurants, activities and everyday services.'],
-              ['San José del Cabo', 'Compare properties around town and the surrounding communities. Think about the routes you’ll use for shopping, the airport and the coast.'],
-              ['The Corridor & Pacific Side', 'Explore communities beyond the two town centers. Compare beach access, driving distances, community amenities and ongoing costs.'],
-            ].map(([title, body]) => <div key={title} className="rounded-xl border border-border p-6"><h3 className="text-xl font-bold mb-3">{title}</h3><p className="text-muted-foreground leading-relaxed">{body}</p></div>)}
+            <p className="text-blue-900 font-semibold mb-2">Explore Our Communities</p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Find your community in Los Cabos, the East Cape or the Pacific coast</h2>
+            <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Where should you buy in Cabo? Start with the way you want to live. Explore these six areas, from the two towns and the Tourist Corridor to the East Cape and Pacific coast. Each guide introduces the setting and the practical details worth comparing before choosing a home, condo or lot.</p>
+            <div className="grid md:grid-cols-2 gap-5 my-8 items-start">
+              {communityGuides.map(community => (
+                <article key={community.id} id={community.id} className="scroll-mt-24 rounded-xl border border-blue-200 p-6 sm:p-7">
+                  <h3 className="text-2xl font-bold text-blue-950 mb-2">{community.title}</h3>
+                  <p className="text-blue-900 font-semibold mb-4">{community.subtitle}</p>
+                  <p className="text-slate-700 leading-relaxed">{community.intro}</p>
+                  <details className="mt-4 group">
+                    <summary className="cursor-pointer text-blue-900 font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-900"><span className="group-open:hidden">Read more about {community.title}</span><span className="hidden group-open:inline">Show less about {community.title}</span></summary>
+                    {community.paragraphs.map(paragraph => <p key={paragraph} className="mt-4 text-slate-700 leading-relaxed">{paragraph}</p>)}
+                  </details>
+                </article>
+              ))}
           </div>
           <div className="rounded-xl bg-blue-50 border border-blue-200 p-6">
             <h3 className="text-xl font-bold text-blue-950">Know a subdivision already? Go straight to it.</h3>
