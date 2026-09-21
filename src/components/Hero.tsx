@@ -1,11 +1,10 @@
 import { ArrowRight, BookOpen, Home, MapPin, Search } from "lucide-react";
+import heroImage from "@/assets/hero-luxury-villa.jpg";
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-slate-950 pt-28 pb-10 sm:pt-36 sm:pb-16">
-    <video autoPlay muted loop playsInline preload="metadata" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover motion-reduce:hidden">
-      <source src="/BIR.mp4" type="video/mp4" />
-    </video>
-    <div className="absolute inset-0 bg-slate-950/70" />
+    <img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" loading="eager" width="1920" height="1080" className="absolute inset-0 h-full w-full object-cover object-[60%_center] sm:object-center" />
+    <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/50 to-slate-950/20" />
     <div className="relative container mx-auto px-4 sm:px-6 max-w-6xl">
       <p className="text-white/90 font-semibold tracking-wide text-sm sm:text-base mb-3">Baja International Realty · Local experience since 1987</p>
       <h1 className="text-white text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight max-w-3xl">Find your place in Cabo.</h1>
