@@ -140,7 +140,7 @@ export async function storedSnapshot(fetcher=fetch,now=Date.now) {
   const body=await response.text();
   if(Buffer.byteLength(body)>4000000)throw new Error('Stored inventory too large');
   const data=JSON.parse(body),age=now()-Date.parse(data.fetchedAt);
-  if(data.complete!==true||!Number.isSafeInteger(data.total)||data.total<0||data.total>20000||!Array.isArray(data.results)||data.results.length!==data.total||!Number.isFinite(age)||age< -60000||age>=300000)throw new Error('Stored inventory invalid or expired');
+  if(data.complete!==true||!Number.isSafeInteger(data.total)||data.total<0||data.total>20000||!Array.isArray(data.results)||data.results.length!==data.total||!Number.isFinite(age)||age< -60000||age>=3600000)throw new Error('Stored inventory invalid or expired');
   const keys=new Set();
   const results=data.results.map(row=>{
     const clean=publicListing(row);
@@ -149,12 +149,11 @@ export async function storedSnapshot(fetcher=fetch,now=Date.now) {
   });
   return {results,total:data.total,complete:true,fetchedAt:data.fetchedAt};
 }
-// Reuse a validated copy during brief storage interruptions, but never extend
-// its original five-minute lifetime. Concurrent visitors share the same work.
+// Reuse a validated copy during brief storage interruptions, with its original timestamp and a hard one-hour maximum. Concurrent visitors share the same work.
 export function createVisitorInventory(loadStored,loadProvider,now=Date.now,report=()=>{}) {
   let cached=null,pending=null,retryAt=0;
   const age=data=>now()-Date.parse(data?.fetchedAt);
-  const usable=data=>Number.isFinite(age(data))&&age(data)>=-60000&&age(data)<300000;
+  const usable=data=>Number.isFinite(age(data))&&age(data)>=-60000&&age(data)<3600000;
   return async()=>{
     if(cached&&usable(cached.data)&&age(cached.data)<120000)return {...cached,source:'memory'};
     if(pending)return pending;
@@ -180,8 +179,8 @@ export function createVisitorInventory(loadStored,loadProvider,now=Date.now,repo
 }
 export function snapshotCacheHeaders(data,refresh,now=Date.now){
   const age=Math.max(0,Math.ceil((now()-Date.parse(data.fetchedAt))/1000));
-  if(!Number.isFinite(age)||age>=300)throw new Error('Inventory expired');
-  if(refresh)return {'Cache-Control':'no-store','Vercel-CDN-Cache-Control':'no-store'};
+  if(!Number.isFinite(age)||age>=3600)throw new Error('Inventory expired');
+  if(refresh||age>=300)return {'Cache-Control':'no-store','Vercel-CDN-Cache-Control':'no-store'};
   const fresh=Math.max(0,120-age),stale=300-age-fresh;
   return {'Cache-Control':'public, max-age=0, must-revalidate','Vercel-CDN-Cache-Control':`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`};
 }
