@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import PropertyCard from "@/components/PropertyCard";
@@ -18,7 +17,6 @@ const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const location = useLocation();
   const canonicalUrl = 'https://www.bircabo.com/';
 
   // Fetch live properties on mount - OPTIMIZED with caching
@@ -114,20 +112,87 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Cabo San Lucas Real Estate | Luxury Homes & Condos for Sale | Baja International Realty</title>
+        <title>Cabo Real Estate | MLS Search, Buying & Selling | Baja International Realty</title>
         <meta 
           name="description" 
           content="Explore Cabo San Lucas and Los Cabos real estate. Search public MLS listings without signup, save favorites, compare properties, and get local help when ready." 
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:title" content="Cabo San Lucas Real Estate | Luxury Properties Los Cabos" />
-        <meta property="og:description" content="Premier real estate agency in Cabo San Lucas. Browse oceanfront villas, beachfront condos & investment properties. 35+ years experience." />
+        <meta property="og:title" content="Cabo Real Estate | Search Freely, Buy & Sell With Local Help" />
+        <meta property="og:description" content="Search Cabo MLS listings without signup. Understand buying, selling and foreign ownership, then explore Los Cabos communities at your own pace." />
         <meta property="og:type" content="website" />
       </Helmet>
       <Navbar />
       <Hero />
       <FloatingContact />
+
+      <section id="buying-in-cabo" className="scroll-mt-24 py-14 sm:py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <p className="text-blue-900 font-semibold mb-2">Understanding Buying</p>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">How do I buy property in Cabo San Lucas?</h2>
+          <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Start with how you want to use your property, the location and your total budget. Explore listings, compare your favorites and take time to understand ownership and the costs before making an offer.</p>
+          <ol className="grid sm:grid-cols-3 gap-5 my-8 list-none">
+            {[
+              ['1. Find the right fit', 'Compare homes, condos or land. Look beyond the photos at access, community rules, upkeep and everyday convenience.'],
+              ['2. Check before you commit', 'Review the title, property documents, condition and offer terms with your agent and qualified closing professionals.'],
+              ['3. Plan your closing', 'Confirm the ownership structure, written closing-cost estimate, payment arrangements and the steps needed to complete and register the purchase.'],
+            ].map(([title, body]) => <li key={title} className="rounded-xl border border-border p-6"><h3 className="text-xl font-bold mb-3">{title}</h3><p className="text-muted-foreground leading-relaxed">{body}</p></li>)}
+          </ol>
+          <div className="space-y-3">
+            <details open className="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6">
+              <summary className="cursor-pointer text-xl font-bold text-blue-950">Can Americans or Canadians buy property in Mexico?</summary>
+              <p className="mt-4 leading-relaxed text-slate-700">Yes. Foreign buyers can purchase residential property in Cabo through a Mexican bank trust called a fideicomiso. Because Cabo is in Mexico’s coastal restricted zone, this differs from holding direct title: the bank acts as trustee and the buyer is the beneficiary. Confirm the appropriate arrangement for the specific property before buying.</p>
+              <a className="inline-block mt-4 text-blue-900 underline font-semibold" href="https://www.caborealestatepros.com/fideicomiso-basics-for-foreign-ownership-los-cabos-real-property.html" target="_blank" rel="noopener noreferrer">Read about foreign ownership on Pros (opens a new tab)</a>
+            </details>
+            <details className="rounded-xl border border-border p-5 sm:p-6">
+              <summary className="cursor-pointer text-xl font-bold">What are the closing costs when buying property in Cabo?</summary>
+              <p className="mt-4 text-muted-foreground leading-relaxed">The purchase price is only part of your budget. Ask for a written estimate covering applicable acquisition taxes, notary and registration charges, trust costs and any other transaction fees. The total depends on the property and the purchase structure; a single percentage will not fit every purchase.</p>
+            </details>
+            <details className="rounded-xl border border-border p-5 sm:p-6">
+              <summary className="cursor-pointer text-xl font-bold">Can I rent out my condo in Cabo?</summary>
+              <p className="mt-4 text-muted-foreground leading-relaxed">Check before you buy. Review the condominium’s rental rules, any applicable local requirements and your tax obligations. Include management, maintenance, utilities and vacancy in your budget instead of assuming rental income will cover everything.</p>
+            </details>
+          </div>
+          <a className="inline-flex mt-7 items-center gap-2 text-blue-900 font-bold text-lg underline underline-offset-4" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html" target="_blank" rel="noopener noreferrer">Read the full buying guide on Pros <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" /></a>
+          <p className="mt-2 text-sm text-muted-foreground">Our Cabo Real Estate Pros guide opens in a new tab, so you can keep exploring Bircabo.</p>
+        </div>
+      </section>
+
+      <section id="selling-in-cabo" className="scroll-mt-24 py-14 sm:py-20 bg-slate-50 border-y border-border">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <p className="text-blue-900 font-semibold mb-2">Understanding Selling</p>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">How do I sell my property in Cabo San Lucas?</h2>
+          <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Start with a realistic valuation and an estimate of what you would receive after selling costs. Then prepare the property and documents, agree on a marketing plan, review offers and work through closing.</p>
+          <div className="grid sm:grid-cols-2 gap-5 my-8">
+            <div className="bg-white border border-border rounded-xl p-6"><h3 className="text-xl font-bold mb-3">What is my Cabo property worth?</h3><p className="text-muted-foreground leading-relaxed">Asking prices are a starting point. Recent comparable sales, location, condition, views and competing listings help establish a realistic price. A local evaluation can explain how your property compares.</p><Link className="inline-block mt-4 text-blue-900 font-semibold underline" to="/seller-evaluation">Request a property evaluation</Link></div>
+            <div className="bg-white border border-border rounded-xl p-6"><h3 className="text-xl font-bold mb-3">What costs should I plan for when selling?</h3><p className="text-muted-foreground leading-relaxed">Request an estimate of your net proceeds that accounts for agreed selling fees, applicable taxes and closing expenses. Have your notary or tax adviser review your circumstances and supporting documents before relying on a final figure.</p></div>
+          </div>
+          <a className="inline-flex items-center gap-2 text-blue-900 font-bold text-lg underline underline-offset-4" href="https://www.caborealestatepros.com/selling-cabo-san-lucas-real-estate.html" target="_blank" rel="noopener noreferrer">Read the full selling guide on Pros <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" /></a>
+          <p className="mt-2 text-sm text-muted-foreground">Opens in a new tab. You can read first and contact us whenever you’re ready.</p>
+        </div>
+      </section>
+
+      <section id="cabo-communities" className="scroll-mt-24 py-14 sm:py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <p className="text-blue-900 font-semibold mb-2">Explore Cabo Communities</p>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Where should I buy property in Los Cabos?</h2>
+          <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Start with the life you want here. Compare access to town, beaches, everyday services and the places you’ll visit most. Two properties with similar views can feel very different day to day.</p>
+          <div className="grid sm:grid-cols-3 gap-5 my-8">
+            {[
+              ['Cabo San Lucas', 'Explore the marina, town neighborhoods and nearby communities. Consider how close you want to be to restaurants, activities and everyday services.'],
+              ['San José del Cabo', 'Compare properties around town and the surrounding communities. Think about the routes you’ll use for shopping, the airport and the coast.'],
+              ['The Corridor & Pacific Side', 'Explore communities beyond the two town centers. Compare beach access, driving distances, community amenities and ongoing costs.'],
+            ].map(([title, body]) => <div key={title} className="rounded-xl border border-border p-6"><h3 className="text-xl font-bold mb-3">{title}</h3><p className="text-muted-foreground leading-relaxed">{body}</p></div>)}
+          </div>
+          <div className="rounded-xl bg-blue-50 border border-blue-200 p-6">
+            <h3 className="text-xl font-bold text-blue-950">Know a subdivision already? Go straight to it.</h3>
+            <p className="mt-2 mb-5 text-slate-700 leading-relaxed">Our MLS search lets you start with a zone and narrow down to area, community and subdivision—or choose a subdivision directly. Use the map, save up to 50 favorites and compare up to three properties side by side.</p>
+            <Button asChild size="lg" className="bg-blue-900 hover:bg-blue-800 text-white"><a href="/property-search.html">Explore the MLS Map <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" /></a></Button>
+            <p className="mt-4 text-base text-slate-700">No signup required. Favorites stay saved in this browser; clearing browser data removes them.</p>
+          </div>
+        </div>
+      </section>
 
       {/* Featured Properties */}
       <section className="py-24 bg-background">
@@ -230,7 +295,7 @@ const Index = () => {
               <p className="text-primary-foreground/80 mb-6">
                 Let us help you find your dream property with expert guidance and personalized service.
               </p>
-              <Link to="/new-client">
+              <Link to="/search">
                 <Button variant="hero" size="lg" className="w-full">
                   Start Your Search
                 </Button>
