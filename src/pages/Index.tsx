@@ -47,16 +47,26 @@ const communityGuides = [
     ],
   },
   {
-    id: 'pacific-south', title: 'Pacific South: Cabo to Rolling Hills', subtitle: 'Cabo’s Pacific side · Our Lower South guide area',
-    intro: 'Our Pacific South guide covers the Pacific side of Cabo San Lucas north toward Rolling Hills. This area offers a different coastal outlook from the marina and the Sea of Cortez, while keeping Cabo as the main reference point for shopping, services and activities. Rolling Hills itself is an elevated Pacific-facing community, illustrating the open ocean outlook that draws buyers to this side.',
+    id: 'pacific-south', title: 'Cabo San Lucas — Pacific Side', subtitle: 'Pedregal to Rolling Hills · Pacific living with Cabo close by',
+    intro: 'From Pedregal to Rolling Hills, Cabo’s Pacific side offers an ocean-facing lifestyle with convenient access to Cabo San Lucas shopping, medical care, restaurants and everyday services. Based on our decades of experience living here, we group this stretch together because of how people use and enjoy it—not because it follows one MLS boundary. The particular neighborhood, access road and distance into town still make a difference.',
+    searchSteps: [
+      'Open the MLS search and click Clear location so earlier choices do not hide the places you want. Your price and other preferences stay selected.',
+      'For Pedregal, choose Pedregal CSL in Community. For Rolling Hills, choose Rolling Hills directly in Subdivision; you do not need to select a zone or area first.',
+      'Explore other neighborhoods between those landmarks on the map, or choose a known community or subdivision by name. Clear location before switching to another part of the coast. One MLS area will not necessarily cover this whole guide.',
+    ],
     paragraphs: [
       'When comparing Pacific-side Cabo real estate, look at the particular community and the property’s position within it. Elevation, the approach road and surrounding development can change the experience substantially. Compare time spent driving into Cabo with the setting you gain at home, and visit the route rather than relying on a quoted number of minutes.',
-      'Ask about water arrangements, road maintenance, community fees and access to shared facilities. For a lot, review building rules and available services before comparing prices with a completed home. An ocean view does not establish beach access or swimming conditions. We use Cabo to Rolling Hills as a practical browsing area; individual subdivisions and MLS location labels may describe the same coast differently.',
+      'Ask about water arrangements, road maintenance, community fees and access to shared facilities. For a lot, review building rules and available services before comparing prices with a completed home. An ocean view does not establish beach access or swimming conditions. This guide follows the coast from Pedregal to Rolling Hills; MLS zones, areas and communities divide it differently.',
     ],
   },
   {
-    id: 'pacific-north', title: 'Pacific North: The Palm to Todos Santos', subtitle: 'KM 93 north toward Pescadero & Todos Santos · Our Upper South guide area',
-    intro: 'This Pacific coast guide starts at The Palm near KM 93 on Highway 19 and continues north toward Todos Santos. It includes the Pescadero and Cerritos area and the approach to Todos Santos, a Pueblo Mágico known for its historic streets, arts and creative community. This is a broader coastal region with several distinct places to live, not one continuous neighborhood.',
+    id: 'pacific-north', title: 'Pacific Coast — The Palm to Todos Santos', subtitle: 'A more rural coastal lifestyle, with small-town amenities farther north',
+    intro: 'Starting at The Palm near KM 93 on Highway 19, this stretch introduces a different way of living: a more rural coastal setting, with more planning around everyday errands, continuing through the Pescadero and Cerritos area to Todos Santos and its small-town amenities. Our local experience is the basis for this grouping. It describes a lifestyle and a stretch of coast, not the MLS area called Pacific North.',
+    searchSteps: [
+      'Open the MLS search and click Clear location. Leave Zone and Area at Any to begin, rather than choosing Pacific North because this guide travels north.',
+      'Choose Pescadero/Cerritos in Community for that part of the coast, or Todos Santos for the town’s MLS community. Search them separately, clearing the location when you change communities.',
+      'For the coast closer to The Palm, or a property between the named communities, explore the map or choose its subdivision directly if you know it. Check the map position of each listing; a community name alone does not establish that it falls within this guide.',
+    ],
     paragraphs: [
       'Buyers exploring Todos Santos, Pescadero and Cerritos real estate may be drawn to the combination of coastal scenery, surfing and a smaller-town setting. Compare being close to the town’s restaurants and galleries with living nearer a beach or in a more rural location. The day-to-day tradeoffs can be more important than a similar asking price.',
       'Check the property’s road, water supply, power and internet individually, and consider the driving involved in your normal routine. Todos Santos and El Pescadero are in La Paz municipality; that does not mean living in La Paz city. Our guide uses The Palm as a recognizable starting landmark, not a surveyed municipal boundary. Confirm the jurisdiction and services for the particular property during your review.',
@@ -229,6 +239,7 @@ const Index = () => {
             <p className="text-blue-900 font-semibold mb-2">Explore Our Communities</p>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Find your community in Los Cabos, the East Cape or the Pacific coast</h2>
             <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">Where should you buy in Cabo? Start with the way you want to live. Explore these six areas, from the two towns and the Tourist Corridor to the East Cape and Pacific coast. Each guide introduces the setting and the practical details worth comparing before choosing a home, condo or lot.</p>
+            <p className="mt-5 rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 leading-relaxed">Based on our decades of experience living here, these guides group places by lifestyle and location. Names in the MLS search filters may differ. The two Pacific guides below include tips to help you find the right properties.</p>
             <div className="grid md:grid-cols-2 gap-5 my-8 items-start">
               {communityGuides.map(community => (
                 <article key={community.id} id={community.id} className="scroll-mt-24 rounded-xl border border-blue-200 p-6 sm:p-7">
@@ -238,6 +249,11 @@ const Index = () => {
                   <details className="mt-4 group">
                     <summary className="cursor-pointer text-blue-900 font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-900"><span className="group-open:hidden">Read more about {community.title}</span><span className="hidden group-open:inline">Show less about {community.title}</span></summary>
                     {community.paragraphs.map(paragraph => <p key={paragraph} className="mt-4 text-slate-700 leading-relaxed">{paragraph}</p>)}
+                    {community.searchSteps && <div className="mt-5 rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-5">
+                      <h4 className="text-lg font-bold text-blue-950">How to search for properties in this area</h4>
+                      <ol className="mt-3 list-decimal pl-5 space-y-3 text-slate-700 leading-relaxed">{community.searchSteps.map(step => <li key={step}>{step}</li>)}</ol>
+                      <a href="/property-search.html" className="inline-block mt-4 font-bold text-blue-900 underline underline-offset-4">Open Cabo MLS search</a>
+                    </div>}
                   </details>
                 </article>
               ))}
