@@ -42,8 +42,8 @@ const communityGuides = [
     id: 'east-cape', title: 'East Cape', subtitle: 'Sea of Cortez scenery and room to explore',
     intro: 'The East Cape, also known as Cabo del Este, follows the Sea of Cortez beyond San José del Cabo toward Cabo Pulmo and the wider eastern coast. Beaches, fishing and outdoor exploration are central to its appeal. This is a broad region rather than a single neighborhood, and the distance from established services varies greatly between locations.',
     searchSteps: [
-      'Open the MLS search, click Clear location, then select East Cape in Zone to explore the listings grouped there.',
-      'Use Area and Community to narrow the results, or clear the location and go directly to a known Subdivision. Check the map position of each property rather than relying only on its MLS label.',
+      'Open the MLS search, click Clear location, then select East Cape in ZONE to explore the listings grouped there.',
+      'Use AREA and COMMUNITY to narrow the results, or clear the location and go directly to a known SUBDIVISION. Check the map position of each property rather than relying only on its MLS label.',
       'Compare the actual route to San José del Cabo or the nearest town, along with access to shopping and medical services. The East Cape zone is a search grouping, not a promise that every property offers the same lifestyle or convenience.',
     ],
     paragraphs: [
@@ -56,10 +56,10 @@ const communityGuides = [
     intro: 'From Pedregal to Rolling Hills, Cabo’s Pacific side offers an ocean-facing lifestyle with convenient access to Cabo San Lucas shopping, medical care, restaurants and everyday services. Based on our decades of experience living here, we group this stretch together because of how people use and enjoy it—not because it follows one MLS boundary. The particular neighborhood, access road and distance into town still make a difference.',
     searchSteps: [
       'Cabo’s Pacific side is spread across several MLS search categories, which can make it harder to find everything in one search. Try the three routes below separately, clicking Clear location before switching routes. Your price and other preferences stay selected.',
-      'For Pedregal: Zone → Cabo San Lucas; Area → CSL-Beach & Marina; Community → Pedregal CSL.',
-      'For the Sunset Beach road area: Zone → Cabo San Lucas; Area → CSL-Centro; Community → Saddles/Sunset Bch Rd. Use the map to focus on listings closest to the Pacific coast within this community.',
-      'For the Pacific coast beyond town: Zone → Pacific; Area → Pacific South. This MLS area extends farther than our Cabo Pacific Side guide. Use the map to explore properties closest to Cabo, or choose a Community to focus on a specific location.',
-      'Already know the subdivision? You can choose it directly. For example, clear the location and select Rolling Hills in Subdivision without choosing a zone or area first.',
+      'For Pedregal: ZONE → Cabo San Lucas; AREA → CSL-Beach & Marina; COMMUNITY → Pedregal CSL.',
+      'For the Sunset Beach road area: ZONE → Cabo San Lucas; AREA → CSL-Centro; COMMUNITY → Saddles/Sunset Bch Rd. Use the map to focus on listings closest to the Pacific coast within this community.',
+      'For the Pacific coast beyond town: ZONE → Pacific; AREA → Pacific South. This MLS area extends farther than our Cabo Pacific Side guide. Use the map to explore properties closest to Cabo, or choose a COMMUNITY to focus on a specific location.',
+      'Already know the subdivision? You can choose it directly. For example, clear the location and select Rolling Hills in SUBDIVISION without choosing a zone or area first.',
     ],
     paragraphs: [
       'When comparing Pacific-side Cabo real estate, look at the particular community and the property’s position within it. Elevation, the approach road and surrounding development can change the experience substantially. Compare time spent driving into Cabo with the setting you gain at home, and visit the route rather than relying on a quoted number of minutes.',
@@ -70,9 +70,11 @@ const communityGuides = [
     id: 'pacific-north', title: 'Pacific Coast — The Palm to Todos Santos', subtitle: 'A more rural coastal lifestyle, with small-town amenities farther north',
     intro: 'Starting at The Palm near KM 93 on Highway 19, this stretch introduces a different way of living: a more rural coastal setting, with more planning around everyday errands, continuing through the Pescadero and Cerritos area to Todos Santos and its small-town amenities. Our local experience is the basis for this grouping. It describes a lifestyle and a stretch of coast, not the MLS area called Pacific North.',
     searchSteps: [
-      'Open the MLS search and click Clear location. Leave Zone and Area at Any to begin, rather than choosing Pacific North because this guide travels north.',
-      'Choose Pescadero/Cerritos in Community for that part of the coast, or Todos Santos for the town’s MLS community. Search them separately, clearing the location when you change communities.',
-      'For the coast closer to The Palm, or a property between the named communities, explore the map or choose its subdivision directly if you know it. Check the map position of each listing; a community name alone does not establish that it falls within this guide.',
+      'This stretch of coast crosses more than one MLS search area. Try the routes below separately, clicking Clear location before switching. Your price and other preferences stay selected.',
+      'For the coast south of Todos Santos: ZONE → Pacific; AREA → Pacific South; COMMUNITY → Pescadero/Cerritos, Elias Calles or Migrino Area. Choose one community at a time and use the map to check the location of each property.',
+      'For Todos Santos: ZONE → Pacific; AREA → Pacific North; COMMUNITY → Todos Santos.',
+      'To include Todos Santos listings entered under a different zone, click Clear location and choose Todos Santos directly in COMMUNITY, leaving ZONE and AREA at Any. Some MLS records place this community under La Paz.',
+      'For the coast closer to The Palm, or a property between the named communities, explore the map or choose its SUBDIVISION directly if you know it. Check the map position of each listing; a community name alone does not establish that it falls within this guide.',
     ],
     paragraphs: [
       'Buyers exploring Todos Santos, Pescadero and Cerritos real estate may be drawn to the combination of coastal scenery, surfing and a smaller-town setting. Compare being close to the town’s restaurants and galleries with living nearer a beach or in a more rural location. The day-to-day tradeoffs can be more important than a similar asking price.',
@@ -87,8 +89,8 @@ const communityGuides = [
       'Separate a bay view from beach access when looking at listings. Popular beaches such as Balandra and El Tecolote are outings beyond the downtown waterfront, so check the actual route from each property. Visit at different times of day, review water and internet arrangements, and ask what condominium or community fees include. This guide focuses on La Paz city and its surroundings; the much larger municipality also includes places far from the city, including Todos Santos.',
     ],
     searchSteps: [
-      'Open the MLS search, click Clear location, then select La Paz in Zone.',
-      'For properties in the city, choose La Paz City in Area. Leave Area at Any if you want to explore the wider La Paz zone, then narrow by Community or Subdivision.',
+      'Open the MLS search, click Clear location, then select La Paz in ZONE.',
+      'For properties in the city, choose La Paz City in AREA. Leave AREA at Any if you want to explore the wider La Paz zone, then narrow by COMMUNITY or SUBDIVISION.',
       'Check each listing on the map to confirm its position relative to the city and bay. The La Paz zone covers more than the city itself.',
     ],
   },
