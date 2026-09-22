@@ -74,7 +74,7 @@ export async function parsePropertyQuery(
 - Phone: +52 624 143 5555
 - Email: info@bircabo.com
 - Website: bircabo.com
-- Address: Boulevard Marina s/n y Vicente Guerrero s/n, Manzana 31-A, Colonia Centro, Cabo San Lucas, BCS 23400
+- Address: Blvd. Marina 14, Plaza Nautica local A6, Colonia Centro, Cabo San Lucas, BCS 23450
 - Google Maps: https://maps.app.goo.gl/DsyfVAHBARUKDJAX8
 - Office Hours: Mon-Fri 9AM-6PM PT, Sat-Sun 10AM-4PM PT
 - Stats: 13 agents, 75+ years combined experience, 1,850+ properties sold, $800M+ sales, 2,200+ families served
@@ -485,7 +485,7 @@ Q: "Is your office open on weekends?"
 A: "Yes! We're open on weekends. Our office hours are Monday-Sunday: 8AM-9PM PT. Feel free to call us at +52 624 143 5555 or stop by anytime!"
 
 Q: "Where is your office located?"
-A: "Our office is located at Boulevard Marina s/n y Vicente Guerrero s/n, Manzana 31-A, Colonia Centro, Cabo San Lucas, Baja California Sur, México 23400. [View on Google Maps](https://maps.app.goo.gl/DsyfVAHBARUKDJAX8). We're in the heart of downtown Cabo, just steps from the Marina!"
+A: "Our office is located at Blvd. Marina 14, Plaza Nautica local A6, Colonia Centro, Cabo San Lucas, Baja California Sur, México 23450. [View on Google Maps](https://maps.app.goo.gl/DsyfVAHBARUKDJAX8). We're in the heart of downtown Cabo, just steps from the Marina!"
 
 Q: "Do you have Spanish-speaking agents?" or "Can you recommend a Spanish-speaking agent?"
 A: "Yes! All 13 of our agents are bilingual in English and Spanish. Some great options include [Don Weis](/team/don), [Alfonso Puente](/team/alfonso), and [David Scott Piper](/team/david). Would you like to learn more about a specific agent or search for properties?"
