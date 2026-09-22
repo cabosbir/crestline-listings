@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { Phone, Mail, MessageCircle, Calendar } from "lucide-react";
+import { Phone, Mail, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useChat } from "@/contexts/ChatContext";
 
 const FloatingContact = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const { openChat } = useChat();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,16 +46,6 @@ const FloatingContact = () => {
           </a>
         </Button>
         <Button
-          variant="luxury"
-          size="icon"
-          className="rounded-full shadow-gold relative"
-          onClick={openChat}
-          title="Property Search Assistant"
-        >
-          <MessageCircle className="h-5 w-5" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-        </Button>
-        <Button
           variant="default"
           size="icon"
           className="rounded-full shadow-hover"
@@ -71,7 +59,7 @@ const FloatingContact = () => {
 
       {/* Mobile - Bottom Bar */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-primary/95 backdrop-blur-md border-t border-primary-light shadow-elegant animate-in slide-in-from-bottom duration-500">
-        <div className="grid grid-cols-4 gap-2 p-3">
+        <div className="grid grid-cols-3 gap-2 p-3">
           <Button
             variant="ghost"
             size="sm"
@@ -94,17 +82,7 @@ const FloatingContact = () => {
               <span className="text-xs">Email</span>
             </a>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-col h-auto py-2 text-primary-foreground hover:text-accent relative"
-            onClick={openChat}
-          >
-            <MessageCircle className="h-4 w-4 mb-1" />
-            <span className="text-xs">Chat</span>
-            <span className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          </Button>
-          <Button
+            <Button
             variant="ghost"
             size="sm"
             className="flex-col h-auto py-2 text-primary-foreground hover:text-accent"
