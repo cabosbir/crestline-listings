@@ -320,6 +320,17 @@ try{
  if(window.L){map=L.map('map',{zoomControl:false}).setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);L.control.zoom({position:'topright'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();if(savedDialog.open)renderSaved();
+ const entry=new URLSearchParams(location.search),requestedMLS=entry.get('mls');
+ if(requestedMLS&&/^[\d-]{3,20}$/.test(requestedMLS)){
+  const listing=rows.find(row=>row.ListingId===requestedMLS);
+  if(listing)openListing({...listing,...detailsCache.get(listing.ListingKey)});
+  else $('message').textContent='This property is no longer in the current public active inventory. You can explore other listings below.';
+  if(entry.get('from')==='price-reductions'){
+   const returnLink=document.createElement('a');returnLink.href='/#price-reductions';returnLink.textContent='Back to price reductions';returnLink.style.cssText='display:inline-block;padding:10px 14px;border:2px solid #b45309;border-radius:6px;background:#fff7ed;color:#78350f;font-weight:700;margin:8px 0';
+   if(listing)listingDialog.querySelector('.gallery-heading').append(returnLink);
+   else $('message').append(document.createElement('br'),returnLink);
+  }
+ }
 }catch(error){failed=true;alternateSearch.hidden=false;clearTimeout(slowNotice);$('count').textContent='Complete search unavailable';$('timestamp').textContent='Please use standard FLEX search below. Any properties shown here are only the first page.';$('message').textContent=error.message;}
 
 
