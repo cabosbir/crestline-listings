@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef, useMemo, memo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -255,10 +254,7 @@ const agents = [
 
 const Team = () => {
   const navigate = useNavigate();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [statsVisible, setStatsVisible] = useState(false);
   const [statCounts, setStatCounts] = useState([0, 0, 0, 0]);
 
@@ -268,24 +264,6 @@ const Team = () => {
       const stat = statsData[index];
       const formattedNum = num.toLocaleString();
       return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
-    };
-  }, []);
-
-  // ⚡ OPTIMIZATION 3: Debounce scroll check
-  const checkScrollButtons = useMemo(() => {
-    let timeout: NodeJS.Timeout;
-    return () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        if (scrollContainerRef.current) {
-          const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-          const atStart = scrollLeft <= 10;
-          const atEnd = scrollLeft >= scrollWidth - clientWidth - 10;
-          
-          setCanScrollLeft(!atStart);
-          setCanScrollRight(!atEnd);
-        }
-      }, 50);
     };
   }, []);
 
@@ -351,31 +329,6 @@ const Team = () => {
     };
   }, [navigate]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      checkScrollButtons();
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, [checkScrollButtons]);
-
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return;
-
-    const container = scrollContainerRef.current;
-    const scrollAmount = 350;
-    
-    if (direction === 'left') {
-      container.scrollLeft -= scrollAmount;
-    } else {
-      container.scrollLeft += scrollAmount;
-    }
-    
-    setTimeout(() => {
-      checkScrollButtons();
-    }, 100);
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
@@ -429,7 +382,7 @@ const Team = () => {
         </div>
       </section>
 
-      {/* Team Carousel */}
+      {/* Team Grid */}
       <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
@@ -443,40 +396,9 @@ const Team = () => {
               </p>
             </div>
 
-            {/* Navigation Arrows */}
-            <div className="flex justify-center items-center gap-6 mb-8">
-              <button
-                onClick={() => handleScroll('left')}
-                disabled={!canScrollLeft}
-                className="h-14 w-14 rounded-full shadow-lg bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all hover:scale-105"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="h-7 w-7 text-gray-700" />
-              </button>
-
-              <button
-                onClick={() => handleScroll('right')}
-                disabled={!canScrollRight}
-                className="h-14 w-14 rounded-full shadow-lg bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center border border-gray-200 transition-all hover:scale-105"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="h-7 w-7 text-gray-700" />
-              </button>
-            </div>
-
-            {/* Scrollable Agent Cards */}
-            <div className="relative">
-              <div 
-                ref={scrollContainerRef}
-                onScroll={checkScrollButtons}
-                className="flex gap-6 overflow-x-scroll scroll-smooth px-4"
-                style={{ 
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                }}
-              >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" aria-label="All BIR agents">
                 {agents.filter(agent => agent.active !== false).map((agent) => (
-                  <div key={agent.id} className="flex-shrink-0 w-[320px]">
+                  <div key={agent.id} className="min-w-0">
                     <AgentBioCard
                       name={agent.name}
                       title={agent.title}
@@ -493,12 +415,6 @@ const Team = () => {
                     />
                   </div>
                 ))}
-              </div>
-            </div>
-
-            {/* Scroll Hint */}
-            <div className="text-center mt-8 text-sm text-muted-foreground">
-              <p>Use arrows to explore all our team members</p>
             </div>
           </div>
         </div>
@@ -534,10 +450,6 @@ const Team = () => {
       <Footer />
 
       <style>{`
-        .overflow-x-scroll::-webkit-scrollbar {
-          display: none;
-        }
-        
         @keyframes fadeInUp {
           from {
             opacity: 0;
