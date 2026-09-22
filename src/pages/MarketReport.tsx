@@ -335,11 +335,13 @@ const MarketReport = () => {
       <header className="bg-white shadow-sm sticky top-0 z-50 py-4">
         <div className="max-w-[1400px] mx-auto px-4 md:px-10 flex justify-between items-center">
           <div className="flex items-center gap-3 md:gap-5">
+            <a href="/" aria-label="BIR — Home" title="Home">
             <img 
               src="/BIRLOGO.png"
               alt="BIR Logo" 
               className="h-[45px] md:h-[60px] w-auto"
             />
+            </a>
 
             <div className="hidden md:block h-[50px] w-px bg-gray-200"></div>
 
