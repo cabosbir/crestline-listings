@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import PropertyCard from "@/components/PropertyCard";
 import PriceReductions from "@/components/PriceReductions";
 import StatsSection from "@/components/StatsSection";
 import AgentBioCard from "@/components/AgentBioCard";
@@ -12,7 +11,6 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { fetchListings, convertMLSToPropertyCard, type MLSProperty } from "@/services/flexMlsService";
 
 const communityGuides = [
   {
@@ -183,66 +181,51 @@ const communityActivities: Record<string, string> = {
 const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [featuredError, setFeaturedError] = useState(false);
+  const [featuredAttempt, setFeaturedAttempt] = useState(0);
+  const [featuredVisible, setFeaturedVisible] = useState(6);
+  const [featuredSort, setFeaturedSort] = useState('updated');
   const canonicalUrl = 'https://www.bircabo.com/';
 
-  // Fetch live properties on mount - OPTIMIZED with caching
   useEffect(() => {
-    const loadFeaturedProperties = async () => {
-      setLoading(true);
-      try {
-        // ⭐ CACHE IMPLEMENTATION - Check cache first for faster loading
-        const cacheKey = 'homepage-featured-v2';
-        const cacheTimeKey = `${cacheKey}-time`;
-        const cached = localStorage.getItem(cacheKey);
-        const cachedTime = localStorage.getItem(cacheTimeKey);
-        
-        const now = Date.now();
-        const cacheLifetime = 2 * 60 * 1000; // Recheck current featured listings after two minutes.
-        
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < cacheLifetime) {
-          console.log('✅ Using cached featured properties');
-          const cachedData = JSON.parse(cached);
-          setFeaturedProperties(cachedData);
-          setLoading(false);
-          return;
-        }
-        
-        console.log('📡 Loading featured properties from API...');
-        
-        // Fetch properties with no filters to get latest listings
-        // OPTIMIZED: Reduced from 50 to 15 for faster loading (only need 3)
-        const mlsProperties: MLSProperty[] = await fetchListings({ limit: 15 });
-        console.log('✅ Received properties:', mlsProperties.length);
-        
-        // Convert to PropertyCard format
-        const convertedProperties = mlsProperties.map(convertMLSToPropertyCard);
-        
-        // Shuffle and take first 3
-        const shuffled = [...convertedProperties].sort(() => Math.random() - 0.5);
-        const featured = shuffled.slice(0, 3);
-        
-        setFeaturedProperties(featured);
-        
-        // ⭐ Cache the results
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(featured));
-          localStorage.setItem(cacheTimeKey, now.toString());
-          console.log('💾 Cached featured properties');
-        } catch (e) {
-          console.error('Error caching featured properties:', e);
-        }
-      } catch (error) {
-        console.error('❌ Error loading featured properties:', error);
-        // Set empty array on error
-        setFeaturedProperties([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const abort = new AbortController();
+    let live = true;
+    setLoading(true);
+    setFeaturedError(false);
+    const timer = setTimeout(() => abort.abort(), 15000);
+    fetch('/api/search-pilot?mode=snapshot', { signal: abort.signal })
+      .then(async response => {
+        if (!response.ok) throw new Error('Inventory unavailable');
+        const data = await response.json();
+        const age = Date.now() - Date.parse(data.fetchedAt);
+        if (data.complete !== true || !Array.isArray(data.results) || data.total !== data.results.length || !Number.isFinite(age) || age >= 3600000 || age < -60000) throw new Error('Incomplete or outdated inventory');
+        const office = data.results.filter((row: any) =>
+          row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false &&
+          String(row.ListOfficeName || '').trim().toLowerCase() === 'baja international realty'
+        );
+        const batches = [];
+        for (let i = 0; i < office.length; i += 24) batches.push(office.slice(i, i + 24));
+        const detailed = await Promise.all(batches.map(async batch => {
+          const response = await fetch('/api/search-pilot?keys=' + encodeURIComponent(batch.map((row: any) => row.ListingKey).join(',')), { signal: abort.signal });
+          if (!response.ok) throw new Error('Photos unavailable');
+          const result = await response.json();
+          if (!Array.isArray(result.results) || result.next) throw new Error('Incomplete details');
+          const requested = new Set(batch.map((row: any) => row.ListingKey));
+          return result.results.filter((row: any) => requested.has(row.ListingKey) && row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false && String(row.ListOfficeName || '').trim().toLowerCase() === 'baja international realty');
+        }));
+        if (live) setFeaturedProperties(detailed.flat());
+      })
+      .catch(() => { if (live) setFeaturedError(true); })
+      .finally(() => { clearTimeout(timer); if (live) setLoading(false); });
+    return () => { live = false; clearTimeout(timer); abort.abort(); };
+  }, [featuredAttempt]);
 
-    loadFeaturedProperties();
-  }, []);
+  const sortedFeatured = [...featuredProperties].sort((a, b) => {
+    if (featuredSort === 'low') return Number(a.ListPrice) - Number(b.ListPrice);
+    if (featuredSort === 'high') return Number(b.ListPrice) - Number(a.ListPrice);
+    return String(b.ModificationTimestamp || '').localeCompare(String(a.ModificationTimestamp || '')) || String(a.ListingId).localeCompare(String(b.ListingId));
+  });
+  const featuredMoney = (price: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
 
   // Team members - Updated with slugs for landing page routing
   const teamMembers = [
@@ -447,49 +430,43 @@ const Index = () => {
       </section>
 
       {/* Featured Properties */}
-      <section className="py-24 bg-background">
+      <section id="featured-properties" className="py-16 sm:py-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <p className="text-accent uppercase tracking-wider mb-2 font-medium">
-              Explore the Market
-            </p>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Featured Properties
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              A selection of MLS listings across Baja California Sur. Use our Cabo MLS search to find the location and property that suit you.
-            </p>
+          <div className="max-w-3xl mb-8">
+            <p className="text-accent uppercase tracking-wider mb-3 font-semibold">Explore our featured selection</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Properties</h2>
+            <p className="text-lg text-muted-foreground">Explore featured homes, condos and land, starting with our active BIR office listings. Open any property for photos and full details, then save your favorites and compare. No signup required.</p>
           </div>
-
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="h-12 w-12 animate-spin text-accent mb-4" />
-              <p className="text-muted-foreground">Loading featured properties...</p>
+          {loading ? <div role="status" className="flex items-center gap-3 py-10"><Loader2 className="h-6 w-6 animate-spin" />Loading our active listings…</div>
+          : featuredError ? <div role="status" className="p-8 border border-border rounded-xl"><p className="mb-4">We couldn't load our office listings. Please try again or explore the MLS search below.</p><Button variant="outline" onClick={() => setFeaturedAttempt(n => n + 1)}>Try Again</Button></div>
+          : featuredProperties.length === 0 ? <p className="py-8">There are no active BIR office listings available in the public feed right now. Explore the full MLS search below.</p>
+          : <>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <p className="font-semibold" aria-live="polite">{featuredProperties.length} active office listings</p>
+              <label className="flex items-center gap-2 font-medium">Sort by
+                <select className="border border-border rounded-lg p-3 bg-background" value={featuredSort} onChange={event => { setFeaturedSort(event.target.value); setFeaturedVisible(6); }}>
+                  <option value="updated">Recently updated</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option>
+                </select>
+              </label>
             </div>
-          ) : featuredProperties.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground mb-4">Featured properties could not be loaded. You can still open the full MLS search.</p>
-              <Link to="/search">
-                <Button variant="outline">View All Properties</Button>
-              </Link>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedFeatured.slice(0, featuredVisible).map(property => <a key={property.ListingKey} href={`/property-search.html?mls=${encodeURIComponent(property.ListingId)}`} className="group block rounded-2xl overflow-hidden border border-border bg-card hover:shadow-lg transition-shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+                <div className="relative">
+                  {property.Media?.[0]?.MediaURL ? <img src={property.Media[0].MediaURL} alt={property.UnparsedAddress || 'BIR property'} loading="lazy" className="w-full aspect-[4/3] object-cover" /> : <div className="aspect-[4/3] bg-muted flex items-center justify-center">Photo coming soon</div>}
+                  <span className="absolute top-3 left-3 bg-white text-primary rounded-full px-3 py-1 text-sm font-semibold shadow-sm">{property.PropertyType}</span>
+                </div>
+                <div className="p-5">
+                  <p className="text-2xl font-bold mb-2">{featuredMoney(property.ListPrice)} <span className="text-sm font-normal">USD</span></p>
+                  <h3 className="text-lg font-semibold leading-snug mb-2">{property.UnparsedAddress || property.SubdivisionName || 'View property'}</h3>
+                  <p className="text-muted-foreground">{[property.SubdivisionName, property.City].filter(Boolean).join(' · ')}</p>
+                  <p className="text-sm mt-3">{Number(property.BedroomsTotal) > 0 ? `${property.BedroomsTotal} beds · ` : ''}{Number(property.BathroomsTotalDecimal) > 0 ? `${property.BathroomsTotalDecimal} baths · ` : ''}MLS {property.ListingId}</p>
+                  <p className="text-primary font-semibold mt-5 group-hover:underline">View photos &amp; details →</p>
+                </div>
+              </a>)}
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {featuredProperties.map((property) => (
-                  <PropertyCard key={property.id} {...property} />
-                ))}
-              </div>
-
-              <div className="text-center">
-                <Link to="/search">
-                  <Button variant="luxury" size="lg">
-                    View All Properties <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </div>
-            </>
-          )}
+            {featuredVisible < featuredProperties.length && <div className="text-center mt-8"><Button variant="outline" size="lg" onClick={() => setFeaturedVisible(n => n + 6)}>Show More Office Listings ({featuredProperties.length - featuredVisible} remaining)</Button></div>}
+          </>}
+          <div className="mt-8 text-center"><Button asChild size="lg"><a href="/property-search.html">Search All MLS Properties <ArrowRight className="ml-2 h-5 w-5" /></a></Button></div>
         </div>
       </section>
 
