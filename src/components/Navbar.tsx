@@ -8,11 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useChat } from "@/contexts/ChatContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { openChat } = useChat();
 
   const navLinks = [
     { name: "About", href: "/about" },
@@ -27,7 +25,6 @@ const Navbar = () => {
 
   const teamLinks: Array<{ name: string; href?: string; action?: string }> = [
     { name: "View Our Agents", href: "/team" },
-    { name: "24/7 BIR Assistant", action: "openChat" },
   ];
 
   return (
@@ -95,7 +92,6 @@ const Navbar = () => {
                   <DropdownMenuItem
                     key={link.name}
                     asChild={link.href ? true : false}
-                    onClick={link.action === "openChat" ? openChat : undefined}
                   >
                     {link.href ? (
                       <Link
@@ -221,7 +217,6 @@ const Navbar = () => {
                         className="text-left text-muted-foreground hover:text-accent transition-fast font-heading"
                         onClick={() => {
                           setIsOpen(false);
-                          openChat();
                         }}
                       >
                         {link.name}
