@@ -464,7 +464,7 @@ const Index = () => {
                 </div>
               </a>)}
             </div>
-            {featuredVisible < featuredProperties.length && <div className="text-center mt-8"><Button variant="outline" size="lg" onClick={() => setFeaturedVisible(n => n + 6)}>Show More Office Listings ({featuredProperties.length - featuredVisible} remaining)</Button></div>}
+            {featuredVisible < featuredProperties.length && <div className="text-center mt-8"><Button variant="outline" size="lg" className="max-w-full whitespace-normal h-auto py-3 px-4" onClick={() => setFeaturedVisible(n => n + 6)}>Show More Office Listings ({featuredProperties.length - featuredVisible} remaining)</Button></div>}
           </>}
           <div className="mt-8 text-center"><Button asChild size="lg"><a href="/property-search.html">Search All MLS Properties <ArrowRight className="ml-2 h-5 w-5" /></a></Button></div>
         </div>
