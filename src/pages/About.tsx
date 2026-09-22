@@ -63,13 +63,13 @@ const About = () => {
     {
       icon: Award,
       title: "Proven Excellence",
-      description: "Award-winning team with decades of combined experience in Cabo San Lucas luxury real estate.",
+      description: "Decades of experience helping buyers and sellers navigate Cabo San Lucas real estate.",
       valueKey: "excellence" as const,
     },
     {
       icon: TrendingUp,
       title: "Market Expertise",
-      description: "Deep local knowledge of Baja California Sur and cutting-edge market insights to give you a competitive advantage.",
+      description: "Local knowledge that connects property prices with access, amenities, microclimates, and everyday life.",
       valueKey: "expertise" as const,
     },
     {
@@ -90,7 +90,7 @@ const About = () => {
     {
       icon: Building2,
       title: "Major Developments",
-      description: "Brokered acquisitions for RIU Hotels and Cabo San Cristobal Resorts - one of the world's largest planned resort projects",
+      description: "Land acquisition experience including RIU Hotels and Cabo San Cristobal Resorts",
       milestoneKey: "major-developments" as const,
     },
     {
@@ -310,16 +310,17 @@ const About = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>About Baja International Realty | Premier Cabo San Lucas Real Estate Agency Since 1987</title>
+        <title>About Baja International Realty | Cabo Real Estate Since 1987</title>
         <meta 
           name="description" 
-          content="Baja International Realty: Cabo's #1 real estate agency since 1987. Founded by Don Weis. Team of 13 expert agents. 1,850+ properties sold. $800M+ in sales. MLS & AMPI member." 
+          content="Meet Baja International Realty, led by Don Weis. Cabo real estate experience since 1987, local guidance for buyers and sellers, and MLS search with no signup required." 
         />
         <link rel="canonical" href="https://www.bircabo.com/about" />
         <meta property="og:url" content="https://www.bircabo.com/about" />
         <meta property="og:title" content="About Baja International Realty | Cabo San Lucas Real Estate Experts" />
+        <meta property="og:image" content="https://www.bircabo.com/bir-office-plaza-nautica.jpg" />
         <meta property="og:type" content="website" />
-        <meta property="og:description" content="35+ years of excellence in Cabo San Lucas luxury real estate. Founding MLS member, 1,850+ families served, $800M+ in sales." />
+        <meta property="og:description" content="35+ years of excellence in Cabo San Lucas luxury real estate. Founding MLS member, 1,850+ properties sold, $800M+ in sales." />
       </Helmet>
       <Navbar />
       <FloatingContact />
@@ -340,11 +341,11 @@ const About = () => {
       {/* Hero */}
       <section className="pt-32 pb-16 bg-secondary">
         <div className="container mx-auto px-4">
-          <h1 className="about-hero-title text-5xl md:text-6xl font-bold text-foreground mb-6">
+          <h1 className="about-hero-title text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
             About Baja International Realty
           </h1>
           <p className="about-hero-subtitle text-xl text-muted-foreground max-w-3xl">
-            Pioneering luxury real estate in Cabo San Lucas since the late 1980s
+            Local experience since 1987. Straightforward answers. A friendly place to explore Cabo real estate at your own pace.
           </p>
         </div>
       </section>
@@ -355,19 +356,14 @@ const About = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="story-heading text-4xl font-bold text-foreground mb-6">Our Story</h2>
-              <div className="story-text space-y-4 text-muted-foreground leading-relaxed">
-                <p>
-                  Founded in the late 1980s by visionary broker <span className="font-semibold text-foreground">Don Weis</span>, Baja International Realty has been a pioneering force in Cabo San Lucas real estate for over 35 years. Don's groundbreaking "Mexico Gold" real estate education seminars were featured on <span className="font-semibold text-foreground">CNN, 20/20, and national media</span>, helping establish foreign investor confidence in Baja real estate.
-                </p>
-                <p>
-                  From those educational roots with Pan America Ltd, Don established Baja International to represent developers in the Baja Norte region, which evolved into Land's End Realty and eventually today's Baja International Realty. Our firm has brokered some of the most significant real estate transactions in Cabo history, including multi-million dollar land acquisitions for <span className="font-semibold text-foreground">RIU Hotels</span> and <span className="font-semibold text-foreground">Cabo San Cristobal Resorts</span> - one of the largest planned resort projects in the world with 8 hotels, championship golf courses, polo fields, and a Formula One racetrack.
-                </p>
-                <p>
-                  As a <span className="font-semibold text-foreground">founding member of MLS-BCS</span> (Multiple Listing Service of Baja California Sur), we've successfully helped over <span className="font-semibold text-foreground">2,200 families</span> find their perfect property in paradise, managing over <span className="font-semibold text-foreground">$1.2 billion</span> in sales. Today, under Don's continued leadership, our team of International Realtors® combines 35+ years of local expertise with international standards of service.
-                </p>
+              <div className="story-text space-y-5 text-lg text-muted-foreground leading-relaxed">
+                <p>Baja International Realty's roots go back to 1987 and the work of founder and broker <strong className="text-foreground">Don Weis</strong>. Over the decades, Cabo has grown and changed. Our purpose has stayed simple: help people understand the market, the property, and the process before they make a decision.</p>
+                <p>Education was part of that work from the beginning. Don's “Mexico Gold” real estate seminars received coverage on CNN, 20/20, and national media, helping introduce buyers to Mexican real estate and the ways foreigners could own property here.</p>
+                <p>From those educational roots with Pan America Ltd, Don established Baja International to represent developers in Baja Norte. The business evolved through Land's End Realty into today's Baja International Realty. Its history includes land acquisitions for RIU Hotels and Cabo San Cristobal Resorts, as well as helping individual buyers and sellers with homes, condos, and land.</p>
+                <p>As a founding member of <strong className="text-foreground">MLS-BCS</strong>, Don has been involved in the development of the region's real estate industry. Under his continued leadership, BIR combines that perspective with the practical knowledge that comes from living and working here.</p>
               </div>
             </div>
-            <div className="story-image relative h-96 lg:h-full min-h-[400px]">
+            <div className="story-image relative">
               <a 
                 href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
                 target="_blank" 
@@ -375,11 +371,34 @@ const About = () => {
                 className="block h-full group"
               >
                 <img 
-                  src="/storefron.jpeg" 
-                  alt="Baja International Realty storefront - Click for directions" 
-                  className="w-full h-full object-cover rounded-2xl shadow-elegant group-hover:opacity-90 transition-opacity cursor-pointer"
+                  src="/bir-office-plaza-nautica.jpg"
+                  width="4032" height="3024" 
+                  alt="Baja International Realty office at Plaza Nautica in downtown Cabo San Lucas — click for directions" 
+                  className="w-full h-auto rounded-2xl shadow-elegant group-hover:opacity-90 transition-opacity cursor-pointer"
                 />
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14 bg-secondary">
+        <div className="container mx-auto px-4 max-w-6xl grid md:grid-cols-2 gap-10">
+          <div>
+            <h2 className="text-3xl font-bold mb-5">Explore first. Talk when you're ready.</h2>
+            <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
+              <p>Some buyers know exactly what they want. Others spend weeks or months learning about Cabo before they are ready to speak with an agent. Both are welcome here.</p>
+              <p>Our MLS search lets you explore public listings, use the map, save up to 50 favorites in your browser, and compare up to three properties. No signup is required. Your favorites stay in that browser unless its data is cleared.</p>
+              <p>When you want advice, our team is here to help you understand the choices. Searching should be useful and comfortable, without pressure to take the next step.</p>
+            </div>
+            <Button asChild size="lg" className="mt-6"><a href="/property-search.html">Search Cabo MLS</a></Button>
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold mb-5">The details that make a place right for you</h2>
+            <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
+              <p>A beautiful photo is only the beginning. Easy access to shopping and medical care, walking distance to restaurants, ocean breezes, seasonal heat, and a community's rules can all affect how a property fits your life.</p>
+              <p>We help buyers consider those differences across Cabo San Lucas, San José del Cabo, the Corridor, the Pacific coast, East Cape, and La Paz. For rental buyers, we also discuss location, the guest experience, competing properties, and ongoing expenses.</p>
+              <p>For sellers, our work starts with understanding your property and your goals. We can help you assess its place in the market, consider pricing and presentation, and plan your next steps.</p>
             </div>
           </div>
         </div>
@@ -547,7 +566,7 @@ const About = () => {
             </div>
             <div className="text-center">
               <div ref={el => statsRefs.current[1] = el} className="text-5xl font-bold text-accent mb-2">0</div>
-              <p className="text-primary-foreground/90">Families<br />Served</p>
+              <p className="text-primary-foreground/90">Properties<br />Sold</p>
             </div>
             <div className="text-center">
               <div ref={el => statsRefs.current[2] = el} className="text-5xl font-bold text-accent mb-2">$0</div>
@@ -593,9 +612,9 @@ const About = () => {
                 className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-accent shadow-lg"
               />
             </div>
-            <blockquote className="text-2xl md:text-3xl font-light text-foreground italic mb-6 leading-relaxed">
-              "Our mission has always been to educate, guide, and empower clients to make confident real estate decisions in Baja California Sur. Three decades later, that commitment remains stronger than ever."
-            </blockquote>
+            <h2 className="text-3xl font-bold mb-5">A personal connection to Cabo's real estate history</h2>
+            <p className="text-lg text-muted-foreground mb-5 leading-relaxed">Don recalls Stewart approaching him in the late 1980s with an exclusive opportunity to offer title insurance throughout Mexico. He was unable to take it on because he needed to return to the San Francisco Bay Area to care for his terminally ill parents. That experience remains part of his connection to the years when foreign buyers were gaining confidence in Mexican property ownership.</p>
+            <p className="text-lg text-muted-foreground mb-6 leading-relaxed">Today, that history informs BIR's emphasis on clear explanations: how ownership works, what buying and selling involve, and what everyday life in each community can be like.</p>
             <div className="text-accent font-semibold text-lg">
               Don Weis
             </div>
@@ -606,6 +625,14 @@ const About = () => {
         </div>
       </section>
 
+      <section className="bg-secondary py-12">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <h2 className="text-3xl font-bold mb-4">Visit us at Plaza Nautica</h2>
+          <p className="text-lg text-muted-foreground mb-5">Stop by our downtown Cabo office to introduce yourself or talk about what you have in mind.</p>
+          <address className="not-italic text-lg leading-relaxed mb-6">Blvd. Marina 14<br />Plaza Nautica local A6<br />Colonia Centro<br />Cabo San Lucas, Baja California Sur<br />CP 23450</address>
+          <Button asChild size="lg"><a href="/contact">Contact BIR</a></Button>
+        </div>
+      </section>
       <Footer />
     </div>
   );
