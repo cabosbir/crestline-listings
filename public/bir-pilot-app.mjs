@@ -1,4 +1,4 @@
-import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates} from './bir-pilot-search.mjs';
+import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates, convertSizeUnits} from './bir-pilot-search.mjs';
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
 document.querySelector('.intro').textContent='Start with a zone, then narrow your search by area, community and subdivision. Each choice narrows the options below it. If you already know the subdivision you want, select it directly.';
@@ -291,8 +291,8 @@ $('filters').addEventListener('submit',e=>e.preventDefault());
 $('filters').addEventListener('input',e=>{
  const key=e.target.name;if(!(key in filters))return;
  if(locationFields.includes(key)){filters=changeLocation(filters,key,e.target.value);syncLocations();$('message').textContent='Location choices below this level cleared. Other filters kept.';}
- else if(key==='areaUnit'){const factor=e.target.value==='ft2'?10.76391041671:1/10.76391041671;for(const name of ['minLot','maxLot','minTotal','maxTotal','minAC','maxAC'])if(filters[name]!==''){filters[name]=String(Math.round(Number(filters[name])*factor*100)/100);$(name).value=filters[name];}filters={...filters,areaUnit:e.target.value};$('message').textContent='All size limits converted to the selected units.';}
- else{filters={...filters,[key]:key==='financing'?e.target.checked:e.target.value};$('message').textContent='';}
+ else if(key==='areaUnit'){filters=convertSizeUnits(filters,e.target.value);for(const name of ['minLot','maxLot','minTotal','maxTotal','minAC','maxAC'])$(name).value=filters[name];$('message').textContent='All size limits converted to the selected units.';}
+ else{filters={...filters,[key]:key==='financing'?e.target.checked:e.target.value};if(filters._areaBounds)delete filters._areaBounds[key];$('message').textContent='';}
  shown=24;render();if(locationFields.includes(key))fitLocationMap();
 });
 $('clear-location').onclick=()=>{filters={...filters,...Object.fromEntries(locationFields.map(k=>[k,'']))};syncLocations();shown=24;render();fitLocationMap();$('message').textContent='Location cleared. Price, bedrooms and other filters kept.';};
