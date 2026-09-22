@@ -178,6 +178,7 @@ const communityActivities: Record<string, string> = {
   'la-paz': 'Winter and the milder transition months favor malecón walks, cycling and outdoor dining. During the very hot summer, daily routines often work better with early errands, an afternoon break and evening waterfront time. Shade, cooling and a comfortable place to sleep become important home features. For kayaking, snorkeling and island trips, choose the day around wind, sea conditions and local operator advice.',
 };
 
+const featuredPhotoOrder = ['26-1759','24-4467','26-3083','26-3891','25-5698','26-811'];
 const handPickedMLS = new Set(['26-3891','26-1759','26-1326','25-3456','26-481','25-678','26-811','25-2758','26-616','26-246','26-3488','26-3314','26-1965']);
 const isFeaturedListing = (row: any) => String(row.ListOfficeName || '').trim().toLowerCase() === 'baja international realty' || handPickedMLS.has(row.ListingId);
 
@@ -187,7 +188,7 @@ const Index = () => {
   const [featuredError, setFeaturedError] = useState(false);
   const [featuredAttempt, setFeaturedAttempt] = useState(0);
   const [featuredVisible, setFeaturedVisible] = useState(6);
-  const [featuredSort, setFeaturedSort] = useState('updated');
+  const [featuredSort, setFeaturedSort] = useState('featured');
   const canonicalUrl = 'https://www.bircabo.com/';
 
   useEffect(() => {
@@ -224,6 +225,11 @@ const Index = () => {
   }, [featuredAttempt]);
 
   const sortedFeatured = [...featuredProperties].sort((a, b) => {
+    if (featuredSort === 'featured') {
+      const rank = (id: string) => { const index = featuredPhotoOrder.indexOf(id); return index < 0 ? featuredPhotoOrder.length : index; };
+      const difference = rank(a.ListingId) - rank(b.ListingId);
+      if (difference) return difference;
+    }
     if (featuredSort === 'low') return Number(a.ListPrice) - Number(b.ListPrice);
     if (featuredSort === 'high') return Number(b.ListPrice) - Number(a.ListPrice);
     return String(b.ModificationTimestamp || '').localeCompare(String(a.ModificationTimestamp || '')) || String(a.ListingId).localeCompare(String(b.ListingId));
@@ -448,7 +454,7 @@ const Index = () => {
               <p className="font-semibold" aria-live="polite">{featuredProperties.length} active featured listings</p>
               <label className="flex items-center gap-2 font-medium">Sort by
                 <select className="border border-border rounded-lg p-3 bg-background" value={featuredSort} onChange={event => { setFeaturedSort(event.target.value); setFeaturedVisible(6); }}>
-                  <option value="updated">Recently updated</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option>
+                  <option value="featured">Featured picks</option><option value="updated">Recently updated</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option>
                 </select>
               </label>
             </div>
