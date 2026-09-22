@@ -6,12 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { ChatProvider, useChat } from "@/contexts/ChatContext";
-import PropertyChatBot from "@/components/PropertyChatBot";
 import Index from "./pages/Index";
 import Properties from "./pages/Properties";
 import AdvancedSearch from "./pages/AdvancedSearch"; // 🔥 NEW: Full-page search with live map
-import AIPropertySearch from "./pages/AIPropertySearch"; // 🤖 NEW: AI-powered property search chatbot
 import PropertiesMap from "./pages/PropertiesMap";
 import PropertyDetail from "./pages/PropertyDetail";
 import About from "./pages/About";
@@ -57,33 +54,16 @@ function ScrollToTop() {
   return null;
 }
 
-// Global Chat Modal - renders on all pages
-function GlobalChatModal() {
-  const { isChatOpen, closeChat } = useChat();
-
-  if (!isChatOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end lg:items-center lg:justify-end lg:pr-6 lg:pb-6">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={closeChat}
-      />
-
-      {/* Chat Container */}
-      <div className="relative w-full lg:w-[800px] h-[90vh] lg:h-[700px] bg-background border border-border rounded-t-2xl lg:rounded-2xl shadow-2xl animate-in slide-in-from-bottom lg:slide-in-from-right duration-300 overflow-hidden">
-        <PropertyChatBot onClose={closeChat} />
-      </div>
-    </div>
-  );
+function RetiredAssistantRedirect() {
+  useEffect(() => { window.location.replace('/property-search.html'); }, []);
+  return <a href="/property-search.html">Open Cabo MLS Search</a>;
 }
 
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <ChatProvider>
+        <>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -92,7 +72,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/search" element={<LivePropertySearch />} /> {/* 🔥 NEW: Full-page search */}
-          <Route path="/ai-search" element={<AIPropertySearch />} /> {/* 🤖 NEW: AI property search */}
+          <Route path="/ai-search" element={<RetiredAssistantRedirect />} /> {/* 🤖 NEW: AI property search */}
           <Route path="/properties/map" element={<PropertiesMap />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/about" element={<About />} />
@@ -158,10 +138,8 @@ const App = () => (
           <Route path="/pacifico-heights" element={<PacificoHeights />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-            {/* Global Chat Modal - Available on ALL pages */}
-            <GlobalChatModal />
       </BrowserRouter>
-        </ChatProvider>
+        </>
       </TooltipProvider>
     </QueryClientProvider>
   </HelmetProvider>
