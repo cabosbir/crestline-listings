@@ -392,7 +392,7 @@ const Team = () => {
                 Each member of our team brings unique expertise<br />and a commitment to exceptional service in Cabo San Lucas
               </p>
               <p className="text-sm text-muted-foreground">
-                {agents.length} expert agents ready to assist you
+                {agents.filter(agent => agent.active !== false).length} expert agents ready to assist you
               </p>
             </div>
 
