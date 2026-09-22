@@ -178,6 +178,9 @@ const communityActivities: Record<string, string> = {
   'la-paz': 'Winter and the milder transition months favor malecón walks, cycling and outdoor dining. During the very hot summer, daily routines often work better with early errands, an afternoon break and evening waterfront time. Shade, cooling and a comfortable place to sleep become important home features. For kayaking, snorkeling and island trips, choose the day around wind, sea conditions and local operator advice.',
 };
 
+const handPickedMLS = new Set(['26-3891','26-1759','26-1326','25-3456','26-481','25-678','26-811','25-2758','26-616','26-246','26-3488','26-3314','26-1965']);
+const isFeaturedListing = (row: any) => String(row.ListOfficeName || '').trim().toLowerCase() === 'baja international realty' || handPickedMLS.has(row.ListingId);
+
 const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,7 +204,7 @@ const Index = () => {
         if (data.complete !== true || !Array.isArray(data.results) || data.total !== data.results.length || !Number.isFinite(age) || age >= 3600000 || age < -60000) throw new Error('Incomplete or outdated inventory');
         const office = data.results.filter((row: any) =>
           row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false &&
-          String(row.ListOfficeName || '').trim().toLowerCase() === 'baja international realty'
+          isFeaturedListing(row)
         );
         const batches = [];
         for (let i = 0; i < office.length; i += 24) batches.push(office.slice(i, i + 24));
@@ -211,7 +214,7 @@ const Index = () => {
           const result = await response.json();
           if (!Array.isArray(result.results) || result.next) throw new Error('Incomplete details');
           const requested = new Set(batch.map((row: any) => row.ListingKey));
-          return result.results.filter((row: any) => requested.has(row.ListingKey) && row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false && String(row.ListOfficeName || '').trim().toLowerCase() === 'baja international realty');
+          return result.results.filter((row: any) => requested.has(row.ListingKey) && row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false && isFeaturedListing(row));
         }));
         if (live) setFeaturedProperties(detailed.flat());
       })
@@ -435,14 +438,14 @@ const Index = () => {
           <div className="max-w-3xl mb-8">
             <p className="text-accent uppercase tracking-wider mb-3 font-semibold">Explore our featured selection</p>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Properties</h2>
-            <p className="text-lg text-muted-foreground">Explore featured homes, condos and land, starting with our active BIR office listings. Open any property for photos and full details, then save your favorites and compare. No signup required.</p>
+            <p className="text-lg text-muted-foreground">Explore featured homes, condos and land, including active BIR office listings and properties hand-picked by Don. Open any property for photos and full details, then save your favorites and compare. No signup required.</p>
           </div>
-          {loading ? <div role="status" className="flex items-center gap-3 py-10"><Loader2 className="h-6 w-6 animate-spin" />Loading our active listings…</div>
-          : featuredError ? <div role="status" className="p-8 border border-border rounded-xl"><p className="mb-4">We couldn't load our office listings. Please try again or explore the MLS search below.</p><Button variant="outline" onClick={() => setFeaturedAttempt(n => n + 1)}>Try Again</Button></div>
-          : featuredProperties.length === 0 ? <p className="py-8">There are no active BIR office listings available in the public feed right now. Explore the full MLS search below.</p>
+          {loading ? <div role="status" className="flex items-center gap-3 py-10"><Loader2 className="h-6 w-6 animate-spin" />Loading featured listings…</div>
+          : featuredError ? <div role="status" className="p-8 border border-border rounded-xl"><p className="mb-4">We couldn't load featured listings. Please try again or explore the MLS search below.</p><Button variant="outline" onClick={() => setFeaturedAttempt(n => n + 1)}>Try Again</Button></div>
+          : featuredProperties.length === 0 ? <p className="py-8">There are no active featured listings available in the public feed right now. Explore the full MLS search below.</p>
           : <>
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <p className="font-semibold" aria-live="polite">{featuredProperties.length} active office listings</p>
+              <p className="font-semibold" aria-live="polite">{featuredProperties.length} active featured listings</p>
               <label className="flex items-center gap-2 font-medium">Sort by
                 <select className="border border-border rounded-lg p-3 bg-background" value={featuredSort} onChange={event => { setFeaturedSort(event.target.value); setFeaturedVisible(6); }}>
                   <option value="updated">Recently updated</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option>
@@ -464,7 +467,7 @@ const Index = () => {
                 </div>
               </a>)}
             </div>
-            {featuredVisible < featuredProperties.length && <div className="text-center mt-8"><Button variant="outline" size="lg" className="max-w-full whitespace-normal h-auto py-3 px-4" onClick={() => setFeaturedVisible(n => n + 6)}>Show More Office Listings ({featuredProperties.length - featuredVisible} remaining)</Button></div>}
+            {featuredVisible < featuredProperties.length && <div className="text-center mt-8"><Button variant="outline" size="lg" className="max-w-full whitespace-normal h-auto py-3 px-4" onClick={() => setFeaturedVisible(n => n + 6)}>Show More Featured Properties ({featuredProperties.length - featuredVisible} remaining)</Button></div>}
           </>}
           <div className="mt-8 text-center"><Button asChild size="lg"><a href="/property-search.html">Search All MLS Properties <ArrowRight className="ml-2 h-5 w-5" /></a></Button></div>
         </div>
