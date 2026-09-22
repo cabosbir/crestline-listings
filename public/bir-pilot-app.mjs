@@ -10,6 +10,9 @@ if(new URLSearchParams(location.search).get('check-email')==='1'){
  const check=document.createElement('p');check.id='email-connection-check';check.setAttribute('role','status');check.style.cssText='padding:20px;background:#fff3cd';check.textContent='Checking the email connection without sending a message...';document.querySelector('.notice').after(check);
  fetch('/api/search-pilot?mode=email-check',{}).then(async response=>{if(!response.ok)throw new Error('Connection check unavailable');return response.json();}).then(result=>{check.textContent=`${result.message} Connection status: ${result.status}`;}).catch(()=>{check.textContent='The connection check could not finish.';});
 }
+const extraFilters=document.createElement('div');
+extraFilters.innerHTML='<label for="construction">CONSTRUCTION</label><select id="construction" name="construction"><option value="">Any</option></select><label for="lotUnit">LOT SIZE — units</label><select id="lotUnit" name="lotUnit"><option value="m2">Square meters (m²)</option><option value="ft2">Square feet (ft²)</option></select><label for="minLot">Minimum lot size</label><input id="minLot" name="minLot" type="number" min="0" step="any" placeholder="Any"><label for="maxLot">Maximum lot size</label><input id="maxLot" name="maxLot" type="number" min="0" step="any" placeholder="Any"><small class="hint">Uses the lot area reported in MLS, not indoor floor area. Listings without a reported lot size are excluded when a size limit is set.</small>';
+$('PropertyType').after(extraFilters);
 let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
 const detailsCache=new Map();
@@ -272,12 +275,14 @@ function render(){
  matches=filterListings(rows,filters);const sort=$('sort').value;
  matches.sort((a,b)=>sort==='low'?(a.ListPrice??Infinity)-(b.ListPrice??Infinity):sort==='high'?(b.ListPrice??-Infinity)-(a.ListPrice??-Infinity):String(b.ModificationTimestamp||'').localeCompare(String(a.ModificationTimestamp||'')));
  $('count').textContent=`${matches.length.toLocaleString()} matching properties`;renderCards();renderMap();
+ if(filters.minLot && filters.maxLot && Number(filters.minLot)>Number(filters.maxLot))$('message').textContent='Minimum lot size is higher than maximum lot size.';
  if(filters.minPrice && filters.maxPrice && Number(filters.minPrice)>Number(filters.maxPrice))$('message').textContent='Minimum price is higher than maximum price.';
 }
 $('filters').addEventListener('submit',e=>e.preventDefault());
 $('filters').addEventListener('input',e=>{
  const key=e.target.name;if(!(key in filters))return;
  if(locationFields.includes(key)){filters=changeLocation(filters,key,e.target.value);syncLocations();$('message').textContent='Location choices below this level cleared. Other filters kept.';}
+ else if(key==='lotUnit'){const factor=e.target.value==='ft2'?10.76391041671:1/10.76391041671;for(const name of ['minLot','maxLot'])if(filters[name]!==''){filters[name]=String(Math.round(Number(filters[name])*factor*100)/100);$(name).value=filters[name];}filters={...filters,lotUnit:e.target.value};$('message').textContent='Lot size limits converted to the selected units.';}
  else{filters={...filters,[key]:key==='financing'?e.target.checked:e.target.value};$('message').textContent='';}
  shown=24;render();if(locationFields.includes(key))fitLocationMap();
 });
@@ -313,7 +318,7 @@ try{
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
  rows=rows.filter(p=>p.StandardStatus==='Active'&&p.InternetEntireListingDisplayYN!==false);
  controls.forEach(el=>el.disabled=false);
- options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),'');options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
+ options('construction',[...new Set(rows.map(p=>p.General_sp_Description_co_Construction).filter(Boolean))].sort(),'');options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),'');options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
  $('timestamp').textContent=`All filters ready in ${((performance.now()-started)/1000).toFixed(1)} seconds. ${rows.length.toLocaleString()} public active listings checked ${new Date(data.fetchedAt).toLocaleTimeString()}. Includes Reservations Only; reload for updates.`;
  $('timestamp').dataset.loadingMethod=loadingMethod;
  if(age>=300000)$('timestamp').textContent+=' The latest inventory update is delayed. You can keep searching these last verified listings. Prices and availability may have changed. Reload for an update.';
