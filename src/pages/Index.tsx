@@ -212,7 +212,7 @@ const Index = () => {
           const response = await fetch('/api/search-pilot?keys=' + encodeURIComponent(batch.map((row: any) => row.ListingKey).join(',')), { signal: abort.signal });
           if (!response.ok) throw new Error('Photos unavailable');
           const result = await response.json();
-          if (!Array.isArray(result.results) || result.next) throw new Error('Incomplete details');
+          if (!Array.isArray(result.results) || !Number.isSafeInteger(result.total) || result.results.length !== result.total) throw new Error('Incomplete details');
           const requested = new Set(batch.map((row: any) => row.ListingKey));
           return result.results.filter((row: any) => requested.has(row.ListingKey) && row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false && isFeaturedListing(row));
         }));
