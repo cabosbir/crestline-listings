@@ -1,5 +1,5 @@
 export const locationFields = ['City', 'MLSAreaMajor', 'Address_co_Community2', 'SubdivisionName'];
-export const defaults = () => ({City:'', MLSAreaMajor:'', Address_co_Community2:'', SubdivisionName:'', PropertyType:'', minPrice:'', maxPrice:'', beds:'', view:'', financing:false, query:''});
+export const defaults = () => ({City:'', MLSAreaMajor:'', Address_co_Community2:'', SubdivisionName:'', PropertyType:'', minPrice:'', maxPrice:'', beds:'', view:'', financing:false, query:'', construction:'', minLot:'', maxLot:'', lotUnit:'m2'});
 export function changeLocation(filters, field, value) {
   const next = {...filters, [field]:value};
   const index = locationFields.indexOf(field);
@@ -11,6 +11,10 @@ export function locationOptions(rows, filters, field) {
   const parents = locationFields.slice(0, locationFields.indexOf(field));
   return [...new Set(rows.filter(p => parents.every(k => !filters[k] || p[k] === filters[k])).map(p => p[field]).filter(Boolean))].sort();
 }
+export function lotSquareMeters(p) {
+  const value=p.General_sp_Description_co_Lot_sp_M2;
+  return value!==null && value!==undefined && String(value).trim()!=='' && Number.isFinite(Number(value)) && Number(value)>0 ? Number(value) : null;
+}
 export function filterListings(rows, f) {
   const query = f.query.trim().toLowerCase();
   return rows.filter(p => p.StandardStatus === 'Active' && p.InternetEntireListingDisplayYN !== false)
@@ -19,6 +23,13 @@ export function filterListings(rows, f) {
     .filter(p => !f.minPrice || (p.ListPrice != null && Number(p.ListPrice) >= Number(f.minPrice)))
     .filter(p => !f.maxPrice || (p.ListPrice != null && Number(p.ListPrice) <= Number(f.maxPrice)))
     .filter(p => !f.beds || (p.BedroomsTotal != null && Number(p.BedroomsTotal) >= Number(f.beds)))
+    .filter(p => !f.construction || p.General_sp_Description_co_Construction === f.construction)
+    .filter(p => {
+      if(!f.minLot && !f.maxLot)return true;
+      const size=lotSquareMeters(p),factor=f.lotUnit==='ft2'?10.76391041671:1;
+      if(size===null)return false;
+      return (!f.minLot || size*factor>=Number(f.minLot)-0.01) && (!f.maxLot || size*factor<=Number(f.maxLot)+0.01);
+    })
     .filter(p => !f.view || p.General_sp_Description_co_Primary_sp_View === f.view)
     .filter(p => !f.financing || /^(yes|true)$/i.test(String(p.General_sp_Description_co_Seller_sp_Financing_sp_Offered)))
     .filter(p => !query || [p.ListingId, p.UnparsedAddress, ...locationFields.map(k => p[k])].some(v => String(v || '').toLowerCase().includes(query)));
