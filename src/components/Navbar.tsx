@@ -1,271 +1,57 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Menu, X, Phone, Mail, ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
+const primaryLinks = [
+  { name: "Search Properties", href: "/property-search.html" },
+  { name: "Recent Price Reductions", href: "/#price-reductions" },
+];
+const exploreLinks = [
+  { name: "Featured Properties", href: "/#featured-properties" },
+  { name: "Explore Our Communities", href: "/#cabo-communities" },
+  { name: "Understanding Buying", href: "/#buying-in-cabo" },
+  { name: "Understanding Selling", href: "/#selling-in-cabo" },
+  { name: "Free Property Evaluation", href: "/seller-evaluation" },
+];
+const companyLinks = [
+  { name: "Our Team", href: "/team" },
+  { name: "About BIR", href: "/about" },
+  { name: "Contact Us", href: "/contact" },
+];
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const navLinks = [
-    { name: "About", href: "/about" },
-  ];
-
-  const propertyLinks = [
-    { name: "Cabo MLS Search", href: "/property-search.html" },
-    { name: "Pacifico Heights", href: "/pacifico-heights" },
-    { name: "Cabo Homes", href: "https://cabo-homes.com/" },
-    { name: "Cabo Condos", href: "https://cabo-condos.com/" },
-  ];
-
-  const teamLinks: Array<{ name: string; href?: string; action?: string }> = [
-    { name: "View Our Agents", href: "/team" },
-  ];
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-elegant">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <a href="/" aria-label="BIR — Home" title="Home" className="flex items-center">
-            <img 
-              src="/BIRLOGO.png" 
-              alt="Baja International Realty" 
-              className="h-16 md:h-20 w-auto"
-            />
-          </a>
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
-            {/* Properties Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-heading text-lg outline-none">
-                Properties
-                <ChevronDown className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                {propertyLinks.map((link) => (
-                  <DropdownMenuItem key={link.name} asChild>
-                    {(link.href.startsWith("http") || link.href.endsWith(".html")) ? (
-                      <a
-                        href={link.href}
-                        target={link.href.startsWith("http") ? "_blank" : undefined}
-                        rel="noopener noreferrer"
-                        className="cursor-pointer w-full font-heading"
-                      >
-                        {link.name}
-                      </a>
-                    ) : (
-                      <Link
-                        to={link.href}
-                        className="cursor-pointer w-full font-heading"
-                      >
-                        {link.name}
-                      </Link>
-                    )}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Office Listings Link */}
-            <Link
-              to="/office-listings"
-              className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-heading text-lg"
-            >
-              Office Listings
-            </Link>
-
-            {/* Team Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent transition-fast font-heading text-lg outline-none">
-                Team
-                <ChevronDown className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
-                {teamLinks.map((link) => (
-                  <DropdownMenuItem
-                    key={link.name}
-                    asChild={link.href ? true : false}
-                  >
-                    {link.href ? (
-                      <Link
-                        to={link.href}
-                        className="cursor-pointer w-full font-heading"
-                      >
-                        {link.name}
-                      </Link>
-                    ) : (
-                      <div className="cursor-pointer w-full font-heading">
-                        {link.name}
-                      </div>
-                    )}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Other Nav Links */}
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.href}
-                className="text-foreground hover:text-accent transition-fast font-heading text-lg"
-              >
-                {link.name}
-              </Link>
-            ))}
-
-            <div className="flex items-center space-x-4 ml-4">
-              <a 
-                href="tel:+526241435555" 
-                className="text-muted-foreground hover:text-accent transition-fast"
-                aria-label="Call Baja International Realty"
-              >
-                <Phone className="h-5 w-5" />
-              </a>
-              <a 
-                href="mailto:info@bircabo.com" 
-                className="text-muted-foreground hover:text-accent transition-fast"
-                aria-label="Email Baja International Realty"
-              >
-                <Mail className="h-5 w-5" />
-              </a>
-              <Link to="/contact">
-                <Button variant="luxury" size="sm">
-                  Contact Us
-                </Button>
-              </Link>
-            </div>
+  return <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-elegant">
+    <div className="container mx-auto px-4">
+      <div className="flex items-center justify-between h-20 gap-4">
+        <a href="/" aria-label="BIR — Home" title="Home" className="flex items-center shrink-0">
+          <img src="/BIRLOGO.png" alt="Baja International Realty" className="h-16 md:h-20 w-auto" />
+        </a>
+        <div className="hidden lg:flex items-center gap-4 xl:gap-6">
+          {primaryLinks.map(link=><a key={link.href} href={link.href} className="text-foreground hover:text-accent font-heading text-base font-semibold">{link.name}</a>)}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent font-heading text-base">Explore<ChevronDown className="h-4 w-4" /></DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-64">
+              {exploreLinks.map(link=><DropdownMenuItem key={link.href} asChild><a href={link.href} className="cursor-pointer w-full py-2">{link.name}</a></DropdownMenuItem>)}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {companyLinks.map(link=><a key={link.href} href={link.href} className="text-foreground hover:text-accent font-heading text-base">{link.name}</a>)}
+          <div className="hidden xl:flex items-center gap-3">
+            <a href="tel:+526241435555" aria-label="Call Baja International Realty" className="hover:text-accent"><Phone className="h-5 w-5" /></a>
+            <a href="mailto:info@bircabo.com" aria-label="Email Baja International Realty" className="hover:text-accent"><Mail className="h-5 w-5" /></a>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-foreground hover:text-accent transition-fast"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </div>
-
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="lg:hidden py-4 border-t border-border">
-            <div className="flex flex-col space-y-4">
-              {/* Properties Section in Mobile */}
-              <div className="px-2">
-                <div className="text-foreground font-heading text-lg mb-2">Properties</div>
-                <div className="flex flex-col space-y-2 pl-4">
-                  {propertyLinks.map((link) => (
-                    (link.href.startsWith("http") || link.href.endsWith(".html")) ? (
-                      <a
-                        key={link.name}
-                        href={link.href}
-                        target={link.href.startsWith("http") ? "_blank" : undefined}
-                        rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-accent transition-fast font-heading"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {link.name}
-                      </a>
-                    ) : (
-                      <Link
-                        key={link.name}
-                        to={link.href}
-                        className="text-muted-foreground hover:text-accent transition-fast font-heading"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {link.name}
-                      </Link>
-                    )
-                  ))}
-                </div>
-              </div>
-
-              {/* Office Listings in Mobile */}
-              <Link
-                to="/office-listings"
-                className="text-foreground hover:text-accent transition-fast font-heading text-lg px-2"
-                onClick={() => setIsOpen(false)}
-              >
-                Office Listings
-              </Link>
-
-              {/* Team Section in Mobile */}
-              <div className="px-2">
-                <div className="text-foreground font-heading text-lg mb-2">Team</div>
-                <div className="flex flex-col space-y-2 pl-4">
-                  {teamLinks.map((link) => (
-                    link.href ? (
-                      <Link
-                        key={link.name}
-                        to={link.href}
-                        className="text-muted-foreground hover:text-accent transition-fast font-heading"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {link.name}
-                      </Link>
-                    ) : (
-                      <button
-                        key={link.name}
-                        className="text-left text-muted-foreground hover:text-accent transition-fast font-heading"
-                        onClick={() => {
-                          setIsOpen(false);
-                        }}
-                      >
-                        {link.name}
-                      </button>
-                    )
-                  ))}
-                </div>
-              </div>
-
-              {/* Other Nav Links in Mobile */}
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  className="text-foreground hover:text-accent transition-fast font-heading text-lg px-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              ))}
-
-              <div className="flex items-center space-x-4 px-2 pt-4">
-                <a 
-                  href="tel:+526241435555" 
-                  className="text-muted-foreground hover:text-accent transition-fast"
-                  aria-label="Call us"
-                >
-                  <Phone className="h-5 w-5" />
-                </a>
-                <a 
-                  href="mailto:info@bircabo.com" 
-                  className="text-muted-foreground hover:text-accent transition-fast"
-                  aria-label="Email us"
-                >
-                  <Mail className="h-5 w-5" />
-                </a>
-              </div>
-              <Link to="/contact" onClick={() => setIsOpen(false)}>
-                <Button variant="luxury" size="sm" className="w-full">
-                  Contact Us
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
+        <button type="button" onClick={()=>setIsOpen(!isOpen)} className="lg:hidden p-2 text-foreground hover:text-accent" aria-label={isOpen?'Close menu':'Open menu'} aria-expanded={isOpen} aria-controls="bir-mobile-menu">{isOpen?<X className="h-6 w-6" />:<Menu className="h-6 w-6" />}</button>
       </div>
-
-    </nav>
-  );
+      {isOpen&&<div id="bir-mobile-menu" className="lg:hidden py-4 border-t border-border max-h-[calc(100dvh-5rem)] overflow-y-auto">
+        <div className="flex flex-col gap-1">
+          {primaryLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg font-semibold text-primary">{link.name}</a>)}
+          {exploreLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg hover:text-accent">{link.name}</a>)}
+          <div className="border-t border-border mt-2 pt-2 flex flex-col">
+            {companyLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg hover:text-accent">{link.name}</a>)}
+          </div>
+        </div>
+      </div>}
+    </div>
+  </nav>;
 };
-
 export default Navbar;
