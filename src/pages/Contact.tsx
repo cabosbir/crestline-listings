@@ -131,10 +131,10 @@ const Contact = () => {
         "name": "Baja International Realty",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Boulevard Marina s/n y Vicente Guerrero s/n, Manzana 31-A, Colonia Centro",
+          "streetAddress": "Blvd. Marina 14, Plaza Nautica local A6, Colonia Centro",
           "addressLocality": "Cabo San Lucas",
           "addressRegion": "Baja California Sur",
-          "postalCode": "23400",
+          "postalCode": "23450",
           "addressCountry": "MX"
         },
         "telephone": "+52-624-143-5555",
@@ -193,10 +193,11 @@ const Contact = () => {
                       rel="noopener noreferrer"
                       className="text-muted-foreground text-sm hover:text-accent transition-fast"
                     >
-                      Boulevard Marina s/n y Vicente Guerrero s/n<br />
-                      Manzana 31-A, Colonia Centro<br />
+                      Blvd. Marina 14<br />
+                  Plaza Nautica local A6<br />
+                  Colonia Centro<br />
                       Cabo San Lucas, Baja California Sur<br />
-                      México, C.P. 23400
+                      CP 23450
                     </a>
                   </div>
                 </div>
