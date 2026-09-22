@@ -23,10 +23,20 @@ export function propertyAreaSquareMeters(p,kind) {
 export function matchesPropertyArea(p,f,kind) {
   const min=f['min'+kind],max=f['max'+kind];
   if(!min&&!max)return true;
-  const value=propertyAreaSquareMeters(p,kind),unit=f.areaUnit;
+  const value=kind==='Lot'?lotSquareMeters(p):propertyAreaSquareMeters(p,kind);
   if(value===null)return false;
-  const size=value*(unit==='m2'?1:10.76391041671);
-  return (!min||size>=Number(min)-0.01)&&(!max||size<=Number(max)+0.01);
+  const bound=name=>f._areaBounds?.[name] ?? Number(f[name])/(f.areaUnit==='m2'?1:10.76391041671);
+  return (!min||value>=bound('min'+kind)-1e-8)&&(!max||value<=bound('max'+kind)+1e-8);
+}
+export function convertSizeUnits(filters,unit) {
+  const next={...filters,areaUnit:unit,_areaBounds:{...filters._areaBounds}};
+  for(const name of ['minLot','maxLot','minTotal','maxTotal','minAC','maxAC']) {
+    if(filters[name]===''){delete next._areaBounds[name];continue;}
+    const meters=filters._areaBounds?.[name] ?? Number(filters[name])/(filters.areaUnit==='m2'?1:10.76391041671);
+    next._areaBounds[name]=meters;
+    next[name]=String(Math.round(meters*(unit==='m2'?1:10.76391041671)*100)/100);
+  }
+  return next;
 }
 export function filterListings(rows, f) {
   const query = f.query.trim().toLowerCase();
@@ -38,12 +48,7 @@ export function filterListings(rows, f) {
     .filter(p => !f.beds || (p.BedroomsTotal != null && Number(p.BedroomsTotal) >= Number(f.beds)))
     .filter(p => matchesPropertyArea(p,f,'Total') && matchesPropertyArea(p,f,'AC'))
     .filter(p => !f.construction || p.General_sp_Description_co_Construction === f.construction)
-    .filter(p => {
-      if(!f.minLot && !f.maxLot)return true;
-      const size=lotSquareMeters(p),factor=f.areaUnit!=='m2'?10.76391041671:1;
-      if(size===null)return false;
-      return (!f.minLot || size*factor>=Number(f.minLot)-0.01) && (!f.maxLot || size*factor<=Number(f.maxLot)+0.01);
-    })
+    .filter(p => matchesPropertyArea(p,f,'Lot'))
     .filter(p => !f.view || p.General_sp_Description_co_Primary_sp_View === f.view)
     .filter(p => !f.financing || /^(yes|true)$/i.test(String(p.General_sp_Description_co_Seller_sp_Financing_sp_Offered)))
     .filter(p => !query || [p.ListingId, p.UnparsedAddress, ...locationFields.map(k => p[k])].some(v => String(v || '').toLowerCase().includes(query)));
