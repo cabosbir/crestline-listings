@@ -71,12 +71,12 @@ export const COMPANY_INFO: CompanyInfo = {
   email: "info@bircabo.com",
   website: "bircabo.com",
   address: {
-    street: "Boulevard Marina s/n y Vicente Guerrero s/n",
-    unit: "Manzana 31-A, Colonia Centro",
+    street: "Blvd. Marina 14",
+    unit: "Plaza Nautica local A6, Colonia Centro",
     city: "Cabo San Lucas",
     state: "Baja California Sur",
     country: "México",
-    postalCode: "23400",
+    postalCode: "23450",
     googleMapsLink: "https://maps.app.goo.gl/DsyfVAHBARUKDJAX8"
   },
   officeHours: {
