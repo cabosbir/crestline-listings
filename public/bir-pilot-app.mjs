@@ -1,7 +1,7 @@
 import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates, convertSizeUnits} from './bir-pilot-search.mjs';
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
-document.querySelector('.intro').textContent='Start with a zone, then narrow your search by area, community and subdivision. Each choice narrows the options below it. If you already know the subdivision you want, select it directly.';
+document.querySelector('.intro').textContent='Choose a property type, then narrow your search by zone, area, community and subdivision. Each choice narrows the options below it. If you already know the subdivision you want, select it directly.';
 document.querySelector('.steps').remove();
 for(const key of locationFields)document.querySelector(`label[for="${key}"]`).textContent=document.querySelector(`label[for="${key}"]`).textContent.replace(/^\d+\.\s*/, '');
 $('MLSAreaMajor').nextElementSibling.textContent='Choose any area, or select a zone to narrow the list.';
@@ -21,7 +21,11 @@ for(const [kind,label] of [['Total','TOTAL PROPERTY SIZE'],['AC','AIR-CONDITIONE
 }
 const areaHelp=document.createElement('small');areaHelp.className='hint';areaHelp.textContent='Total size uses the MLS Total M2 field; air-conditioned size uses AC area. Neither is lot size. Listings without the selected area are excluded when a limit is set.';areaFilters.append(areaHelp);extraFilters.after(areaFilters);
 
-let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
+const entryType = new URLSearchParams(location.search).get('type');
+const initialType = ({land:'Land',houses:'Houses',house:'Houses',homes:'Houses',condos:'Condos',condo:'Condos'})[String(entryType||'').toLowerCase()] || '';
+const typeLabel=document.querySelector('label[for="PropertyType"]');typeLabel.textContent='TYPE';
+$('filters').prepend(typeLabel,$('PropertyType'));
+let filters={...defaults(),PropertyType:initialType},rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
 const detailsCache=new Map();
 const galleryCache=new Map(),galleryRequests=new Map(),photoPositions=new Map();
@@ -308,9 +312,9 @@ try{
  const started=performance.now();
  const firstPage=fetch('/api/search-pilot?mode=first',{}).then(async response=>{if(!response.ok)throw new Error('Initial results unavailable');return response.json();}).then(data=>{
   if(ready||failed)return;
-  matches=data.results;
+  matches=filterListings(data.results,filters);
   for(const p of matches)detailsCache.set(p.ListingKey,{Media:p.Media,PublicRemarks:p.PublicRemarks});
-  renderCards(false);$('count').textContent=`${Number(data.total).toLocaleString()} properties · first ${matches.length} shown`;
+  renderCards(false);$('count').textContent=initialType?`${matches.length} initial ${initialType.toLowerCase()} · complete results loading`:`${Number(data.total).toLocaleString()} properties · first ${matches.length} shown`;
   $('mapnote').textContent='The complete map and location filters are loading.';
   $('timestamp').textContent=`First properties loaded in ${((performance.now()-started)/1000).toFixed(1)} seconds. Preparing all location choices...`;
  }).catch(()=>{});
@@ -327,7 +331,7 @@ try{
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
  rows=rows.filter(p=>p.StandardStatus==='Active'&&p.InternetEntireListingDisplayYN!==false);
  controls.forEach(el=>el.disabled=false);
- options('construction',[...new Set(rows.map(p=>p.General_sp_Description_co_Construction).filter(Boolean))].sort(),'');options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),'');options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
+ options('construction',[...new Set(rows.map(p=>p.General_sp_Description_co_Construction).filter(Boolean))].sort(),'');options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),initialType);options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
  $('timestamp').textContent=`All filters ready in ${((performance.now()-started)/1000).toFixed(1)} seconds. ${rows.length.toLocaleString()} public active listings checked ${new Date(data.fetchedAt).toLocaleTimeString()}. Includes Reservations Only; reload for updates.`;
  $('timestamp').dataset.loadingMethod=loadingMethod;
  if(age>=300000)$('timestamp').textContent+=' The latest inventory update is delayed. You can keep searching these last verified listings. Prices and availability may have changed. Reload for an update.';
