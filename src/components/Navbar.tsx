@@ -35,13 +35,13 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <a href="/" aria-label="BIR — Home" title="Home" className="flex items-center">
             <img 
               src="/BIRLOGO.png" 
               alt="Baja International Realty" 
               className="h-16 md:h-20 w-auto"
             />
-          </Link>
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
