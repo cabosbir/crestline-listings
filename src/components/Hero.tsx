@@ -9,17 +9,21 @@ const Hero = () => (
       <p className="text-white/90 font-semibold tracking-wide text-sm sm:text-base mb-3">Baja International Realty · Local experience since 1987</p>
       <h1 className="text-white text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight max-w-3xl">Find your place in Cabo.</h1>
       <p className="text-white/90 text-lg sm:text-xl mt-4 max-w-2xl">Search freely. Understand your options. Get local help when you’re ready.</p>
-      <nav aria-label="What would you like to do?" className="mt-7 sm:mt-9 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <a href="/property-search.html" className="sm:col-span-3 flex items-center justify-between gap-4 rounded-xl bg-white p-5 sm:p-7 text-blue-950 shadow-lg hover:bg-blue-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
+      <nav aria-label="What would you like to do?" className="mt-7 sm:mt-9 grid grid-cols-1 sm:grid-cols-6 gap-3 sm:gap-4">
+        <a href="/property-search.html" className="sm:col-span-4 flex items-center justify-between gap-4 rounded-xl bg-white p-5 sm:p-7 text-blue-950 shadow-lg hover:bg-blue-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
           <span className="flex items-center gap-3 sm:gap-4 min-w-0"><Search className="hidden sm:block h-8 w-8 shrink-0" aria-hidden="true" /><span><span className="block text-2xl sm:text-3xl font-bold">Search Properties</span><span className="block mt-2 text-base sm:text-lg leading-relaxed">Search Cabo MLS. Save favorites and compare properties at your own pace—<strong>no signup required.</strong></span></span></span>
           <ArrowRight className="h-7 w-7 shrink-0" aria-hidden="true" />
+        </a>
+        <a href="#price-reductions" className="sm:col-span-2 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-5 sm:p-6 text-blue-950 shadow-lg hover:bg-amber-100 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
+          <span><span className="block text-xl sm:text-2xl font-bold leading-snug">Recent Price Reductions</span><span className="block mt-2 text-base leading-relaxed">Explore properties reduced in the last 7 days. Updated daily.</span></span>
+          <ArrowRight className="h-6 w-6 shrink-0" aria-hidden="true" />
         </a>
         {[
           { href: '#buying-in-cabo', title: 'Understanding Buying', note: 'Ownership, steps and costs', Icon: BookOpen },
           { href: '#selling-in-cabo', title: 'Understanding Selling', note: 'Pricing, preparation and closing', Icon: Home },
           { href: '#cabo-communities', title: 'Explore Our Communities', note: 'Los Cabos, La Paz & beyond', Icon: MapPin },
         ].map(({ href, title, note, Icon }) => (
-          <a key={href} href={href} className="flex items-center gap-3 rounded-xl border border-white/60 bg-slate-950/70 p-4 sm:p-5 text-white hover:bg-blue-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
+          <a key={href} href={href} className="sm:col-span-2 flex items-center gap-3 rounded-xl border border-white/60 bg-slate-950/70 p-4 sm:p-5 text-white hover:bg-blue-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
             <Icon className="h-6 w-6 shrink-0" aria-hidden="true" /><span><span className="block text-lg sm:text-xl font-bold leading-snug">{title}</span><span className="block mt-1 text-sm text-white/90">{note}</span></span>
           </a>
         ))}
