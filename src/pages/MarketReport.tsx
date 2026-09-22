@@ -558,10 +558,11 @@ const MarketReport = () => {
               <div>
                 <p className="text-sm font-semibold text-gray-700 mb-1">Address:</p>
                 <address className="not-italic text-gray-600 leading-relaxed">
-                  Boulevard Marina s/n y Vicente Guerrero s/n<br />
-                  Manzana 31-A, Colonia Centro<br />
+                  Blvd. Marina 14<br />
+                  Plaza Nautica local A6<br />
+                  Colonia Centro<br />
                   Cabo San Lucas, Baja California Sur<br />
-                  23400, Mexico
+                  CP 23450
                 </address>
               </div>
 
@@ -732,10 +733,11 @@ const MarketReport = () => {
             <div>
               <h3 className="text-sm md:text-base font-semibold mb-4 md:mb-5 text-gray-900">Our Office</h3>
               <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
-                Boulevard Marina s/n<br />
-                Cabo San Lucas<br />
-                Baja California Sur<br />
-                México, C.P. 23400
+                Blvd. Marina 14<br />
+                Plaza Nautica local A6<br />
+                Colonia Centro<br />
+                Cabo San Lucas, Baja California Sur<br />
+                CP 23450
               </p>
             </div>
 
