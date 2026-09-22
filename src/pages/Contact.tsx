@@ -148,9 +148,6 @@ const Contact = () => {
 
   <Navbar />
   <FloatingContact />
-  {/* ... rest of your code stays exactly the same ... */}
-      <Navbar />
-      <FloatingContact />
 
       {/* Header */}
       <section className="pt-32 pb-16 bg-secondary">
