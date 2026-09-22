@@ -11,8 +11,16 @@ if(new URLSearchParams(location.search).get('check-email')==='1'){
  fetch('/api/search-pilot?mode=email-check',{}).then(async response=>{if(!response.ok)throw new Error('Connection check unavailable');return response.json();}).then(result=>{check.textContent=`${result.message} Connection status: ${result.status}`;}).catch(()=>{check.textContent='The connection check could not finish.';});
 }
 const extraFilters=document.createElement('div');
-extraFilters.innerHTML='<label for="construction">CONSTRUCTION</label><select id="construction" name="construction"><option value="">Any</option></select><label for="lotUnit">LOT SIZE — units</label><select id="lotUnit" name="lotUnit"><option value="m2">Square meters (m²)</option><option value="ft2">Square feet (ft²)</option></select><label for="minLot">Minimum lot size</label><input id="minLot" name="minLot" type="number" min="0" step="any" placeholder="Any"><label for="maxLot">Maximum lot size</label><input id="maxLot" name="maxLot" type="number" min="0" step="any" placeholder="Any"><small class="hint">Uses the lot area reported in MLS, not indoor floor area. Listings without a reported lot size are excluded when a size limit is set.</small>';
+extraFilters.innerHTML='<label for="construction">CONSTRUCTION</label><select id="construction" name="construction"><option value="">Any</option></select><label for="areaUnit">SIZE UNITS — all size filters</label><select id="areaUnit" name="areaUnit"><option value="ft2">Square feet (ft²)</option><option value="m2">Square meters (m²)</option></select><p class="hint">Applies to lot, total and air-conditioned size.</p><strong>LOT SIZE</strong><label for="minLot">Minimum lot size</label><input id="minLot" name="minLot" type="number" min="0" step="any" placeholder="Any"><label for="maxLot">Maximum lot size</label><input id="maxLot" name="maxLot" type="number" min="0" step="any" placeholder="Any"><small class="hint">Uses the lot area reported in MLS, not indoor floor area. Listings without a reported lot size are excluded when a size limit is set.</small>';
 $('PropertyType').after(extraFilters);
+const areaFilters=document.createElement('div');
+for(const [kind,label] of [['Total','TOTAL PROPERTY SIZE'],['AC','AIR-CONDITIONED INTERIOR SIZE']]){
+ const group=document.createElement('div');
+ group.innerHTML=`<strong>${label}</strong><label for="min${kind}">Minimum ${kind==='Total'?'total':'air-conditioned'} size</label><input id="min${kind}" name="min${kind}" type="number" min="0" step="any" placeholder="Any"><label for="max${kind}">Maximum ${kind==='Total'?'total':'air-conditioned'} size</label><input id="max${kind}" name="max${kind}" type="number" min="0" step="any" placeholder="Any">`;
+ areaFilters.append(group);
+}
+const areaHelp=document.createElement('small');areaHelp.className='hint';areaHelp.textContent='Total size uses the MLS Total M2 field; air-conditioned size uses AC area. Neither is lot size. Listings without the selected area are excluded when a limit is set.';areaFilters.append(areaHelp);extraFilters.after(areaFilters);
+
 let filters=defaults(),rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
 const detailsCache=new Map();
@@ -275,6 +283,7 @@ function render(){
  matches=filterListings(rows,filters);const sort=$('sort').value;
  matches.sort((a,b)=>sort==='low'?(a.ListPrice??Infinity)-(b.ListPrice??Infinity):sort==='high'?(b.ListPrice??-Infinity)-(a.ListPrice??-Infinity):String(b.ModificationTimestamp||'').localeCompare(String(a.ModificationTimestamp||'')));
  $('count').textContent=`${matches.length.toLocaleString()} matching properties`;renderCards();renderMap();
+ for(const kind of ['Total','AC'])if(filters['min'+kind] && filters['max'+kind] && Number(filters['min'+kind])>Number(filters['max'+kind]))$('message').textContent='Minimum '+(kind==='Total'?'total':'air-conditioned')+' size is higher than maximum size.';
  if(filters.minLot && filters.maxLot && Number(filters.minLot)>Number(filters.maxLot))$('message').textContent='Minimum lot size is higher than maximum lot size.';
  if(filters.minPrice && filters.maxPrice && Number(filters.minPrice)>Number(filters.maxPrice))$('message').textContent='Minimum price is higher than maximum price.';
 }
@@ -282,7 +291,7 @@ $('filters').addEventListener('submit',e=>e.preventDefault());
 $('filters').addEventListener('input',e=>{
  const key=e.target.name;if(!(key in filters))return;
  if(locationFields.includes(key)){filters=changeLocation(filters,key,e.target.value);syncLocations();$('message').textContent='Location choices below this level cleared. Other filters kept.';}
- else if(key==='lotUnit'){const factor=e.target.value==='ft2'?10.76391041671:1/10.76391041671;for(const name of ['minLot','maxLot'])if(filters[name]!==''){filters[name]=String(Math.round(Number(filters[name])*factor*100)/100);$(name).value=filters[name];}filters={...filters,lotUnit:e.target.value};$('message').textContent='Lot size limits converted to the selected units.';}
+ else if(key==='areaUnit'){const factor=e.target.value==='ft2'?10.76391041671:1/10.76391041671;for(const name of ['minLot','maxLot','minTotal','maxTotal','minAC','maxAC'])if(filters[name]!==''){filters[name]=String(Math.round(Number(filters[name])*factor*100)/100);$(name).value=filters[name];}filters={...filters,areaUnit:e.target.value};$('message').textContent='All size limits converted to the selected units.';}
  else{filters={...filters,[key]:key==='financing'?e.target.checked:e.target.value};$('message').textContent='';}
  shown=24;render();if(locationFields.includes(key))fitLocationMap();
 });
