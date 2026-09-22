@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import PropertyCard from "@/components/PropertyCard";
+import PriceReductions from "@/components/PriceReductions";
 import StatsSection from "@/components/StatsSection";
 import AgentBioCard from "@/components/AgentBioCard";
 import WhyWorkWithUs from "@/components/WhyWorkWithUs";
@@ -493,6 +494,8 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
+      <PriceReductions />
+
       <StatsSection />
 
       {/* Team Section */}
