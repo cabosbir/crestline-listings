@@ -28,10 +28,11 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-white/80 hover:text-white transition-fast"
                 >
-                  Boulevard Marina s/n y Vicente Guerrero s/n<br />
-                  Manzana 31-A, Colonia Centro<br />
+                  Blvd. Marina 14<br />
+                  Plaza Nautica local A6<br />
+                  Colonia Centro<br />
                   Cabo San Lucas, Baja California Sur<br />
-                  México, C.P. 23400
+                  CP 23450
                 </a>
               </div>
               <div className="flex items-center gap-3">
