@@ -274,12 +274,12 @@ const Index = () => {
         <title>Cabo Real Estate | MLS Search, Buying & Selling | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Explore Cabo San Lucas and Los Cabos real estate. Search public MLS listings without signup, save favorites, compare properties, and get local help when ready." 
+          content="Search the full public MLS inventory in Los Cabos and Baja California Sur. Save favorites, compare properties and explore local buying advice. No signup required." 
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:title" content="Cabo Real Estate | Search Freely, Buy & Sell With Local Help" />
-        <meta property="og:description" content="Search Cabo MLS listings without signup. Understand buying, selling and foreign ownership, then explore Los Cabos communities at your own pace." />
+        <meta property="og:description" content="Explore the full public MLS inventory, save favorites and compare without signup. Get experienced local guidance on buying and selling in Cabo." />
         <meta property="og:type" content="website" />
       </Helmet>
       <Navbar />
