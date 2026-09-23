@@ -5,8 +5,12 @@
       "destination": "/api/flexmls-listings-v2"
     },
     {
-      "source": "/caborealestateblog/:path*",
-      "destination": "/api/legacy-blog"
+      "source": "/caborealestateblog",
+      "destination": "/api/legacy-blog.js"
+    },
+    {
+      "source": "/caborealestateblog/(.*)",
+      "destination": "/api/legacy-blog.js"
     },
     {
       "source": "/(.*)",
