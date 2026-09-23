@@ -68,6 +68,16 @@
       "source": "/fernando",
       "destination": "/fernando-cabrera",
       "permanent": true
+    },
+    {
+      "source": "/idx-search",
+      "destination": "/property-search.html",
+      "permanent": true
+    },
+    {
+      "source": "/properties/map",
+      "destination": "/property-search.html",
+      "permanent": true
     }
   ]
 }
