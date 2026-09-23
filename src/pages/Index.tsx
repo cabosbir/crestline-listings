@@ -271,15 +271,15 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Cabo Real Estate | MLS Search, Buying & Selling | Baja International Realty</title>
+        <title>Cabo Real Estate &amp; MLS Search | Complete Los Cabos Inventory | BIR</title>
         <meta 
           name="description" 
-          content="Search the full public MLS inventory in Los Cabos and Baja California Sur. Save favorites, compare properties and explore local buying advice. No signup required." 
+          content="Search the complete Los Cabos MLS inventory of homes, condos and land. No signup required. Save favorites, compare properties and explore recent price reductions." 
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:title" content="Cabo Real Estate | Search Freely, Buy & Sell With Local Help" />
-        <meta property="og:description" content="Explore the full public MLS inventory, save favorites and compare without signup. Get experienced local guidance on buying and selling in Cabo." />
+        <meta property="og:description" content="Search the complete Los Cabos MLS inventory of homes, condos and land. No signup required. Save favorites, compare properties and explore recent price reductions." />
         <meta property="og:type" content="website" />
       </Helmet>
       <Navbar />
