@@ -73,7 +73,7 @@ const Footer = () => {
           <div className="bg-white/5 rounded-lg p-8 backdrop-blur-sm">
             <h3 className="font-semibold text-xl mb-2 text-white">Explore Cabo at Your Own Pace</h3>
             <p className="text-white/80 text-sm mb-5 leading-relaxed">
-              Search public MLS listings, save up to 50 favorites in this browser, and compare up to three properties. No signup required.
+              Search the full MLS inventory available for public search. Save up to 50 favorites in this browser and compare up to three properties. No signup required.
             </p>
             
             <Button 
