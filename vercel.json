@@ -5,6 +5,10 @@
       "destination": "/api/flexmls-listings-v2"
     },
     {
+      "source": "/caborealestateblog/:path*",
+      "destination": "/api/legacy-blog"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
@@ -41,6 +45,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/search",
       "destination": "/property-search.html",
