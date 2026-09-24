@@ -286,6 +286,21 @@ const Index = () => {
       <Hero />
       <FloatingContact />
 
+      <section id="cabo-real-estate" className="py-14 bg-slate-50">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Cabo real estate: find the property that fits your life</h2>
+          <p className="text-lg text-slate-700 leading-relaxed max-w-4xl">Compare homes, condos and land for sale in Cabo San Lucas, San José del Cabo and the surrounding Los Cabos communities. Start with how you plan to use the property: everyday living, a vacation home, rental income or a place to build. Baja International Realty combines a complete MLS search with decades of local experience to help you compare the choices.</p>
+          <div className="grid md:grid-cols-3 gap-6 mt-8">
+            <article className="rounded-xl border bg-white p-6"><h3 className="text-xl font-bold mb-3">Cabo homes for sale</h3><p className="text-slate-700 leading-relaxed">A house offers room to consider private outdoor space, guests and the layout you want. Compare upkeep, access and neighborhood rules alongside bedrooms and views. A hillside home, a marina-area property and a coastal villa can offer very different daily routines.</p><a className="inline-block mt-4 text-blue-900 font-semibold underline" href="/property-search.html?type=houses">Search homes and villas for sale</a></article>
+            <article className="rounded-xl border bg-white p-6"><h3 className="text-xl font-bold mb-3">Cabo condos for sale</h3><p className="text-slate-700 leading-relaxed">For a vacation home or year-round base, compare the building as carefully as the condo. Look at HOA dues, maintenance, parking, rental rules and which amenities are included. Verify the actual walk to the beach or restaurants rather than judging convenience from a view.</p><a className="inline-block mt-4 text-blue-900 font-semibold underline" href="/property-search.html?type=condos">Search condos for sale</a></article>
+            <article className="rounded-xl border bg-white p-6"><h3 className="text-xl font-bold mb-3">Cabo land for sale</h3><p className="text-slate-700 leading-relaxed">Buying land starts with what you want to build. Compare access, slope, available services and community building rules before comparing price alone. A lower purchase price may come with additional site preparation or infrastructure costs.</p><a className="inline-block mt-4 text-blue-900 font-semibold underline" href="/property-search.html?type=land">Search land and building lots</a></article>
+          </div>
+          <h3 className="text-xl font-bold mt-8 mb-3">Choose your location before narrowing your list</h3>
+          <p className="text-slate-700 leading-relaxed">Explore <a className="text-blue-900 underline" href="#cabo-san-lucas">Cabo San Lucas</a> for marina life and everyday convenience, <a className="text-blue-900 underline" href="#san-jose-del-cabo">San José del Cabo</a> for its town center and surrounding coastal neighborhoods, and the <a className="text-blue-900 underline" href="#los-cabos-corridor">Los Cabos Corridor</a> for communities between the two towns. Our guides also explain the Pacific coast, East Cape and La Paz, including weather, access and how to find each area in the MLS.</p>
+        </div>
+      </section>
+
+
       <section id="buying-in-cabo" className="scroll-mt-24 py-14 sm:py-20 bg-background">
         <div className="container mx-auto px-4 max-w-6xl">
           <p className="text-blue-900 font-semibold mb-2">Understanding Buying</p>
