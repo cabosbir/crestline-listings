@@ -1,6 +1,7 @@
 import { ArrowRight, BookOpen, Home, MapPin, Search } from "lucide-react";
 import heroImage from "@/assets/hero-luxury-villa.jpg";
 
+
 const Hero = () => (
   <section className="relative overflow-hidden bg-slate-950 pt-28 pb-10 sm:pt-36 sm:pb-16">
     <img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" loading="eager" width="1920" height="1080" className="absolute inset-0 h-full w-full object-cover object-[60%_center] sm:object-center" />
@@ -11,7 +12,7 @@ const Hero = () => (
       <p className="text-white/90 text-lg sm:text-xl mt-4 max-w-2xl">Search freely. Understand your options. Get local help when you’re ready.</p>
       <nav aria-label="What would you like to do?" className="mt-7 sm:mt-9 grid grid-cols-1 sm:grid-cols-6 gap-3 sm:gap-4">
         <a href="/property-search.html" className="sm:col-span-4 flex items-center justify-between gap-4 rounded-xl bg-white p-5 sm:p-7 text-blue-950 shadow-lg hover:bg-blue-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
-          <span className="flex items-center gap-3 sm:gap-4 min-w-0"><Search className="hidden sm:block h-8 w-8 shrink-0" aria-hidden="true" /><span><span className="block text-2xl sm:text-3xl font-bold">Search Complete MLS Inventory</span><span className="block mt-2 text-base sm:text-lg leading-relaxed">Explore the complete Los Cabos MLS inventory of homes, condos and land, plus properties across Baja California Sur. Save favorites and compare at your own pace—<strong>no signup required.</strong></span></span></span>
+          <span className="flex items-center gap-3 sm:gap-4 min-w-0"><Search className="hidden sm:block h-8 w-8 shrink-0" aria-hidden="true" /><span><span className="block text-2xl sm:text-3xl font-bold">Search Complete MLS Inventory</span><span className="block mt-2 text-base sm:text-lg leading-relaxed">Explore 4,300+ active listings in the complete Baja California Sur MLS inventory, including homes, condos and land across Los Cabos and the entire state. Save favorites and compare at your own pace—<strong>no signup required.</strong></span></span></span>
           <ArrowRight className="h-7 w-7 shrink-0" aria-hidden="true" />
         </a>
         <a href="#price-reductions" className="sm:col-span-2 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-5 sm:p-6 text-blue-950 shadow-lg hover:bg-amber-100 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
@@ -32,4 +33,6 @@ const Hero = () => (
   </section>
 );
 
+
 export default Hero;
+
