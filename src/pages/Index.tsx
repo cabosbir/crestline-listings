@@ -367,6 +367,26 @@ const Index = () => {
               <p className="mt-4 text-muted-foreground leading-relaxed">Some charges are fixed or do not rise in direct proportion to the price, which can make closing costs a smaller percentage on a higher-priced purchase. Ask us for a written, itemized estimate for the property you are considering.</p>
               <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-5">
                 <h3 className="text-lg font-bold text-blue-950">The good news: look beyond the closing costs</h3>
+                <section aria-label="Annual property tax example for a 500,000 US dollar home" className="mt-5 rounded-xl border-2 border-blue-300 bg-white p-4 sm:p-6">
+                  <h4 className="text-xl sm:text-2xl font-bold text-blue-950">A $500,000 home: what could yearly property tax look like?</h4>
+                  <p className="mt-3 text-slate-700 leading-relaxed">For this illustration, assume the municipal assessed value (valor catastral) equals US $500,000, or MXN $8,855,000 at <strong>17.7100 pesos per US dollar</strong>, Banco de México’s latest available FIX rate, dated September 25, 2026. Your actual assessed value can differ from the purchase price.</p>
+                  <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <article className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                      <h5 className="text-lg font-bold text-blue-950">Exclusively residential, occupied by its owner</h5>
+                      <p className="mt-2 text-sm text-slate-700">Annual base rate: 0.115331% of assessed value</p>
+                      <p className="mt-4 text-slate-700">Without discount</p><p className="text-3xl font-bold text-blue-950">US $577 / year</p><p className="text-sm text-slate-600">Approximately MXN $10,213</p>
+                      <p className="mt-4 text-slate-700">With a 20% early-payment discount</p><p className="text-3xl font-bold text-blue-950">US $461 / year</p><p className="text-sm text-slate-600">Approximately MXN $8,170</p>
+                    </article>
+                    <article className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                      <h5 className="text-lg font-bold text-blue-950">Residential rental or mixed use</h5>
+                      <p className="mt-2 text-sm text-slate-700">Annual base rate: 0.22997% of assessed value</p>
+                      <p className="mt-4 text-slate-700">Without discount</p><p className="text-3xl font-bold text-blue-950">US $1,150 / year</p><p className="text-sm text-slate-600">Approximately MXN $20,364</p>
+                      <p className="mt-4 text-slate-700">With a 20% early-payment discount</p><p className="text-3xl font-bold text-blue-950">US $920 / year</p><p className="text-sm text-slate-600">Approximately MXN $16,291</p>
+                    </article>
+                  </div>
+                  <p className="mt-4 text-sm text-slate-700 leading-relaxed">Illustrative base predial only, rounded to whole dollars and pesos; excludes other charges or arrears. The 20% discount was available in January and February 2026 and is not a current September offer. Future discounts depend on municipal approval. Use the property’s actual assessed value, classification and tax bill for your budget; a vacation home or short-term rental may have a different classification.</p>
+                  <p className="mt-3 text-sm text-slate-600">Sources: <a className="underline" href="https://www.tesoreria.loscabos.gob.mx/wp-content/uploads/2025/03/LEY-DE-HACIENDA-PARA-EL-MUNICIPIO-DE-LOS-CABOS.pdf" target="_blank" rel="noopener noreferrer">Los Cabos tax law, Article 29</a>; <a className="underline" href="https://www.banxico.org.mx/tipcamb/tipCamMIAction.do?idioma=en" target="_blank" rel="noopener noreferrer">Banco de México FIX exchange rate</a>; <a className="underline" href="https://www.loscabos.gob.mx/anuncia-tesoreria-municipal-descuentos-en-el-pago-del-impuesto-predial-2026-en-los-cabos/" target="_blank" rel="noopener noreferrer">2026 early-payment discounts</a>.</p>
+                </section>
                 <p className="mt-3 leading-relaxed text-slate-700">Many buyers find their annual property taxes considerably lower than they are accustomed to in the United States or Canada. The local property tax, called predial, is based on the municipal assessed value and property classification. We can help you review the property’s actual tax bill alongside HOA fees, insurance, maintenance, utilities and annual trust fees, so you understand the ongoing ownership costs before buying.</p>
                 <p className="mt-3 leading-relaxed text-slate-700">Early-payment discounts may also help. For 2026, Los Cabos offered 20% off annual predial in January and February and 10% in March; future discounts depend on the municipality’s announcements.</p>
               </div>
