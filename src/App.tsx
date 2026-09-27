@@ -43,13 +43,23 @@ import NotFound from "./pages/NotFound";
 function LivePropertySearch() { useEffect(() => { window.location.replace("/property-search.html" + window.location.search); }, []); return <p>Opening property search...</p>; }
 const queryClient = new QueryClient();
 
-// ScrollToTop component - scrolls to top on route change
+// Honor section links after React renders the destination page.
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    const frame = window.requestAnimationFrame(() => {
+      let id = hash.slice(1);
+      try { id = decodeURIComponent(id); } catch { /* Keep malformed fragments harmless. */ }
+      const target = id ? document.getElementById(id) : null;
+      if (target) {
+        target.scrollIntoView({ block: "start", behavior: "instant" });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [pathname, hash]);
 
   return null;
 }
