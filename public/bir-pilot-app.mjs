@@ -26,7 +26,7 @@ const initialType = ({land:'Land',houses:'Houses',house:'Houses',homes:'Houses',
 const typeLabel=document.querySelector('label[for="PropertyType"]');typeLabel.textContent='TYPE';
 $('filters').prepend(typeLabel,$('PropertyType'));
 const requestedCommunity=new URLSearchParams(location.search).get('community');
-const initialCommunity=['El Tezal-East','El Tezal-West','Pedregal CSL'].includes(requestedCommunity)?requestedCommunity:'';
+const initialCommunity=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos'].includes(requestedCommunity)?requestedCommunity:'';
 let filters={...defaults(),PropertyType:initialType,Address_co_Community2:initialCommunity},rows=[],matches=[],shown=24,map,layer;
 let ready=false,failed=false,detailVersion=0;
 const detailsCache=new Map();
