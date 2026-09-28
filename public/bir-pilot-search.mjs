@@ -39,7 +39,8 @@ export function convertSizeUnits(filters,unit) {
   return next;
 }
 export function filterListings(rows, f) {
-  const query = f.query.trim().toLowerCase();
+  const query = String(f.query || '').trim();
+  const mlsNumbers = new Set(query.toLowerCase().replace(/[‐-―−]/g, '-').split(/[,;\s]+/).filter(Boolean));
   return rows.filter(p => p.StandardStatus === 'Active' && p.InternetEntireListingDisplayYN !== false)
     .filter(p => locationFields.every(k => !f[k] || p[k] === f[k]))
     .filter(p => !f.PropertyType || p.PropertyType === f.PropertyType)
@@ -51,7 +52,7 @@ export function filterListings(rows, f) {
     .filter(p => matchesPropertyArea(p,f,'Lot'))
     .filter(p => !f.view || p.General_sp_Description_co_Primary_sp_View === f.view)
     .filter(p => !f.financing || /^(yes|true)$/i.test(String(p.General_sp_Description_co_Seller_sp_Financing_sp_Offered)))
-    .filter(p => !query || [p.ListingId, p.UnparsedAddress, ...locationFields.map(k => p[k])].some(v => String(v || '').toLowerCase().includes(query)));
+    .filter(p => !query || mlsNumbers.has(String(p.ListingId || '').trim().toLowerCase()));
 }
 export function coordinates(p) {
   return typeof p.Latitude === 'number' && typeof p.Longitude === 'number' && Math.abs(p.Latitude) <= 90 && Math.abs(p.Longitude) <= 180 && !(p.Latitude === 0 && p.Longitude === 0);
