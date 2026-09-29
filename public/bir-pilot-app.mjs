@@ -396,7 +396,7 @@ try{
   const message=document.createElement('p');message.textContent=validAlert?'Showing '+matches.length+' currently available properties from the '+alertIds.length+' listings in your email. Only listings from that alert are included.':'This alert link is incomplete or invalid. Please open the original link in your email.';
   note.append(heading,message);
   if(validAlert){const available=new Set(matches.map(p=>p.ListingId));const missing=alertIds.filter(id=>!available.has(id));if(missing.length){const unavailable=document.createElement('p');unavailable.textContent='No longer in the public active inventory: MLS '+missing.join(', ')+'. Ask your BIR agent for the latest status.';note.append(unavailable);}}
-  $('count').before(note);note.scrollIntoView({block:'start'});
+  $('count').closest('main').prepend(note);note.scrollIntoView({block:'start'});
  }
  const entry=new URLSearchParams(location.search),requestedMLS=entry.get('mls');
  if(requestedMLS&&requestedMLS.includes(',')){const ids=requestedMLS.split(',');if(ids.length<=50&&ids.every(id=>/^[\d-]{3,20}$/.test(id))){filters.query=ids.join(',');$('query').value=filters.query;shown=24;render();fitLocationMap();$('message').textContent='Shared favorites: showing '+matches.length+' currently available listings from '+ids.length+' shared MLS numbers.';$('count').scrollIntoView({block:'start'});}} 
