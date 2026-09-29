@@ -359,7 +359,7 @@ try{
  const started=performance.now();
  const firstPage=fetch('/api/search-pilot?mode=first',{}).then(async response=>{if(!response.ok)throw new Error('Initial results unavailable');return response.json();}).then(data=>{
   if(ready||failed)return;
-  matches=filterListings(data.results,filters);
+  matches=filterListings(data.results.filter(p=>p.PropertyType!=='Reservations Only'),filters);
   for(const p of matches)detailsCache.set(p.ListingKey,{Media:p.Media,PublicRemarks:p.PublicRemarks});
   renderCards(false);$('count').textContent=initialType?`${matches.length} initial ${initialType.toLowerCase()} · complete results loading`:`${Number(data.total).toLocaleString()} properties · first ${matches.length} shown`;
   $('mapnote').textContent='The complete map and location filters are loading.';
@@ -376,10 +376,10 @@ try{
  rows=data.results;
  ready=true;clearTimeout(slowNotice);$('message').textContent='';
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
- rows=rows.filter(p=>p.StandardStatus==='Active'&&p.InternetEntireListingDisplayYN!==false);
+ rows=rows.filter(p=>p.StandardStatus==='Active'&&p.InternetEntireListingDisplayYN!==false&&p.PropertyType!=='Reservations Only');
  controls.forEach(el=>el.disabled=false);
  options('construction',[...new Set(rows.map(p=>p.General_sp_Description_co_Construction).filter(Boolean))].sort(),'');options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),initialType);options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
- $('timestamp').textContent=`All filters ready in ${((performance.now()-started)/1000).toFixed(1)} seconds. ${rows.length.toLocaleString()} public active listings checked ${new Date(data.fetchedAt).toLocaleTimeString()}. Includes Reservations Only; reload for updates.`;
+ $('timestamp').textContent=`All filters ready in ${((performance.now()-started)/1000).toFixed(1)} seconds. ${rows.length.toLocaleString()} public active listings checked ${new Date(data.fetchedAt).toLocaleTimeString()}. Reload for updates.`;
  $('timestamp').dataset.loadingMethod=loadingMethod;
  if(age>=300000)$('timestamp').textContent+=' The latest inventory update is delayed. You can keep searching these last verified listings. Prices and availability may have changed. Reload for an update.';
  if(window.L){map=L.map('map',{zoomControl:false}).setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);L.control.zoom({position:'topright'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
