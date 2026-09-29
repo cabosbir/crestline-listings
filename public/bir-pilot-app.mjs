@@ -28,6 +28,11 @@ $('filters').prepend(typeLabel,$('PropertyType'));
 const requestedCommunity=new URLSearchParams(location.search).get('community');
 const initialCommunity=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos'].includes(requestedCommunity)?requestedCommunity:'';
 let filters={...defaults(),PropertyType:initialType,Address_co_Community2:initialCommunity},rows=[],matches=[],shown=24,map,layer;
+const alertParam=new URLSearchParams(location.hash.slice(1)).get('alert');
+const alertIds=alertParam===null?null:[...new Set(alertParam.split(','))];
+const validAlert=alertIds&&alertIds.length>0&&alertIds.length<=20000&&alertIds.every(id=>/^\d{2}-\d{1,10}$/.test(id));
+if(alertIds){filters={...defaults(),query:validAlert?alertIds.join(','):'__invalid_alert__'};$('query').value=filters.query;}
+
 let ready=false,failed=false,detailVersion=0;
 const detailsCache=new Map();
 const galleryCache=new Map(),galleryRequests=new Map(),photoPositions=new Map();
@@ -385,6 +390,14 @@ try{
  if(window.L){map=L.map('map',{zoomControl:false}).setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);L.control.zoom({position:'topright'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();if(savedDialog.open)renderSaved();
+ if(alertIds){
+  const note=document.createElement('section');note.setAttribute('aria-label','Properties from your alert');note.style.cssText='padding:18px;margin:12px 0;background:#edf6f2;border:1px solid #b8d5cf;border-radius:8px';
+  const heading=document.createElement('h2');heading.textContent='Properties from your alert';
+  const message=document.createElement('p');message.textContent=validAlert?'Showing '+matches.length+' currently available properties from the '+alertIds.length+' listings in your email. Only listings from that alert are included.':'This alert link is incomplete or invalid. Please open the original link in your email.';
+  note.append(heading,message);
+  if(validAlert){const available=new Set(matches.map(p=>p.ListingId));const missing=alertIds.filter(id=>!available.has(id));if(missing.length){const unavailable=document.createElement('p');unavailable.textContent='No longer in the public active inventory: MLS '+missing.join(', ')+'. Ask your BIR agent for the latest status.';note.append(unavailable);}}
+  $('count').before(note);note.scrollIntoView({block:'start'});
+ }
  const entry=new URLSearchParams(location.search),requestedMLS=entry.get('mls');
  if(requestedMLS&&requestedMLS.includes(',')){const ids=requestedMLS.split(',');if(ids.length<=50&&ids.every(id=>/^[\d-]{3,20}$/.test(id))){filters.query=ids.join(',');$('query').value=filters.query;shown=24;render();fitLocationMap();$('message').textContent='Shared favorites: showing '+matches.length+' currently available listings from '+ids.length+' shared MLS numbers.';$('count').scrollIntoView({block:'start'});}} 
  if(requestedMLS&&/^[\d-]{3,20}$/.test(requestedMLS)){
