@@ -11,13 +11,14 @@ function signedState(yes){$('signout').hidden=!yes;$('save-choices').hidden=yes;
 const incoming=new URLSearchParams(location.hash.slice(1)), callbackError=incoming.has('error');
 let client;
 function message(text){status.textContent=text;}
+function signInInstructions(){const returning=document.createElement('strong');returning.textContent='Sign in to your existing account';returning.style.cssText='display:block;font-size:21px;margin-bottom:6px';status.replaceChildren(returning,document.createTextNode('Enter your email below to sign in or create a free account. We will email you a secure sign-in link to confirm it’s you—no password needed.'));}
 async function refresh(){
  const {data,error}=await client.auth.getSession();
  if(error){$('signin').hidden=false;message('This sign-in link has expired or could not be verified. Request a new link below.');return;}
- if(!data.session){signedState(false);$('signin').hidden=false;$('account').hidden=true;message(callbackError?'This sign-in link has expired or is invalid. Request a new link below.':'To create a free account or sign in to your existing account, enter your email below. We will email you a secure sign-in link to confirm it’s you—no password needed.');return;}
+ if(!data.session){signedState(false);$('signin').hidden=false;$('account').hidden=true;if(callbackError)message('This sign-in link has expired or is invalid. Request a new link below.');else signInInstructions();return;}
  const verified=await client.auth.getUser();
  if(verified.error||!verified.data.user?.email_confirmed_at){signedState(false);$('signin').hidden=false;$('account').hidden=true;message('We could not verify your session. Please request a new sign-in link.');return;}
- signedState(true);$('signin').hidden=true;$('account').hidden=false;$('identity').textContent='Signed in as '+verified.data.user.email;message('You are signed in.');
+ signedState(true);$('signin').hidden=true;$('account').hidden=false;$('identity').textContent='Your saved properties and searches are ready below.';message('Welcome back, '+verified.data.user.email+' — you are signed in.');
 }
 try{
  const {connectAccount,mountAccount}=await import('./bir-account-ui.mjs');
