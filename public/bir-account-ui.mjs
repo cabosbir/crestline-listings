@@ -31,21 +31,21 @@ export async function mountAccount(target,hooks={}){
   const u=!error&&data.user?.email_confirmed_at?data.user:null;
   if(topSignOut)topSignOut.hidden=!u;
   if(u)document.getElementById('save-account-offer')?.remove();
-  if(!u){title.textContent='Save your way — always free';current=null;cloud=[];searches=[];signedIn.replaceChildren();signedIn.hidden=true;signedOut.hidden=false;hooks.setFavorites?.(localFavorites(),false);tell('');return;}
+  if(!u){title.textContent='Save your way — always free';intro.textContent='Save on this device without signing in, or use a free account to keep favorites and named searches across devices.';current=null;cloud=[];searches=[];signedIn.replaceChildren();signedIn.hidden=true;signedOut.hidden=false;hooks.setFavorites?.(localFavorites(),false);tell('');return;}
   if(current!==u.id){cloud=[];hooks.setFavorites?.([],true);}
-  title.textContent='My Account';current=u.id;signedOut.hidden=true;signedIn.hidden=false;tell('Loading your account…');
+  title.textContent='My Account';intro.textContent='Manage your saved properties and searches here.';current=u.id;signedOut.hidden=true;signedIn.hidden=false;tell('Loading your account…');
   const [f,s,p]=await Promise.all([api.listFavorites(),api.listSearches(),api.getPreferences()]);
   if(stamp!==version||current!==u.id)return;
   cloud=f;searches=s;displayFavorites();draw(u,p);tell('Signed in as '+u.email);
  }
  function draw(u,p){
   signedIn.replaceChildren();const actions=el('div');actions.className='buyer-actions';
-  const local=localFavorites();if(Array.isArray(local)&&local.length)actions.append(button('Copy browser favorites to account',()=>action(async()=>{await api.importFavorites(local);await load();tell('Browser favorites copied to your account. Your browser copy is unchanged.');})));
+  const local=localFavorites(),pending=Array.isArray(local)?local.filter(f=>!cloud.some(c=>c.listing_key===f.key)):[];if(pending.length){const box=el('section');box.style.cssText='padding:16px;margin:12px 0;background:#edf4f1;border:2px solid #146b68;border-radius:8px';box.append(el('h3',pending.length+' favorites saved on this device'),el('p','Add these to your account so you can see them on your other devices too.'),button('Add these favorites to My Account',()=>action(async()=>{await api.importFavorites(pending);await load();tell('Your favorites are now saved in My Account and available on your other devices.');})));signedIn.append(box);}
   actions.append(button('Refresh saved items',()=>action(load)),button('Sign out',()=>action(async()=>{await api.signOut();current=null;await load();})));
   signedIn.append(actions);
   if(!hooks.setFavorites){
    const details=el('details');details.open=true;details.append(el('summary',`Saved properties (${cloud.length})`));const list=el('ul');
-   for(const f of cloud){const li=el('li'),a=el('a','MLS '+f.mls_number);a.href='/property-search.html?mls='+encodeURIComponent(f.mls_number);li.append(a,button('Remove',()=>action(async()=>{await api.removeFavorite(f.listing_key);await load();})));list.append(li);}details.append(cloud.length?list:el('p','Save properties while browsing, or copy your existing browser favorites above.'));signedIn.append(details);
+   for(const f of cloud){const li=el('li'),a=el('a','MLS '+f.mls_number);a.href='/property-search.html?mls='+encodeURIComponent(f.mls_number);li.append(a,button('Remove',()=>action(async()=>{await api.removeFavorite(f.listing_key);await load();})));list.append(li);}details.append(cloud.length?list:el('p','Save properties while browsing. If you saved favorites before signing in on this device, use the Add these favorites to My Account button above.'));signedIn.append(details);
   }
   const searchBox=el('details');searchBox.open=true;searchBox.append(el('summary',`Saved searches (${searches.length})`));
   if(hooks.getFilters){const form=el('form'),label=el('label','Name this search'),input=el('input');input.required=true;input.maxLength=80;input.placeholder='For example: El Tezal condos';input.id='buyer-search-name';label.htmlFor=input.id;const save=el('button','Save current search');save.type='submit';form.append(label,input,save);form.onsubmit=e=>{e.preventDefault();action(async()=>{if(!hooks.ready())throw Error('Wait for the full search to load before saving.');await api.addSearch(input.value,hooks.getFilters());await load();tell('Search saved to your account.');});};searchBox.append(form);}
