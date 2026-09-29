@@ -111,6 +111,34 @@ function offerAccount(source){
 }
 
 function saveButton(p){const button=document.createElement('button');button.type='button';button.className='save-property';button.dataset.saveKey=String(p.ListingKey);const selected=savedProperties.some(item=>item.key===String(p.ListingKey));button.textContent=selected?'\u2665 Saved':'\u2661 Save property';button.setAttribute('aria-pressed',String(selected));button.onclick=()=>toggleSaved(p,button);return button;}
+
+function propertyLink(p){return 'https://www.bircabo.com/property-search.html?mls='+encodeURIComponent(p.ListingId);}
+function sharingActions(p){
+ const bar=document.createElement('div');bar.className='listing-share-actions';
+ const agent=document.createElement('button');agent.type='button';agent.textContent='Send to a BIR agent';agent.className='share-agent';agent.onclick=()=>{inquire(p);question.value='I would like to discuss this property with a BIR agent.\n'+propertyLink(p);updateInquiry();};
+ const friend=document.createElement('button');friend.type='button';friend.textContent='Share listing';friend.onclick=()=>openShare(p);bar.append(agent,friend);return bar;
+}
+const shareDialog=document.createElement('dialog');shareDialog.setAttribute('aria-label','Share listing');shareDialog.className='saved-dialog';document.body.append(shareDialog);
+function openShare(p){
+ const list=Array.isArray(p)?p:[p],multiple=Array.isArray(p);p=list[0];
+ shareDialog.replaceChildren();const heading=document.createElement('div');heading.className='saved-heading';const title=document.createElement('h2');title.textContent=multiple?'Share saved favorites':'Share this listing';const close=document.createElement('button');close.textContent='Close';close.onclick=()=>shareDialog.close();heading.append(title,close);
+ const text=document.createElement('p');text.textContent=multiple?list.length+' saved favorites':(p.UnparsedAddress||'Property')+' · MLS '+p.ListingId;
+ const note=document.createElement('p');note.textContent='Share with a friend, spouse or your agent. No account is needed to view the link. Only listings still in the public inventory will appear. This shares your current selection, not future changes to your favorites.';
+ const url=multiple?favoritesLink(list):propertyLink(p),subject=multiple?'My BIR saved favorites':'BIR property: MLS '+p.ListingId,body=list.map(x=>(x.UnparsedAddress||'Property')+' · MLS '+x.ListingId).join('\n')+'\n'+url;
+ const field=document.createElement('input');field.readOnly=true;field.value=url;field.setAttribute('aria-label','Listing link');field.style.cssText='box-sizing:border-box;width:100%;padding:12px;font:inherit';
+ const actions=document.createElement('div');actions.className='listing-share-actions';const status=document.createElement('p');status.setAttribute('role','status');
+ const copy=document.createElement('button');copy.textContent='Copy link';copy.onclick=async()=>{try{await navigator.clipboard.writeText(url);status.textContent='Link copied. Paste it into your message.';}catch{field.focus();field.select();status.textContent='Select and copy the link above.';}};
+ const email=document.createElement('a');email.textContent='Email';email.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+ const whatsapp=document.createElement('a');whatsapp.textContent='WhatsApp';whatsapp.href='https://wa.me/?text='+encodeURIComponent(body);whatsapp.target='_blank';whatsapp.rel='noopener noreferrer';actions.append(copy,email,whatsapp);
+ if(navigator.share){const more=document.createElement('button');more.textContent='More sharing options';more.onclick=async()=>{try{await navigator.share({title:subject,text:(p.UnparsedAddress||'Property')+' · MLS '+p.ListingId,url});}catch(e){if(e.name!=='AbortError')status.textContent='Please use Copy link, Email or WhatsApp.';}};actions.append(more);}
+ shareDialog.append(heading,text,note,field,actions,status);shareDialog.showModal();
+}
+style.textContent+='.listing-share-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}.listing-share-actions .share-agent{background:#12666a;color:white}.listing-share-actions a{display:inline-block;padding:10px 14px;border:1px solid #b8d5cf;border-radius:6px;color:#12666a;text-decoration:none;font-weight:600}';
+
+
+function favoritesLink(list){return 'https://www.bircabo.com/property-search.html?mls='+encodeURIComponent(list.map(p=>p.ListingId).join(','));}
+function savedSharingActions(){const list=savedProperties.map(s=>rows.find(p=>String(p.ListingKey)===s.key)||{ListingKey:s.key,ListingId:s.mls,UnparsedAddress:'Saved property'});const bar=document.createElement('div');bar.className='listing-share-actions';const agent=document.createElement('button');agent.className='share-agent';agent.textContent='Send favorites to a BIR agent';agent.onclick=()=>{inquire(list[0]);$('property-context').textContent=list.length+' saved favorites';question.value='I would like to discuss these saved favorites with a BIR agent.\nMLS numbers: '+list.map(p=>p.ListingId).join(', ')+'\n'+favoritesLink(list);updateInquiry();};const share=document.createElement('button');share.textContent='Share all favorites';share.onclick=()=>openShare(list);bar.append(agent,share);return bar;}
+
 function renderSaved(){
  compareKeys=compareKeys.filter(key=>savedProperties.some(p=>p.key===key)&&rows.some(p=>String(p.ListingKey)===key));
  savedDialog.replaceChildren();const heading=document.createElement('div');heading.className='saved-heading';const title=document.createElement('h2');title.textContent=`Saved & Compare (${savedProperties.length})`;const close=document.createElement('button');close.textContent='Back to search';close.onclick=()=>savedDialog.close();heading.append(title,close);savedDialog.append(heading);
@@ -118,13 +146,14 @@ function renderSaved(){
  if(!accountMode){const choices=document.createElement('section');choices.setAttribute('aria-label','Free saving options');choices.style.cssText='padding:16px;margin:16px 0;background:#edf4f1;border:1px solid #b8d5cf;border-radius:8px';const label=document.createElement('h3');label.textContent='Two free ways to save';label.style.margin='0 0 8px';const device=document.createElement('p');device.textContent='Save on this device — your favorites are already saved in this browser. No account needed.';const account=document.createElement('p');account.textContent='Free buyer account — access favorites and saved searches across devices. Sign in with an email link, then choose to add this browser’s favorites to your account.';const link=document.createElement('a');link.href='/buyer-account.html';link.textContent='Create a free account or sign in';link.style.cssText='display:inline-block;background:#12666a;color:white;padding:10px 14px;border-radius:6px;text-decoration:none;font-weight:700';choices.append(label,device,account,link);savedDialog.append(choices);}
 
  if(!savedProperties.length){const empty=document.createElement('p');empty.textContent='No saved properties yet. Click Save property on any listing to keep it here.';savedDialog.append(empty);return;}
+ savedDialog.append(savedSharingActions());
  const compareBar=document.createElement('div');compareBar.className='compare-controls';const compareHelp=document.createElement('p');compareHelp.textContent='Choose two or three properties to compare side by side.';const compareStart=document.createElement('button');compareStart.textContent=`Compare selected (${compareKeys.length}/3)`;compareStart.disabled=compareKeys.length<2;compareStart.onclick=openComparison;compareBar.append(compareHelp,compareStart);savedDialog.append(compareBar);
  for(const saved of savedProperties){
   const row=rows.find(p=>String(p.ListingKey)===saved.key),card=document.createElement('article');card.className='saved-item';
   if(row){const title=document.createElement('h3');title.textContent=row.UnparsedAddress||'Property';const facts=document.createElement('p');facts.textContent=`${money(row.ListPrice)} · ${row.PropertyType} · MLS ${row.ListingId}`;const open=document.createElement('button');open.textContent='View property';open.onclick=()=>{savedDialog.close();openListing({...row,...detailsCache.get(row.ListingKey)});};card.append(title,facts,open);}
   else{const text=document.createElement('p');text.textContent=ready?`MLS ${saved.mls}: no longer in the current public search. Contact Don to check its status.`:`MLS ${saved.mls}: current availability has not loaded yet.`;card.append(text);}
   if(row){const label=document.createElement('label'),check=document.createElement('input');label.className='compare-choice';check.type='checkbox';check.checked=compareKeys.includes(saved.key);check.disabled=compareKeys.length===3&&!check.checked;check.setAttribute('aria-label',`Compare MLS ${saved.mls}`);check.onchange=()=>{compareKeys=check.checked?[...compareKeys,saved.key]:compareKeys.filter(key=>key!==saved.key);renderSaved();};label.append(check,document.createTextNode('Compare'));card.append(label);}
-  const remove=document.createElement('button');remove.textContent='Remove from saved';remove.onclick=()=>toggleSaved({ListingKey:saved.key,ListingId:saved.mls});card.append(remove);savedDialog.append(card);
+  const remove=document.createElement('button');remove.textContent='Remove from saved';remove.onclick=()=>toggleSaved({ListingKey:saved.key,ListingId:saved.mls});card.append(remove);if(row)card.append(sharingActions(row));savedDialog.append(card);
  }
 }
 let compareKeys=[],compareVersion=0;
@@ -178,7 +207,7 @@ function openListing(p,fromMap=false){
  const remarks=document.createElement('p');remarks.textContent=p.PublicRemarks||'Loading property description...';
  const details=document.createElement('section');details.className='property-details';details.textContent='Loading property details...';
  const inquireButton=document.createElement('button');inquireButton.textContent='Ask about this property';inquireButton.onclick=()=>inquire(p);
- listingDialog.replaceChildren(heading,facts,saveButton(p),photoViewer(p,true),remarks,details,inquireButton);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
+ listingDialog.replaceChildren(heading,facts,saveButton(p),sharingActions(p),photoViewer(p,true),remarks,details);if(fromMap&&!window.matchMedia('(max-width:760px)').matches)listingDialog.show();else listingDialog.showModal();
  fetchGallery(p).then(row=>{remarks.textContent=row.PublicRemarks||'No description supplied.';renderPropertyDetails(details,row.PropertyDetails);}).catch(error=>{remarks.textContent=error.message;details.textContent='Property details could not load. Close and reopen this property to retry.';});
 }
 
@@ -206,7 +235,7 @@ const previous=document.createElement('button');previous.textContent='Previous';
 const pageInfo=document.createElement('span');pageInfo.className='page-info';$('more').after(pageInfo);
 previous.onclick=()=>{shown=Math.max(24,shown-24);renderCards();$('cards').scrollIntoView({block:'start'});};
 const inquiryNote=$('inquiry').querySelector('p:not(#property-context)');
-inquiryNote.textContent='Send Don your question. The property and MLS number are included automatically.';
+inquiryNote.textContent='Your message goes to Don at Baja International Realty. If you work with another BIR agent, include their name in your message. The listing link and MLS number are included automatically.';
 const inquiryForm=document.createElement('form');inquiryForm.id='inquiry-form';$('email').before(inquiryForm);
 style.textContent+='#inquiry{max-height:90vh;overflow:auto}';
 for(const [id,label,type,required,max] of [['contact-name','Your name','text',true,100],['contact-email','Your email','email',true,254],['contact-phone','Phone (optional)','tel',false,50]]){
@@ -224,7 +253,7 @@ inquiryForm.onsubmit=async event=>{
  event.preventDefault();if(!selectedProperty||sendButton.disabled)return;
  sendButton.disabled=true;$('close').disabled=true;sendButton.textContent='Sending...';inquiryStatus.textContent='';
  try{
-  const response=await fetch('/api/search-pilot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('contact-name').value,email:$('contact-email').value,phone:$('contact-phone').value,message:question.value,website:trap.value,listingId:String(selectedProperty.ListingId),address:selectedProperty.UnparsedAddress||''})});
+  const response=await fetch('/api/search-pilot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('contact-name').value,email:$('contact-email').value,phone:$('contact-phone').value,message:question.value+'\nListing: '+propertyLink(selectedProperty),website:trap.value,listingId:String(selectedProperty.ListingId),address:selectedProperty.UnparsedAddress||''})});
   const result=await response.json();if(!response.ok||!result.success)throw new Error(result.error||'We could not confirm your inquiry was sent. Please use the email or call link.');
   inquiryStatus.textContent='Thank you. Your inquiry has been submitted to Don.';sendButton.textContent='Inquiry submitted';
  }catch(error){inquiryStatus.textContent=error.message||'Unable to confirm delivery. Please use the email or call link.';sendButton.disabled=false;sendButton.textContent='Send inquiry';}
@@ -234,7 +263,7 @@ $('inquiry').addEventListener('cancel',event=>{if($('close').disabled)event.prev
 const contactOptions=document.createElement('div');contactOptions.className='contact-options';
 const callLink=document.createElement('a');callLink.href='tel:+526241296245';callLink.textContent='Call Don';contactOptions.append(callLink);$('email').after(contactOptions);
 let selectedProperty;
-function updateInquiry(){if(!selectedProperty)return;const p=selectedProperty;const body=`I would like more information about ${p.UnparsedAddress}.\nMLS: ${p.ListingId}\nPrice: ${money(p.ListPrice)}\n\n${question.value}`;$('email').href=`mailto:don@bircabo.com?subject=${encodeURIComponent('Property inquiry: MLS '+p.ListingId)}&body=${encodeURIComponent(body)}`;}
+function updateInquiry(){if(!selectedProperty)return;const p=selectedProperty;const body=`I would like more information about ${p.UnparsedAddress}.\nMLS: ${p.ListingId}\nPrice: ${money(p.ListPrice)}\nListing: ${propertyLink(p)}\n\n${question.value}`;$('email').href=`mailto:don@bircabo.com?subject=${encodeURIComponent('Property inquiry: MLS '+p.ListingId)}&body=${encodeURIComponent(body)}`;}
 question.oninput=updateInquiry;
 const money=n=>n == null ? 'Price on request' : new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);
 function options(id,values,value){const select=$(id);select.replaceChildren(new Option('Any',''),...values.map(v=>new Option(v,v)));select.value=value;}
@@ -289,7 +318,7 @@ function renderCards(loadDetails=true){
   for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '-'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '-'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
   const title=content.querySelector('h2'),titleButton=document.createElement('button');titleButton.className='listing-title';titleButton.textContent=title.textContent;titleButton.onclick=()=>openListing(p);title.replaceChildren(titleButton);
   const detail=document.createElement('details'),summary=document.createElement('summary'),remarks=document.createElement('p');summary.textContent='Property description';remarks.textContent=p.PublicRemarks||(cached?'No description supplied.':'Loading description...');remarks.className='meta';detail.append(summary,remarks);content.append(detail);
-  const button=document.createElement('button');button.className='inquiry';button.textContent='Ask about this property';button.onclick=()=>inquire(p);content.append(button);card.append(content);$('cards').append(card);
+  const button=document.createElement('button');button.className='inquiry';button.textContent='Ask about this property';button.onclick=()=>inquire(p);content.append(sharingActions(p));card.append(content);$('cards').append(card);
  }
  $('more').textContent='Next 24 properties';$('more').hidden=!ready||shown>=matches.length;previous.hidden=!ready||shown<=24;$('empty').hidden=matches.length>0;
  pageInfo.textContent=matches.length?`${shown-23}-${Math.min(shown,matches.length)}${ready?' of '+matches.length.toLocaleString():''}`:'';
