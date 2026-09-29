@@ -386,6 +386,7 @@ try{
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
  render();if(savedDialog.open)renderSaved();
  const entry=new URLSearchParams(location.search),requestedMLS=entry.get('mls');
+ if(requestedMLS&&requestedMLS.includes(',')){const ids=requestedMLS.split(',');if(ids.length<=50&&ids.every(id=>/^[\d-]{3,20}$/.test(id))){filters.query=ids.join(',');$('query').value=filters.query;shown=24;render();fitLocationMap();$('message').textContent='Shared favorites: showing '+matches.length+' currently available listings from '+ids.length+' shared MLS numbers.';$('count').scrollIntoView({block:'start'});}} 
  if(requestedMLS&&/^[\d-]{3,20}$/.test(requestedMLS)){
   const listing=rows.find(row=>row.ListingId===requestedMLS);
   if(listing)openListing({...listing,...detailsCache.get(listing.ListingKey)});
