@@ -17,6 +17,7 @@ export async function mountAccount(target,hooks={}){
  const status=el('p');status.className='buyer-status';status.setAttribute('role','status');
  const signedOut=el('div'),link=el('a','Sign in or create a free account');link.href='/buyer-account.html';signedOut.append(link,el('p','No account needed for this device. Choose an account only if you want your saved items on other devices.'));
  const topNav=document.querySelector('header nav');
+ const welcome=el('p');welcome.setAttribute('role','status');welcome.hidden=true;welcome.style.cssText='flex-basis:100%;margin:8px 0 0;font-weight:600;font-size:15px;overflow-wrap:anywhere';if(topNav){topNav.parentElement.style.flexWrap='wrap';topNav.parentElement.append(welcome);}
  const topSignOut=topNav&&!document.getElementById('signout')?button('Sign out',()=>action(async()=>{await api.signOut();await load();})):null;
  if(topSignOut){topSignOut.className='account-signout';topSignOut.hidden=true;topNav.append(topSignOut);}
  const signedIn=el('div');signedIn.hidden=true;panel.append(title,intro,status,signedOut,signedIn);
@@ -29,7 +30,7 @@ export async function mountAccount(target,hooks={}){
   const {data,error}=await client.auth.getUser();
   if(stamp!==version)return;
   const u=!error&&data.user?.email_confirmed_at?data.user:null;
-  if(topSignOut)topSignOut.hidden=!u;
+  if(topSignOut)topSignOut.hidden=!u;welcome.hidden=!u;welcome.textContent=u?'Welcome back, '+u.email+' — you are signed in.':'';
   if(u)document.getElementById('save-account-offer')?.remove();
   if(!u){title.textContent='Save your way — always free';intro.textContent='Save on this device without signing in, or use a free account to keep favorites and named searches across devices.';current=null;cloud=[];searches=[];signedIn.replaceChildren();signedIn.hidden=true;signedOut.hidden=false;hooks.setFavorites?.(localFavorites(),false);tell('');return;}
   if(current!==u.id){cloud=[];hooks.setFavorites?.([],true);}
