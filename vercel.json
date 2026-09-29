@@ -50,6 +50,16 @@
   ],
   "redirects": [
     {
+      "source": "/susu",
+      "destination": "/team",
+      "permanent": true
+    },
+    {
+      "source": "/agents/susu",
+      "destination": "/team",
+      "permanent": true
+    },
+    {
       "source": "/index.html",
       "destination": "/",
       "permanent": true
