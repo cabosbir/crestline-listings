@@ -133,12 +133,6 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
-  <url>
-    <loc>https://www.bircabo.com/susu</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
 
   <url><loc>https://www.bircabo.com/office-listings</loc></url>
   <url><loc>https://www.bircabo.com/bonnie-renee</loc></url>
