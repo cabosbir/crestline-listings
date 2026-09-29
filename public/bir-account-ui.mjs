@@ -20,7 +20,7 @@ export async function mountAccount(target,hooks={}){
  const topSignOut=topNav&&!document.getElementById('signout')?button('Sign out',()=>action(async()=>{await api.signOut();await load();})):null;
  if(topSignOut){topSignOut.className='account-signout';topSignOut.hidden=true;topNav.append(topSignOut);}
  const signedIn=el('div');signedIn.hidden=true;panel.append(title,intro,status,signedOut,signedIn);
- let client,api,current=null,busy=false,version=0,cloud=[],searches=[];
+ let client,api,current=null,busy=false,version=0,cloud=[],searches=[],syncProblem='';
  const tell=t=>status.textContent=t;
  async function action(run){if(busy)return;busy=true;panel.querySelectorAll('button').forEach(b=>b.disabled=true);try{await run();}catch(e){tell(e.message||'Your change could not be saved. Please try again.');}finally{busy=false;panel.querySelectorAll('button').forEach(b=>b.disabled=false);}}
  const displayFavorites=()=>hooks.setFavorites?.(cloud.map(p=>({key:p.listing_key,mls:p.mls_number})),true);
@@ -36,16 +36,30 @@ export async function mountAccount(target,hooks={}){
   title.textContent='My Account';intro.textContent='Manage your saved properties and searches here.';current=u.id;signedOut.hidden=true;signedIn.hidden=false;tell('Loading your account…');
   const [f,s,p]=await Promise.all([api.listFavorites(),api.listSearches(),api.getPreferences()]);
   if(stamp!==version||current!==u.id)return;
-  cloud=f;searches=s;displayFavorites();draw(u,p);tell('Signed in as '+u.email);
+  cloud=f;searches=s;syncProblem='';
+  const local=localFavorites();
+  if(Array.isArray(local)&&local.length){
+   try{
+    const pending=local.filter(x=>!cloud.some(c=>c.listing_key===x.key));
+    if(pending.length)await api.importFavorites(pending);
+    const updated=await api.listFavorites();
+    if(stamp!==version||current!==u.id)return;
+    cloud=updated;
+    const confirmed=new Set(cloud.map(x=>x.listing_key));
+    const latest=localFavorites();
+    if(Array.isArray(latest))localStorage.setItem('bir-saved-properties-v1',JSON.stringify(latest.filter(x=>!confirmed.has(x.key))));
+   }catch{syncProblem='Some favorites are still saved only on this device. We could not add them to your account. Click Retry saving favorites. If your account already has 50 favorites, remove one first.';}
+  }
+  if(stamp!==version||current!==u.id)return;
+  displayFavorites();draw(u,p);tell(syncProblem||'Signed in as '+u.email+'. Your favorites are saved to your account.');
  }
  function draw(u,p){
-  signedIn.replaceChildren();const actions=el('div');actions.className='buyer-actions';
-  const local=localFavorites(),pending=Array.isArray(local)?local.filter(f=>!cloud.some(c=>c.listing_key===f.key)):[];if(pending.length){const box=el('section');box.style.cssText='padding:16px;margin:12px 0;background:#edf4f1;border:2px solid #146b68;border-radius:8px';box.append(el('h3',pending.length+' favorites saved on this device'),el('p','Add these to your account so you can see them on your other devices too.'),button('Add these favorites to My Account',()=>action(async()=>{await api.importFavorites(pending);await load();tell('Your favorites are now saved in My Account and available on your other devices.');})));signedIn.append(box);}
+  signedIn.replaceChildren();const actions=el('div');actions.className='buyer-actions';if(syncProblem)actions.append(button('Retry saving favorites',()=>action(load)));
   actions.append(button('Refresh saved items',()=>action(load)),button('Sign out',()=>action(async()=>{await api.signOut();current=null;await load();})));
   signedIn.append(actions);
   if(!hooks.setFavorites){
    const details=el('details');details.open=true;details.append(el('summary',`Saved properties (${cloud.length})`));const list=el('ul');
-   for(const f of cloud){const li=el('li'),a=el('a','MLS '+f.mls_number);a.href='/property-search.html?mls='+encodeURIComponent(f.mls_number);li.append(a,button('Remove',()=>action(async()=>{await api.removeFavorite(f.listing_key);await load();})));list.append(li);}details.append(cloud.length?list:el('p','Save properties while browsing. If you saved favorites before signing in on this device, use the Add these favorites to My Account button above.'));signedIn.append(details);
+   for(const f of cloud){const li=el('li'),a=el('a','MLS '+f.mls_number);a.href='/property-search.html?mls='+encodeURIComponent(f.mls_number);li.append(a,button('Remove',()=>action(async()=>{await api.removeFavorite(f.listing_key);await load();})));list.append(li);}details.append(cloud.length?list:el('p','Save properties while browsing. Favorites saved on this device before signing in are added to your account automatically.'));signedIn.append(details);
   }
   const searchBox=el('details');searchBox.open=true;searchBox.append(el('summary',`Saved searches (${searches.length})`));
   if(hooks.getFilters){const form=el('form'),label=el('label','Name this search'),input=el('input');input.required=true;input.maxLength=80;input.placeholder='For example: El Tezal condos';input.id='buyer-search-name';label.htmlFor=input.id;const save=el('button','Save current search');save.type='submit';form.append(label,input,save);form.onsubmit=e=>{e.preventDefault();action(async()=>{if(!hooks.ready())throw Error('Wait for the full search to load before saving.');await api.addSearch(input.value,hooks.getFilters());await load();tell('Search saved to your account.');});};searchBox.append(form);}
