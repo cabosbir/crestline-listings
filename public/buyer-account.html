@@ -14,7 +14,7 @@ function message(text){status.textContent=text;}
 async function refresh(){
  const {data,error}=await client.auth.getSession();
  if(error){$('signin').hidden=false;message('This sign-in link has expired or could not be verified. Request a new link below.');return;}
- if(!data.session){signedState(false);$('signin').hidden=false;$('account').hidden=true;message(callbackError?'This sign-in link has expired or is invalid. Request a new link below.':'To create a free account or sign in to your existing account, enter your email below. We will email you a secure sign-in link—no password needed.');return;}
+ if(!data.session){signedState(false);$('signin').hidden=false;$('account').hidden=true;message(callbackError?'This sign-in link has expired or is invalid. Request a new link below.':'To create a free account or sign in to your existing account, enter your email below. We will email you a secure sign-in link to confirm it’s you—no password needed.');return;}
  const verified=await client.auth.getUser();
  if(verified.error||!verified.data.user?.email_confirmed_at){signedState(false);$('signin').hidden=false;$('account').hidden=true;message('We could not verify your session. Please request a new sign-in link.');return;}
  signedState(true);$('signin').hidden=true;$('account').hidden=false;$('identity').textContent='Signed in as '+verified.data.user.email;message('You are signed in.');
