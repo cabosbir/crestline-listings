@@ -22,6 +22,26 @@ export async function mountAccount(target,hooks={}){
  if(topSignOut){topSignOut.className='account-signout';topSignOut.hidden=true;topNav.append(topSignOut);}
  const signedIn=el('div');signedIn.hidden=true;panel.append(title,intro,status,signedOut,signedIn);
  let client,api,current=null,busy=false,version=0,cloud=[],searches=[],syncProblem='';
+
+ const searchWidget=hooks.getFilters&&document.getElementById('filters')?el('section'):null;
+ let searchForm,searchInput,searchGuest,searchHelp,searchFeedback,searchOpen,searchSaving=false;
+ if(searchWidget){
+  searchWidget.className='filter-save-search';searchWidget.setAttribute('aria-label','Save this search');
+  style.textContent+='.filter-save-search{margin:14px 0;padding:14px;border:1px solid #b8d5cf;border-radius:8px;background:#f3faf8}.filter-save-search [hidden]{display:none!important}.filter-save-search p{font-size:14px;margin:8px 0}.filter-save-search button{width:100%}.filter-save-search label{display:block;margin:8px 0}.filter-save-search input{box-sizing:border-box;width:100%;padding:10px;margin-bottom:10px}.filter-save-search a{font-weight:600}';
+  searchHelp=el('p','Requires a free account.');
+  searchGuest=el('div');const signup=el('a','Create a free account or sign in');signup.href='/buyer-account.html#signin';signup.target='_blank';signup.rel='noopener';
+  searchGuest.append(signup,el('p','Opens a new tab so your search stays here. After signing in, return here to save it.'));
+  searchForm=el('form');searchForm.hidden=true;searchForm.id='filter-save-search-form';
+  const label=el('label','Name this search');searchInput=el('input');searchInput.id='filter-search-name';label.htmlFor=searchInput.id;searchInput.required=true;searchInput.maxLength=80;searchInput.placeholder='For example: El Tezal condos';
+  const submit=el('button','Save search');submit.type='submit';searchForm.append(label,searchInput,submit);
+  searchFeedback=el('p');searchFeedback.setAttribute('role','status');
+  searchOpen=button('Save this search',()=>{if(current){searchForm.hidden=false;searchOpen.setAttribute('aria-expanded','true');searchInput.focus();}else{searchFeedback.textContent='Create a free account or sign in using the link above to save this search.';signup.focus();}});
+  searchOpen.setAttribute('aria-controls',searchForm.id);searchOpen.setAttribute('aria-expanded','false');
+  searchForm.onsubmit=async e=>{e.preventDefault();if(searchSaving)return;searchSaving=true;submit.disabled=true;searchFeedback.textContent='Saving your search…';try{if(!current)throw Error('Please sign in to save this search.');if(!hooks.ready())throw Error('Wait for the full search to load before saving.');const name=searchInput.value.trim();if(!name)throw Error('Please give your search a name.');await api.addSearch(name,hooks.getFilters());searchInput.value='';await load();searchFeedback.textContent='Search saved to your account. Find it under My Account → Saved searches.';}catch(e){searchFeedback.textContent=e.message||'Your search could not be saved. Please try again.';}finally{searchSaving=false;submit.disabled=false;}};
+  searchWidget.append(searchOpen,searchHelp,searchGuest,searchForm,searchFeedback);document.getElementById('filters').before(searchWidget);
+ }
+ function updateSearchWidget(u){if(!searchWidget)return;searchGuest.hidden=!!u;searchHelp.textContent=u?'Save your current filters with a name.':'Requires a free account.';if(!u){searchForm.hidden=true;searchOpen.setAttribute('aria-expanded','false');}}
+
  const tell=t=>status.textContent=t;
  async function action(run){if(busy)return;busy=true;panel.querySelectorAll('button').forEach(b=>b.disabled=true);try{await run();}catch(e){tell(e.message||'Your change could not be saved. Please try again.');}finally{busy=false;panel.querySelectorAll('button').forEach(b=>b.disabled=false);}}
  const displayFavorites=()=>hooks.setFavorites?.(cloud.map(p=>({key:p.listing_key,mls:p.mls_number})),true);
@@ -30,6 +50,7 @@ export async function mountAccount(target,hooks={}){
   const {data,error}=await client.auth.getUser();
   if(stamp!==version)return;
   const u=!error&&data.user?.email_confirmed_at?data.user:null;
+  updateSearchWidget(u);
   if(topSignOut)topSignOut.hidden=!u;welcome.hidden=!u;welcome.textContent=u?'Welcome back, '+u.email+' — you are signed in.':'';
   if(u)document.getElementById('save-account-offer')?.remove();
   if(!u){title.textContent='Save your way — always free';intro.textContent='Save on this device without signing in, or use a free account to keep favorites and named searches across devices.';current=null;cloud=[];searches=[];signedIn.replaceChildren();signedIn.hidden=true;signedOut.hidden=false;hooks.setFavorites?.(localFavorites(),false);tell('');return;}
@@ -63,7 +84,7 @@ export async function mountAccount(target,hooks={}){
    for(const f of cloud){const li=el('li'),a=el('a','MLS '+f.mls_number);a.href='/property-search.html?mls='+encodeURIComponent(f.mls_number);li.append(a,button('Remove',()=>action(async()=>{await api.removeFavorite(f.listing_key);await load();})));list.append(li);}details.append(cloud.length?list:el('p','Save properties while browsing. Favorites saved on this device before signing in are added to your account automatically.'));signedIn.append(details);
   }
   const searchBox=el('details');searchBox.open=true;searchBox.append(el('summary',`Saved searches (${searches.length})`));
-  if(hooks.getFilters){const form=el('form'),label=el('label','Name this search'),input=el('input');input.required=true;input.maxLength=80;input.placeholder='For example: El Tezal condos';input.id='buyer-search-name';label.htmlFor=input.id;const save=el('button','Save current search');save.type='submit';form.append(label,input,save);form.onsubmit=e=>{e.preventDefault();action(async()=>{if(!hooks.ready())throw Error('Wait for the full search to load before saving.');await api.addSearch(input.value,hooks.getFilters());await load();tell('Search saved to your account.');});};searchBox.append(form);}
+  if(searchWidget)searchBox.append(button('Save this search',()=>{searchOpen.click();searchWidget.scrollIntoView({block:'center',behavior:'smooth'});}));
   const list=el('ul');for(const s of searches){const li=el('li');if(hooks.applyFilters)li.append(button(s.name,()=>action(async()=>{if(!hooks.ready())throw Error('Wait for the full search to load.');hooks.applyFilters(savedSearch(s.name,s.filters).filters);tell('Showing '+s.name);})));
    else{const a=el('a',s.name);a.href='/property-search.html?saved='+encodeURIComponent(s.id);li.append(a);}li.append(button('Delete search',()=>action(async()=>{await api.removeSearch(s.id);await load();})));list.append(li);}
   searchBox.append(searches.length?list:el('p','No saved searches yet. Choose filters on the property search page, then save your search.'));signedIn.append(searchBox);
