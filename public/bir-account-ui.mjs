@@ -67,9 +67,9 @@ export async function mountAccount(target,hooks={}){
   const list=el('ul');for(const s of searches){const li=el('li');if(hooks.applyFilters)li.append(button(s.name,()=>action(async()=>{if(!hooks.ready())throw Error('Wait for the full search to load.');hooks.applyFilters(savedSearch(s.name,s.filters).filters);tell('Showing '+s.name);})));
    else{const a=el('a',s.name);a.href='/property-search.html?saved='+encodeURIComponent(s.id);li.append(a);}li.append(button('Delete search',()=>action(async()=>{await api.removeSearch(s.id);await load();})));list.append(li);}
   searchBox.append(searches.length?list:el('p','No saved searches yet. Choose filters on the property search page, then save your search.'));signedIn.append(searchBox);
-  const pref=el('details');pref.append(el('summary','Email alert preferences'),el('p','Automatic email delivery is not active yet. Daily and weekly alerts will be available after setup and testing are complete.'));
+  const pref=el('details');pref.append(el('summary','Email alert preferences'),el('p','Choose daily, weekly or no email alerts. Updates are sent only when there are changes matching the topics you select.'));
   const form=el('form'),label=el('label','How often would you like updates?'),select=el('select');select.id='buyer-frequency';label.htmlFor=select.id;
-  for(const [value,text] of [['none','No alerts'],['daily','Daily — coming soon'],['weekly','Weekly — coming soon']]){const option=new Option(text,value);option.disabled=value!=='none';select.append(option);}select.value=p?.frequency||'none';
+  for(const [value,text] of [['none','No alerts'],['daily','Daily'],['weekly','Weekly']]){const option=new Option(text,value);select.append(option);}select.value=p?.frequency||'none';
   const topics=[];for(const [name,text] of [['new_matches','New listings matching my saved searches'],['favorite_changes','Price or public availability changes to my saved properties']]){const l=el('label'),c=el('input');c.type='checkbox';c.name=name;c.checked=p?.[name]===true;l.append(c,document.createTextNode(text));topics.push([name,c,l]);}
   const save=el('button','Save alert preferences');save.type='submit';
   form.append(label,select,...topics.map(t=>t[2]),el('p','Alerts are off unless you choose a frequency and at least one topic. You can turn them off here at any time.'),save);
