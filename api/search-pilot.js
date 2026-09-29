@@ -7,7 +7,7 @@ export function buildRequest(endpoint, query) {
   const url=new URL(endpoint), light=query.mode==='inventory';
   const gallery=query.mode==='gallery';
   if(gallery&&(typeof query.keys!=='string'||!/^\d{1,40}$/.test(query.keys)))throw new Error('Gallery requires one listing');
-  let filter="StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false";
+  let filter="StandardStatus eq 'Active' and InternetEntireListingDisplayYN ne false and PropertyType ne 'Reservations Only'";
   if(query.group!==undefined){
     if(!light)throw new Error('Invalid group');
     const groups={budget:'ListPrice lt 250000',mid:'ListPrice ge 250000 and ListPrice lt 500000',upper:'ListPrice ge 500000 and ListPrice lt 1000000',other:'ListPrice ge 1000000 or ListPrice eq null'};
@@ -72,8 +72,8 @@ export function propertyDetails(row) {
  return [...groups].map(([heading,items])=>({heading,items}));
 }
 
-export function publicListing(row,fullPhotos=false) {
-  if(row.StandardStatus!=='Active'||row.InternetEntireListingDisplayYN===false)return null;
+export function publicListing(row,fullPhotos=false,includeReservations=false) {
+  if(row.StandardStatus!=='Active'||row.InternetEntireListingDisplayYN===false||(!includeReservations&&row.PropertyType==='Reservations Only'))return null;
   const result=Object.fromEntries(fields.filter(k=>k in row && row[k]!==null && row[k]!==undefined && row[k]!=='').map(k=>[k,row[k]]));
   // Keep the verified corridor area in its zone when a listing has an inconsistent City.
   if(result.MLSAreaMajor==='CSL-Corr. Oceanside'&&result.City==='Cabo San Lucas')result.City='Cabo Corridor';
@@ -143,11 +143,12 @@ export async function storedSnapshot(fetcher=fetch,now=Date.now) {
   if(data.complete!==true||!Number.isSafeInteger(data.total)||data.total<0||data.total>20000||!Array.isArray(data.results)||data.results.length!==data.total||!Number.isFinite(age)||age< -60000||age>=3600000)throw new Error('Stored inventory invalid or expired');
   const keys=new Set();
   const results=data.results.map(row=>{
-    const clean=publicListing(row);
+    const clean=publicListing(row,false,true);
     if(!clean?.ListingKey||keys.has(clean.ListingKey))throw new Error('Stored inventory invalid');
     keys.add(clean.ListingKey);return clean;
   });
-  return {results,total:data.total,complete:true,fetchedAt:data.fetchedAt};
+  const eligible=results.filter(row=>row.PropertyType!=='Reservations Only');
+  return {results:eligible,total:eligible.length,complete:true,fetchedAt:data.fetchedAt};
 }
 // Reuse a validated copy during brief storage interruptions, with its original timestamp and a hard one-hour maximum. Concurrent visitors share the same work.
 export function createVisitorInventory(loadStored,loadProvider,now=Date.now,report=()=>{}) {
