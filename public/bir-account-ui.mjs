@@ -13,9 +13,12 @@ function localFavorites(){try{return JSON.parse(localStorage.getItem('bir-saved-
 export async function mountAccount(target,hooks={}){
  const style=el('style');style.textContent='.buyer-panel{margin:16px 0;padding:18px;border:1px solid #b8d5cf;border-radius:8px;background:white}.buyer-panel h2{font-size:22px;margin:0 0 8px}.buyer-panel p{font-size:15px;margin:8px 0}.buyer-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.buyer-panel li{margin:12px 0;overflow-wrap:anywhere}.buyer-panel li button{margin-left:10px}.buyer-panel [hidden]{display:none!important}.buyer-panel input:not([type=checkbox]),.buyer-panel select{box-sizing:border-box;width:100%;padding:10px;font:inherit}.buyer-panel label{display:block;margin:12px 0 6px}.buyer-panel input[type=checkbox]{width:auto;margin-right:8px}.buyer-panel summary{font-weight:700;cursor:pointer}.buyer-status{min-height:1.5em}.buyer-panel button:disabled{opacity:.5;cursor:wait}';document.head.append(style);
  const panel=el('section');panel.className='buyer-panel';panel.setAttribute('aria-label','Free buyer account');target.append(panel);
- const title=el('h2','Your free buyer account'),intro=el('p','Keep your saved properties and searches across devices. Signing in is optional.');
+ const title=el('h2','Save your way — always free'),intro=el('p','Save on this device without signing in, or use a free account to keep favorites and named searches across devices.');
  const status=el('p');status.className='buyer-status';status.setAttribute('role','status');
- const signedOut=el('div'),link=el('a','Sign in or create a free account');link.href='/buyer-account.html';signedOut.append(link,el('p','Without an account, your favorites stay in this browser.'));
+ const signedOut=el('div'),link=el('a','Sign in or create a free account');link.href='/buyer-account.html';signedOut.append(link,el('p','No account needed for this device. Choose an account only if you want your saved items on other devices.'));
+ const topNav=document.querySelector('header nav');
+ const topSignOut=topNav&&!document.getElementById('signout')?button('Sign out',()=>action(async()=>{await api.signOut();await load();})):null;
+ if(topSignOut){topSignOut.className='account-signout';topSignOut.hidden=true;topNav.append(topSignOut);}
  const signedIn=el('div');signedIn.hidden=true;panel.append(title,intro,status,signedOut,signedIn);
  let client,api,current=null,busy=false,version=0,cloud=[],searches=[];
  const tell=t=>status.textContent=t;
@@ -26,9 +29,11 @@ export async function mountAccount(target,hooks={}){
   const {data,error}=await client.auth.getUser();
   if(stamp!==version)return;
   const u=!error&&data.user?.email_confirmed_at?data.user:null;
-  if(!u){current=null;cloud=[];searches=[];signedIn.replaceChildren();signedIn.hidden=true;signedOut.hidden=false;hooks.setFavorites?.(localFavorites(),false);tell('');return;}
+  if(topSignOut)topSignOut.hidden=!u;
+  if(u)document.getElementById('save-account-offer')?.remove();
+  if(!u){title.textContent='Save your way — always free';current=null;cloud=[];searches=[];signedIn.replaceChildren();signedIn.hidden=true;signedOut.hidden=false;hooks.setFavorites?.(localFavorites(),false);tell('');return;}
   if(current!==u.id){cloud=[];hooks.setFavorites?.([],true);}
-  current=u.id;signedOut.hidden=true;signedIn.hidden=false;tell('Loading your account…');
+  title.textContent='My Account';current=u.id;signedOut.hidden=true;signedIn.hidden=false;tell('Loading your account…');
   const [f,s,p]=await Promise.all([api.listFavorites(),api.listSearches(),api.getPreferences()]);
   if(stamp!==version||current!==u.id)return;
   cloud=f;searches=s;displayFavorites();draw(u,p);tell('Signed in as '+u.email);
