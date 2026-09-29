@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X, Phone, Mail, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -20,6 +20,27 @@ const companyLinks = [
 ];
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [accountEmail, setAccountEmail] = useState('');
+  useEffect(() => {
+    let active = true, revision = 0;
+    let unsubscribe = () => {};
+    const modulePath = '/bir-account-ui.mjs';
+    import(/* @vite-ignore */ modulePath).then(async ({ connectAccount }) => {
+      const { client } = await connectAccount();
+      if (!active) return;
+      const refresh = async () => {
+        const stamp = ++revision;
+        try {
+          const { data, error } = await client.auth.getUser();
+          if (active && stamp === revision) setAccountEmail(!error && data.user?.email_confirmed_at ? data.user.email || '' : '');
+        } catch { if (active && stamp === revision) setAccountEmail(''); }
+      };
+      const { data } = client.auth.onAuthStateChange(() => { setTimeout(() => { if (active) void refresh(); }, 0); });
+      unsubscribe = () => data.subscription.unsubscribe();
+      void refresh();
+    }).catch(() => { if (active) setAccountEmail(''); });
+    return () => { active = false; unsubscribe(); };
+  }, []);
   return <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-elegant">
     <div className="container mx-auto px-4">
       <div className="flex items-center justify-between h-20 gap-2 xl:gap-4">
@@ -40,7 +61,7 @@ const Navbar = () => {
             <a href="mailto:info@bircabo.com" aria-label="Email Baja International Realty" className="hover:text-accent"><Mail className="h-5 w-5" /></a>
           </div>
         </div>
-        <a href="/buyer-account.html" className="shrink-0 rounded-md border border-primary px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10" aria-label="My Account — free buyer account">My Account</a>
+        <a href="/buyer-account.html" className="shrink-0 rounded-md border border-primary px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10" aria-label="My Account — free buyer account">My Account{accountEmail && <span role="status" className="block max-w-[160px] text-xs font-normal" title={"Welcome back, " + accountEmail + " — you are signed in"}>Welcome back<span className="block truncate">{accountEmail}</span></span>}</a>
         <button type="button" onClick={()=>setIsOpen(!isOpen)} className="lg:hidden p-2 text-foreground hover:text-accent" aria-label={isOpen?'Close menu':'Open menu'} aria-expanded={isOpen} aria-controls="bir-mobile-menu">{isOpen?<X className="h-6 w-6" />:<Menu className="h-6 w-6" />}</button>
       </div>
       {isOpen&&<div id="bir-mobile-menu" className="lg:hidden py-4 border-t border-border max-h-[calc(100dvh-5rem)] overflow-y-auto">
