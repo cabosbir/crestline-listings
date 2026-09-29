@@ -76,6 +76,7 @@ function photoViewer(p,large=false){
 }
 // Saved choices contain identifiers only, never cached listing descriptions or photos.
 const savedKey='bir-saved-properties-v1';
+let accountUI=null,accountMode=false;
 let savedProperties=[];
 try{const value=JSON.parse(localStorage.getItem(savedKey)||'[]');if(Array.isArray(value))savedProperties=value.filter(p=>p&&typeof p.key==='string'&&/^\d{1,40}$/.test(p.key)&&typeof p.mls==='string').slice(0,500);}catch{}
 const savedBar=document.createElement('div');savedBar.className='saved-bar';
@@ -89,6 +90,7 @@ function refreshSaveButtons(){
  document.querySelectorAll('button[data-save-key]').forEach(button=>{const selected=savedProperties.some(p=>p.key===button.dataset.saveKey);button.textContent=selected?'\u2665 Saved':'\u2661 Save property';button.setAttribute('aria-pressed',String(selected));});
 }
 function toggleSaved(p){
+ if(accountMode){if(accountUI)void accountUI.toggle(p);else savedStatus.textContent="Your account is loading. Please try again shortly.";return;}
  const key=String(p.ListingKey),selected=savedProperties.some(item=>item.key===key);
  if(!selected&&savedProperties.length>=50){savedStatus.textContent='You can save up to 50 properties. Remove a saved property before adding another.';return;}
  const next=selected?savedProperties.filter(item=>item.key!==key):[...savedProperties,{key,mls:String(p.ListingId||'')}];
@@ -100,7 +102,7 @@ function saveButton(p){const button=document.createElement('button');button.type
 function renderSaved(){
  compareKeys=compareKeys.filter(key=>savedProperties.some(p=>p.key===key)&&rows.some(p=>String(p.ListingKey)===key));
  savedDialog.replaceChildren();const heading=document.createElement('div');heading.className='saved-heading';const title=document.createElement('h2');title.textContent=`Saved & Compare (${savedProperties.length})`;const close=document.createElement('button');close.textContent='Back to search';close.onclick=()=>savedDialog.close();heading.append(title,close);savedDialog.append(heading);
- const note=document.createElement('p');note.textContent='Your saved list is independent of your search filters. Saved on this browser only.';savedDialog.append(note);
+ const note=document.createElement('p');note.textContent=accountMode?'Your saved list is independent of your search filters. Saved to your signed-in account.':'Your saved list is independent of your search filters. Saved on this browser only.';savedDialog.append(note);
  if(!savedProperties.length){const empty=document.createElement('p');empty.textContent='No saved properties yet. Click Save property on any listing to keep it here.';savedDialog.append(empty);return;}
  const compareBar=document.createElement('div');compareBar.className='compare-controls';const compareHelp=document.createElement('p');compareHelp.textContent='Choose two or three properties to compare side by side.';const compareStart=document.createElement('button');compareStart.textContent=`Compare selected (${compareKeys.length}/3)`;compareStart.disabled=compareKeys.length<2;compareStart.onclick=openComparison;compareBar.append(compareHelp,compareStart);savedDialog.append(compareBar);
  for(const saved of savedProperties){
@@ -148,7 +150,7 @@ async function openComparison(){
 }
 style.textContent+=`.compare-controls{position:sticky;top:0;background:white;padding:8px 0;z-index:1;border-bottom:1px solid #d4dfdc}.compare-controls p{margin:4px 0 10px}.compare-choice{display:inline-flex;align-items:center;gap:8px;margin:10px 18px 10px 0}.compare-choice input{width:20px;height:20px}.compare-dialog{width:96vw;max-width:1250px;max-height:94vh;padding:24px;border:1px solid #c5d4ce;border-radius:12px;overflow:auto}.comparison-scroll{overflow-x:auto;max-width:100%}.comparison-table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:720px}.comparison-table caption{text-align:left;padding:12px 0;font-weight:600}.comparison-table th,.comparison-table td{padding:14px;text-align:left;vertical-align:top;border:1px solid #d4dfdc;overflow-wrap:anywhere}.comparison-table th{background:#f1f6f3}.comparison-table th:first-child{width:150px}.comparison-table img{width:100%;height:140px;object-fit:cover;border-radius:6px}.comparison-table button{font-size:14px}.comparison-table tbody tr:nth-child(even) td{background:#fafcfb}.compare-warning{color:#865411;font-size:13px}@media(max-width:760px){.compare-dialog{padding:12px;width:98vw}.compare-dialog h2{font-size:21px}.comparison-table{min-width:760px}.comparison-table th:first-child{width:110px}.comparison-table th,.comparison-table td{padding:10px}}`;
 savedOpen.onclick=()=>{renderSaved();savedDialog.showModal();};refreshSaveButtons();
-window.addEventListener('storage',event=>{if(event.key!==savedKey&&event.key!==null)return;try{const value=JSON.parse(event.newValue||'[]');if(!Array.isArray(value))return;savedProperties=value.filter(p=>p&&typeof p.key==='string'&&/^\d{1,40}$/.test(p.key)&&typeof p.mls==='string').slice(0,500);refreshSaveButtons();if(savedDialog.open)renderSaved();}catch{}});
+window.addEventListener('storage',event=>{if(accountMode)return;if(event.key!==savedKey&&event.key!==null)return;try{const value=JSON.parse(event.newValue||'[]');if(!Array.isArray(value))return;savedProperties=value.filter(p=>p&&typeof p.key==='string'&&/^\d{1,40}$/.test(p.key)&&typeof p.mls==='string').slice(0,500);refreshSaveButtons();if(savedDialog.open)renderSaved();}catch{}});
 style.textContent+='.saved-bar{padding:14px 24px;border-bottom:1px solid #d4dfdc;background:#f1f6f3}.saved-primary{background:#12666a;color:white;border:2px solid #12666a;padding:12px 20px;font-size:18px;font-weight:700;box-shadow:0 2px 5px #0002}.saved-primary:hover{background:#0b4b50}.saved-bar p{margin:7px 0;font-size:13px}.saved-status:empty{display:none}.save-property{margin:8px 8px 8px 0;color:#12666a}.save-property[aria-pressed=true]{background:#12666a;color:white}.saved-dialog{width:92vw;max-width:850px;max-height:90vh;overflow:auto;padding:24px;border:1px solid #c5d4ce;border-radius:12px}.saved-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.saved-item{padding:16px 0;border-top:1px solid #d4dfdc}.saved-item button{margin-right:12px}.saved-item h3{margin:6px 0}@media(max-width:760px){.saved-dialog{padding:14px}.saved-heading{align-items:start}.saved-heading h2{font-size:21px}}';
 
 const listingDialog=document.createElement('dialog');listingDialog.id='listing-gallery';document.body.append(listingDialog);
@@ -360,3 +362,13 @@ style.textContent+='#listing-gallery .gallery-heading button{border:2px solid #b
 style.textContent+='main{min-width:0}.result-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;flex:1}.saved-bar{margin:0 0 14px;padding:16px 20px;border:1px solid #b8d5cf;border-left:5px solid #12666a;border-radius:7px;background:#edf6f2}.saved-bar p{font-size:18px;line-height:1.5;margin:0}.saved-bar p>strong{display:block;font-size:21px;color:#124e52;margin-bottom:5px}.saved-bar p>span{display:block}.saved-bar small{display:block;font-size:14px;margin-top:8px;color:#425d59}@media(max-width:760px){.result-actions{flex:0 0 100%;width:100%;justify-content:center;text-align:center;gap:12px}.result-actions .saved-primary{width:100%}.saved-bar{padding:14px}.saved-bar p{font-size:17px}.saved-bar p>strong{font-size:20px}}';
 
 style.textContent+='.saved-bar small{font-size:17px;line-height:1.5;padding:10px 12px;margin-top:12px;border:1px solid #8db7ae;border-radius:6px;background:#fff;color:#244b46}';
+
+// Optional accounts load independently; the existing browser-only search stays usable.
+import('./bir-account-ui.mjs').then(async({mountAccount})=>{
+ const target=document.createElement('div');savedBar.after(target);
+ accountUI=await mountAccount(target,{
+  ready:()=>ready, getFilters:()=>structuredClone(filters),
+  setFavorites:(list,cloud)=>{accountMode=cloud;savedProperties=Array.isArray(list)?list:[];refreshSaveButtons();if(savedDialog.open)renderSaved();savedNote.querySelector('small').textContent=cloud?'Account favorites sync across your devices. Your browser-only favorites are kept separately.':'No signup required. Favorites stay saved in this browser; clearing browser data removes them.';},
+  applyFilters:next=>{filters={...defaults(),...next};for(const [k,v]of Object.entries(filters)){const input=$(k);if(!input)continue;if(k==='financing')input.checked=v;else if(!locationFields.includes(k))input.value=v;}syncLocations();shown=24;render();fitLocationMap();}
+ });
+}).catch(()=>{});

@@ -3,7 +3,7 @@
 <style>body{margin:0;background:#f3f6f4;color:#183d49;font:17px/1.6 system-ui,sans-serif}header{background:#183d49;color:white;padding:22px max(22px,calc((100vw - 980px)/2))}header a{color:white;text-decoration:none;font-weight:700}main{max-width:620px;margin:48px auto;padding:30px;background:white;border-radius:14px;box-shadow:0 8px 28px #183d4910}h1{font-size:32px;line-height:1.2}label{display:block;font-weight:600}input{box-sizing:border-box;width:100%;padding:13px;border:1px solid #8da6a1;border-radius:6px;font:inherit;margin:8px 0 18px}button,.button{display:inline-block;background:#146b68;border:0;border-radius:6px;color:white;padding:12px 20px;font:inherit;cursor:pointer;text-decoration:none}button:disabled{opacity:.55;cursor:wait}a{color:#146b68}#status{padding:14px;background:#edf4f1;border-radius:6px;overflow-wrap:anywhere}small{display:block;color:#546765;margin-top:18px} [hidden]{display:none!important}@media(max-width:680px){main{margin:24px 16px;padding:24px}h1{font-size:28px}}</style></head>
 <body><header><a href="/">Baja International Realty</a></header><main><h1>Your buyer account</h1><p>Sign in securely with an email link. No password to remember.</p><p id="status" role="status" aria-live="polite">Checking your sign-in…</p>
 <form id="signin" hidden><label for="email">Email address</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" required><button id="send" type="submit">Email me a sign-in link</button><small>Signing in does not subscribe you to property alerts. You can browse listings without an account.</small></form>
-<section id="account" hidden><p id="identity"></p><p>Your email is verified and your buyer account is connected.</p><p><a class="button" href="/property-search.html">Continue browsing properties</a></p><button id="signout" type="button">Sign out on this device</button><small>Account sign-in is ready for testing. Saved-property syncing and email alert controls are not available yet.</small></section>
+<section id="account" hidden><p id="identity"></p><p>Your email is verified and your buyer account is connected.</p><p><a class="button" href="/property-search.html">Continue browsing properties</a></p><button id="signout" type="button">Sign out on this device</button><div id="buyer-tools"></div></section>
 <p><a href="/property-search.html">Browse properties without signing in</a></p><noscript>Enable JavaScript to sign in. Property browsing remains available.</noscript></main>
 <script type="module">
 const $=id=>document.getElementById(id), status=$('status');
@@ -19,8 +19,9 @@ async function refresh(){
  $('signin').hidden=true;$('account').hidden=false;$('identity').textContent='Signed in as '+verified.data.user.email;message('You are signed in.');
 }
 try{
- const {createClient}=await import('https://esm.sh/@supabase/supabase-js@2.57.4');
- client=createClient('https://uhgruwbaweepkhpydkxa.supabase.co','sb_publishable_r1OGEb7OoMOugnxNtymj6A_fYo6ttVg',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}});
+ const {connectAccount,mountAccount}=await import('./bir-account-ui.mjs');
+ ({client}=await connectAccount());
+ await mountAccount($('buyer-tools'));
  await refresh();
  if(location.hash)history.replaceState(null,'',location.pathname);
  client.auth.onAuthStateChange(()=>{setTimeout(()=>refresh().catch(()=>message('Connection interrupted. Reload this page to try again.')),0);});
