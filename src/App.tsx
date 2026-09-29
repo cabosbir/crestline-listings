@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -30,7 +30,6 @@ import FernandoLandingPage from "./pages/FernandoLandingPage";
 import HectorLandingPage from "./pages/HectorLandingPage";
 import HumbertoLandingPage from "./pages/HumbertoLandingPage";
 import MarisolLandingPage from "./pages/MarisolLandingPage";
-import SusuLandingPage from "./pages/SusuLandingPage";
 import OfficeListings from "./pages/OfficeListings";
 import OfficeListingDetail from "./pages/OfficeListingDetail";
 import PacificoHeights from "./pages/PacificoHeights";
@@ -123,7 +122,7 @@ const App = () => (
           <Route path="/hector" element={<HectorLandingPage />} />
           <Route path="/humberto" element={<HumbertoLandingPage />} />
           <Route path="/marisol" element={<MarisolLandingPage />} />
-          <Route path="/susu" element={<SusuLandingPage />} />
+          <Route path="/susu" element={<Navigate to="/team" replace />} />
 
           {/* Agent Landing Pages - Full URLs (e.g., /agents/bob) */}
           <Route path="/agents/alfonso" element={<AlfonsoLandingPage />} />
@@ -140,7 +139,7 @@ const App = () => (
           <Route path="/agents/hector" element={<HectorLandingPage />} />
           <Route path="/agents/humberto" element={<HumbertoLandingPage />} />
           <Route path="/agents/marisol" element={<MarisolLandingPage />} />
-          <Route path="/agents/susu" element={<SusuLandingPage />} />
+          <Route path="/agents/susu" element={<Navigate to="/team" replace />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/office-listings" element={<OfficeListings />} />
