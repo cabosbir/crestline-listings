@@ -5,10 +5,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const primaryLinks = [
   { name: "Search Properties", href: "/property-search.html" },
   { name: "Recent Price Reductions", href: "/#price-reductions" },
+  { name: "Communities", href: "/#cabo-communities" },
 ];
 const exploreLinks = [
   { name: "Featured Properties", href: "/#featured-properties" },
-  { name: "Explore Our Communities", href: "/#cabo-communities" },
   { name: "Understanding Buying", href: "/#buying-in-cabo" },
   { name: "Understanding Selling", href: "/#selling-in-cabo" },
   { name: "Free Property Evaluation", href: "/seller-evaluation" },
@@ -47,7 +47,7 @@ const Navbar = () => {
         <a href="/" aria-label="BIR — Home" title="Home" className="flex items-center shrink-0">
           <img src="/BIRLOGO.png" alt="Baja International Realty" className="h-12 sm:h-16 md:h-20 w-auto" />
         </a>
-        <div className="hidden lg:flex items-center gap-4 xl:gap-6">
+        <div className="hidden xl:flex items-center gap-4">
           {primaryLinks.map(link=><a key={link.href} href={link.href} className="text-foreground hover:text-accent font-heading text-base font-semibold">{link.name}</a>)}
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent font-heading text-base">Explore<ChevronDown className="h-4 w-4" /></DropdownMenuTrigger>
@@ -62,9 +62,9 @@ const Navbar = () => {
           </div>
         </div>
         <a href="/buyer-account.html" className="shrink-0 rounded-md border border-primary px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10" aria-label="My Account — free buyer account">My Account{accountEmail && <span role="status" className="block max-w-[160px] text-xs font-normal" title={"Welcome back, " + accountEmail + " — you are signed in"}>Welcome back<span className="block truncate">{accountEmail}</span></span>}</a>
-        <button type="button" onClick={()=>setIsOpen(!isOpen)} className="lg:hidden p-2 text-foreground hover:text-accent" aria-label={isOpen?'Close menu':'Open menu'} aria-expanded={isOpen} aria-controls="bir-mobile-menu">{isOpen?<X className="h-6 w-6" />:<Menu className="h-6 w-6" />}</button>
+        <button type="button" onClick={()=>setIsOpen(!isOpen)} className="xl:hidden p-2 text-foreground hover:text-accent" aria-label={isOpen?'Close menu':'Open menu'} aria-expanded={isOpen} aria-controls="bir-mobile-menu">{isOpen?<X className="h-6 w-6" />:<Menu className="h-6 w-6" />}</button>
       </div>
-      {isOpen&&<div id="bir-mobile-menu" className="lg:hidden py-4 border-t border-border max-h-[calc(100dvh-5rem)] overflow-y-auto">
+      {isOpen&&<div id="bir-mobile-menu" className="xl:hidden py-4 border-t border-border max-h-[calc(100dvh-5rem)] overflow-y-auto">
         <div className="flex flex-col gap-1">
           {primaryLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg font-semibold text-primary">{link.name}</a>)}
           {exploreLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg hover:text-accent">{link.name}</a>)}
