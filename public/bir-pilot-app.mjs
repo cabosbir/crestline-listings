@@ -61,7 +61,7 @@ function photoViewer(p,large=false){
  function draw(){
   position=photos.length?((position%photos.length)+photos.length)%photos.length:0;
   if(photos.length){image.src=photos[position].MediaURL;image.hidden=false;image.alt=`${p.UnparsedAddress||'Property'} - photo ${position+1}`;}else{image.removeAttribute('src');image.hidden=true;}
-  count.textContent=full?(photos.length?`${position+1} / ${photos.length}`:'No photos'):'View all photos';
+  count.textContent=full?(photos.length?`${position+1} / ${photos.length}`:'No photos'):'Photos & details';
   caption.textContent=photos[position]?.caption||(full?'':'Use arrows to browse photos');
   prev.disabled=next.disabled=busy||(!!full&&photos.length<2);photoPositions.set(p.ListingKey,position);
   if(large&&full){if(thumbs.childElementCount!==photos.length){thumbs.replaceChildren();photos.forEach((photo,index)=>{const button=document.createElement('button');button.type='button';button.setAttribute('aria-label',`Show photo ${index+1}`);const thumb=document.createElement('img');thumb.src=photo.MediaURL;thumb.alt='';thumb.loading='lazy';button.append(thumb);button.onclick=()=>{position=index;draw();};thumbs.append(button);});}Array.from(thumbs.children).forEach((button,index)=>button.setAttribute('aria-current',String(position===index)));}
@@ -73,7 +73,7 @@ function photoViewer(p,large=false){
   finally{busy=false;prev.disabled=next.disabled=!!full&&photos.length<2;}
  }
  prev.onclick=()=>move(-1);next.onclick=()=>move(1);count.onclick=()=>large?move(0):openListing(p);
- if(!large){image.tabIndex=0;image.setAttribute('role','button');image.setAttribute('aria-label','Open full property gallery');image.onclick=()=>openListing(p);image.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openListing(p);}};}
+ if(!large){image.tabIndex=0;image.setAttribute('role','button');image.setAttribute('aria-label','Open photos & details');image.onclick=()=>openListing(p);image.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openListing(p);}};}
  box.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();move(event.key==='ArrowLeft'?-1:1);}});
  let touchX;box.addEventListener('touchstart',event=>{touchX=event.touches[0]?.clientX;},{passive:true});box.addEventListener('touchend',event=>{const end=event.changedTouches[0]?.clientX;if(touchX!=null&&end!=null&&Math.abs(end-touchX)>50)move(end<touchX?1:-1);touchX=null;},{passive:true});
  image.onerror=()=>{caption.textContent='This photo could not load. Try the next photo.';};
@@ -331,7 +331,7 @@ function renderCards(loadDetails=true){
   const content=document.createElement('div');content.className='content';content.append(saveButton(p));
   for(const [tag,text,cls] of [['div',money(p.ListPrice),'price'],['h2',p.UnparsedAddress||'Property',''],['p',[p.SubdivisionName,p.Address_co_Community2,p.City].filter(Boolean).join(' · '),'meta'],['p',`${p.PropertyType} · ${p.BedroomsTotal ?? '-'} bedrooms · ${p.BathroomsTotalDecimal ?? p.BathroomsFull ?? '-'} baths`,'meta'],['p',p.General_sp_Description_co_AC_sp_SqFt != null ? `${Number(p.General_sp_Description_co_AC_sp_SqFt).toLocaleString()} indoor sq ft` : 'Indoor area not supplied','meta'],['p',`MLS ${p.ListingId}`,'meta']]){const el=document.createElement(tag);el.textContent=text;el.className=cls;content.append(el);}
   const title=content.querySelector('h2'),titleButton=document.createElement('button');titleButton.className='listing-title';titleButton.textContent=title.textContent;titleButton.onclick=()=>openListing(p);title.replaceChildren(titleButton);
-  const detail=document.createElement('details'),summary=document.createElement('summary'),remarks=document.createElement('p');summary.textContent='Property description';remarks.textContent=p.PublicRemarks||(cached?'No description supplied.':'Loading description...');remarks.className='meta';detail.append(summary,remarks);content.append(detail);
+  const detail=document.createElement('button');detail.type='button';detail.textContent='Photos & details';detail.onclick=()=>openListing(p);content.append(detail);
   const button=document.createElement('button');button.className='inquiry';button.textContent='Ask about this property';button.onclick=()=>inquire(p);content.append(sharingActions(p));card.append(content);$('cards').append(card);
  }
  $('more').textContent='Next 24 properties';$('more').hidden=!ready||shown>=matches.length;previous.hidden=!ready||shown<=24;$('empty').hidden=matches.length>0;
