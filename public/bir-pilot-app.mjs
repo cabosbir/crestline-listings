@@ -152,6 +152,16 @@ function renderSaved(){
 
  if(!savedProperties.length){const empty=document.createElement('p');empty.textContent='No saved properties yet. Click Save property on any listing to keep it here.';savedDialog.append(empty);return;}
  savedDialog.append(savedSharingActions());
+ const removeAll=document.createElement('button');removeAll.type='button';removeAll.textContent='Remove all saved properties';
+ const removeFeedback=document.createElement('p');removeFeedback.setAttribute('role','status');
+ removeAll.onclick=async()=>{
+  if(removeAll.disabled)return;removeAll.disabled=true;
+  try{
+   if(accountMode){if(!accountUI)throw Error('Your account is loading. Please try again shortly.');await accountUI.removeAllFavorites();}
+   else if(confirm('Remove all '+savedProperties.length+' saved properties from this browser? Your saved searches and alert preferences will be kept.')){localStorage.setItem(savedKey,'[]');savedProperties=[];compareKeys=[];refreshSaveButtons();renderSaved();savedStatus.textContent='All saved properties removed from this browser.';}
+  }catch(error){removeFeedback.textContent=error.message||'Could not remove all properties. Please try again.';}
+  finally{removeAll.disabled=false;}
+ };savedDialog.append(removeAll,removeFeedback);
  const compareBar=document.createElement('div');compareBar.className='compare-controls';const compareHelp=document.createElement('p');compareHelp.textContent='Choose two or three properties to compare side by side.';const compareStart=document.createElement('button');compareStart.textContent=`Compare selected (${compareKeys.length}/3)`;compareStart.disabled=compareKeys.length<2;compareStart.onclick=openComparison;compareBar.append(compareHelp,compareStart);savedDialog.append(compareBar);
  for(const saved of savedProperties){
   const row=rows.find(p=>String(p.ListingKey)===saved.key),card=document.createElement('article');card.className='saved-item';
