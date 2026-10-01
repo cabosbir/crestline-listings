@@ -51,7 +51,6 @@ export async function mountAccount(target,hooks={}){
   if(!current)throw Error('Please sign in again.');
   const identity=current,keys=cloud.map(f=>f.listing_key);
   if(!keys.length)return true;
-  if(!confirm('Remove all '+keys.length+' saved properties from your account on all devices? Your saved searches and alert preferences will be kept.'))return false;
   busy=true;
   try{for(const key of keys){if(current!==identity)throw Error('Your account changed. Please try again.');await api.removeFavorite(key);}await load();tell('All saved properties removed. Your saved searches and alert preferences were kept.');return true;}
   catch(error){await load();throw error;}
@@ -94,7 +93,7 @@ export async function mountAccount(target,hooks={}){
   signedIn.append(actions);
   if(!hooks.setFavorites){
    const details=el('details');details.open=true;details.append(el('summary',`Saved properties (${cloud.length})`));const list=el('ul');list.className='buyer-favorites';
-   for(const f of cloud){const li=el('li'),a=el('a','MLS '+f.mls_number);a.href='/property-search.html?mls='+encodeURIComponent(f.mls_number);li.append(a,button('Remove',()=>action(async()=>{await api.removeFavorite(f.listing_key);await load();})));list.append(li);}if(cloud.length)details.append(button('Remove all saved properties',()=>removeAllFavorites().catch(e=>tell(e.message||'Could not remove all properties. Please try again.'))));details.append(cloud.length?list:el('p','Save properties while browsing. Favorites saved on this device before signing in are added to your account automatically.'));signedIn.append(details);
+   for(const f of cloud){const li=el('li'),a=el('a','MLS '+f.mls_number);a.href='/property-search.html?mls='+encodeURIComponent(f.mls_number);li.append(a,button('Remove',()=>action(async()=>{await api.removeFavorite(f.listing_key);await load();})));list.append(li);}if(cloud.length){const removal=el('div'),confirmation=el('div');confirmation.hidden=true;confirmation.setAttribute('role','group');confirmation.setAttribute('aria-label','Confirm removal');const open=button('Remove all saved properties',()=>{confirmation.hidden=false;yes.focus();});const yes=button('Yes, remove all saved properties',async()=>{yes.disabled=true;try{await removeAllFavorites();}catch(e){tell(e.message||'Could not remove all properties. Please try again.');}finally{yes.disabled=false;}});confirmation.append(el('p','Remove all saved properties from your account on all devices? Your saved searches and alert preferences will be kept.'),yes,button('Cancel',()=>{confirmation.hidden=true;open.focus();}));removal.append(open,confirmation);details.append(removal);}details.append(cloud.length?list:el('p','Save properties while browsing. Favorites saved on this device before signing in are added to your account automatically.'));signedIn.append(details);
   }
   const searchBox=el('details');searchBox.id='saved-searches';searchBox.open=true;searchBox.append(el('summary',`Saved searches (${searches.length})`));
   if(searchWidget)searchBox.append(button('Save this search',()=>{searchOpen.click();searchWidget.scrollIntoView({block:'center',behavior:'smooth'});}));
