@@ -27,7 +27,8 @@ const typeLabel=document.querySelector('label[for="PropertyType"]');typeLabel.te
 $('filters').prepend(typeLabel,$('PropertyType'));
 const requestedCommunity=new URLSearchParams(location.search).get('community');
 const initialCommunity=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos'].includes(requestedCommunity)?requestedCommunity:'';
-let filters={...defaults(),PropertyType:initialType,Address_co_Community2:initialCommunity},rows=[],matches=[],shown=24,map,layer;
+const initialSubdivision=new URLSearchParams(location.search).get('subdivision')==='Cascadas'?'Cascadas':'';
+let filters={...defaults(),PropertyType:initialType,Address_co_Community2:initialCommunity,SubdivisionName:initialSubdivision},rows=[],matches=[],shown=24,map,layer;
 const alertParam=new URLSearchParams(location.hash.slice(1)).get('alert');
 const alertIds=alertParam===null?null:[...new Set(alertParam.split(','))];
 const validAlert=alertIds&&alertIds.length>0&&alertIds.length<=20000&&alertIds.every(id=>/^\d{2}-\d{1,10}$/.test(id));
