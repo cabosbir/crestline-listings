@@ -12,171 +12,58 @@ import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2 } from "lucide-react";
 
+// Full community guides are served as individual HTML pages in public/.
 const communityGuides = [
   {
-    id: 'cabo-san-lucas', title: 'Cabo San Lucas', subtitle: 'Marina life, beaches and everyday convenience',
-    intro: 'Cabo San Lucas brings together the marina, Médano Beach, restaurants and the dramatic coastline around Land’s End. It is a natural starting point for buyers who want an active setting and convenient access to things to do. The town also extends well beyond its visitor center, so the experience changes considerably from one neighborhood to another.',
-    paragraphs: [
-      'When exploring Cabo San Lucas homes and condos for sale, think about how you will spend an ordinary day. Would you rather walk to dinner and the marina, or have more separation from the busiest streets? An elevated view can be appealing, but it may come with a steeper drive and less walkability.',
-      'Visit at different times of day to compare traffic, activity and noise. Check the actual route to the beach, parking, grocery shopping and any services you use regularly. For a condominium, review the building’s upkeep, shared amenities and rules as carefully as the unit itself. Cabo can suit very different lifestyles; choosing the right neighborhood matters as much as choosing the property.',
-    ],
+    "id": "cabo-san-lucas",
+    "title": "Cabo San Lucas",
+    "subtitle": "Marina life, beaches and everyday convenience",
+    "intro": "Cabo San Lucas brings together the marina, Médano Beach, restaurants and the dramatic coastline around Land’s End. It is a natural starting point for buyers who want an active setting and convenient access to things to do. The town also extends well beyond its visitor center, so the experience changes considerably from one neighborhood to another.",
+    "href": "/cabo-san-lucas-real-estate.html"
   },
   {
-    id: 'san-jose-del-cabo', title: 'San José del Cabo', subtitle: 'Historic character, art and coastal living',
-    intro: 'San José del Cabo offers a different introduction to Los Cabos: a historic center, a traditional plaza and an arts district with galleries, local work and places to eat. Beyond downtown, the coastline and marina add another side to the area. Buyers can explore a town-centered lifestyle while comparing residential settings farther from the historic streets.',
-    paragraphs: [
-      'A search for San José del Cabo real estate should begin with the kind of setting you prefer. Being close to galleries and restaurants is a different experience from choosing a coastal or golf-oriented community. Consider whether this will be your everyday home, a seasonal retreat or a property you intend to visit several times a year.',
-      'Compare the routes to shopping, the airport and your favorite activities rather than relying on distances on a map. Ask what community fees include, which amenities are available to owners and what access actually comes with the property. The historic town, coastline and surrounding neighborhoods each deserve a visit before you decide which feels most like home.',
-    ],
+    "id": "san-jose-del-cabo",
+    "title": "San José del Cabo",
+    "subtitle": "Historic character, art and coastal living",
+    "intro": "San José del Cabo offers a different introduction to Los Cabos: a historic center, a traditional plaza and an arts district with galleries, local work and places to eat. Beyond downtown, the coastline and marina add another side to the area. Buyers can explore a town-centered lifestyle while comparing residential settings farther from the historic streets.",
+    "href": "/san-jose-del-cabo-real-estate.html"
   },
   {
-    id: 'los-cabos-corridor', title: 'Los Cabos Tourist Corridor', subtitle: 'Between Cabo San Lucas and San José del Cabo',
-    intro: 'The Los Cabos Tourist Corridor connects Cabo San Lucas and San José del Cabo along the Sea of Cortez. Often called the Cabo–San José Corridor, this coastal stretch combines desert scenery, ocean views, resorts and golf. It is worth exploring if you want a residential base between the two towns rather than in either town center.',
-    paragraphs: [
-      'For buyers comparing Los Cabos Corridor homes and condos, the specific community makes a major difference. A property on the ocean side of the highway has a different approach and setting from one in the hills. Compare the actual entrance, driving route, beach access and the amenities included with ownership.',
-      'Do not assume a nearby resort, golf course or beach club is included: ask about membership, access and additional charges. Think about which town you will visit more often and test that drive at the times you would normally travel. Ocean views and proximity to a beach do not necessarily mean a short walk to the sand. Choose the setting for the way you plan to live, not only the view from the terrace.',
-    ],
+    "id": "los-cabos-corridor",
+    "title": "Los Cabos Tourist Corridor",
+    "subtitle": "Between Cabo San Lucas and San José del Cabo",
+    "intro": "The Los Cabos Tourist Corridor connects Cabo San Lucas and San José del Cabo along the Sea of Cortez. Often called the Cabo–San José Corridor, this coastal stretch combines desert scenery, ocean views, resorts and golf. It is worth exploring if you want a residential base between the two towns rather than in either town center.",
+    "href": "/los-cabos-corridor-real-estate.html"
   },
   {
-    id: 'east-cape', title: 'East Cape', subtitle: 'Sea of Cortez scenery and room to explore',
-    intro: 'The East Cape, also known as Cabo del Este, follows the Sea of Cortez beyond San José del Cabo toward Cabo Pulmo and the wider eastern coast. Beaches, fishing and outdoor exploration are central to its appeal. This is a broad region rather than a single neighborhood, and the distance from established services varies greatly between locations.',
-    searchSteps: [
-      'Open the MLS search, click Clear location, then select East Cape in ZONE to explore the listings grouped there.',
-      'Use AREA and COMMUNITY to narrow the results, or clear the location and go directly to a known SUBDIVISION. Check the map position of each property rather than relying only on its MLS label.',
-      'Compare the actual route to San José del Cabo or the nearest town, along with access to shopping and medical services. The East Cape zone is a search grouping, not a promise that every property offers the same lifestyle or convenience.',
-    ],
-    paragraphs: [
-      'East Cape real estate attracts buyers who put a high value on the coastal setting and are willing to look beyond the two main towns. A home near an established community and a more secluded coastal property can offer very different daily routines. We cover these differences within one East Cape guide: the MLS zone name alone does not tell you how remote a property feels or how convenient everyday services will be. Decide how much driving, maintenance and planning you are comfortable with before narrowing your search.',
-      'For each property, confirm road access, water supply, electricity, internet and the practical route to groceries and medical services. If you are considering land, investigate permitted uses and the cost and availability of connecting services before setting a building budget. Visit the exact location and ask about seasonal road conditions. The right fit depends on the individual property, not just an East Cape label.',
-    ],
+    "id": "east-cape",
+    "title": "East Cape",
+    "subtitle": "Sea of Cortez scenery and room to explore",
+    "intro": "The East Cape, also known as Cabo del Este, follows the Sea of Cortez beyond San José del Cabo toward Cabo Pulmo and the wider eastern coast. Beaches, fishing and outdoor exploration are central to its appeal. This is a broad region rather than a single neighborhood, and the distance from established services varies greatly between locations.",
+    "href": "/east-cape-real-estate.html"
   },
   {
-    id: 'pacific-south', title: 'Cabo San Lucas — Pacific Side', subtitle: 'Pedregal to Rolling Hills · Pacific living with Cabo close by',
-    intro: 'From Pedregal to Rolling Hills, Cabo’s Pacific side offers an ocean-facing lifestyle with convenient access to Cabo San Lucas shopping, medical care, restaurants and everyday services. Based on our decades of experience living here, we group this stretch together because of how people use and enjoy it—not because it follows one MLS boundary. The particular neighborhood, access road and distance into town still make a difference.',
-    searchSteps: [
-      'Cabo’s Pacific side is spread across several MLS search categories, which can make it harder to find everything in one search. Try the three routes below separately, clicking Clear location before switching routes. Your price and other preferences stay selected.',
-      'For Pedregal: ZONE → Cabo San Lucas; AREA → CSL-Beach & Marina; COMMUNITY → Pedregal CSL.',
-      'For the Sunset Beach road area: ZONE → Cabo San Lucas; AREA → CSL-Centro; COMMUNITY → Saddles/Sunset Bch Rd. Use the map to focus on listings closest to the Pacific coast within this community.',
-      'For the Pacific coast beyond town: ZONE → Pacific; AREA → Pacific South. This MLS area extends farther than our Cabo Pacific Side guide. Use the map to explore properties closest to Cabo, or choose a COMMUNITY to focus on a specific location.',
-      'Already know the subdivision? You can choose it directly. For example, clear the location and select Rolling Hills in SUBDIVISION without choosing a zone or area first.',
-    ],
-    paragraphs: [
-      'When comparing Pacific-side Cabo real estate, look at the particular community and the property’s position within it. Elevation, the approach road and surrounding development can change the experience substantially. Compare time spent driving into Cabo with the setting you gain at home, and visit the route rather than relying on a quoted number of minutes.',
-      'Ask about water arrangements, road maintenance, community fees and access to shared facilities. For a lot, review building rules and available services before comparing prices with a completed home. An ocean view does not establish beach access or swimming conditions. This guide follows the coast from Pedregal to Rolling Hills; MLS zones, areas and communities divide it differently.',
-    ],
+    "id": "pacific-south",
+    "title": "Cabo San Lucas — Pacific Side",
+    "subtitle": "Pedregal to Rolling Hills · Pacific living with Cabo close by",
+    "intro": "From Pedregal to Rolling Hills, Cabo’s Pacific side offers an ocean-facing lifestyle with convenient access to Cabo San Lucas shopping, medical care, restaurants and everyday services. Based on our decades of experience living here, we group this stretch together because of how people use and enjoy it—not because it follows one MLS boundary. The particular neighborhood, access road and distance into town still make a difference.",
+    "href": "/cabo-san-lucas-pacific-side-real-estate.html"
   },
   {
-    id: 'pacific-north', title: 'Pacific Coast — The Palm to Todos Santos', subtitle: 'A more rural coastal lifestyle, with small-town amenities farther north',
-    intro: 'Starting at The Palm near KM 93 on Highway 19, this stretch introduces a different way of living: a more rural coastal setting, with more planning around everyday errands, continuing through the Pescadero and Cerritos area to Todos Santos and its small-town amenities. Our local experience is the basis for this grouping. It describes a lifestyle and a stretch of coast, not the MLS area called Pacific North.',
-    searchSteps: [
-      'This stretch of coast crosses more than one MLS search area. Try the routes below separately, clicking Clear location before switching. Your price and other preferences stay selected.',
-      'For the coast south of Todos Santos: ZONE → Pacific; AREA → Pacific South; COMMUNITY → Pescadero/Cerritos, Elias Calles or Migrino Area. Choose one community at a time and use the map to check the location of each property.',
-      'For Todos Santos: ZONE → Pacific; AREA → Pacific North; COMMUNITY → Todos Santos.',
-      'To include Todos Santos listings entered under a different zone, click Clear location and choose Todos Santos directly in COMMUNITY, leaving ZONE and AREA at Any. Some MLS records place this community under La Paz.',
-      'For the coast closer to The Palm, or a property between the named communities, explore the map or choose its SUBDIVISION directly if you know it. Check the map position of each listing; a community name alone does not establish that it falls within this guide.',
-    ],
-    paragraphs: [
-      'Buyers exploring Todos Santos, Pescadero and Cerritos real estate may be drawn to the combination of coastal scenery, surfing and a smaller-town setting. Compare being close to the town’s restaurants and galleries with living nearer a beach or in a more rural location. The day-to-day tradeoffs can be more important than a similar asking price.',
-      'Check the property’s road, water supply, power and internet individually, and consider the driving involved in your normal routine. Todos Santos and El Pescadero are in La Paz municipality; that does not mean living in La Paz city. Our guide uses The Palm as a recognizable starting landmark, not a surveyed municipal boundary. Confirm the jurisdiction and services for the particular property during your review.',
-    ],
+    "id": "pacific-north",
+    "title": "Pacific Coast — The Palm to Todos Santos",
+    "subtitle": "A more rural coastal lifestyle, with small-town amenities farther north",
+    "intro": "Starting at The Palm near KM 93 on Highway 19, this stretch introduces a different way of living: a more rural coastal setting, with more planning around everyday errands, continuing through the Pescadero and Cerritos area to Todos Santos and its small-town amenities. Our local experience is the basis for this grouping. It describes a lifestyle and a stretch of coast, not the MLS area called Pacific North.",
+    "href": "/pacific-coast-todos-santos-real-estate.html"
   },
   {
-    id: 'la-paz', title: 'La Paz', subtitle: 'Bayfront living, the malecón and a city to call home',
-    intro: 'La Paz offers another way to enjoy Baja California Sur: life around a broad bay, a waterfront malecón and an established city. The promenade is a natural gathering place for walks and time outdoors, while the Sea of Cortez adds opportunities for boating, snorkeling and exploring. For buyers, the appeal is combining a coastal setting with the routines of everyday city life.',
-    paragraphs: [
-      'When comparing La Paz homes and condos for sale, begin with the setting you want. Living near the malecón and downtown is different from choosing a residential neighborhood farther from the waterfront or a property around the wider bay. Consider access to shopping, medical appointments and the places you will visit regularly, along with parking, noise and how much you expect to drive.',
-      'Separate a bay view from beach access when looking at listings. Popular beaches such as Balandra and El Tecolote are outings beyond the downtown waterfront, so check the actual route from each property. Visit at different times of day, review water and internet arrangements, and ask what condominium or community fees include. This guide focuses on La Paz city and its surroundings; the much larger municipality also includes places far from the city, including Todos Santos.',
-    ],
-    searchSteps: [
-      'Open the MLS search, click Clear location, then select La Paz in ZONE.',
-      'For properties in the city, choose La Paz City in AREA. Leave AREA at Any if you want to explore the wider La Paz zone, then narrow by COMMUNITY or SUBDIVISION.',
-      'Check each listing on the map to confirm its position relative to the city and bay. The La Paz zone covers more than the city itself.',
-    ],
-  },
+    "id": "la-paz",
+    "title": "La Paz",
+    "subtitle": "Bayfront living, the malecón and a city to call home",
+    "intro": "La Paz offers another way to enjoy Baja California Sur: life around a broad bay, a waterfront malecón and an established city. The promenade is a natural gathering place for walks and time outdoors, while the Sea of Cortez adds opportunities for boating, snorkeling and exploring. For buyers, the appeal is combining a coastal setting with the routines of everyday city life.",
+    "href": "/la-paz-real-estate.html"
+  }
 ];
-
-const communityWeather: Record<string, { seasons: [string, string][]; living: string; source: string; sourceName: string }> = {
-  'cabo-san-lucas': {
-    seasons: [
-      ['Winter · December–February', 'Generally mild days and cooler evenings; bring a light layer for dinner outdoors.'],
-      ['Spring · March–May', 'Mostly dry, with increasing daytime warmth. An exposed terrace can feel quite different from a sheltered street.'],
-      ['Summer · June–August', 'Hotter days and warmer nights, with humidity increasing into late summer.'],
-      ['Fall · September–November', 'September can remain hot and humid, with rain or tropical storms; conditions usually become more comfortable later in fall.'],
-    ],
-    living: 'At Land’s End, exposure matters. Compare the marina and bay setting with a Pacific-facing hillside rather than treating all of Cabo as one microclimate. Visit the outdoor spaces at the times you expect to use them.',
-    source: 'https://www.visitloscabos.travel/plan/useful-information/weather/', sourceName: 'Los Cabos seasonal weather',
-  },
-  'san-jose-del-cabo': {
-    seasons: [
-      ['Winter · December–February', 'Mild afternoons and cooler nights suit time outdoors.'],
-      ['Spring · March–May', 'Dry weather and rising temperatures make shade increasingly welcome.'],
-      ['Summer · June–August', 'Expect heat and increasing humidity; check how well bedrooms cool overnight.'],
-      ['Fall · September–November', 'Early fall retains summer heat and storm potential, followed by gradually cooler, drier weather.'],
-    ],
-    living: 'A downtown courtyard, an inland home and an open coastal balcony offer different exposure to sun and moving air. Compare the exact setting, not just a forecast for San José or its airport. Trees, shade and ventilation can change how comfortable a home feels.',
-    source: 'https://www.visitloscabos.travel/plan/useful-information/', sourceName: 'Los Cabos climate overview',
-  },
-  'los-cabos-corridor': {
-    seasons: [
-      ['Winter · December–February', 'Mild days, with cooler evenings on open terraces.'],
-      ['Spring · March–May', 'Generally dry and warming; compare sheltered patios with exposed viewpoints.'],
-      ['Summer · June–August', 'Hotter and increasingly humid. Ocean views do not remove the need for shade and cooling.'],
-      ['Fall · September–November', 'Summer warmth can linger through early fall, with rain and tropical-storm potential before the seasonal cooldown.'],
-    ],
-    living: 'The Corridor is a long coastal stretch, not one uniform climate. Hills, coves and building orientation affect wind and sun exposure. Check morning and afternoon conditions at the property; a breezy balcony and a sheltered pool area may feel different within the same development.',
-    source: 'https://www.visitloscabos.travel/plan/useful-information/weather/', sourceName: 'Los Cabos seasonal weather',
-  },
-  'east-cape': {
-    seasons: [
-      ['Winter · December–February', 'Milder temperatures, but northerly winds can be a major part of coastal life. Around Los Barriles, the wind-sports season extends through March.'],
-      ['Spring · March–May', 'Temperatures rise as winter gives way to summer; windy days can still affect beach and boating plans.'],
-      ['Summer · June–August', 'Hot days and warm coastal water; humidity builds later in summer. Plan outdoor errands for cooler hours.'],
-      ['Fall · September–November', 'Early fall can be hot and humid with storm-related rain. Later fall brings cooler conditions and the return of the winter wind pattern.'],
-    ],
-    living: 'The southern East Cape and the coast farther north do not share identical wind exposure. A sheltered site may feel very different from an open beach. Ask about the property’s seasonal breezes and how access roads handle heavy rain.',
-    source: 'https://www.visitloscabos.travel/places-to-visit/surroundings/los-barriles/', sourceName: 'East Cape winter winds',
-  },
-  'pacific-south': {
-    seasons: [
-      ['Winter · December–February', 'Ocean-exposed properties can feel cool and breezy, especially after sunset.'],
-      ['Spring · March–May', 'Pacific influence can soften the heat; a protected patio and an open hillside can feel noticeably different.'],
-      ['Summer · June–August', 'Coastal airflow may provide relief, but summer still brings heat and increasing humidity.'],
-      ['Fall · September–November', 'Late-summer warmth and storm-related rain can continue into early fall; evenings generally cool as winter approaches.'],
-    ],
-    living: 'From Pedregal to Rolling Hills, the direction a home faces and its shelter from ocean winds matter. Do not assume every Pacific-side property is equally cool. Compare wind protection, afternoon sun and comfortable outdoor seating at the individual home.',
-    source: 'https://www.visitloscabos.travel/plan/useful-information/', sourceName: 'Regional climate background',
-  },
-  'pacific-north': {
-    seasons: [
-      ['Winter · December–February', 'Generally mild days with cool nights; ocean exposure can make evenings feel chilly.'],
-      ['Spring · March–May', 'The Pacific moderates temperatures along this coast. Open sites may feel breezier than sheltered locations farther inland.'],
-      ['Summer · June–August', 'Ocean moderation remains important, but heat and humidity still increase toward late summer.'],
-      ['Fall · September–November', 'Late summer and early fall bring much of the region’s storm-related rainfall, followed by a gradual return to cooler conditions.'],
-    ],
-    living: 'The Palm, Migrino, Elías Calles, Pescadero, Cerritos and Todos Santos are not interchangeable microclimates. The Pacific’s moderating influence is documented around Todos Santos and El Pescadero; how much a particular home benefits depends on exposure and distance inland. Visit in more than one season if possible.',
-    source: 'https://todossantos.csusystem.edu/wp-content/uploads/sites/11/2025/11/community-needs-assessment-2020-ACS.pdf', sourceName: 'Todos Santos & El Pescadero climate study (PDF)',
-  },
-  'la-paz': {
-    seasons: [
-      ['Winter · December–February', 'Generally dry, comfortable days and noticeably cooler nights. Breezy waterfront evenings may call for a jacket.'],
-      ['Spring · March–May', 'Usually very dry, with daytime heat building substantially toward May.'],
-      ['Summer · June–August', 'A long, very hot season with warm nights and rising humidity. Shade and effective air conditioning matter for everyday comfort.'],
-      ['Fall · September–November', 'September remains hot and humid and is a wetter part of the year. Heat and humidity generally ease through October and November.'],
-    ],
-    living: 'La Paz city has a different seasonal feel from the Pacific coast near Todos Santos, even though both are in the same municipality. Check airflow, west-facing windows and afternoon shade at each property rather than relying on the municipality’s name.',
-    source: 'https://weatherspark.com/y/2800/Average-Weather-in-La-Paz-Mexico-Year-Round', sourceName: 'La Paz seasonal climate',
-  },
-};
-
-const communityActivities: Record<string, string> = {
-  'cabo-san-lucas': 'The cooler months make marina walks, golf and time on a terrace easier to fit into the middle of the day. In summer, plan walks and exercise early, with shaded lunches or an indoor break during the hottest hours. For fishing and boat trips, use the day’s wind and sea forecast; sunshine on land does not guarantee calm water.',
-  'san-jose-del-cabo': 'Mild winter and spring weather suits exploring the historic center, gallery visits and outdoor dining. As summer heats up, mornings and evenings become more appealing for walking, while shade and air conditioning matter during the afternoon. A covered patio can extend the hours you spend outside, and a light layer helps with cooler evening dinners in winter.',
-  'los-cabos-corridor': 'Golf, beach walks and outdoor meals can fit comfortably into more of the day during the cooler season. Summer favors early tee times, shaded pool areas and a break from midday sun. Check how exposed a terrace is before planning year-round outdoor dining. For swimming or snorkeling, follow local beach flags and conditions rather than assuming a sheltered-looking bay is always safe.',
-  'east-cape': 'Winter winds are a draw for kiteboarding and windsurfing around Los Barriles, but the same winds can interrupt fishing, snorkeling and small-boat outings. In hot weather, early starts make shore walks and outdoor chores more comfortable. A sheltered patio offers a useful alternative on windy days. After heavy rain, check road conditions before heading to a remote beach or property.',
-  'pacific-south': 'Pacific airflow can make a shaded terrace pleasant, but an exposed outdoor dining area may need wind protection, particularly in cooler months. Plan beach walks around wind and sun, and compare how a patio feels in the morning and late afternoon. The ocean view is part of the appeal; swimming suitability is a separate question, and some Pacific beaches have dangerous surf and currents.',
-  'pacific-north': 'The ocean’s moderating influence can suit outdoor meals, gardening and walks, although wind exposure changes the experience from one property to another. Cooler evenings often call for a layer. In late-summer heat and humidity, shift errands and exercise earlier. Surfing depends on the break, swell and ability; a popular surf beach is not automatically suitable for casual swimming.',
-  'la-paz': 'Winter and the milder transition months favor malecón walks, cycling and outdoor dining. During the very hot summer, daily routines often work better with early errands, an afternoon break and evening waterfront time. Shade, cooling and a comfortable place to sleep become important home features. For kayaking, snorkeling and island trips, choose the day around wind, sea conditions and local operator advice.',
-};
 
 const featuredPhotoOrder = ['26-1759','24-4467','26-3083','26-3891','25-5698','26-811'];
 const handPickedMLS = new Set(['26-3891','26-1759','26-1326','25-3456','26-481','25-678','26-811','25-2758','26-616','26-246','26-3488','26-3314','26-1965']);
@@ -297,7 +184,7 @@ const Index = () => {
             <article className="rounded-xl border bg-white p-6"><h3 className="text-xl font-bold mb-3">Cabo land for sale</h3><p className="text-slate-700 leading-relaxed">Buying land starts with what you want to build. Compare access, slope, available services and community building rules before comparing price alone. A lower purchase price may come with additional site preparation or infrastructure costs.</p><a className="inline-block mt-4 text-blue-900 font-semibold underline" href="/property-search.html?type=land">Search land and building lots</a></article>
           </div>
           <h3 className="text-xl font-bold mt-8 mb-3">Choose your location before narrowing your list</h3>
-          <p className="text-slate-700 leading-relaxed">Explore <a className="text-blue-900 underline" href="#cabo-san-lucas">Cabo San Lucas</a> for marina life and everyday convenience, <a className="text-blue-900 underline" href="#san-jose-del-cabo">San José del Cabo</a> for its town center and surrounding coastal neighborhoods, and the <a className="text-blue-900 underline" href="#los-cabos-corridor">Los Cabos Corridor</a> for communities between the two towns. Our guides also explain the Pacific coast, East Cape and La Paz, including weather, access and how to find each area in the MLS.</p>
+          <p className="text-slate-700 leading-relaxed">Explore <a className="text-blue-900 underline" href="/cabo-san-lucas-real-estate.html">Cabo San Lucas</a> for marina life and everyday convenience, <a className="text-blue-900 underline" href="/san-jose-del-cabo-real-estate.html">San José del Cabo</a> for its town center and surrounding coastal neighborhoods, and the <a className="text-blue-900 underline" href="/los-cabos-corridor-real-estate.html">Los Cabos Corridor</a> for communities between the two towns. Our guides also explain the Pacific coast, East Cape and La Paz, including weather, access and how to find each area in the MLS.</p>
         </div>
       </section>
 
@@ -442,27 +329,10 @@ const Index = () => {
             <div className="grid md:grid-cols-2 gap-5 my-8 items-start">
               {communityGuides.map(community => (
                 <article key={community.id} id={community.id} className="scroll-mt-24 rounded-xl border border-blue-200 p-6 sm:p-7">
-                  <h3 className="text-2xl font-bold text-blue-950 mb-2">{community.title}</h3>
+                  <h3 className="text-2xl font-bold text-blue-950 mb-2"><a href={community.href} className="hover:underline underline-offset-4">{community.title}</a></h3>
                   <p className="text-blue-900 font-semibold mb-4">{community.subtitle}</p>
                   <p className="text-slate-700 leading-relaxed">{community.intro}</p>
-                  <details className="mt-4 group">
-                    <summary className="cursor-pointer text-blue-900 font-bold underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-900"><span className="group-open:hidden">Read more about {community.title}</span><span className="hidden group-open:inline">Show less about {community.title}</span></summary>
-                    {community.paragraphs.map(paragraph => <p key={paragraph} className="mt-4 text-slate-700 leading-relaxed">{paragraph}</p>)}
-                    <section aria-label={`Weather and seasons in ${community.title}`} className="mt-6 rounded-lg border border-amber-200 bg-amber-50/60 p-4 sm:p-5">
-                      <h4 className="text-xl font-bold text-slate-900">Weather &amp; seasons</h4>
-                      <dl className="mt-4 space-y-4">
-                        {communityWeather[community.id].seasons.map(([season, description]) => <div key={season}><dt className="font-bold text-slate-900">{season}</dt><dd className="mt-1 text-slate-700 leading-relaxed">{description}</dd></div>)}
-                      </dl>
-                      <p className="mt-4 text-slate-700 leading-relaxed"><strong>Lifestyle &amp; activities:</strong> {communityActivities[community.id]}</p>
-                      <p className="mt-4 text-slate-700 leading-relaxed"><strong>What this means for living here:</strong> {communityWeather[community.id].living}</p>
-                      <p className="mt-4 text-sm text-slate-600 leading-relaxed">Typical seasonal patterns, not a forecast. Neighborhood exposure, elevation and the individual home can change how the weather feels. <a href={communityWeather[community.id].source} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{communityWeather[community.id].sourceName} (opens a new tab)</a>.</p>
-                    </section>
-                    {community.searchSteps && <div className="mt-5 rounded-lg border border-blue-200 bg-blue-50 p-4 sm:p-5">
-                      <h4 className="text-lg font-bold text-blue-950">How to search for properties in this area</h4>
-                      <ol className="mt-3 list-decimal pl-5 space-y-3 text-slate-700 leading-relaxed">{community.searchSteps.map(step => <li key={step}>{step}</li>)}</ol>
-                      <a href="/property-search.html" className="inline-block mt-4 font-bold text-blue-900 underline underline-offset-4">Open Cabo MLS search</a>
-                    </div>}
-                  </details>
+                  <a href={community.href} className="inline-flex items-center gap-2 mt-5 text-blue-900 font-bold underline underline-offset-4">Read the full community guide <ArrowRight className="h-4 w-4" aria-hidden="true" /><span className="sr-only">: {community.title}</span></a>
                 </article>
               ))}
           </div>
