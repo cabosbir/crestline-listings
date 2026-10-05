@@ -4,7 +4,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://www.bircabo.com/</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -137,4 +137,12 @@
   <url><loc>https://www.bircabo.com/office-listings</loc></url>
   <url><loc>https://www.bircabo.com/bonnie-renee</loc></url>
   <url><loc>https://www.bircabo.com/humberto</loc></url>
+  <!-- Individual community guides -->
+  <url><loc>https://www.bircabo.com/cabo-san-lucas-real-estate.html</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.bircabo.com/san-jose-del-cabo-real-estate.html</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.bircabo.com/los-cabos-corridor-real-estate.html</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.bircabo.com/east-cape-real-estate.html</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.bircabo.com/cabo-san-lucas-pacific-side-real-estate.html</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.bircabo.com/pacific-coast-todos-santos-real-estate.html</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.bircabo.com/la-paz-real-estate.html</loc><lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
