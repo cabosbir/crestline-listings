@@ -1,3 +1,4 @@
+import {websiteMailReady, websiteMailSender, createWebsiteMailTransport} from './contact.js';
 import {createHmac, timingSafeEqual} from 'node:crypto';
 
 export const fields = ['ListingKey','ListingId','UnparsedAddress','City','MLSAreaMajor','Address_co_Community2','SubdivisionName','PropertyType','StandardStatus','ListPrice','BedroomsTotal','BathroomsTotalDecimal','BathroomsFull','Latitude','Longitude','General_sp_Description_co_AC_sp_SqFt','General_sp_Description_co_Primary_sp_View','General_sp_Description_co_Seller_sp_Financing_sp_Offered','ListOfficeName','PublicRemarks','InternetAddressDisplayYN','InternetEntireListingDisplayYN','ModificationTimestamp','General_sp_Description_co_Construction','General_sp_Description_co_Lot_sp_M2','General_sp_Description_co_Total_sp_M2','General_sp_Description_co_AC_sp_M2'];
@@ -270,10 +271,7 @@ export function inquiryMessage(body,from){
   if(!values.listingId){const source=String(body.sourceSite).replace(/^www\./,'');return {from,to:'don@bircabo.com',replyTo:values.email,subject:`BIR website inquiry - ${source}`,text:`New website inquiry\n\nSource: ${source}\nName: ${values.name}\nEmail: ${values.email}\nProperty/MLS: ${values.address||'Not specified'}\n\n${values.message}`};}
   return {from,to:'don@bircabo.com',replyTo:values.email,subject:`BIR property inquiry - MLS ${values.listingId}`,text:`New property inquiry from the BIR search preview\n\nName: ${values.name}\nEmail: ${values.email}\nPhone: ${values.phone||'Not provided'}\nMLS: ${values.listingId}\nProperty: ${values.address}\n\n${values.message}\n\nProperty reference supplied by the visitor; confirm current availability in FLEX.`};
 }
-async function mailTransport(){
-  const {default:nodemailer}=await import('nodemailer');
-  return nodemailer.createTransport({service:'gmail',auth:{user:process.env.OFFICE_EMAIL,pass:process.env.OFFICE_APP_PASSWORD},connectionTimeout:10000,greetingTimeout:10000,socketTimeout:15000});
-}
+async function mailTransport(){return createWebsiteMailTransport();}
 export function mailErrorCode(error){
   return ['EAUTH','ECONNECTION','ETIMEDOUT','ESOCKET','EDNS','EENVELOPE','EMESSAGE','ERR_MODULE_NOT_FOUND'].includes(error?.code)?error.code:'EMAIL_SERVICE_ERROR';
 }
@@ -291,9 +289,9 @@ export async function handleInquiry(req,res,send=deliverInquiry){
   if(!String(req.headers['content-type']||'').startsWith('application/json'))return res.status(415).json({error:'Invalid form format.'});
   if(Number(req.headers['content-length']||0)>16000)return res.status(413).json({error:'Please shorten your question.'});
   if(req.body?.website)return res.status(400).json({error:'Please reload the form and try again.'});
-  if(!process.env.OFFICE_EMAIL||!process.env.OFFICE_APP_PASSWORD)return res.status(503).json({error:'Online inquiries are not configured yet. Please use the email or call link below.'});
+  if(!websiteMailReady())return res.status(503).json({error:'Online inquiries are not configured yet. Please use the email or call link below.'});
   let message;
-  try{message=inquiryMessage(req.body,process.env.OFFICE_EMAIL);}catch(error){return res.status(400).json({error:error.message});}
+  try{message=inquiryMessage(req.body,websiteMailSender());}catch(error){return res.status(400).json({error:error.message});}
   const now=Date.now(),ip=String(req.headers['x-forwarded-for']||'unknown').split(',')[0];
   for(const [id,value] of inquiryLimits)if(value.expires<now)inquiryLimits.delete(id);
   const bucket=inquiryLimits.get(ip)||{count:0,expires:now+600000};

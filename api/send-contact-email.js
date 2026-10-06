@@ -1,5 +1,4 @@
-import nodemailer from 'nodemailer';
-import {checkFormSubmission} from './contact.js';
+import {checkFormSubmission, websiteMailReady, websiteMailSender, createWebsiteMailTransport} from './contact.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -35,8 +34,8 @@ export default async function handler(req, res) {
     }
 
     // Validate email configuration
-    if (!process.env.OFFICE_APP_PASSWORD) {
-      console.error('OFFICE_APP_PASSWORD not configured');
+    if (!websiteMailReady()) {
+      console.error('Website mail is not configured');
       return res.status(500).json({ 
         success: false, 
         error: 'Email service not configured. Please contact us directly at don@bircabo.com' 
@@ -44,13 +43,7 @@ export default async function handler(req, res) {
     }
 
     // Create nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.OFFICE_EMAIL || 'info@bircabo.com',
-        pass: process.env.OFFICE_APP_PASSWORD
-      }
-    });
+    const transporter = createWebsiteMailTransport();
 
     // Get current date/time
     const submissionDate = new Date().toLocaleString('en-US', { 
@@ -136,7 +129,7 @@ export default async function handler(req, res) {
 
     // Send email to business (and agent if selected)
     const mailOptions = {
-      from: process.env.OFFICE_EMAIL || 'info@bircabo.com',
+      from: websiteMailSender(),
       to: emailRecipients.join(', '),
       subject: `🏡 New ${inquiryName} Inquiry${preferredAgent ? ` for ${preferredAgent}` : ''} - ${name}`,
       html: businessEmailHtml,
@@ -217,7 +210,7 @@ export default async function handler(req, res) {
     `;
 
     const clientMailOptions = {
-      from: process.env.OFFICE_EMAIL || 'info@bircabo.com',
+      from: websiteMailSender(),
       to: email,
       subject: `We Received Your Inquiry${preferredAgent ? ` - ${preferredAgent}` : ''} - Baja International Realty`,
       html: clientEmailHtml,

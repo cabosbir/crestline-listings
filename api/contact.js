@@ -1,4 +1,21 @@
 import nodemailer from 'nodemailer';
+
+// cPanel's secure outgoing settings for Don's existing mailbox, verified Oct 6, 2026.
+// The new secret activates SMTP atomically; an SMTP failure never retries through Gmail.
+export function websiteMailReady(){
+  return Boolean(process.env.BIR_SMTP_PASSWORD || (process.env.OFFICE_EMAIL && process.env.OFFICE_APP_PASSWORD));
+}
+export function websiteMailSender(){
+  return {name:'Baja International Realty',address:process.env.BIR_SMTP_PASSWORD?'don@bircabo.com':process.env.OFFICE_EMAIL};
+}
+export function createWebsiteMailTransport(){
+  const timeouts={connectionTimeout:10000,greetingTimeout:10000,socketTimeout:15000};
+  if(process.env.BIR_SMTP_PASSWORD){
+    return nodemailer.createTransport({host:'mail.bircabo.com',port:465,secure:true,auth:{user:'don@bircabo.com',pass:process.env.BIR_SMTP_PASSWORD},...timeouts});
+  }
+  return nodemailer.createTransport({service:'gmail',auth:{user:process.env.OFFICE_EMAIL,pass:process.env.OFFICE_APP_PASSWORD},...timeouts});
+}
+
 // Lightweight safeguards for the legacy contact and seller forms.
 // Limits are per warm server instance; this is not a global bot firewall.
 const formAttempts=new Map();
@@ -77,8 +94,8 @@ export default async function handler(req, res) {
     }
 
     // Validate email configuration
-    if (!process.env.OFFICE_APP_PASSWORD) {
-      console.error('OFFICE_APP_PASSWORD not configured');
+    if (!websiteMailReady()) {
+      console.error('Website mail is not configured');
       return res.status(500).json({ 
         success: false, 
         error: 'Email service not configured. Please contact us directly at don@bircabo.com' 
@@ -86,13 +103,7 @@ export default async function handler(req, res) {
     }
 
     // Create nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
-        pass: process.env.OFFICE_APP_PASSWORD
-      }
-    });
+    const transporter = createWebsiteMailTransport();
 
     // Get current date/time
     const submissionDate = new Date().toLocaleString('en-US', { 
@@ -178,7 +189,7 @@ export default async function handler(req, res) {
 
     // Send email to business (and agent if selected)
     const mailOptions = {
-      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      from: websiteMailSender(),
       to: emailRecipients.join(', '),
       subject: `🏡 New ${inquiryName} Inquiry${preferredAgent ? ` for ${preferredAgent}` : ''} - ${name}`,
       html: businessEmailHtml,
@@ -235,7 +246,7 @@ export default async function handler(req, res) {
     `;
 
     const clientMailOptions = {
-      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      from: websiteMailSender(),
       to: email,
       subject: `We Received Your Inquiry${preferredAgent ? ` - ${preferredAgent}` : ''} - Baja International Realty`,
       html: clientEmailHtml,
