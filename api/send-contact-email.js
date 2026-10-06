@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       console.error('OFFICE_APP_PASSWORD not configured');
       return res.status(500).json({ 
         success: false, 
-        error: 'Email service not configured. Please contact us directly at info@bircabo.com' 
+        error: 'Email service not configured. Please contact us directly at don@bircabo.com' 
       });
     }
 
@@ -77,7 +77,8 @@ export default async function handler(req, res) {
     const propertyName = propertyTypes[propertyType] || propertyType || 'Not specified';
 
     // Determine email recipients
-    const officeEmail = process.env.OFFICE_EMAIL || 'cabosbir@gmail.com';
+    // The delivery inbox is separate from the authenticated sending account.
+    const officeEmail = 'don@bircabo.com';
     let emailRecipients = [officeEmail];
     
     // Add agent email if an agent was selected
@@ -179,8 +180,8 @@ export default async function handler(req, res) {
           
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 25px 0;">
             <h3 style="margin-top: 0; color: #1f2937; font-size: 18px;">Need Immediate Assistance?</h3>
-            <p style="margin: 8px 0; color: #374151;">📱 <strong>Call/Text:</strong> <a href="tel:+526121698328" style="color: #2563eb;">+52 612 169 8328</a></p>
-            <p style="margin: 8px 0; color: #374151;">📧 <strong>Email:</strong> <a href="mailto:cabosbir@gmail.com" style="color: #2563eb;">cabosbir@gmail.com</a></p>
+            <p style="margin: 8px 0; color: #374151;">📱 <strong>Call/Text:</strong> <a href="tel:+526241296245" style="color: #2563eb;">+52 624 129 6245</a></p>
+            <p style="margin: 8px 0; color: #374151;">📧 <strong>Email:</strong> <a href="mailto:don@bircabo.com" style="color: #2563eb;">don@bircabo.com</a></p>
             ${agentEmail ? `<p style="margin: 8px 0; color: #374151;">👤 <strong>${preferredAgent}:</strong> <a href="mailto:${agentEmail}" style="color: #2563eb;">${agentEmail}</a></p>` : ''}
             <p style="margin: 8px 0; color: #374151;">🏢 <strong>Office Hours:</strong> Monday - Friday, 9 AM - 6 PM</p>
           </div>
@@ -189,7 +190,7 @@ export default async function handler(req, res) {
             <h3 style="margin-top: 0; color: #1f2937; font-size: 18px;">🏡 Our Services:</h3>
             <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Luxury Property Sales & Acquisitions in Cabo San Lucas</p>
             <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Investment Property Consulting</p>
-            <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Property Management in Baja California Sur</p>
+            <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Buyer, Seller and Developer Representation</p>
             <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Market Analysis & Valuation</p>
             <p style="margin: 5px 0; color: #374151; font-size: 14px;">✓ Exclusive Off-Market Opportunities</p>
           </div>
@@ -219,7 +220,8 @@ export default async function handler(req, res) {
       from: process.env.OFFICE_EMAIL || 'info@bircabo.com',
       to: email,
       subject: `We Received Your Inquiry${preferredAgent ? ` - ${preferredAgent}` : ''} - Baja International Realty`,
-      html: clientEmailHtml
+      html: clientEmailHtml,
+      replyTo: officeEmail
     };
 
     await transporter.sendMail(clientMailOptions);
@@ -241,7 +243,7 @@ export default async function handler(req, res) {
     
     return res.status(500).json({ 
       success: false, 
-      error: 'Failed to send inquiry. Please try calling us directly at +52 612 169 8328',
+      error: 'Failed to send inquiry. Please try calling us directly at +52 624 129 6245',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }

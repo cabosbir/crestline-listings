@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       console.error('GROQ_API_KEY not configured');
       return res.status(500).json({ 
         success: false,
-        message: 'AI service not configured. Please contact us at cabosbir@gmail.com or +52 612 169 8328' 
+        message: 'AI service not configured. Please contact us at don@bircabo.com or +52 624 129 6245' 
       });
     }
 
@@ -48,8 +48,8 @@ export default async function handler(req, res) {
 COMPANY INFORMATION:
 - Name: Baja International Realty
 - Location: Blvd. Marina, Cabo San Lucas, BCS, Mexico
-- Phone: +52 612 169 8328
-- Email: cabosbir@gmail.com
+- Phone: +52 624 129 6245
+- Email: don@bircabo.com
 - Specialization: Luxury properties in Cabo San Lucas and Baja California Sur
 - Experience: Since 2014, 85+ combined years of team experience
 - Track Record: 2,200+ properties sold, $800M+ in sales
@@ -118,20 +118,20 @@ Keep responses concise, friendly, and focused on helping the user find their dre
     if (error.status === 401) {
       return res.status(500).json({
         success: false,
-        message: "I'm having trouble connecting right now. Please reach out to our team at cabosbir@gmail.com or call +52 612 169 8328."
+        message: "I'm having trouble connecting right now. Please reach out to our team at don@bircabo.com or call +52 624 129 6245."
       });
     }
 
     if (error.status === 400 && error.message?.includes('model')) {
       return res.status(500).json({
         success: false,
-        message: "Our AI assistant is being updated. Please contact our team directly at cabosbir@gmail.com or +52 612 169 8328."
+        message: "Our AI assistant is being updated. Please contact our team directly at don@bircabo.com or +52 624 129 6245."
       });
     }
 
     return res.status(500).json({
       success: false,
-      message: "I apologize, but I'm experiencing technical difficulties. Please contact our team at cabosbir@gmail.com or +52 612 169 8328.",
+      message: "I apologize, but I'm experiencing technical difficulties. Please contact our team at don@bircabo.com or +52 624 129 6245.",
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
