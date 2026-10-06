@@ -1,6 +1,5 @@
+import {checkFormSubmission, websiteMailReady, websiteMailSender, createWebsiteMailTransport} from '../contact.js';
 // api/contact/seller-evaluation.js
-import nodemailer from 'nodemailer';
-import {checkFormSubmission} from '../contact.js';
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -72,8 +71,8 @@ export default async function handler(req, res) {
     const nextStep = preliminary ? 'Email an initial estimate based on the supplied information. Explain any limitations. Do not call or send sales follow-up unless the owner asks.' : 'Email the owner to clarify the property details and discuss a more detailed valuation.';
 
     // Validate email configuration
-    if (!process.env.OFFICE_APP_PASSWORD) {
-      console.error('OFFICE_APP_PASSWORD not configured');
+    if (!websiteMailReady()) {
+      console.error('Website mail is not configured');
       return res.status(500).json({ 
         success: false, 
         error: 'Email service not configured. Please contact us directly at don@bircabo.com' 
@@ -81,13 +80,7 @@ export default async function handler(req, res) {
     }
 
     // Create email transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
-        pass: process.env.OFFICE_APP_PASSWORD
-      }
-    });
+    const transporter = createWebsiteMailTransport();
 
     const submissionDate = new Date().toLocaleString('en-US', {
       dateStyle: 'full',
@@ -204,7 +197,7 @@ export default async function handler(req, res) {
 
     // Send email to business
     const mailOptions = {
-      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      from: websiteMailSender(),
       to: emailRecipients.join(', '),
       subject: `🏡 Seller Evaluation Request${agentName ? ` for ${agentName}` : ''} - ${sellerName}`,
       html: businessEmailHtml,
@@ -277,7 +270,7 @@ export default async function handler(req, res) {
     `;
 
     const clientMailOptions = {
-      from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
+      from: websiteMailSender(),
       to: sellerEmail,
       subject: `Thank You for Your Property Evaluation Request - ${agentName || 'Baja International Realty'}`,
       html: clientEmailHtml,
