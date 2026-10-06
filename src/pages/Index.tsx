@@ -174,6 +174,31 @@ const Index = () => {
       <section aria-label="Cabo property buyer guide" className="border-y border-blue-200 bg-blue-50 py-6"><div className="container mx-auto px-4 max-w-6xl"><h2 className="text-xl sm:text-2xl font-bold text-blue-950">Can foreigners buy property in Cabo?</h2><p className="mt-2 text-slate-700">Yes. Americans, Canadians and other foreign buyers can buy homes and condos in Cabo. For residential property in the coastal restricted zone, the usual route is a Mexican bank trust called a <em>fideicomiso</em>. The bank holds title as trustee, and you hold the beneficial rights to the property.</p><nav aria-label="Buying guide topics" className="mt-4 flex flex-wrap gap-x-6 gap-y-3 font-semibold text-blue-900"><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html#ownership" target="_blank" rel="noopener">How foreign ownership works ↗</a><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html#costs" target="_blank" rel="noopener">See closing-cost examples</a><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html#annual-costs" target="_blank" rel="noopener">Explore annual property taxes</a><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html" target="_blank" rel="noopener">Read the full buying guide ↗</a></nav><p className="mt-2 text-sm text-slate-600">Opens PROS in a new tab so you can keep browsing BIR.</p></div></section>
       <FloatingContact />
 
+      <section id="property-resources" aria-labelledby="property-resources-title" className="scroll-mt-24 border-b border-blue-200 bg-white py-10 sm:py-14">
+        <div className="container mx-auto max-w-6xl px-4">
+          <p className="mb-2 font-semibold text-blue-900">Useful local tools</p>
+          <h2 id="property-resources-title" className="text-2xl sm:text-3xl font-bold text-blue-950">Resources for Property Owners, Buyers &amp; Sellers</h2>
+          <p className="mt-3 max-w-3xl leading-relaxed text-slate-700">Whether you own a property, are preparing to sell or are researching a purchase, these government resources can help you find useful property information.</p>
+          <div className="mt-6 grid gap-5 md:grid-cols-2">
+            <article className="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6">
+              <h3 className="text-xl font-bold text-blue-950">Los Cabos property-tax statement (Predial)</h3>
+              <p className="mt-3 leading-relaxed text-slate-700">Look up the municipal property-tax account using the property's <em>clave catastral</em> (cadastral identification number). Useful for owners checking their account, sellers gathering documents and buyers reviewing a property.</p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-700">On the Spanish-language page, enter the clave catastral and select <strong>Buscar</strong> (Search) to view the <em>estado de cuenta</em> (account statement).</p>
+              <a className="mt-5 inline-flex font-bold text-blue-900 underline underline-offset-4" href="https://www.tesoreria.loscabos.gob.mx/pagos/consultatupredial/consulta-predial.php" target="_blank" rel="noopener noreferrer">Check a property-tax statement ↗</a>
+            </article>
+            <article className="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6">
+              <h3 className="text-xl font-bold text-blue-950">BCS government map</h3>
+              <p className="mt-3 leading-relaxed text-slate-700">Explore the Los Cabos area with the state government's interactive mapping tool. Owners, sellers and buyers can use it as a reference when researching locations and surrounding areas.</p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-700">The map opens centered on Los Cabos. Zoom in and explore the available layers. For a purchase or sale, have the property's legal boundaries confirmed separately.</p>
+              <a className="mt-5 inline-flex font-bold text-blue-900 underline underline-offset-4" href="http://sig.bcs.gob.mx/iclusterbcs/?v=bGF0OjIzLjAzODY3LGxvbjotMTA5Ljc1NjY3LHo6NyxsOmNpbXAxMDB8Y2ltcDEwMXxjaW1wMTAyfGNpbXAxMDN8Y2ltcDEwNXxjaW1wMTA2" target="_blank" rel="noopener noreferrer">Open the government map ↗</a>
+            </article>
+          </div>
+          <p className="mt-4 text-sm text-slate-600">Both government tools are in Spanish and open in a new tab, keeping BIR available.</p>
+          <p className="mt-5 text-slate-700">Need help preparing to buy or sell? <a className="font-semibold text-blue-900 underline underline-offset-4" href="/don">Contact Don Weis</a> for local guidance.</p>
+        </div>
+      </section>
+
+
       <section id="cabo-real-estate" className="py-14 bg-slate-50">
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">Cabo real estate: find the property that fits your life</h2>
