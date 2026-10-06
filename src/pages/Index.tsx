@@ -183,7 +183,7 @@ const Index = () => {
             <article className="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6">
               <h3 className="text-xl font-bold text-blue-950">Los Cabos property-tax statement (Predial)</h3>
               <p className="mt-3 leading-relaxed text-slate-700">Look up the municipal property-tax account using the property's <em>clave catastral</em> (cadastral identification number). Useful for owners checking their account, sellers gathering documents and buyers reviewing a property.</p>
-              <p className="mt-3 text-sm leading-relaxed text-slate-700">On the Spanish-language page, enter the clave catastral and select <strong>Buscar</strong> (Search) to view the <em>estado de cuenta</em> (account statement).</p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-700">Enter the clave catastral and select <strong>Buscar</strong> (Search) to view the account statement. If browser translation displays “Enter password,” enter the property’s cadastral identification number in that field.</p>
               <a className="mt-5 inline-flex font-bold text-blue-900 underline underline-offset-4" href="https://www.tesoreria.loscabos.gob.mx/pagos/consultatupredial/consulta-predial.php" target="_blank" rel="noopener noreferrer">Check a property-tax statement ↗</a>
             </article>
             <article className="rounded-xl border border-blue-200 bg-blue-50 p-5 sm:p-6">
@@ -193,7 +193,7 @@ const Index = () => {
               <a className="mt-5 inline-flex font-bold text-blue-900 underline underline-offset-4" href="http://sig.bcs.gob.mx/iclusterbcs/?v=bGF0OjIzLjAzODY3LGxvbjotMTA5Ljc1NjY3LHo6NyxsOmNpbXAxMDB8Y2ltcDEwMXxjaW1wMTAyfGNpbXAxMDN8Y2ltcDEwNXxjaW1wMTA2" target="_blank" rel="noopener noreferrer">Open the government map ↗</a>
             </article>
           </div>
-          <p className="mt-4 text-sm text-slate-600">Both government tools are in Spanish and open in a new tab, keeping BIR available.</p>
+          <p className="mt-4 text-sm text-slate-600">Both government tools open in a new tab, keeping BIR available. For English, use your browser’s Translate option.</p>
           <p className="mt-5 text-slate-700">Need help preparing to buy or sell? <a className="font-semibold text-blue-900 underline underline-offset-4" href="/don">Contact Don Weis</a> for local guidance.</p>
         </div>
       </section>
