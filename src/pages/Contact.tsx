@@ -86,7 +86,8 @@ const Contact = () => {
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
+        document.dispatchEvent(new CustomEvent('bir-lead-result', {detail: {form: 'general_contact', outcome: 'success'}}));
         setSubmitStatus('success');
         setFormData({
           name: '',
@@ -99,10 +100,12 @@ const Contact = () => {
         });
       } else {
         setSubmitStatus('error');
+        document.dispatchEvent(new CustomEvent('bir-lead-result', {detail: {form: 'general_contact', outcome: 'error'}}));
       }
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
+        document.dispatchEvent(new CustomEvent('bir-lead-result', {detail: {form: 'general_contact', outcome: 'error'}}));
     } finally {
       setIsSubmitting(false);
     }
@@ -280,7 +283,7 @@ const Contact = () => {
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border border-border shadow-elegant">
+              <form data-bir-lead-form="general_contact" onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border border-border shadow-elegant">
                 <div aria-hidden="true" style={{position:'absolute',left:'-10000px',width:1,height:1,overflow:'hidden'}}><label>Leave this field empty<input name="website" value={website} onChange={e=>setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" /></label></div>
                 <h2 className="text-2xl font-bold text-foreground mb-6">Send Us a General Message</h2>
                 
