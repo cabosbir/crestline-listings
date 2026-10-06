@@ -78,7 +78,7 @@ const AIChat = ({ onClose }: AIChatProps) => {
       console.error('Chat error:', error);
       const errorMessage: Message = {
         role: "assistant",
-        content: "I apologize, but I'm having trouble connecting right now. Please try again or contact us directly at cabosbir@gmail.com or +52 612 169 8328.",
+        content: "I apologize, but I'm having trouble connecting right now. Please try again or contact us directly at don@bircabo.com or +52 624 129 6245.",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);

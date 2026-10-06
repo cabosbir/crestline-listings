@@ -567,7 +567,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         // User wants contact information
         const contactMessage: Message = {
           role: "assistant",
-          content: "**Get in Touch with Baja International Realty:**\n\n📞 **Call/WhatsApp:** +52 612 169 8328\n📧 **Email:** cabosbir@gmail.com\n🌐 **Website:** [bircabo.com](https://bircabo.com)\n\n📅 **Schedule a Meeting:**\n👉 [Contact Form](/contact)\n\n💬 **Or continue chatting here!**\nI can help you search for properties right now. What are you looking for?",
+          content: "**Get in Touch with Baja International Realty:**\n\n📞 **Call/WhatsApp:** +52 624 129 6245\n📧 **Email:** don@bircabo.com\n🌐 **Website:** [bircabo.com](https://bircabo.com)\n\n📅 **Schedule a Meeting:**\n👉 [Contact Form](/contact)\n\n💬 **Or continue chatting here!**\nI can help you search for properties right now. What are you looking for?",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, contactMessage]);
