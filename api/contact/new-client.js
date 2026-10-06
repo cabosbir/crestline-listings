@@ -62,7 +62,7 @@ export default async function handler(req, res) {
       console.error('OFFICE_APP_PASSWORD not configured');
       return res.status(500).json({
         success: false,
-        error: 'Email service not configured. Please contact us directly at cabosbir@gmail.com'
+        error: 'Email service not configured. Please contact us directly at don@bircabo.com'
       });
     }
 
@@ -82,7 +82,8 @@ export default async function handler(req, res) {
     });
 
     // Determine email recipients
-    const officeEmail = process.env.OFFICE_EMAIL || 'cabosbir@gmail.com';
+    // The delivery inbox is separate from the authenticated sending account.
+    const officeEmail = 'don@bircabo.com';
     let emailRecipients = [agentEmail];
     
     // Always CC the office (only if different from agent email)
@@ -204,13 +205,13 @@ export default async function handler(req, res) {
             <h3 style="margin-top: 0; color: #065f46; font-size: 18px;">Your Dedicated Agent:</h3>
             <p style="margin: 8px 0; color: #374151;"><strong>Name:</strong> ${agentName}</p>
             ${agentEmail ? `<p style="margin: 8px 0; color: #374151;"><strong>Email:</strong> <a href="mailto:${agentEmail}" style="color: #059669;">${agentEmail}</a></p>` : ''}
-            <p style="margin: 8px 0; color: #374151;"><strong>Office:</strong> <a href="tel:+526241435555" style="color: #059669;">+52 624 143 5555</a></p>
+            <p style="margin: 8px 0; color: #374151;"><strong>Office:</strong> <a href="tel:+526241296245" style="color: #059669;">+52 624 129 6245</a></p>
           </div>
           
           <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 25px 0;">
             <h3 style="margin-top: 0; color: #1f2937; font-size: 18px;">Need Immediate Assistance?</h3>
-            <p style="margin: 8px 0; color: #374151;">📱 <strong>Office:</strong> <a href="tel:+526241435555" style="color: #2563eb;">+52 624 143 5555</a></p>
-            <p style="margin: 8px 0; color: #374151;">📧 <strong>Email:</strong> <a href="mailto:cabosbir@gmail.com" style="color: #2563eb;">cabosbir@gmail.com</a></p>
+            <p style="margin: 8px 0; color: #374151;">📱 <strong>Office:</strong> <a href="tel:+526241296245" style="color: #2563eb;">+52 624 129 6245</a></p>
+            <p style="margin: 8px 0; color: #374151;">📧 <strong>Email:</strong> <a href="mailto:don@bircabo.com" style="color: #2563eb;">don@bircabo.com</a></p>
           </div>
           
           <p style="font-size: 16px; color: #374151; margin-top: 30px;">
@@ -234,7 +235,8 @@ export default async function handler(req, res) {
       from: process.env.OFFICE_EMAIL || 'cabosbir@gmail.com',
       to: clientEmail,
       subject: `Welcome to Baja International Realty - ${agentName}`,
-      html: clientEmailHtml
+      html: clientEmailHtml,
+      replyTo: officeEmail
     };
 
     await transporter.sendMail(clientMailOptions);
@@ -255,7 +257,7 @@ export default async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: 'Failed to submit registration. Please contact us directly at +52 624 143 5555',
+      error: 'Failed to submit registration. Please contact us directly at +52 624 129 6245',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
