@@ -188,6 +188,7 @@ export function snapshotCacheHeaders(data,refresh,now=Date.now){
 let snapshotIdentity='',getSnapshot,getVisitorInventory;
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
+  if(req.method==='OPTIONS'){res.setHeader('Allow','GET, POST, OPTIONS');return res.status(204).end();}
   if(req.method==='POST')return handleInquiry(req,res);
   if(req.method!=='GET'){res.setHeader('Allow','GET, POST');return res.status(405).json({error:'Method not allowed'});}
   if(req.query.mode==='email-check'){
@@ -265,7 +266,8 @@ export function inquiryMessage(body,from){
     if(typeof value!=='string'||value.length>max)throw new Error('Please shorten the form fields.');
     values[field]=value.trim();
   }
-  if(!values.name||!values.message||!/^\S+@[^\s@]+\.[^\s@]+$/.test(values.email)||/[\r\n]/.test(values.email)||!/^\d{2}-\d{1,10}$/.test(values.listingId))throw new Error('Please provide your name, a valid email, and a question.');
+  if(!values.name||!values.message||!/^\S+@[^\s@]+\.[^\s@]+$/.test(values.email)||/[\r\n]/.test(values.email)||(values.listingId?!/^\d{2}-\d{1,10}$/.test(values.listingId):!['cabo-homes.com','cabo-condos.com','cabo-land.com','caborealestatepros.com'].includes(String(body.sourceSite||'').replace(/^www\./,''))))throw new Error('Please provide your name, a valid email, and a question.');
+  if(!values.listingId){const source=String(body.sourceSite).replace(/^www\./,'');return {from,to:'don@bircabo.com',replyTo:values.email,subject:`BIR website inquiry - ${source}`,text:`New website inquiry\n\nSource: ${source}\nName: ${values.name}\nEmail: ${values.email}\nProperty/MLS: ${values.address||'Not specified'}\n\n${values.message}`};}
   return {from,to:'don@bircabo.com',replyTo:values.email,subject:`BIR property inquiry - MLS ${values.listingId}`,text:`New property inquiry from the BIR search preview\n\nName: ${values.name}\nEmail: ${values.email}\nPhone: ${values.phone||'Not provided'}\nMLS: ${values.listingId}\nProperty: ${values.address}\n\n${values.message}\n\nProperty reference supplied by the visitor; confirm current availability in FLEX.`};
 }
 async function mailTransport(){
@@ -285,7 +287,7 @@ const inquiryLimits=new Map();
 export async function handleInquiry(req,res,send=deliverInquiry){
   let origin;
   try{origin=new URL(req.headers.origin);}catch{return res.status(403).json({error:'Please send your inquiry from the website.'});}
-  if(origin.host!==req.headers.host||origin.protocol!=='https:')return res.status(403).json({error:'Please send your inquiry from the website.'});
+  if(origin.protocol!=='https:'||!(origin.host===req.headers.host||['cabo-homes.com','cabo-condos.com','cabo-land.com','caborealestatepros.com','www.caborealestatepros.com'].includes(origin.host)))return res.status(403).json({error:'Please send your inquiry from the website.'});
   if(!String(req.headers['content-type']||'').startsWith('application/json'))return res.status(415).json({error:'Invalid form format.'});
   if(Number(req.headers['content-length']||0)>16000)return res.status(413).json({error:'Please shorten your question.'});
   if(req.body?.website)return res.status(400).json({error:'Please reload the form and try again.'});
