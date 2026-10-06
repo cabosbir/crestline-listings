@@ -284,8 +284,9 @@ inquiryForm.onsubmit=async event=>{
  try{
   const response=await fetch('/api/search-pilot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('contact-name').value,email:$('contact-email').value,phone:$('contact-phone').value,message:question.value+'\nListing: '+propertyLink(selectedProperty),website:trap.value,listingId:String(selectedProperty.ListingId),address:selectedProperty.UnparsedAddress||''})});
   const result=await response.json();if(!response.ok||!result.success)throw new Error(result.error||'We could not confirm your inquiry was sent. Please use the email or call link.');
+  document.dispatchEvent(new CustomEvent('bir-lead-result',{detail:{form:'mls_inquiry',outcome:'success'}}));
   inquiryStatus.textContent='Thank you. Your inquiry has been submitted to Don.';sendButton.textContent='Inquiry submitted';
- }catch(error){inquiryStatus.textContent=error.message||'Unable to confirm delivery. Please use the email or call link.';sendButton.disabled=false;sendButton.textContent='Send inquiry';}
+ }catch(error){document.dispatchEvent(new CustomEvent('bir-lead-result',{detail:{form:'mls_inquiry',outcome:'error'}}));inquiryStatus.textContent=error.message||'Unable to confirm delivery. Please use the email or call link.';sendButton.disabled=false;sendButton.textContent='Send inquiry';}
  finally{$('close').disabled=false;}
 };
 $('inquiry').addEventListener('cancel',event=>{if($('close').disabled)event.preventDefault();});
