@@ -8,6 +8,7 @@ const primaryLinks = [
   { name: "Communities", href: "/#cabo-communities" },
 ];
 const exploreLinks = [
+  { name: "Owner, Buyer & Seller Resources", href: "/#property-resources" },
   { name: "Featured Properties", href: "/#featured-properties" },
   { name: "Understanding Buying", href: "/#buying-in-cabo" },
   { name: "Understanding Selling", href: "/#selling-in-cabo" },
@@ -50,7 +51,7 @@ const Navbar = () => {
         <div className="hidden xl:flex items-center gap-4">
           {primaryLinks.map(link=><a key={link.href} href={link.href} className="text-foreground hover:text-accent font-heading text-base font-semibold">{link.name}</a>)}
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent font-heading text-base">Explore<ChevronDown className="h-4 w-4" /></DropdownMenuTrigger>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent font-heading text-base">Resources<ChevronDown className="h-4 w-4" /></DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-64">
               {exploreLinks.map(link=><DropdownMenuItem key={link.href} asChild><a href={link.href} className="cursor-pointer w-full py-2">{link.name}</a></DropdownMenuItem>)}
             </DropdownMenuContent>
