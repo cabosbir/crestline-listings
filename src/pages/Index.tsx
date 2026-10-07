@@ -176,6 +176,15 @@ const Index = () => {
       <section aria-label="Cabo property buyer guide" className="border-y border-blue-200 bg-blue-50 py-6"><div className="container mx-auto px-4 max-w-6xl"><h2 className="text-xl sm:text-2xl font-bold text-blue-950">Can foreigners buy property in Cabo?</h2><p className="mt-2 text-slate-700">Yes. Americans, Canadians and other foreign buyers can buy homes and condos in Cabo. For residential property in the coastal restricted zone, the usual route is a Mexican bank trust called a <em>fideicomiso</em>. The bank holds title as trustee, and you hold the beneficial rights to the property.</p><nav aria-label="Buying guide topics" className="mt-4 flex flex-wrap gap-x-6 gap-y-3 font-semibold text-blue-900"><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html#ownership" target="_blank" rel="noopener">How foreign ownership works ↗</a><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html#costs" target="_blank" rel="noopener">See closing-cost examples</a><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html#annual-costs" target="_blank" rel="noopener">Explore annual property taxes</a><a className="underline" href="https://www.caborealestatepros.com/cabo-real-estate-buyers-guide.html" target="_blank" rel="noopener">Read the full buying guide ↗</a></nav><p className="mt-2 text-sm text-slate-600">Opens PROS in a new tab so you can keep browsing BIR.</p></div></section>
       <FloatingContact />
 
+      <section id="los-cabos-market-guide" aria-labelledby="market-guide-title" className="border-b border-blue-200 bg-slate-50 py-10 sm:py-14">
+        <div className="container mx-auto max-w-6xl px-4">
+          <p className="mb-2 font-semibold text-blue-900">Local experience, current market context</p>
+          <h2 id="market-guide-title" className="text-2xl sm:text-3xl font-bold text-blue-950">Los Cabos real estate market: what buyers should know</h2>
+          <p className="mt-3 max-w-3xl leading-relaxed text-slate-700">Understand recent market activity, compare asking prices and ownership costs, and learn what Don Weis looks for when evaluating completed property and preconstruction.</p>
+          <a className="mt-5 inline-flex font-bold text-blue-900 underline underline-offset-4" href="/los-cabos-real-estate-market.html">Read our October 2026 market guide →</a>
+        </div>
+      </section>
+
       <section id="property-resources" aria-labelledby="property-resources-title" className="scroll-mt-24 border-b border-blue-200 bg-white py-10 sm:py-14">
         <div className="container mx-auto max-w-6xl px-4">
           <p className="mb-2 font-semibold text-blue-900">Useful local tools</p>
