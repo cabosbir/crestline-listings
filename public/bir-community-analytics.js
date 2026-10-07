@@ -22,12 +22,16 @@
   }
   if (blocked()) return;
   const clean = value => {try {const u=new URL(value);return /^https?:$/.test(u.protocol)?u.origin+u.pathname:'';}catch{return '';}};
+  // Only our published, non-personal campaign labels are retained; other query data stays private.
+  const knownCampaigns=new Set(['completed_ocean_view_20261006','completed_ocean_view_homes_20261006','mls_search_20261006']);
+  const campaign=params.get('utm_source')==='facebook'&&params.get('utm_medium')==='social'&&knownCampaigns.has(params.get('utm_campaign'))
+    ? {campaign_source:'facebook',campaign_medium:'social',campaign_name:params.get('utm_campaign')} : {};
   const debug=params.get('bir_debug')==='1';
   window.dataLayer=window.dataLayer||[];
   window.gtag=window.gtag||function(){window.dataLayer.push(arguments);};
   const tag=window.gtag;
   tag('set','linker',{domains,decorate_forms:false});tag('js',new Date());
-  tag('config',id,{send_page_view:false,page_location:clean(location.href),page_referrer:clean(document.referrer),allow_google_signals:false,allow_ad_personalization_signals:false,...(debug?{debug_mode:true}:{})});
+  tag('config',id,{send_page_view:false,page_location:clean(location.href),page_referrer:clean(document.referrer),allow_google_signals:false,allow_ad_personalization_signals:false,...campaign,...(debug?{debug_mode:true}:{})});
   const emit=(name,details={})=>{if(blocked())return;tag('event',name,{send_to:id,site_host:location.hostname,page_location:clean(location.href),page_referrer:clean(document.referrer),...details,...(debug?{debug_mode:true}:{})});};
   let lastPath='';
   const page=()=>{if(location.pathname===lastPath)return;lastPath=location.pathname;if(blocked())return;emit('page_view',{page_title:document.title});if(location.pathname==='/property-search.html')emit('mls_search_visit');if(['/casa-oasis.html','/pacifico-heights.html'].includes(location.pathname))emit('property_detail_view');};
@@ -49,6 +53,7 @@
     if(form&&form.id!=='filters'&&(['inquiry-form','inquiry-draft'].includes(form.id)||form.hasAttribute('data-bir-lead-form'))&&!started.has(form)){started.add(form);emit('lead_form_start',{form_name:form.id==='inquiry-form'?'mls_inquiry':'general_contact'});}
     if(!field.closest?.('#filters')||!filters.has(field.id))return;clearTimeout(timer);timer=setTimeout(()=>emit('mls_filter_change',{filter_name:field.id}),1000);
   });
+  document.addEventListener('change',event=>{const field=event.target;if(field.closest?.('#ov-filters')&&['ov-price','ov-beds','ov-community'].includes(field.id))emit('property_filter_change',{filter_name:field.id});});
   // Explicit success comes only from the form's successful server response.
   document.addEventListener('bir-lead-result',event=>{
     const detail=event.detail||{};
@@ -56,5 +61,5 @@
     if(detail.outcome==='success')emit('generate_lead',{form_name:detail.form,contact_method:'website_form'});
     else if(detail.outcome==='error')emit('lead_form_error',{form_name:detail.form});
   });
-  const openStates=new Map();new MutationObserver(records=>{for(const record of records){const el=record.target;if(!['listing-gallery','inquiry'].includes(el.id))continue;const open=el.hasAttribute('open');if(open&&!openStates.get(el.id))emit(el.id==='listing-gallery'?'property_detail_view':'contact_click',el.id==='inquiry'?{contact_method:'inquiry_dialog'}:{});openStates.set(el.id,open);}}).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+  const openStates=new WeakMap();new MutationObserver(records=>{for(const record of records){const el=record.target;const property=el.id==='listing-gallery'||el.matches?.('dialog.cd-dialog');if(!property&&el.id!=='inquiry')continue;const open=el.hasAttribute('open');if(open&&!openStates.get(el))emit(property?'property_detail_view':'contact_click',property?{}:{contact_method:'inquiry_dialog'});openStates.set(el,open);}}).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
 })();
