@@ -247,8 +247,8 @@ const Index = () => {
             <div className="bg-white border border-border rounded-xl p-6"><h3 className="text-xl font-bold mb-3">What is my Cabo property worth?</h3><p className="text-muted-foreground leading-relaxed">Asking prices are a starting point. Recent comparable sales, location, condition, views and competing listings help establish a realistic price. A local evaluation can explain how your property compares.</p><Link className="inline-block mt-4 text-blue-900 font-semibold underline" to="/seller-evaluation">Request a property evaluation</Link></div>
             <div className="bg-white border border-border rounded-xl p-6"><h3 className="text-xl font-bold mb-3">What costs should I plan for when selling?</h3><p className="text-muted-foreground leading-relaxed">Request an estimate of your net proceeds that accounts for agreed selling fees, applicable taxes and closing expenses. If your agent does not want to start by reviewing your title, find another agent. Your title contains important information your agent needs to evaluate to give you an estimated breakdown of the net money you would receive. Your agent should provide this upfront, as part of evaluating your listing price.</p></div>
           </div>
-          <a className="inline-flex items-center gap-2 text-blue-900 font-bold text-lg underline underline-offset-4" href="https://www.caborealestatepros.com/selling-los-cabos-mexico-real-estate.html" target="_blank" rel="noopener">Read the full selling guide on Pros <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" /></a>
-          <p className="mt-2 text-sm text-muted-foreground">Opens in a new tab. You can read first and contact us whenever you’re ready.</p>
+          <a className="inline-flex items-center gap-2 text-blue-900 font-bold text-lg underline underline-offset-4" href="/selling-property-in-cabo.html">Read the full selling guide <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" /></a>
+          <p className="mt-2 text-sm text-muted-foreground">Read about pricing, preparation, selling costs and offers, then contact us whenever you’re ready.</p>
         </div>
       </section>
 
