@@ -1,37 +1,14 @@
-import { ArrowRight, BookOpen, Home, MapPin, Search } from "lucide-react";
 import heroImage from "@/assets/hero-luxury-villa.jpg";
-
-
-const Hero = () => (
-  <section className="relative overflow-hidden bg-slate-950 pt-28 pb-10 sm:pt-36 sm:pb-16">
-    <img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" loading="eager" width="1920" height="1080" className="absolute inset-0 h-full w-full object-cover object-[60%_center] sm:object-center" />
-    <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/50 to-slate-950/20" />
-    <div className="relative container mx-auto px-4 sm:px-6 max-w-6xl">
-      <p className="text-white/90 font-semibold tracking-wide text-sm sm:text-base mb-3">Baja International Realty · Local experience since 1987</p>
-      <h1 className="text-white text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight max-w-3xl">Find your place in Cabo.</h1>
-      <p className="text-white/90 text-lg sm:text-xl mt-4 max-w-2xl">Search freely. Understand your options. Get local help when you’re ready.</p>
-      <nav aria-label="What would you like to do?" className="mt-7 sm:mt-9 grid grid-cols-1 sm:grid-cols-6 gap-3 sm:gap-4">
-        <a href="/property-search.html" className="sm:col-span-4 flex items-center justify-between gap-4 rounded-xl bg-white p-5 sm:p-7 text-blue-950 shadow-lg hover:bg-blue-50 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
-          <span className="flex items-center gap-3 sm:gap-4 min-w-0"><Search className="hidden sm:block h-8 w-8 shrink-0" aria-hidden="true" /><span><span className="block text-2xl sm:text-3xl font-bold">Search Complete MLS Inventory</span><span className="block mt-2 text-base sm:text-lg leading-relaxed">Explore the complete active Baja California Sur MLS inventory, including homes, condos and land across Los Cabos and the entire state. Save favorites and compare at your own pace—<strong>no signup required.</strong></span></span></span>
-          <ArrowRight className="h-7 w-7 shrink-0" aria-hidden="true" />
-        </a>
-        <a href="#price-reductions" className="sm:col-span-2 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-5 sm:p-6 text-blue-950 shadow-lg hover:bg-amber-100 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
-          <span><span className="block text-xl sm:text-2xl font-bold leading-snug">Recent Price Reductions</span><span className="block mt-2 text-base leading-relaxed">Explore properties reduced in the last 7 days. Updated daily.</span></span>
-          <ArrowRight className="h-6 w-6 shrink-0" aria-hidden="true" />
-        </a>
-        {[
-          { href: '#buying-in-cabo', title: 'Understanding Buying', note: 'Ownership, steps and costs', Icon: BookOpen },
-          { href: '#selling-in-cabo', title: 'Understanding Selling', note: 'Pricing, preparation and closing', Icon: Home },
-          { href: '#cabo-communities', title: 'Explore Our Communities', note: 'Los Cabos, La Paz & beyond', Icon: MapPin },
-        ].map(({ href, title, note, Icon }) => (
-          <a key={href} href={href} className="sm:col-span-2 flex items-center gap-3 rounded-xl border border-white/60 bg-slate-950/70 p-4 sm:p-5 text-white hover:bg-blue-950 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400">
-            <Icon className="h-6 w-6 shrink-0" aria-hidden="true" /><span><span className="block text-lg sm:text-xl font-bold leading-snug">{title}</span><span className="block mt-1 text-sm text-white/90">{note}</span></span>
-          </a>
-        ))}
-      </nav>
-    </div>
-  </section>
-);
-
-
+const Hero = () => <section className="relative overflow-hidden bg-slate-950 py-14 sm:py-20">
+  <img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" loading="eager" width="1920" height="1080" className="absolute inset-0 h-full w-full object-cover object-[60%_center] sm:object-center" />
+  <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/65 to-slate-950/25" />
+  <div className="relative container mx-auto px-5 max-w-6xl">
+    <p className="text-white/90 font-semibold text-sm tracking-wide mb-4">BAJA INTERNATIONAL REALTY · LOCAL EXPERIENCE SINCE 1987</p>
+    <h1 className="text-white text-4xl sm:text-5xl lg:text-6xl leading-tight max-w-3xl">Los Cabos real estate.<br />Find your place here.</h1>
+    <p className="text-white/95 text-lg sm:text-xl mt-5 max-w-2xl leading-relaxed">Homes, condos and land. Clear answers about buying and selling. Local guidance from Cabo San Lucas to San José del Cabo and the Pacific coast.</p>
+    <div className="flex flex-wrap gap-3 mt-7"><a href="/property-search.html" className="rounded-md bg-white text-blue-950 px-6 py-4 font-bold text-lg hover:bg-blue-50">Search the complete MLS →</a><a href="#cabo-communities" className="rounded-md border border-white/70 text-white px-6 py-4 font-semibold text-lg hover:bg-white/10">Find your area</a></div>
+    <p className="text-white/85 mt-3 text-sm">Browse freely. Save favorites and compare. No signup required.</p>
+    <nav className="flex flex-wrap gap-x-6 gap-y-3 mt-8 text-white font-semibold" aria-label="Start with a property type"><a href="#cabo-homes" className="underline underline-offset-4">Homes for sale</a><a href="/cabo-san-lucas-condos-for-sale.html" className="underline underline-offset-4">Condos for sale</a><a href="#cabo-land" className="underline underline-offset-4">Land for sale</a><a href="#price-reductions" className="underline underline-offset-4">Recent price reductions</a></nav>
+  </div>
+</section>;
 export default Hero;
