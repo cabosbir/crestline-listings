@@ -8,7 +8,7 @@ const StatsSection = () => {
 
   const stats = [
     { number: 75, label: "Combined Years of\nExperience", suffix: "" },
-    { number: 1850, label: "Homes & Properties\nSold", suffix: "+" },
+    { number: 1850, label: "Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
     { number: 800, label: "Combined Sales\nSince 1987", suffix: "M+", prefix: "$", isDecimal: true },
   ];
