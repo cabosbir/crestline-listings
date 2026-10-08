@@ -1,27 +1,8 @@
 import { useEffect, useState } from "react";
-import { Menu, X, Phone, Mail, ChevronDown } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
-const primaryLinks = [
-  { name: "Search Properties", href: "/property-search.html" },
-  { name: "Recent Price Reductions", href: "/#price-reductions" },
-  { name: "Communities", href: "/#cabo-communities" },
-];
-const exploreLinks = [
-  { name: "Owner, Buyer & Seller Resources", href: "/#property-resources" },
-  { name: "Featured Properties", href: "/#featured-properties" },
-  { name: "Understanding Buying", href: "/#buying-in-cabo" },
-  { name: "Understanding Selling", href: "/#selling-in-cabo" },
-  { name: "Free Property Evaluation", href: "/seller-evaluation" },
-];
-const companyLinks = [
-  { name: "Our Team", href: "/team" },
-  { name: "About BIR", href: "/about" },
-  { name: "Contact Us", href: "/contact" },
-];
+const groups = [["Properties", [["Cabo San Lucas condos for sale", "/cabo-san-lucas-condos-for-sale.html"], ["Homes & villas", "/#cabo-homes"], ["Land & building lots", "/#cabo-land"], ["Featured properties", "/#featured-properties"], ["Recent price reductions", "/#price-reductions"], ["Casa Oasis · Private pool home", "/casa-oasis.html"]]], ["Areas & Communities", [["Compare all areas", "/#cabo-communities"], ["Cabo San Lucas", "/cabo-san-lucas-real-estate.html"], ["San José del Cabo", "/san-jose-del-cabo-real-estate.html"], ["Los Cabos Corridor", "/los-cabos-corridor-real-estate.html"], ["Cerritos Beach", "/cerritos-beach-real-estate.html"], ["El Pescadero", "/el-pescadero-real-estate.html"], ["Todos Santos", "/todos-santos-real-estate.html"], ["Cabo’s Pacific side", "/cabo-san-lucas-pacific-side-real-estate.html"], ["East Cape", "/east-cape-real-estate.html"], ["La Paz", "/la-paz-real-estate.html"]]], ["Buying", [["Buying property in Cabo", "/#buying-in-cabo"], ["Condo costs & buying questions", "/cabo-san-lucas-condos-for-sale.html#buying-questions"], ["Property owner resources", "/#property-resources"]]], ["Selling", [["Selling your property", "/#selling-in-cabo"], ["Request a property evaluation", "/seller-evaluation"]]], ["Market Updates", "/los-cabos-real-estate-market.html"], ["About BIR", [["Our story", "/about"], ["Meet our team", "/team"], ["Don Weis · Broker", "/don"]]], ["Contact", "/contact"]] as const;
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [accountEmail, setAccountEmail] = useState('');
+  const [isOpen,setIsOpen]=useState(false);
+  const [accountEmail,setAccountEmail]=useState('');
   useEffect(() => {
     let active = true, revision = 0;
     let unsubscribe = () => {};
@@ -42,39 +23,21 @@ const Navbar = () => {
     }).catch(() => { if (active) setAccountEmail(''); });
     return () => { active = false; unsubscribe(); };
   }, []);
-  return <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-elegant">
-    <div className="container mx-auto px-4">
-      <div className="flex items-center justify-between h-20 gap-2 xl:gap-4">
-        <a href="/" aria-label="BIR — Home" title="Home" className="flex items-center shrink-0">
-          <img src="/BIRLOGO.png" alt="Baja International Realty" className="h-12 sm:h-16 md:h-20 w-auto" />
-        </a>
-        <div className="hidden xl:flex items-center gap-4">
-          {primaryLinks.map(link=><a key={link.href} href={link.href} className="text-foreground hover:text-accent font-heading text-base font-semibold">{link.name}</a>)}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-foreground hover:text-accent font-heading text-base">Resources<ChevronDown className="h-4 w-4" /></DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64">
-              {exploreLinks.map(link=><DropdownMenuItem key={link.href} asChild><a href={link.href} className="cursor-pointer w-full py-2">{link.name}</a></DropdownMenuItem>)}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {companyLinks.map(link=><a key={link.href} href={link.href} className="text-foreground hover:text-accent font-heading text-base">{link.name}</a>)}
-          <div className="hidden xl:flex items-center gap-3">
-            <a href="tel:+526241435555" aria-label="Call Baja International Realty" className="hover:text-accent"><Phone className="h-5 w-5" /></a>
-            <a href="mailto:info@bircabo.com" aria-label="Email Baja International Realty" className="hover:text-accent"><Mail className="h-5 w-5" /></a>
-          </div>
-        </div>
-        <a href="/buyer-account.html" className="shrink-0 rounded-md border border-primary px-3 py-2 text-sm font-semibold text-primary hover:bg-primary/10" aria-label="My Account — free buyer account">My Account{accountEmail && <span role="status" className="block max-w-[160px] text-xs font-normal" title={"Welcome back, " + accountEmail + " — you are signed in"}>Welcome back<span className="block truncate">{accountEmail}</span></span>}</a>
-        <button type="button" onClick={()=>setIsOpen(!isOpen)} className="xl:hidden p-2 text-foreground hover:text-accent" aria-label={isOpen?'Close menu':'Open menu'} aria-expanded={isOpen} aria-controls="bir-mobile-menu">{isOpen?<X className="h-6 w-6" />:<Menu className="h-6 w-6" />}</button>
-      </div>
-      {isOpen&&<div id="bir-mobile-menu" className="xl:hidden py-4 border-t border-border max-h-[calc(100dvh-5rem)] overflow-y-auto">
-        <div className="flex flex-col gap-1">
-          {primaryLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg font-semibold text-primary">{link.name}</a>)}
-          {exploreLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg hover:text-accent">{link.name}</a>)}
-          <div className="border-t border-border mt-2 pt-2 flex flex-col">
-            {companyLinks.map(link=><a key={link.href} href={link.href} onClick={()=>setIsOpen(false)} className="px-2 py-3 font-heading text-lg hover:text-accent">{link.name}</a>)}
-          </div>
-        </div>
-      </div>}
+
+  useEffect(()=>{
+    const close=(event: MouseEvent)=>{if(!(event.target as Element).closest('.bir-header')){setIsOpen(false);document.querySelectorAll<HTMLDetailsElement>('.bir-header details[open]').forEach(d=>d.open=false);}};
+    const escape=(event: KeyboardEvent)=>{if(event.key==='Escape'){const expanded=document.querySelector<HTMLDetailsElement>('.bir-header details[open]');if(expanded){expanded.open=false;expanded.querySelector('summary')?.focus();}else if(isOpen){setIsOpen(false);document.querySelector<HTMLButtonElement>('.bir-menu-toggle')?.focus();}}};
+    document.addEventListener('click',close);document.addEventListener('keydown',escape);
+    return()=>{document.removeEventListener('click',close);document.removeEventListener('keydown',escape);};
+  },[isOpen]);
+  const closeMenu=()=>{setIsOpen(false);document.querySelectorAll<HTMLDetailsElement>('.bir-header details[open]').forEach(d=>d.open=false);};
+  return <header className="bir-header"><nav className="bir-nav" aria-label="Main navigation">
+    <a href="/" className="bir-brand" aria-label="BIR home"><img src="/BIRLOGO.png" alt="Baja International Realty" width="124" height="72" /></a>
+    <div id="bir-navigation-links" className={'bir-nav-links'+(isOpen?' is-open':'')}>
+      {groups.map(([label,items])=>typeof items==='string'?<a key={label} className="bir-nav-link" href={items} onClick={closeMenu}>{label}</a>:<details key={label} className="bir-nav-group" onToggle={event=>{const current=event.currentTarget;if(current.open)document.querySelectorAll<HTMLDetailsElement>('.bir-nav-group[open]').forEach(d=>{if(d!==current)d.open=false;});}}><summary>{label} <span aria-hidden="true">⌄</span></summary><div className="bir-nav-dropdown">{items.map(([text,url])=><a key={url} href={url} onClick={closeMenu}>{text}</a>)}</div></details>)}
+      <a className="bir-mobile-account" href="/buyer-account.html" onClick={closeMenu}>My Account</a>
     </div>
-  </nav>;
+    <div className="bir-nav-actions"><a className="bir-mls-button" href="/property-search.html">Search MLS</a><a href="/buyer-account.html" className="bir-account-link">My Account{accountEmail&&<span role="status" title={accountEmail}>Welcome back</span>}</a><button type="button" className="bir-menu-toggle" onClick={()=>setIsOpen(!isOpen)} aria-expanded={isOpen} aria-controls="bir-navigation-links">{isOpen?'Close':'Menu'} <span aria-hidden="true">{isOpen?'×':'☰'}</span></button></div>
+  </nav></header>;
 };
 export default Navbar;
