@@ -362,7 +362,7 @@ const Properties = () => {
     />
     <link rel="canonical" href="https://www.bircabo.com/properties" />
     <meta property="og:title" content="Cabo San Lucas Properties for Sale | Luxury MLS Listings" />
-    <meta property="og:description" content={`Search ${totalCount.toLocaleString()}+ luxury homes, villas, and condos in Los Cabos, Mexico.`} />
+    <meta property="og:description" content={`Search ${totalCount.toLocaleString()}+ luxury houses, villas, and condos in Los Cabos, Mexico.`} />
     <meta property="og:url" content="https://www.bircabo.com/properties" />
     <meta property="og:type" content="website" />
       </Helmet>

@@ -14,7 +14,7 @@ const AIPropertySearch = () => {
         />
         <meta
           name="keywords"
-          content="property search, Los Cabos real estate, Cabo San Lucas homes, intelligent property search, natural language search"
+          content="property search, Los Cabos real estate, Cabo San Lucas houses, intelligent property search, natural language search"
         />
       </Helmet>
 
@@ -70,7 +70,7 @@ const AIPropertySearch = () => {
               <div className="bg-background p-4 rounded-lg border border-border">
                 <p className="text-sm font-medium text-green-600">Luxury Estates</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  "What luxury homes with pools are available in Querencia?"
+                  "What luxury houses with pools are available in Querencia?"
                 </p>
               </div>
               <div className="bg-background p-4 rounded-lg border border-border">

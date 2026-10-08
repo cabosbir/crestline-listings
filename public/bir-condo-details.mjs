@@ -13,7 +13,7 @@ export function setupCondoDetails({completedOnly=false,returnLabel='Back to feat
  function create(){
   if(dialog)return;
   dialog=document.createElement('dialog');dialog.className='cd-dialog';dialog.setAttribute('aria-labelledby','cd-title');
-  dialog.innerHTML=`<div class="cd-panel"><header class="cd-header"><button type="button" class="cd-back">← ${esc(returnLabel)}</button><span>Baja International Realty · Cabo San Lucas condos</span></header><div class="cd-content"><h2 id="cd-title">Condo details</h2><div id="cd-body" aria-live="polite"></div></div></div>`;
+  dialog.innerHTML=`<div class="cd-panel"><header class="cd-header"><button type="button" class="cd-back">← ${esc(returnLabel)}</button><span>Baja International Realty · Los Cabos condos</span></header><div class="cd-content"><h2 id="cd-title">Condo details</h2><div id="cd-body" aria-live="polite"></div></div></div>`;
   document.body.append(dialog);
   dialog.querySelector('.cd-back').addEventListener('click',close);
   dialog.addEventListener('cancel',event=>{event.preventDefault();close();});

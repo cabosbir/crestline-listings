@@ -28,7 +28,7 @@ export default function PriceReductions() {
         <p className="uppercase tracking-wider text-primary font-semibold mb-3">A fresh look at the market</p>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">Cabo Real Estate Price Reductions</h2>
         <p className="text-xl font-semibold mb-3">Properties reduced in price during the last 7 days</p>
-        <p className="text-lg text-muted-foreground">Explore homes, condos, land and commercial properties with recent price reductions in Los Cabos and across Baja California Sur. Updated daily at 5:00 a.m. Cabo time. No signup required.</p>
+        <p className="text-lg text-muted-foreground">Explore houses, condos, land and commercial properties with recent price reductions in Los Cabos and across Baja California Sur. Updated daily at 5:00 a.m. Cabo time. No signup required.</p>
         {data && <p className="text-sm text-muted-foreground mt-3">Last updated {date(data.fetchedAt)} at {new Date(data.fetchedAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Mazatlan'})} Cabo time · {data.total} properties</p>}
       </div>
       {failed ? <div className="text-center border border-border rounded-xl bg-white p-8"><p className="mb-4">We couldn't load the latest price reductions. You can still explore the full MLS search.</p><Button variant="outline" onClick={()=>setAttempt(n=>n+1)}>Try Again</Button></div> : !data ? <p role="status" className="text-center py-8">Loading recent price reductions…</p> : data.results.length===0 ? <p className="text-center py-8">No active listings are currently marked as price reduced within the last seven days. Check back after the next daily update.</p> : <>

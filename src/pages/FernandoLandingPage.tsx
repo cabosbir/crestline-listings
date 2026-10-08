@@ -16,7 +16,7 @@ const agent = {
   slug: "fernando-cabrera",
   name: "Fernando Cabrera",
   title: "Real Estate Advisor",
-  specialization: "Residential Properties & Vacation Homes",
+  specialization: "Residential Properties & Vacation Properties",
   image: "/fernando-cabrera.jpg",
   phone: "+52 624 135 8900",
   email: "fernando@bircabo.com",
@@ -433,13 +433,13 @@ const FernandoLandingPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Fernando Cabrera - Real Estate Advisor | Residential & Vacation Homes Expert | Baja International Realty</title>
+        <title>Fernando Cabrera - Real Estate Advisor | Residential & Vacation Properties Expert | Baja International Realty</title>
         <meta 
           name="description" 
           content="Connect with Fernando Cabrera, Real Estate Advisor with 5 years experience in Cabo San Lucas. 40+ properties sold, $18M+ in sales. Former professional tennis player bringing dedication and focus to residential and vacation home sales."
         />
         <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content="Fernando Cabrera - Cabo San Lucas Residential & Vacation Homes Expert" />
+        <meta property="og:title" content="Fernando Cabrera - Cabo San Lucas Residential & Vacation Properties Expert" />
         <meta property="og:description" content="5 years experience, 40+ properties sold, $18M+ in sales. Dedicated advisor combining athletic discipline with personalized service." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/fernando-cabrera.jpg" />
@@ -462,7 +462,7 @@ const FernandoLandingPage = () => {
             "image": "https://www.bircabo.com/fernando-cabrera.jpg",
             "url": canonicalUrl,
             "description": "Former professional tennis player and passionate real-estate advisor in Los Cabos. Helping clients feel confident and comfortable when choosing a home.",
-            "knowsAbout": ["Real Estate", "Residential Properties", "Vacation Homes", "Cabo San Lucas", "Los Cabos"],
+            "knowsAbout": ["Real Estate", "Residential Properties", "Vacation Properties", "Cabo San Lucas", "Los Cabos"],
             "award": "Top Producer"
           })}
         </script>

@@ -1,6 +1,7 @@
+import {CABO_AREAS,matchesArea,sortByPrice,restoreCollectionFilters,rememberCollectionFilters} from './bir-collection-utils.mjs';
+export {CABO_AREAS};
 import {landDetailsHref,setupLandDetails} from './bir-land-details.mjs';
 
-export const CABO_AREAS=['Cabo San Lucas','Cabo Corridor','San Jose del Cabo','San Jose Corridor','Pacific','East Cape'];
 export const WATER_VIEWS=['Ocean','Oceanfront','Arch','Marina'];
 export function eligibleLand(data, now=Date.now()) {
   const age=now-Date.parse(data.fetchedAt);
@@ -12,9 +13,9 @@ export function eligibleLand(data, now=Date.now()) {
     view:x.General_sp_Description_co_Primary_sp_View==='Select One'?'':x.General_sp_Description_co_Primary_sp_View||'',office:x.ListOfficeName||''
   })).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity)||String(a.mls).localeCompare(String(b.mls)));
 }
-export function filterLand(rows,{price='all',size='0',view='',area=''}={}){
+export function filterLand(rows,{price='all',size='0',view='',area='',sort='price-asc'}={}){
   const range=price==='all'?null:price.split('-').map(Number);
-  return rows.filter(x=>(!range||(x.price!==null&&x.price>=range[0]&&x.price<range[1]))&&(!Number(size)||(x.lotM2!==null&&x.lotM2>=Number(size)))&&(!view||(view==='water'?WATER_VIEWS.includes(x.view):x.view===view))&&(!area||(area==='cerritos-pescadero'?x.area==='Pacific'&&x.mlsCommunity==='Pescadero/Cerritos':area==='todos-santos'?x.area==='Pacific'&&['Todos Santos','Todos Santos North'].includes(x.mlsCommunity):x.area===area)));
+  return sortByPrice(rows.filter(x=>(!range||(x.price!==null&&x.price>=range[0]&&x.price<range[1]))&&(!Number(size)||(x.lotM2!==null&&x.lotM2>=Number(size)))&&(!view||(view==='water'?WATER_VIEWS.includes(x.view):x.view===view))&&matchesArea(x,area)),sort);
 }
 export function shortlistPayload(form){
   return {name:String(form.get('name')||'').trim(),email:String(form.get('email')||'').trim(),phone:'',inquiryType:'buying',propertyType:'land',preferredAgent:'Don Weis',agentEmail:'don@bircabo.com',website:String(form.get('website')||''),
@@ -28,7 +29,7 @@ if(typeof document!=='undefined'){
   const details=setupLandDetails({returnLabel:'Back to Cabo land'});
   let rows=[],limit=12,busy=false,expiry,checkedAt='',version=0;const photos=new Map();
   const card=x=>`<article class="ov-card" data-mls="${esc(x.mls)}"><a class="ov-image-link" href="${esc(landDetailsHref(x.mls))}" data-land-details="${esc(x.mls)}" aria-label="Photos and details for ${esc(x.name)}">${photos.has(x.key)?`<img src="${esc(photos.get(x.key))}" alt="${esc(x.name)} — listing photo" width="600" height="400" loading="lazy">`:'<span>Loading property photo…</span>'}</a><div class="ov-card-body"><span class="ov-badge">Land${x.view?' · '+esc(x.view)+' view':''}</span><p class="ov-price">${money(x.price)}</p><h3><a href="${esc(landDetailsHref(x.mls))}" data-land-details="${esc(x.mls)}">${esc(x.name)}</a></h3><p>${x.lotM2===null?'Lot size on request':esc(x.lotM2.toLocaleString('en-US',{maximumFractionDigits:1}))+' m² lot'+(x.lotM2>=10000?' · '+esc((x.lotM2/10000).toLocaleString('en-US',{maximumFractionDigits:2}))+' ha':'')}</p><p>${esc(x.area)} · ${esc(x.community)}</p><p class="ov-office">Listing office: ${esc(x.office||'MLS BCS participant')}</p><div class="ov-card-foot"><span>MLS ${esc(x.mls)}</span><a href="${esc(landDetailsHref(x.mls))}" data-land-details="${esc(x.mls)}">Photos &amp; details →</a></div></div></article>`;
-  const choices=()=>({price:document.querySelector('#ov-price').value,size:document.querySelector('#ov-size').value,view:document.querySelector('#ov-view').value,area:document.querySelector('#ov-area').value});
+  const choices=()=>({price:document.querySelector('#ov-price').value,size:document.querySelector('#ov-size').value,view:document.querySelector('#ov-view').value,area:document.querySelector('#ov-area').value,sort:document.querySelector('#ov-sort').value});
   async function loadPhotos(visible,stamp){
     const missing=visible.filter(x=>!photos.has(x.key));
     for(let i=0;i<missing.length;i+=24){
@@ -47,9 +48,9 @@ if(typeof document!=='undefined'){
       const src=photos.get(row.key);if(src&&!container.querySelector('img')){const img=document.createElement('img');img.src=src;img.alt=row.name+' — listing photo';img.width=600;img.height=400;img.loading='lazy';container.replaceChildren(img);}else if(!src){const span=container.querySelector('span');if(span)span.textContent='Open photos & details';}
     }
   }
-  function render(){const url=new URL(location.href);for(const [key,id,fallback] of [['area','ov-area',''],['price','ov-price','all'],['size','ov-size','0'],['view','ov-view','']]){const value=document.getElementById(id).value;if(value===fallback)url.searchParams.delete(key);else url.searchParams.set(key,value);}history.replaceState(history.state,'',url); const selected=filterLand(rows,choices()),visible=selected.slice(0,limit),stamp=++version;
+  function render(){rememberCollectionFilters([["area", "ov-area", ""], ["price", "ov-price", "all"], ["size", "ov-size", "0"], ["view", "ov-view", ""], ["sort", "ov-sort", "price-asc"]]);const selected=filterLand(rows,choices()),visible=selected.slice(0,limit),stamp=++version;
     grid.innerHTML=visible.map(card).join('');more.hidden=selected.length<=limit;more.textContent=`Show ${Math.min(12,Math.max(0,selected.length-limit))} more land`;empty.hidden=selected.length!==0;
-    status.innerHTML=`<span>${selected.length} matching land listings · Showing ${visible.length}</span><strong>LOWEST PRICE FIRST</strong><span class="ov-checked">Availability checked ${esc(checkedAt)}.</span>`;
+    status.innerHTML=`<span>${selected.length} matching land listings · Showing ${visible.length}</span><strong>${document.querySelector('#ov-sort').value==='price-desc'?'HIGHEST PRICE FIRST':'LOWEST PRICE FIRST'}</strong><span class="ov-checked">Availability checked ${esc(checkedAt)}.</span>`;
     void loadPhotos(visible,stamp);details.update(rows);
   }
   function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);}
@@ -60,7 +61,7 @@ if(typeof document!=='undefined'){
       expiry=setTimeout(()=>clear('This availability check has expired. Reload to check again, or ask Don for current options.'),Math.max(0,3600000-(Date.now()-Date.parse(data.fetchedAt))));
     }catch{clear('We cannot confirm current land availability right now. Reload to try again, ask Don for a shortlist, or use the complete MLS search.');}finally{busy=false;}
   }
-  const initial=new URL(location.href).searchParams;for(const [key,id] of [['area','ov-area'],['price','ov-price'],['size','ov-size'],['view','ov-view']]){const select=document.getElementById(id),value=initial.get(key);if([...select.options].some(x=>x.value===value))select.value=value;}
+  restoreCollectionFilters([["area", "ov-area", ""], ["price", "ov-price", "all"], ["size", "ov-size", "0"], ["view", "ov-view", ""], ["sort", "ov-sort", "price-asc"]]);
   filters.addEventListener('submit',e=>e.preventDefault());filters.addEventListener('change',()=>{limit=12;render();});filters.addEventListener('reset',()=>setTimeout(()=>{limit=12;render();},0));more.addEventListener('click',()=>{limit+=12;render();});void refresh();setInterval(()=>{if(!document.hidden)void refresh();},300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refresh();});
 
   const form=document.querySelector('#land-shortlist'),button=form.querySelector('button[type="submit"]'),formStatus=form.querySelector('.buyer-form-status');

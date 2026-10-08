@@ -58,13 +58,13 @@ const agent = {
   slug: "cozbi",
   name: "Cozbi Sanchez",
   title: "Residential Specialist",
-  specialization: "Family Homes & Condos",
+  specialization: "Family Houses & Condos",
   image: "/cozbi-sanchez.png",
   phone: "+52 624 118 9512",
   email: "Cozbi@bajainternationalrealty.com",
   yearsExperience: 8,
   propertiesSold: 105,
-  bio: "I bring a strong track record of leading high performance, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family homes and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
+  bio: "I bring a strong track record of leading high performance, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family houses and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
   certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
   languages: ["English", "Spanish"],
 };
@@ -500,14 +500,14 @@ const CozbiLandingPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Cozbi Sanchez - Residential Specialist | Family Homes & Condos Expert | Baja International Realty</title>
+        <title>Cozbi Sanchez - Residential Specialist | Family Houses & Condos Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Cozbi Sanchez, Residential Specialist with 8 years experience in Cabo San Lucas. 105+ properties sold. Expert in family homes and condominiums for first-time buyers and growing families."
+          content="Connect with Cozbi Sanchez, Residential Specialist with 8 years experience in Cabo San Lucas. 105+ properties sold. Expert in family houses and condominiums for first-time buyers and growing families."
         />
         <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content="Cozbi Sanchez - Cabo San Lucas Family Homes Expert" />
-        <meta property="og:description" content="8 years experience, 105+ properties sold. Specializing in family homes and condos with patient, client-focused service." />
+        <meta property="og:title" content="Cozbi Sanchez - Cabo San Lucas Family Houses Expert" />
+        <meta property="og:description" content="8 years experience, 105+ properties sold. Specializing in family houses and condos with patient, client-focused service." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/cozbi-sanchez.png" />
         <meta property="og:type" content="profile" />
@@ -528,8 +528,8 @@ const CozbiLandingPage = () => {
             "telephone": "+52 624 118 9512",
             "image": "https://www.bircabo.com/cozbi-sanchez.png",
             "url": canonicalUrl,
-            "description": "I bring dedication and genuine care to every real estate transaction in Cabo San Lucas, specializing in family homes and condominiums.",
-            "knowsAbout": ["Residential Real Estate", "Family Homes", "Condominiums", "First-Time Buyers", "Cabo San Lucas", "Los Cabos"],
+            "description": "I bring dedication and genuine care to every real estate transaction in Cabo San Lucas, specializing in family houses and condominiums.",
+            "knowsAbout": ["Residential Real Estate", "Family Houses", "Condominiums", "First-Time Buyers", "Cabo San Lucas", "Los Cabos"],
             "award": "Top Producer"
           })}
         </script>
