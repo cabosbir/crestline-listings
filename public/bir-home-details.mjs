@@ -6,14 +6,14 @@ export function homeDetailsHref(mls){
  const url=new URL(location.href);url.searchParams.set('home',mls);url.hash=document.querySelector('#ov-grid')?'homes':'featured-homes';return url.pathname+url.search+url.hash;
 }
 
-export function setupHomeDetails({completedOnly=false,returnLabel='Back to featured homes'}={}){
+export function setupHomeDetails({completedOnly=false,returnLabel='Back to houses & villas'}={}){
  let rows=[],dialog,active='',photos=[],photoIndex=0,requestNumber=0,controller,origin,scrollBefore=0,overflowBefore='',pending='';
  const anchor=document.querySelector('#ov-grid')?'homes':'featured-homes';
  const isOpen=()=>Boolean(dialog?.open);
  function create(){
   if(dialog)return;
   dialog=document.createElement('dialog');dialog.className='cd-dialog';dialog.setAttribute('aria-labelledby','cd-title');
-  dialog.innerHTML=`<div class="cd-panel"><header class="cd-header"><button type="button" class="cd-back">← ${esc(returnLabel)}</button><span>Baja International Realty · Cabo homes</span></header><div class="cd-content"><h2 id="cd-title">Home details</h2><div id="cd-body" aria-live="polite"></div></div></div>`;
+  dialog.innerHTML=`<div class="cd-panel"><header class="cd-header"><button type="button" class="cd-back">← ${esc(returnLabel)}</button><span>Baja International Realty · Houses & Villas</span></header><div class="cd-content"><h2 id="cd-title">House details</h2><div id="cd-body" aria-live="polite"></div></div></div>`;
   document.body.append(dialog);
   dialog.querySelector('.cd-back').addEventListener('click',close);
   dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
@@ -34,7 +34,7 @@ export function setupHomeDetails({completedOnly=false,returnLabel='Back to featu
  function inquiry(row,title){
   const url=new URL(homeDetailsHref(row.mls),location.href);url.searchParams.delete('bir_internal');
   const message=`Hello Don, I am interested in ${title} (MLS ${row.mls}). Please send current details or help arrange a showing.\n${url.href}`;
-  return `<section class="cd-contact"><h3>Interested in this home?</h3><p>Ask Don for current details, compare it with your favorites, or arrange a showing.</p><div class="cd-actions"><a class="button" href="https://wa.me/526241296245?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">WhatsApp Don ↗</a><a class="cd-email" href="mailto:don@bircabo.com?subject=${encodeURIComponent(title+' · MLS '+row.mls)}&body=${encodeURIComponent(message)}">Email Don</a><a class="cd-email" href="tel:+526241296245">Call Don</a></div></section>`;
+  return `<section class="cd-contact"><h3>Interested in this house?</h3><p>Ask Don for current details, compare it with your favorites, or arrange a showing.</p><div class="cd-actions"><a class="button" href="https://wa.me/526241296245?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">WhatsApp Don ↗</a><a class="cd-email" href="mailto:don@bircabo.com?subject=${encodeURIComponent(title+' · MLS '+row.mls)}&body=${encodeURIComponent(message)}">Email Don</a><a class="cd-email" href="tel:+526241296245">Call Don</a></div></section>`;
  }
  function showPhoto(index){
   if(!photos.length||!isOpen())return;photoIndex=(index+photos.length)%photos.length;
@@ -45,7 +45,7 @@ export function setupHomeDetails({completedOnly=false,returnLabel='Back to featu
   for(const button of dialog.querySelectorAll('[data-photo]'))button.setAttribute('aria-current',Number(button.dataset.photo)===photoIndex?'true':'false');
  }
  function render(row,listing){
-  const privateAddress=listing.InternetAddressDisplayYN===false,title=privateAddress?'Home details':row.name;
+  const privateAddress=listing.InternetAddressDisplayYN===false,title=privateAddress?'House details':row.name;
   dialog.querySelector('#cd-title').textContent=title;
   photos=(Array.isArray(listing.Media)?listing.Media:[]).map(x=>({url:safeImage(x.MediaURL),caption:String(x.caption||'')})).filter(x=>x.url);
   const facts=[];const beds=listing.BedroomsTotal,baths=listing.BathroomsTotalDecimal??listing.BathroomsFull;
@@ -62,7 +62,7 @@ export function setupHomeDetails({completedOnly=false,returnLabel='Back to featu
   create();controller?.abort();controller=new AbortController();const thisRequest=++requestNumber;active=row.mls;pending='';
   if(!isOpen()){origin=document.activeElement;scrollBefore=window.scrollY;overflowBefore=document.body.style.overflow;document.body.style.overflow='hidden';dialog.showModal();}
   if(push)history.pushState({...history.state,birHomeOverlay:true},'',homeDetailsHref(row.mls));
-  dialog.querySelector('#cd-title').textContent=row.name;dialog.querySelector('#cd-body').innerHTML='<p role="status">Loading this home’s photos and details…</p>';dialog.scrollTop=0;photos=[];
+  dialog.querySelector('#cd-title').textContent=row.name;dialog.querySelector('#cd-body').innerHTML='<p role="status">Loading this house’s photos and details…</p>';dialog.scrollTop=0;photos=[];
   try{
    const response=await fetch('/api/search-pilot?mode=gallery&keys='+encodeURIComponent(row.key),{signal:AbortSignal.any([controller.signal,AbortSignal.timeout(20000)])});if(!response.ok)throw Error('unavailable');
    const data=await response.json(),listing=data.results?.find(x=>x.ListingId===row.mls&&x.ListingKey===row.key);
@@ -71,7 +71,7 @@ export function setupHomeDetails({completedOnly=false,returnLabel='Back to featu
    render(row,listing);
   }catch{
    if(thisRequest!==requestNumber)return;
-   dialog.querySelector('#cd-title').textContent='Current home details';dialog.querySelector('#cd-body').innerHTML=`<p role="status">We cannot confirm this home’s current details right now. Ask Don for an update, or return to your selection.</p>${inquiry(row,'Home MLS '+row.mls)}`;
+   dialog.querySelector('#cd-title').textContent='Current house details';dialog.querySelector('#cd-body').innerHTML=`<p role="status">We cannot confirm this house’s current details right now. Ask Don for an update, or return to your selection.</p>${inquiry(row,'House MLS '+row.mls)}`;
   }
  }
  function sync(){
