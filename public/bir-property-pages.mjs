@@ -8,6 +8,14 @@ export function matchesRule(row,rule){
 }
 export function matchesScope(row,id){const scope=SCOPES[id];return Boolean(scope&&scope.rules.some(rule=>matchesRule(row,rule)));}
 export function golfIds(row){return GOLF_COMMUNITIES.filter(id=>matchesScope(row,id));}
+// The visitor's clock may be wrong. Date plus HTTP cache Age gives the server
+// reference time; include request duration conservatively in freshness checks.
+export function snapshotResponseTime(headers,elapsedMs=0){
+ const serverTime=Date.parse(headers.get('date')||''),ageText=headers.get('age');
+ const age=ageText===null?0:/^\d+$/.test(ageText.trim())?Number(ageText):NaN;
+ if(!Number.isFinite(serverTime)||!Number.isSafeInteger(age)||age<0||!Number.isFinite(elapsedMs)||elapsedMs<0)throw Error('Inventory response time unavailable');
+ return serverTime+age*1000+elapsedMs;
+}
 export function currentRows(data,config,now=Date.now()){
  const age=now-Date.parse(data.fetchedAt);
  if(data.complete!==true||!Array.isArray(data.results)||data.total!==data.results.length||new Set(data.results.map(x=>x.ListingKey)).size!==data.total||!Number.isFinite(age)||age< -60000||age>=3600000)throw Error('Current inventory unavailable');
@@ -51,7 +59,23 @@ if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
  function render(){rememberCollectionFilters(controls);const selected=filterRows(rows,choices()),visible=selected.slice(0,limit),stamp=++version;grid.innerHTML=visible.map(card).join('');more.hidden=selected.length<=limit;more.textContent=`Show ${Math.min(12,Math.max(0,selected.length-limit))} more properties`;empty.hidden=selected.length!==0;
  status.innerHTML=`<span>${selected.length} matching ${selected.length===1?'property':'properties'} · Showing ${visible.length}</span><strong>${choices().sort==='price-desc'?'HIGHEST PRICE FIRST':'LOWEST PRICE FIRST'}</strong><span class="ov-checked">Availability checked ${esc(checked)}.</span>`;details.update(rows);void loadPhotos(visible,stamp);}
  function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);}
- async function refresh(){if(busy)return;busy=true;try{const response=await fetch('/api/search-pilot?mode=snapshot',{signal:AbortSignal.timeout(25000)});if(!response.ok)throw Error();const data=await response.json();rows=currentRows(data,config);locations.refresh();checked=new Date(data.fetchedAt).toLocaleString('en-US',{timeZone:'America/Mazatlan',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' Cabo time';if(Date.now()-Date.parse(data.fetchedAt)>=300000)checked+=' (update delayed; confirm with Don)';render();clearTimeout(expiry);expiry=setTimeout(()=>clear('This availability check has expired. Reload for current listings or ask Don for an update.'),Math.max(0,3600000-(Date.now()-Date.parse(data.fetchedAt))));}catch{clear('We cannot confirm current availability right now. Reload to try again, ask Don for a shortlist, or use the full MLS search.');}finally{busy=false;}}
+ async function refresh(){
+  if(busy)return;busy=true;
+  try{
+   const started=performance.now();
+   const response=await fetch('/api/search-pilot?mode=snapshot',{signal:AbortSignal.timeout(25000)});
+   if(!response.ok)throw Error();
+   const data=await response.json(),serverNow=snapshotResponseTime(response.headers,performance.now()-started);
+   rows=currentRows(data,config,serverNow);
+   const inventoryAge=serverNow-Date.parse(data.fetchedAt);
+   locations.refresh();
+   checked=new Date(data.fetchedAt).toLocaleString('en-US',{timeZone:'America/Mazatlan',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' Cabo time';
+   if(inventoryAge>=300000)checked+=' (update delayed; confirm with Don)';
+   render();clearTimeout(expiry);
+   expiry=setTimeout(()=>clear('This availability check has expired. Reload for current listings or ask Don for an update.'),Math.max(0,3600000-inventoryAge));
+  }catch{clear('We cannot confirm current availability right now. Reload to try again, ask Don for a shortlist, or use the full MLS search.');}
+  finally{busy=false;}
+ }
  restoreCollectionFilters(controls);dependencies();form.addEventListener('submit',e=>e.preventDefault());form.addEventListener('change',event=>{dependencies();if(['ov-kind','ov-golf'].includes(event.target.id)){locations.reset();}else locations.change(event.target);limit=12;render();});form.addEventListener('reset',()=>setTimeout(()=>{dependencies();locations.reset();limit=12;render();},0));more.addEventListener('click',()=>{limit+=12;render();});void refresh();setInterval(()=>{if(!document.hidden)void refresh();},300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refresh();});
  const lead=document.getElementById('property-shortlist'),button=lead.querySelector('button[type="submit"]'),message=lead.querySelector('.buyer-form-status');
  lead.addEventListener('submit',async event=>{event.preventDefault();if(button.disabled)return;const payload=requestPayload(new FormData(lead),config);button.disabled=true;button.textContent='Sending…';message.textContent='';try{const response=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(25000)}),data=await response.json();if(!response.ok||data.success!==true)throw Error();document.dispatchEvent(new CustomEvent('bir-lead-result',{detail:{form:'general_contact',outcome:'success'}}));message.textContent='Thank you. Your request has been sent to Don at Baja International Realty.';button.textContent='Request sent';lead.reset();}catch{document.dispatchEvent(new CustomEvent('bir-lead-result',{detail:{form:'general_contact',outcome:'error'}}));message.replaceChildren(document.createTextNode('We could not confirm delivery. Your request is still here. '));const email=document.createElement('a');email.href='mailto:don@bircabo.com?subject='+encodeURIComponent(config.title)+'&body='+encodeURIComponent(payload.message);email.textContent='Email Don instead';message.append(email);button.disabled=false;button.textContent='Try sending again';}});
