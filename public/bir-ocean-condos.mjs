@@ -1,3 +1,4 @@
+import {snapshotResponseTime} from './bir-inventory-time.mjs';
 import {CABO_AREAS,matchesCollectionLocation,collectionLocation,COLLECTION_LOCATION_FIELDS,setupCollectionLocations,sortByPrice,restoreCollectionFilters,rememberCollectionFilters} from './bir-collection-utils.mjs';
 export {CABO_AREAS};
 import {condoDetailsHref,setupCondoDetails} from './bir-condo-details.mjs';
@@ -55,10 +56,11 @@ if(typeof document!=='undefined'){
   }
   function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);}
   async function refresh(){if(busy)return;busy=true;
-    try{const response=await fetch('/api/search-pilot?mode=snapshot',{signal:AbortSignal.timeout(20000)});if(!response.ok)throw Error();const data=await response.json();rows=eligibleCondos(data);locations.refresh();
+    try{const started=performance.now();
+      const response=await fetch('/api/search-pilot?mode=snapshot',{signal:AbortSignal.timeout(20000)});if(!response.ok)throw Error();const data=await response.json();const serverNow=snapshotResponseTime(response.headers,performance.now()-started),inventoryAge=serverNow-Date.parse(data.fetchedAt);rows=eligibleCondos(data,serverNow);locations.refresh();
       checkedAt=new Date(data.fetchedAt).toLocaleString('en-US',{timeZone:'America/Mazatlan',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' Cabo time';
-      if(Date.now()-Date.parse(data.fetchedAt)>=300000)checkedAt+=' (update delayed; confirm availability with Don)';render();clearTimeout(expiry);
-      expiry=setTimeout(()=>clear('This availability check has expired. Reload to check again, or ask Don for current options.'),Math.max(0,3600000-(Date.now()-Date.parse(data.fetchedAt))));
+      if(inventoryAge>=300000)checkedAt+=' (update delayed; confirm availability with Don)';render();clearTimeout(expiry);
+      expiry=setTimeout(()=>clear('This availability check has expired. Reload to check again, or ask Don for current options.'),Math.max(0,3600000-(inventoryAge)));
     }catch{clear('We cannot confirm current condo availability right now. Reload to try again, ask Don for a shortlist, or use the complete MLS search.');}finally{busy=false;}
   }
   restoreCollectionFilters([...COLLECTION_LOCATION_FIELDS, ["price", "ov-price", "all"], ["beds", "ov-beds", "0"], ["view", "ov-view", ""], ["sort", "ov-sort", "price-asc"]]);
