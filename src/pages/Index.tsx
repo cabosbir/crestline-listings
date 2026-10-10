@@ -84,11 +84,17 @@ const Index = () => {
     setLoading(true);
     setFeaturedError(false);
     const timer = setTimeout(() => abort.abort(), 15000);
+    const snapshotStarted = performance.now();
     fetch('/api/search-pilot?mode=snapshot', { signal: abort.signal })
       .then(async response => {
         if (!response.ok) throw new Error('Inventory unavailable');
         const data = await response.json();
-        const age = Date.now() - Date.parse(data.fetchedAt);
+        // Use the server's time, including CDN age and request duration, not the visitor's clock.
+        const serverTime = Date.parse(response.headers.get('date') || '');
+        const cacheAgeText = response.headers.get('age');
+        const cacheAge = cacheAgeText === null ? 0 : /^\d+$/.test(cacheAgeText.trim()) ? Number(cacheAgeText) : NaN;
+        if (!Number.isFinite(serverTime) || !Number.isSafeInteger(cacheAge) || cacheAge < 0) throw new Error('Inventory response time unavailable');
+        const age = serverTime + cacheAge * 1000 + (performance.now() - snapshotStarted) - Date.parse(data.fetchedAt);
         if (data.complete !== true || !Array.isArray(data.results) || data.total !== data.results.length || !Number.isFinite(age) || age >= 3600000 || age < -60000) throw new Error('Incomplete or outdated inventory');
         const office = data.results.filter((row: any) =>
           row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false &&
