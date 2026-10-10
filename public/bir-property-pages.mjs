@@ -8,14 +8,8 @@ export function matchesRule(row,rule){
 }
 export function matchesScope(row,id){const scope=SCOPES[id];return Boolean(scope&&scope.rules.some(rule=>matchesRule(row,rule)));}
 export function golfIds(row){return GOLF_COMMUNITIES.filter(id=>matchesScope(row,id));}
-// The visitor's clock may be wrong. Date plus HTTP cache Age gives the server
-// reference time; include request duration conservatively in freshness checks.
-export function snapshotResponseTime(headers,elapsedMs=0){
- const serverTime=Date.parse(headers.get('date')||''),ageText=headers.get('age');
- const age=ageText===null?0:/^\d+$/.test(ageText.trim())?Number(ageText):NaN;
- if(!Number.isFinite(serverTime)||!Number.isSafeInteger(age)||age<0||!Number.isFinite(elapsedMs)||elapsedMs<0)throw Error('Inventory response time unavailable');
- return serverTime+age*1000+elapsedMs;
-}
+import {snapshotResponseTime} from './bir-inventory-time.mjs';
+export {snapshotResponseTime};
 export function currentRows(data,config,now=Date.now()){
  const age=now-Date.parse(data.fetchedAt);
  if(data.complete!==true||!Array.isArray(data.results)||data.total!==data.results.length||new Set(data.results.map(x=>x.ListingKey)).size!==data.total||!Number.isFinite(age)||age< -60000||age>=3600000)throw Error('Current inventory unavailable');
