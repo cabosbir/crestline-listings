@@ -321,9 +321,13 @@ const SellerEvaluationForm = () => {
         body: JSON.stringify(submissionData),
       });
 
-      if (!response.ok) {
+      const result = await response.json();
+      if (!response.ok || result.success !== true) {
         throw new Error('Failed to submit form');
       }
+      document.dispatchEvent(new CustomEvent('bir-lead-result', {
+        detail: { form: 'seller_inquiry', outcome: 'success' },
+      }));
 
       toast({
         title: "Form Submitted Successfully! ✓",
@@ -367,6 +371,9 @@ const SellerEvaluationForm = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (error) {
+      document.dispatchEvent(new CustomEvent('bir-lead-result', {
+        detail: { form: 'seller_inquiry', outcome: 'error' },
+      }));
       console.error('Error submitting form:', error);
       toast({
         title: "Error Submitting Form",
@@ -427,7 +434,7 @@ const SellerEvaluationForm = () => {
           <p className="text-center text-gray-600 mb-2">Seller Information Form</p>
           <p className="text-center text-sm text-gray-500 mb-8">Agent: {agent.name}</p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} data-bir-lead-form="seller_inquiry" className="space-y-6">
                 <div aria-hidden="true" style={{position:'absolute',left:'-10000px',width:1,height:1,overflow:'hidden'}}><label>Leave this field empty<input name="website" value={website} onChange={e=>setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" /></label></div>
             {/* Personal Information */}
             <div className="border-t pt-6">

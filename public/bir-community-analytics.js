@@ -1,4 +1,4 @@
-/* BIR measurement v2: no names, email addresses, form text or saved properties. */
+/* BIR measurement v3: no names, email addresses, form text or saved properties. */
 (() => {
   const domains = ['bircabo.com','caborealestatepros.com','cabo-homes.com','cabo-condos.com','cabo-land.com'];
   const own = host => domains.includes(host.replace(/^www\./,''));
@@ -50,10 +50,10 @@
   const started=new WeakSet();
   document.addEventListener('input',event=>{
     const field=event.target,form=field.closest?.('form');
-    if(form&&form.id!=='filters'&&(['inquiry-form','inquiry-draft'].includes(form.id)||form.hasAttribute('data-bir-lead-form'))&&!started.has(form)){started.add(form);emit('lead_form_start',{form_name:form.id==='inquiry-form'?'mls_inquiry':'general_contact'});}
+    if(form&&form.id!=='filters'&&(['inquiry-form','inquiry-draft'].includes(form.id)||form.hasAttribute('data-bir-lead-form'))&&!started.has(form)){started.add(form);emit('lead_form_start',{form_name:form.id==='inquiry-form'?'mls_inquiry':form.getAttribute('data-bir-lead-form')==='seller_inquiry'?'seller_inquiry':'general_contact'});}
     if(!field.closest?.('#filters')||!filters.has(field.id))return;clearTimeout(timer);timer=setTimeout(()=>emit('mls_filter_change',{filter_name:field.id}),1000);
   });
-  document.addEventListener('change',event=>{const field=event.target;if(field.closest?.('#ov-filters')&&['ov-price','ov-beds','ov-community'].includes(field.id))emit('property_filter_change',{filter_name:field.id});});
+  document.addEventListener('change',event=>{const field=event.target;if(field.closest?.('#ov-filters')&&['ov-price','ov-beds','ov-community','ov-kind','ov-golf','ov-area','ov-mls-area','ov-mls-community','ov-subdivision','ov-size','ov-view','ov-sort'].includes(field.id))emit('property_filter_change',{filter_name:field.id});});
   // Explicit success comes only from the form's successful server response.
   document.addEventListener('bir-lead-result',event=>{
     const detail=event.detail||{};
