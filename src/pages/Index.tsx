@@ -172,6 +172,19 @@ const Index = () => {
       <Navbar />
       <main id="main-content">
       <Hero />
+      <section id="focused-property-searches" aria-labelledby="focused-search-title" className="border-b border-blue-200 bg-blue-50 py-8 sm:py-10">
+        <div className="container mx-auto max-w-6xl px-4">
+          <h2 id="focused-search-title" className="text-2xl sm:text-3xl font-bold text-blue-950">Find properties by area, ocean view or golf community</h2>
+          <p className="mt-3 text-lg text-slate-700">Choose from nine areas, then browse condos, Houses &amp; Villas or land. Compare current listings and ask Don to help narrow your choices.</p>
+          <nav aria-label="Focused property searches" className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/property-guides.html#ocean-views">Ocean-view properties · 9 areas →</a>
+            <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/los-cabos-golf-properties.html#compare-golf">Golf communities &amp; memberships →</a>
+            <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/beachfront-properties-for-sale-los-cabos.html#ov-status">Beachfront properties →</a>
+            <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/property-guides.html">All areas &amp; property types →</a>
+          </nav>
+        </div>
+      </section>
+
       <section id="cabo-real-estate" className="scroll-mt-24 py-12 sm:py-16 bg-slate-50">
         <div className="container mx-auto px-4 max-w-6xl">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">Cabo real estate: find the property that fits your life</h2>
