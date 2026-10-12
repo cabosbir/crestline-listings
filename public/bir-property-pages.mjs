@@ -1,3 +1,4 @@
+import {priceSortButton,setupPriceSort} from './bir-property-sort.mjs';
 import { SCOPES, GOLF_COMMUNITIES } from './bir-property-scopes.mjs';
 import {collectionLocation,sortByPrice,matchesCollectionLocation,setupCollectionLocations,COLLECTION_LOCATION_FIELDS,restoreCollectionFilters,rememberCollectionFilters} from './bir-collection-utils.mjs';
 import {propertyDetailsHref,setupPropertyDetails} from './bir-property-details.mjs';
@@ -26,7 +27,7 @@ export function currentRows(data,config,now=Date.now()){
   lotM2:Number.isFinite(x.General_sp_Description_co_Lot_sp_M2)&&x.General_sp_Description_co_Lot_sp_M2>0?x.General_sp_Description_co_Lot_sp_M2:null,
   view:x.General_sp_Description_co_Primary_sp_View==='Select One'?'':x.General_sp_Description_co_Primary_sp_View||'',office:x.ListOfficeName||'',golf:golfIds(x)}));
 }
-export function filterRows(rows,{kind='',golf='',price='all',beds='0',size='0',view='',sort='price-asc',...location}={}){
+export function filterRows(rows,{kind='',golf='',price='all',beds='0',size='0',view='',sort='price-desc',...location}={}){
  const range=price==='all'?null:price.split('-').map(Number);
  return sortByPrice(rows.filter(x=>(!kind||x.kind===kind)&&(!golf||x.golf.includes(golf))&&(!range||(x.price!==null&&x.price>=range[0]&&x.price<range[1]))&&
   (!Number(beds)||(x.kind!=='Land'&&x.beds!=null&&x.beds>=Number(beds)))&&(!Number(size)||(x.lotM2!==null&&x.lotM2>=Number(size)))&&(!view||x.view===view)&&matchesCollectionLocation(x,location)),sort);
@@ -39,8 +40,9 @@ const money=n=>n==null?'Price on request':new Intl.NumberFormat('en-US',{style:'
 if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
  const config=JSON.parse(document.getElementById('bir-page-config').textContent),grid=document.getElementById('ov-grid'),status=document.getElementById('ov-status'),more=document.getElementById('ov-more'),empty=document.getElementById('ov-empty'),form=document.getElementById('ov-filters');
  const simpleListings=config.simpleListings===true;
+ if(!simpleListings)setupPriceSort(status,document.getElementById('ov-sort'));
  const details=setupPropertyDetails({completedOnly:true,returnLabel:'Back to your results'}),photos=new Map();let rows=[],limit=12,busy=false,expiry,version=0,checked='';
- const controls=[...COLLECTION_LOCATION_FIELDS,['kind','ov-kind',''],['golf','ov-golf',''],['price','ov-price','all'],['beds','ov-beds','0'],['size','ov-size','0'],['view','ov-view',''],['sort','ov-sort','price-asc']];
+ const controls=[...COLLECTION_LOCATION_FIELDS,['kind','ov-kind',''],['golf','ov-golf',''],['price','ov-price','all'],['beds','ov-beds','0'],['size','ov-size','0'],['view','ov-view',''],['sort','ov-sort',simpleListings?'price-asc':'price-desc']];
  const choices=()=>Object.fromEntries(controls.map(([key,id,fallback])=>[key,simpleListings?fallback:document.getElementById(id).value]));
  const locationRows=()=>rows.filter(x=>(!document.getElementById('ov-kind').value||x.kind===document.getElementById('ov-kind').value)&&(!document.getElementById('ov-golf').value||x.golf.includes(document.getElementById('ov-golf').value)));
  const locations=setupCollectionLocations(locationRows);
@@ -52,7 +54,7 @@ if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
  }catch{/* Details and contact remain available if a photo service is unavailable. */}}
  if(stamp!==version)return;for(const row of visible){const container=[...grid.querySelectorAll('[data-mls]')].find(x=>x.dataset.mls===row.mls)?.querySelector('.ov-image-link');if(!container)continue;const src=photos.get(row.key);if(src&&!container.querySelector('img')){const img=document.createElement('img');img.src=src;img.alt=row.name+' — listing photo';img.width=600;img.height=400;img.loading='lazy';container.replaceChildren(img);}else if(!src){const span=container.querySelector('span');if(span)span.textContent='Open photos & details';}}}
  function render(){if(!simpleListings)rememberCollectionFilters(controls);const selected=filterRows(rows,choices()),visible=selected.slice(0,limit),stamp=++version;grid.innerHTML=visible.map(card).join('');more.hidden=selected.length<=limit;more.textContent=`Show ${Math.min(12,Math.max(0,selected.length-limit))} more properties`;empty.hidden=selected.length!==0;
- status.innerHTML=simpleListings?`<span class="ov-checked">Availability checked ${esc(checked)}.</span>`:`<span>${selected.length} matching ${selected.length===1?'property':'properties'} · Showing ${visible.length}</span><strong>${choices().sort==='price-desc'?'HIGHEST PRICE FIRST':'LOWEST PRICE FIRST'}</strong><span class="ov-checked">Availability checked ${esc(checked)}.</span>`;details.update(rows);void loadPhotos(visible,stamp);}
+ status.innerHTML=simpleListings?`<span class="ov-checked">Availability checked ${esc(checked)}.</span>`:`<span>${selected.length} matching ${selected.length===1?'property':'properties'} · Showing ${visible.length}</span>${priceSortButton(choices().sort)}<span class="ov-checked">Availability checked ${esc(checked)}.</span>`;details.update(rows);void loadPhotos(visible,stamp);}
  function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);}
  async function refresh(){
   if(busy)return;busy=true;
