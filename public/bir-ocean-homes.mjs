@@ -1,3 +1,4 @@
+import {priceSortButton,setupPriceSort} from './bir-property-sort.mjs';
 import {snapshotResponseTime} from './bir-inventory-time.mjs';
 import {CABO_AREAS,matchesCollectionLocation,collectionLocation,COLLECTION_LOCATION_FIELDS,setupCollectionLocations,sortByPrice,restoreCollectionFilters,rememberCollectionFilters} from './bir-collection-utils.mjs';
 export {CABO_AREAS};
@@ -14,7 +15,7 @@ export function eligibleHomes(data, now=Date.now()) {
     view:x.General_sp_Description_co_Primary_sp_View==='Select One'?'':x.General_sp_Description_co_Primary_sp_View||'',office:x.ListOfficeName||''
   })).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity)||String(a.mls).localeCompare(String(b.mls)));
 }
-export function filterHomes(rows,{price='all',beds='0',view='',subdivision='',mlsArea='',mlsCommunity='',area='',sort='price-asc'}={}){
+export function filterHomes(rows,{price='all',beds='0',view='',subdivision='',mlsArea='',mlsCommunity='',area='',sort='price-desc'}={}){
   const range=price==='all'?null:price.split('-').map(Number);
   return sortByPrice(rows.filter(x=>(!range||(x.price!==null&&x.price>=range[0]&&x.price<range[1]))&&(!Number(beds)||(x.beds!=null&&x.beds>=Number(beds)))&&(!view||(view==='water'?WATER_VIEWS.includes(x.view):x.view===view))&&matchesCollectionLocation(x,{area,mlsArea,mlsCommunity,subdivision})),sort);
 }
@@ -27,6 +28,7 @@ const money=n=>n==null?'Price on request':new Intl.NumberFormat('en-US',{style:'
 
 if(typeof document!=='undefined'){
   const grid=document.querySelector('#ov-grid'),status=document.querySelector('#ov-status'),more=document.querySelector('#ov-more'),empty=document.querySelector('#ov-empty'),filters=document.querySelector('#ov-filters');
+  setupPriceSort(status,document.querySelector('#ov-sort'));
   const details=setupHomeDetails({completedOnly:true,returnLabel:'Back to ocean-view houses'});
   let rows=[],limit=12,busy=false,expiry,checkedAt='',version=0;const photos=new Map();
   const locations=setupCollectionLocations(()=>rows);
@@ -50,9 +52,9 @@ if(typeof document!=='undefined'){
       const src=photos.get(row.key);if(src&&!container.querySelector('img')){const img=document.createElement('img');img.src=src;img.alt=row.name+' — listing photo';img.width=600;img.height=400;img.loading='lazy';container.replaceChildren(img);}else if(!src){const span=container.querySelector('span');if(span)span.textContent='Open photos & details';}
     }
   }
-  function render(){rememberCollectionFilters([...COLLECTION_LOCATION_FIELDS, ["price", "ov-price", "all"], ["beds", "ov-beds", "0"], ["view", "ov-view", ""], ["sort", "ov-sort", "price-asc"]]);const selected=filterHomes(rows,choices()),visible=selected.slice(0,limit),stamp=++version;
+  function render(){rememberCollectionFilters([...COLLECTION_LOCATION_FIELDS, ["price", "ov-price", "all"], ["beds", "ov-beds", "0"], ["view", "ov-view", ""], ["sort", "ov-sort", "price-desc"]]);const selected=filterHomes(rows,choices()),visible=selected.slice(0,limit),stamp=++version;
     grid.innerHTML=visible.map(card).join('');more.hidden=selected.length<=limit;more.textContent=`Show ${Math.min(12,Math.max(0,selected.length-limit))} more houses`;empty.hidden=selected.length!==0;
-    status.innerHTML=`<span>${selected.length} matching ${selected.length===1?'house':'houses'} · Showing ${visible.length}</span><strong>${document.querySelector('#ov-sort').value==='price-desc'?'HIGHEST PRICE FIRST':'LOWEST PRICE FIRST'}</strong><span class="ov-checked">Availability checked ${esc(checkedAt)}.</span>`;
+    status.innerHTML=`<span>${selected.length} matching ${selected.length===1?'house':'houses'} · Showing ${visible.length}</span>${priceSortButton(document.querySelector('#ov-sort').value)}<span class="ov-checked">Availability checked ${esc(checkedAt)}.</span>`;
     void loadPhotos(visible,stamp);details.update(rows);
   }
   function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);}
@@ -64,7 +66,7 @@ if(typeof document!=='undefined'){
       expiry=setTimeout(()=>clear('This availability check has expired. Reload to check again, or ask Don for current options.'),Math.max(0,3600000-(inventoryAge)));
     }catch{clear('We cannot confirm current house availability right now. Reload to try again, ask Don for a shortlist, or use the complete MLS search.');}finally{busy=false;}
   }
-  restoreCollectionFilters([...COLLECTION_LOCATION_FIELDS, ["price", "ov-price", "all"], ["beds", "ov-beds", "0"], ["view", "ov-view", ""], ["sort", "ov-sort", "price-asc"]]);
+  restoreCollectionFilters([...COLLECTION_LOCATION_FIELDS, ["price", "ov-price", "all"], ["beds", "ov-beds", "0"], ["view", "ov-view", ""], ["sort", "ov-sort", "price-desc"]]);
   filters.addEventListener('submit',e=>e.preventDefault());filters.addEventListener('change',event=>{locations.change(event.target);limit=12;render();});filters.addEventListener('reset',()=>setTimeout(()=>{locations.reset();limit=12;render();},0));more.addEventListener('click',()=>{limit+=12;render();});void refresh();setInterval(()=>{if(!document.hidden)void refresh();},300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refresh();});
 
   const form=document.querySelector('#home-shortlist'),button=form.querySelector('button[type="submit"]'),formStatus=form.querySelector('.buyer-form-status');
