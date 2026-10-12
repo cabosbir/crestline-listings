@@ -30,7 +30,8 @@
 .condos-browse .condos-filter-actions>button{min-height:36px;padding:8px 0;border:0;background:transparent;text-decoration:underline;color:#173b66;font-size:13px;white-space:nowrap;text-align:left}
 .condos-browse .condos-results .ov-status{margin:0 0 18px;gap:5px 16px;font-size:18px;line-height:1.5}
 .condos-browse #ov-status{scroll-margin-top:0}
-.condos-browse .condos-results .ov-status strong{font-size:18px;padding:3px 9px}
+.condos-browse .condos-results .ov-sort-toggle{font:700 16px/1.4 Inter,system-ui,sans-serif;min-height:44px;padding:8px 14px;border:1px solid #173b66;border-radius:5px;background:#173b66;color:#fff;cursor:pointer}
+.condos-browse .condos-results .ov-sort-toggle:hover{background:#244f7c}
 .condos-browse .condos-results .ov-checked{font-size:12px;line-height:1.4}
 .condos-browse .condos-guidance{background:#f7f8f9}
 .condos-guidance .buyer-strip{padding:0 0 26px;gap:14px 25px}
@@ -73,6 +74,6 @@
  .condos-browse .condos-filter-actions>button{font-size:12px;padding-left:8px}
  .condos-preview-bar{font-size:10px}
  .condos-browse .condos-results .ov-status{font-size:16px}
- .condos-browse .condos-results .ov-status strong{font-size:16px}
+ .condos-browse .condos-results .ov-sort-toggle{font-size:15px}
  .condos-browse .condos-results .ov-grid{grid-template-columns:minmax(0,1fr)}
 }
