@@ -1,0 +1,78 @@
+/* Page-specific experiment: show the property collection before the long guide. */
+.condos-browse .condos-intro{padding:14px 0 20px;background:#f3f5f7}
+.condos-browse .breadcrumbs{margin-bottom:10px}
+.condos-intro-row{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:36px;align-items:center}
+.condos-browse .condos-intro h1{font-size:42px;line-height:1.1;margin:8px 0 10px;max-width:none}
+.condos-intro h1 span{display:block;font-size:29px;line-height:1.25;margin-top:5px;letter-spacing:-.02em}
+.condos-intro-text{font-size:16px;line-height:1.5;max-width:690px;margin:0;color:#42556b}
+.condos-intro-actions{display:flex;flex-direction:column;align-items:stretch;gap:13px;text-align:center}
+.condos-intro-actions>a:not(.button){font-size:14px;font-weight:600}
+.condos-intro-actions .condos-jump{gap:30px;font-size:17px;padding:17px 18px}
+.condos-jump span{font-size:26px;line-height:1}
+.condos-browse .condos-results{padding:20px 0 38px}
+.condos-results-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.condos-results-heading h2{font-size:25px;margin:0}
+.condos-results-heading>a{font-size:14px}
+.condos-browser-layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:24px;margin-top:18px;align-items:start}
+.condos-browse .condos-filter-panel{padding:0;border:0;background:none;border-radius:0;margin:0;min-width:0}
+.condos-browse .condos-filter-panel>summary{font:700 15px/1.5 Inter,system-ui,sans-serif;padding:14px 16px;background:#eff3f6;color:#173b66;cursor:pointer;border:1px solid #dce5eb;border-radius:5px}
+.condos-browse .condos-compact-filters{display:block;margin:0;padding:16px 16px 8px;border:1px solid #dce5eb;background:#f3f6f8}
+.condos-main-filters{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.condos-listing-column{min-width:0}
+.condos-browse .condos-results .ov-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.condos-compact-filters label{min-width:0;gap:5px;font-size:13px}
+.condos-compact-filters select{width:100%;font-size:14px;min-height:43px;padding:10px;background:#fff}
+.condos-filter-actions{display:flex;flex-direction:column;align-items:stretch;gap:0;margin-top:8px}
+.condos-browse .condos-extra-filters{padding:0;border:0;border-radius:0;background:transparent;margin:0}
+.condos-browse .condos-extra-filters>summary{padding:8px 0;color:#173b66;font:600 14px/1.5 Inter,system-ui,sans-serif;cursor:pointer;list-style:revert}
+.condos-extra-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:15px;padding:12px 0}
+.condos-extra-filters .collection-filter-help{margin:0 0 12px;font-size:13px}
+.condos-browse .condos-filter-actions>button{min-height:36px;padding:8px 0;border:0;background:transparent;text-decoration:underline;color:#173b66;font-size:13px;white-space:nowrap;text-align:left}
+.condos-browse .condos-results .ov-status{margin:0 0 18px;gap:5px 16px;font-size:18px;line-height:1.5}
+.condos-browse #ov-status{scroll-margin-top:0}
+.condos-browse .condos-results .ov-status strong{font-size:18px;padding:3px 9px}
+.condos-browse .condos-results .ov-checked{font-size:12px;line-height:1.4}
+.condos-browse .condos-guidance{background:#f7f8f9}
+.condos-guidance .buyer-strip{padding:0 0 26px;gap:14px 25px}
+.condos-guidance .intro{font-size:18px}
+.condos-preview-bar{background:#173b66;color:#fff;font-size:12px;line-height:1.4;padding:8px 0}
+.condos-preview-bar>.container{display:flex;justify-content:space-between;gap:15px}
+.condos-preview-bar a{color:#fff}
+.condos-browse summary:focus-visible,.condos-browse button:focus-visible,.condos-browse select:focus-visible{outline:3px solid #ab792d;outline-offset:3px}
+@media(max-width:900px){
+ .condos-intro-row{grid-template-columns:minmax(0,1fr) 235px;gap:22px}
+ .condos-browse .condos-intro h1{font-size:39px}
+ .condos-intro h1 span{font-size:25px}
+ .condos-main-filters{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .condos-browser-layout{display:block;margin-top:14px}
+ .condos-listing-column{margin-top:18px}
+ .condos-filter-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}
+ .condos-extra-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-width:901px){.condos-browse .condos-filter-panel>summary{display:none}}
+@media(max-width:620px){
+ .condos-browse .condos-intro{padding:16px 0 20px}
+ .condos-browse .breadcrumbs{margin-bottom:12px;font-size:12px}
+ .condos-intro-row{display:block}
+ .condos-browse .condos-intro .eyebrow{font-size:10px;letter-spacing:.1em}
+ .condos-browse .condos-intro h1{font-size:35px;margin:8px 0 11px}
+ .condos-intro h1 span{font-size:24px}
+ .condos-intro-text{font-size:15px}
+ .condos-intro-actions{margin-top:16px;gap:10px}
+ .condos-intro-actions .condos-jump{padding:12px 18px}
+ .condos-browse .condos-results{padding-top:20px}
+ .condos-results-heading{align-items:baseline;flex-wrap:wrap;gap:5px}
+ .condos-results-heading h2{font-size:25px}
+ .condos-results-heading>a{font-size:13px}
+ .condos-browse .condos-compact-filters{padding:12px 12px 4px}
+ .condos-compact-filters label{font-size:12px}
+ .condos-compact-filters select{font-size:13px}
+ .condos-extra-grid{grid-template-columns:1fr}
+ .condos-filter-actions{gap:4px}
+ .condos-browse .condos-extra-filters>summary{font-size:12px}
+ .condos-browse .condos-filter-actions>button{font-size:12px;padding-left:8px}
+ .condos-preview-bar{font-size:10px}
+ .condos-browse .condos-results .ov-status{font-size:16px}
+ .condos-browse .condos-results .ov-status strong{font-size:16px}
+ .condos-browse .condos-results .ov-grid{grid-template-columns:minmax(0,1fr)}
+}
