@@ -1,3 +1,4 @@
+(()=>{const menu=document.querySelector('.bir-header .bir-nav-links');if(!menu||menu.querySelector('a[href="/las-cascadas-de-pedregal-condos-for-sale.html"]'))return;const pedregal=menu.querySelector('a[href="/pedregal-real-estate.html"]');if(pedregal){const link=document.createElement('a');link.href='/las-cascadas-de-pedregal-condos-for-sale.html';link.textContent='Las Cascadas de Pedregal';pedregal.after(link);}})();
 (() => {
 const header=document.querySelector('.bir-header');if(!header)return;
 const menu=header.querySelector('.bir-nav-links'),toggle=header.querySelector('.bir-menu-toggle');
