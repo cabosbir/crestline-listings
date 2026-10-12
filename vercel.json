@@ -92,6 +92,11 @@
       "source": "/properties/map",
       "destination": "/property-search.html",
       "permanent": true
+    },
+    {
+      "source": "/market-report",
+      "destination": "/los-cabos-real-estate-market.html",
+      "permanent": true
     }
   ]
 }
