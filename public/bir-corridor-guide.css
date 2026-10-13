@@ -1,0 +1,22 @@
+/* Scoped to the Cabo San Lucas Corridor guide; existing MLS layout is unchanged. */
+.corridor-guide .corridor-guide-nav{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:26px;padding-top:20px;border-top:1px solid #d8e1e6;font-size:16px;font-weight:600}
+.corridor-guide .corridor-community-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:30px 0}
+.corridor-guide .corridor-community{display:flex;flex-direction:column;background:white;border:1px solid #d8e1e6;border-top:4px solid #b79251;border-radius:6px;padding:28px;min-width:0}
+.corridor-guide .corridor-kicker{font-size:12px;line-height:1.6;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:#70592e;margin-bottom:10px}
+.corridor-guide .corridor-community h3{font-family:Marcellus,Georgia,serif;font-weight:400;font-size:28px;line-height:1.25;margin:0 0 18px}
+.corridor-guide .corridor-community p{font-size:17px;line-height:1.7}
+.corridor-guide .corridor-property-link{margin-top:auto;padding-top:6px;font-weight:650;line-height:1.6;text-underline-offset:4px}
+.corridor-guide p.corridor-source{font-size:13px;line-height:1.6;color:#526276;margin:16px 0 0}
+.corridor-guide .corridor-advice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 38px;margin-top:28px}
+.corridor-guide .corridor-advice-grid h3{font-size:24px;line-height:1.3;margin:0 0 16px}
+.corridor-guide .corridor-view-callout{background:#f4f2eb;padding:26px;border-left:4px solid #b79251;border-radius:0 6px 6px 0}
+.corridor-guide .corridor-view-callout a{font-weight:650}
+.corridor-guide .corridor-cost-list{margin:26px 0}
+.corridor-guide .corridor-cost-list>div{padding:20px 24px;border:1px solid #dce3e8;background:#fff;border-radius:6px;margin:14px 0}
+.corridor-guide .corridor-cost-list dt{font-size:19px;font-weight:700;margin-bottom:8px}
+.corridor-guide .corridor-cost-list dd{margin:0;line-height:1.75}
+.corridor-guide #corridor-questions details{max-width:1000px}
+.corridor-guide #corridor-questions summary{font-size:19px}
+.corridor-guide #corridor-questions details p{font-size:17px;line-height:1.75}
+.corridor-guide .corridor-guide-nav a:focus-visible,.corridor-guide .corridor-community a:focus-visible{outline:3px solid #b2853f;outline-offset:4px}
+@media(max-width:760px){.corridor-guide .corridor-community-grid,.corridor-guide .corridor-advice-grid{grid-template-columns:1fr}.corridor-guide .corridor-community{padding:24px}.corridor-guide .corridor-community h3{font-size:26px}.corridor-guide .corridor-guide-nav{gap:12px 20px}.corridor-guide .corridor-cost-list>div{padding:18px 20px}}
