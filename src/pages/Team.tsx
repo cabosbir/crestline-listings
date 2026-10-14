@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -6,14 +6,6 @@ import FloatingContact from "@/components/FloatingContact";
 import AgentBioCard from "@/components/AgentBioCard";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-
-// ⚡ OPTIMIZATION 1: Move static data outside component to prevent re-creation
-const statsData = [
-  { number: 75, label: "Years Combined\nExperience", suffix: "" },
-  { number: 1850, label: "Properties\nSold", suffix: "+" },
-  { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
-  { number: 800, label: "Combined Sales\nSince 1987", suffix: "M+", prefix: "$" },
-];
 
 const agents = [
   {
@@ -248,70 +240,6 @@ const agents = [
 
 const Team = () => {
   const navigate = useNavigate();
-  const statsRef = useRef<HTMLElement>(null);
-  const [statsVisible, setStatsVisible] = useState(false);
-  const [statCounts, setStatCounts] = useState([0, 0, 0, 0]);
-
-  // ⚡ OPTIMIZATION 2: Memoize format function
-  const formatStatNumber = useMemo(() => {
-    return (num: number, index: number) => {
-      const stat = statsData[index];
-      const formattedNum = num.toLocaleString();
-      return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
-    };
-  }, []);
-
-  // Intersection Observer for stats animation
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !statsVisible) {
-          setStatsVisible(true);
-        }
-      },
-      { 
-        threshold: 0.1,
-        rootMargin: '50px'
-      }
-    );
-
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
-    }
-
-    return () => {
-      if (statsRef.current) {
-        observer.unobserve(statsRef.current);
-      }
-    };
-  }, [statsVisible]);
-
-  // Animated counting effect for stats
-  useEffect(() => {
-    if (!statsVisible) return;
-
-    const duration = 2000;
-    const steps = 60;
-    const increment = duration / steps;
-
-    let frame = 0;
-    const interval = setInterval(() => {
-      frame++;
-      const progress = frame / steps;
-      
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-
-      setStatCounts(statsData.map(stat => Math.floor(stat.number * easeOutQuart)));
-
-      if (frame >= steps) {
-        clearInterval(interval);
-        setStatCounts(statsData.map(stat => stat.number));
-      }
-    }, increment);
-
-    return () => clearInterval(interval);
-  }, [statsVisible]);
-
   const handleViewBio = useMemo(() => {
     return (agentId: number) => {
       const agent = agents.find(a => a.id === agentId);
@@ -349,30 +277,6 @@ const Team = () => {
           <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
             Local guidance in Los Cabos, Cerritos, El Pescadero and Todos Santos.
           </p>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section ref={statsRef} className="py-16 bg-secondary border-b">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            {statsData.map((stat, index) => (
-              <div 
-                key={index}
-                className="text-center"
-                style={{ 
-                  animation: statsVisible ? `fadeInUp 0.6s ease-out ${index * 0.1}s both` : 'none'
-                }}
-              >
-                <div className="text-4xl md:text-5xl font-bold text-accent mb-2 tabular-nums">
-                  {formatStatNumber(statCounts[index], index)}
-                </div>
-                <div className="text-sm text-muted-foreground whitespace-pre-line">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -443,19 +347,7 @@ const Team = () => {
       </section>
 
       <Footer />
-
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+
     </div>
   );
 };
