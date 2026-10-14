@@ -63,7 +63,6 @@ const agent = {
   phone: "+52 624 109 7909",
   email: "Eaispuro80@gmail.com",
   yearsExperience: 8,
-  propertiesSold: 60,
   bio: "My passion for luxury coastal living in Cabo San Lucas and my commitment to client satisfaction have made me one of the most sought-after agents in the region. I specialize in oceanfront estates and investment properties throughout Baja California Sur, offering comprehensive market analysis and personalized service to ensure every client finds the perfect property to match their vision and lifestyle.",
   certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
   languages: ["English", "Spanish"],
@@ -503,11 +502,11 @@ const ErikaLandingPage = () => {
         <title>Erika Aispuro - Luxury Property Specialist | Oceanfront Estates Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Erika Aispuro, Luxury Property Specialist with 8 years experience in Cabo San Lucas. 60+ properties sold. Expert in oceanfront estates and investment properties throughout Baja California Sur."
+          content="Connect with Erika Aispuro, Luxury Property Specialist with 8 years experience in Cabo San Lucas. Expert in oceanfront estates and investment properties throughout Baja California Sur."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Erika Aispuro - Cabo San Lucas Oceanfront Estates Expert" />
-        <meta property="og:description" content="8 years experience, 60+ properties sold. Passionate about luxury coastal living with comprehensive market analysis and personalized service." />
+        <meta property="og:description" content="8 years experience. Passionate about luxury coastal living with comprehensive market analysis and personalized service." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/erika-aispuro.jpg" />
         <meta property="og:type" content="profile" />
@@ -590,14 +589,10 @@ const ErikaLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

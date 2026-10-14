@@ -62,8 +62,7 @@ const agent = {
   phone: "+52 624 127 6012",
   email: "robertvanpatten2@gmail.com",
   yearsExperience: 9,
-  propertiesSold: 85,
-  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
+  bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
   certifications: ["MLS Member"],
   languages: ["English"],
 };
@@ -107,7 +106,7 @@ const fallbackListings = [
 const testimonials = [
   {
     name: "Gregory & Patricia Hamilton",
-    text: "Bob's expertise in high-yield investments is exceptional. His $35M+ sales track record and deep market knowledge helped us find the perfect investment property in Cabo.",
+    text: "Bob's expertise in high-yield investments is exceptional.",
     rating: 5
   },
   {
@@ -376,11 +375,11 @@ const BobLandingPage = () => {
         <title>Bob Van Patten - Senior Real Estate Advisor | High Yield Investment Properties | Baja International Realty</title>
         <meta
           name="description"
-          content="Connect with Bob Van Patten, Senior Real Estate Advisor with 9 years experience in Cabo San Lucas. 85+ properties sold, $35M+ in sales. Specialist in high-yield investment properties at Baja International Realty."
+          content="Connect with Bob Van Patten, Senior Real Estate Advisor with 9 years experience in Cabo San Lucas. Specialist in high-yield investment properties at Baja International Realty."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Bob Van Patten - Cabo San Lucas Investment Property Specialist" />
-        <meta property="og:description" content="9 years experience, 85+ properties sold, $35M+ in sales. High-yield investment property specialist in Cabo San Lucas." />
+        <meta property="og:description" content="9 years experience. High-yield investment property specialist in Cabo San Lucas." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/bob-van-patten.jpg" />
         <meta property="og:type" content="profile" />
@@ -443,14 +442,10 @@ const BobLandingPage = () => {
               <p className="text-lg mb-8 max-w-xl mx-auto lg:mx-0" style={{ color: '#666' }}>
                 Specializing in {agent.specialization}
               </p>
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">

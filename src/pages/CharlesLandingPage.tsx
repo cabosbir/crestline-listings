@@ -21,8 +21,6 @@ const agent = {
   phone: "+1 858 964 4629",
   email: "cabocharlie79@gmail.com",
   yearsExperience: 30,
-  propertiesSold: 250,
-  totalSales: "$95M+",
   bio: "A real estate professional by heritage, fluent in English and Spanish, with over 30 years of experience in Pedregal, Cabo San Lucas, and extensive knowledge of the entire area. This background allows me to offer a strategic and global approach when assisting my clients with buying, selling, or managing properties. I am passionate about real estate, specializing in identifying high-value opportunities and overseeing construction and renovation projects. I also have extensive experience managing luxury vacation rental properties in Pedregal, ensuring exceptional results and meticulous attention to detail. I work exclusively with top-tier professionals, offering 24/7 availability and delivering efficient, personalized service while always protecting my clients' best interests.",
   certifications: ["REALTOR®", "MLS Member", "Property Management Specialist"],
   languages: ["English", "Spanish"],
@@ -436,11 +434,11 @@ const CharlesLandingPage = () => {
         <title>Charles Jones - Luxury Property Specialist | Pedregal & Cabo San Lucas Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Charles Jones, Luxury Property Specialist with 30 years experience in Pedregal and Cabo San Lucas. 250+ properties sold, $95M+ in sales. Expert in luxury vacation rentals and property management."
+          content="Connect with Charles Jones, Luxury Property Specialist with 30 years experience in Pedregal and Cabo San Lucas. Expert in luxury vacation rentals and property management."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Charles Jones - Pedregal & Cabo San Lucas Luxury Real Estate Expert" />
-        <meta property="og:description" content="30 years experience, 250+ properties sold. Specializing in Pedregal luxury properties and vacation rental management." />
+        <meta property="og:description" content="30 years experience. Specializing in Pedregal luxury properties and vacation rental management." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/charles-jones.jpg" />
         <meta property="og:type" content="profile" />
@@ -520,14 +518,10 @@ const CharlesLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

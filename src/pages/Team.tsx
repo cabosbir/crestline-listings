@@ -18,7 +18,6 @@ const agents = [
     phone: "+52 624 143 5555",
     email: "Don@bircabo.com",
     yearsExperience: 35,
-    propertiesSold: 2200,
     bio: "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s...",
     certifications: [
       "Real Estate Broker",
@@ -38,8 +37,7 @@ const agents = [
     phone: "+52 624 127 6012",
     email: "robertvanpatten2@gmail.com",
     yearsExperience: 9,
-    propertiesSold: 85,
-    bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales.",
+    bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties.",
     certifications: ["MLS Member"],
     languages: ["English"]
   },
@@ -53,7 +51,6 @@ const agents = [
     phone: "+52 664 188 8681",
     email: "alfonso@bircabo.com",
     yearsExperience: 18,
-    propertiesSold: 890,
     bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates.",
     certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
     languages: ["English", "Spanish"]
@@ -68,7 +65,6 @@ const agents = [
     phone: "+52 624 317 0297",
     email: "David@bircabo.com",
     yearsExperience: 10,
-    propertiesSold: 50,
     bio: "David is a seasoned investor and advisor with a decade of experience helping clients build successful real estate portfolios.",
     certifications: ["REALTOR®", "MLS Member"],
     languages: ["English", "Spanish"]
@@ -107,7 +103,6 @@ const agents = [
     phone: "+52 624 211 4879",
     email: "Hector@bircabo.com",
     yearsExperience: 2,
-    propertiesSold: 12,
     bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding.",
     certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
     languages: ["English", "Spanish"]
@@ -124,7 +119,6 @@ const agents = [
     phoneSecondary: "+52 (612) 120 5289",
     email: "Susu@bircabo.com",
     yearsExperience: 11,
-    propertiesSold: 101,
     bio: "With decades of experience in Real Estate, Susu brings unmatched expertise and dedication to every client relationship.",
     certifications: ["REALTOR®", "MLS Member"],
     languages: ["English", "Spanish"]
@@ -139,7 +133,6 @@ const agents = [
     phone: "+52 624 264 3896",
     email: "mtortricardi@gmail.com",
     yearsExperience: 12,
-    propertiesSold: 50,
     bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment opportunities.",
     certifications: ["REALTOR®", "MLS Member"],
     languages: ["English", "Spanish"]
@@ -154,7 +147,6 @@ const agents = [
     phone: "+52 624 118 9512",
     email: "Cozbi@bajainternationalrealty.com",
     yearsExperience: 8,
-    propertiesSold: 105,
     bio: "I bring dedication and genuine care to every real estate transaction in Cabo San Lucas.",
     certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
     languages: ["English", "Spanish"]
@@ -169,7 +161,6 @@ const agents = [
     phone: "+52 612 169 8328",
     email: "Edgar@bircabo.com",
     yearsExperience: 1,
-    propertiesSold: 4,
     bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage with analytical precision and real estate expertise.",
     certifications: ["REALTOR®", "MLS Member"],
     languages: ["English", "Spanish"]
@@ -184,7 +175,6 @@ const agents = [
     phone: "+52 624 135 8900",
     email: "fernando@bircabo.com",
     yearsExperience: 5,
-    propertiesSold: 40,
     bio: "I'm a former professional tennis player, and now a passionate real-estate advisor in Los Cabos. I know how important it is to feel confident and comfortable when choosing a home. I love meeting new people, listening to their needs, and helping them find the best options available. My goal is simple: to make every client feel supported, informed, and excited about their real estate journey.",
     certifications: ["MLS Member", "NAR Member"],
     languages: ["English", "Spanish"]
@@ -200,7 +190,6 @@ const agents = [
   phone: "+1 858-204-3115",
   email: "bonnie@bircabo.com",
   yearsExperience: 15,
-  propertiesSold: 98,
   bio: "Born and raised in California, I bring a unique blend of cultural fluency and professional expertise to the world of real estate. Having lived in Mexico for over 35 years, I've developed deep roots and a strong understanding of both Baja and Mainland markets. With 25 years of hands-on experience, I've guided clients through residential, commercial, and investment opportunities across diverse regions.",
   certifications: ["Senior Real Estate Advisor", "AMPI® Member", "Bilingual Real Estate Specialist", "MLS Member"],
   languages: ["English", "Spanish"]
@@ -215,7 +204,6 @@ const agents = [
     phone: "+52 624 147 7708",
     email: "humberto@bircabo.com",
     yearsExperience: 15,
-    propertiesSold: 148,
     bio: "Dedicated real estate advisor specializing in luxury properties in Cabo San Lucas.",
     certifications: ["MLS Member"],
     languages: ["English", "Spanish"]
@@ -231,7 +219,6 @@ const agents = [
     phone: "+1 858 964 4629",
     email: "cabocharlie79@gmail.com",
     yearsExperience: 30,
-    propertiesSold: 250,
     bio: "A real estate professional by heritage, fluent in English and Spanish, with over 30 years of experience in Pedregal, Cabo San Lucas, and extensive knowledge of the entire area. This background allows me to offer a strategic and global approach when assisting my clients with buying, selling, or managing properties.",
     certifications: ["REALTOR®", "MLS Member", "Property Management Specialist"],
     languages: ["English", "Spanish"]
@@ -305,7 +292,6 @@ const Team = () => {
                       phone2={agent.phoneSecondary}
                       email={agent.email}
                       specialization={agent.specialization}
-                      propertiesSold={agent.propertiesSold}
                       yearsExperience={agent.yearsExperience}
                       onViewBio={() => handleViewBio(agent.id)}
                       showStats={false}

@@ -63,7 +63,6 @@ const agent = {
   phone: "+52 624 118 9512",
   email: "Cozbi@bajainternationalrealty.com",
   yearsExperience: 8,
-  propertiesSold: 105,
   bio: "I bring a strong track record of leading high performance, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family houses and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
   certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
   languages: ["English", "Spanish"],
@@ -503,11 +502,11 @@ const CozbiLandingPage = () => {
         <title>Cozbi Sanchez - Residential Specialist | Family Houses & Condos Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Cozbi Sanchez, Residential Specialist with 8 years experience in Cabo San Lucas. 105+ properties sold. Expert in family houses and condominiums for first-time buyers and growing families."
+          content="Connect with Cozbi Sanchez, Residential Specialist with 8 years experience in Cabo San Lucas. Expert in family houses and condominiums for first-time buyers and growing families."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Cozbi Sanchez - Cabo San Lucas Family Houses Expert" />
-        <meta property="og:description" content="8 years experience, 105+ properties sold. Specializing in family houses and condos with patient, client-focused service." />
+        <meta property="og:description" content="8 years experience. Specializing in family houses and condos with patient, client-focused service." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/cozbi-sanchez.png" />
         <meta property="og:type" content="profile" />
@@ -590,14 +589,10 @@ const CozbiLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

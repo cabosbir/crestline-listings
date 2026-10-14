@@ -63,7 +63,6 @@ const agent = {
   phone: "+52 624 264 3896",
   email: "mtortricardi@gmail.com",
   yearsExperience: 12,
-  propertiesSold: 50,
   bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico's most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.",
   certifications: ["REALTOR®", "MLS Member"],
   languages: ["English", "Spanish"],
@@ -503,11 +502,11 @@ const MarisolLandingPage = () => {
         <title>Marisol Tort - Real Estate Advisor | Luxury Property Investment Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Marisol Tort, Real Estate Advisor with 12 years experience in Cabo San Lucas. 50+ properties sold. Data-driven approach and sharp negotiation skills for profitable luxury property investments."
+          content="Connect with Marisol Tort, Real Estate Advisor with 12 years experience in Cabo San Lucas. Data-driven approach and sharp negotiation skills for profitable luxury property investments."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Marisol Tort - Cabo San Lucas Luxury Investment Expert" />
-        <meta property="og:description" content="12 years experience, 50+ properties sold. Trusted advisor specializing in profitable luxury property opportunities." />
+        <meta property="og:description" content="12 years experience. Trusted advisor specializing in profitable luxury property opportunities." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/marisol-tort.jpg" />
         <meta property="og:type" content="profile" />
@@ -590,14 +589,10 @@ const MarisolLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

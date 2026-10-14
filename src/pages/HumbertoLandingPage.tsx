@@ -49,7 +49,6 @@ const agent = {
   phone: "+52 624 147 7708",
   email: "humberto@bircabo.com",
   yearsExperience: 15,
-  propertiesSold: 148,
   bio: "Passionate about connecting clients with their dream properties in Los Cabos. Humberto brings dedication, local knowledge, and a client-first approach to every transaction. Specializing in luxury properties, he is committed to making your real estate experience in Cabo San Lucas seamless and rewarding.",
   certifications: ["MLS Member"],
   languages: ["English", "Spanish"],
@@ -396,14 +395,10 @@ const HumbertoLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

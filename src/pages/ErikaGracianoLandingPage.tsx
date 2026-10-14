@@ -63,7 +63,6 @@ const agent = {
   phone: "+52 624 157 2154",
   email: "erikag@bircabo.com",
   yearsExperience: 15,
-  propertiesSold: 150,
   bio: "Professional with extensive experience in administrative tasks and organizational skills. With solid knowledge of document management and customer service, Erika brings a unique perspective to real estate in Cabo San Lucas.",
   bio2: "Erika has built her career on a foundation of exceptional client service and meticulous attention to detail. Her background in administrative management and HR positions her perfectly to guide clients through the complex process of buying or selling property in Los Cabos.",
   bio3: "With over 15 years of professional experience in various administrative and management roles, including positions at Hotel Esperanza Resort and Hotel Villa del Palmar, Erika understands the luxury hospitality market that defines Cabo San Lucas.",
@@ -507,11 +506,11 @@ const ErikaLandingPage = () => {
         <title>Erika Graciano - Real Estate Agent & Administrative Specialist | Client Relations Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Erika Graciano, Real Estate Agent with 15 years experience in administrative management and client relations. 150+ properties sold. Expert in property management and luxury hospitality in Cabo San Lucas."
+          content="Connect with Erika Graciano, Real Estate Agent with 15 years experience in administrative management and client relations. Expert in property management and luxury hospitality in Cabo San Lucas."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Erika Graciano - Cabo San Lucas Real Estate & Client Relations Expert" />
-        <meta property="og:description" content="15 years experience, 150+ properties sold. Exceptional client service with meticulous attention to detail in Los Cabos real estate." />
+        <meta property="og:description" content="15 years experience. Exceptional client service with meticulous attention to detail in Los Cabos real estate." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/ErikaGraciano.jpg" />
         <meta property="og:type" content="profile" />
@@ -594,14 +593,10 @@ const ErikaLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}+</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

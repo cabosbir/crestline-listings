@@ -63,8 +63,6 @@ const agent = {
   phone: "+52 664 188 8681",
   email: "alfonso@bircabo.com",
   yearsExperience: 18,
-  propertiesSold: 890,
-  totalSales: "$200M+",
   bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
   certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
   languages: ["English", "Spanish"],
@@ -504,11 +502,11 @@ const AlfonsoLandingPage = () => {
         <title>Alfonso Puente - Sales Manager & Commercial Real Estate Expert | Cabo San Lucas | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Alfonso Puente, Sales Manager with 18 years experience and 890+ properties sold. Expert in commercial real estate developments and market analysis in Cabo San Lucas."
+          content="Connect with Alfonso Puente, Sales Manager with 18 years experience. Expert in commercial real estate developments and market analysis in Cabo San Lucas."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Alfonso Puente - Cabo San Lucas Commercial Real Estate Expert" />
-        <meta property="og:description" content="Sales manager with 890+ properties sold. Specializing in real estate developments and market analysis." />
+        <meta property="og:description" content="Sales manager. Specializing in real estate developments and market analysis." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/alfonso-puente.jpg" />
         <meta property="og:type" content="profile" />
@@ -591,14 +589,10 @@ const AlfonsoLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

@@ -64,7 +64,6 @@ const agent = {
   phoneSecondary: "+52 (612) 120-5289",
   email: "Susu@BIRCabo.com",
   yearsExperience: 22,
-  propertiesSold: 50,
   bio: "With decades of experience in Real Estate, Susu brings unmatched expertise and dedication to every client relationship. Living in Cabo San Lucas and La Paz full-time for six years, has rewarded her with continuing knowledge on the ever expanding Baja market. Los Cabos has become a world renowned magnet for Billionaires and other investors to enjoy its unique lifestyle, customs, beauty, and high rate of returns on investment. Magically, Cabo has something for everyone's taste, budget, and financial goals. Whether it be helping clients find their dream home, marketing and selling their properties, flipping her own investments, or having the opportunities to stage and design hundreds of homes, she is all about full-service and results.",
   certifications: ["REALTOR®", "MLS Member", "US Real Estate License", "Interior Design Degree"],
   languages: ["English", "Spanish"],
@@ -504,11 +503,11 @@ const SusuLandingPage = () => {
         <title>Susu Vieira - Luxury Real Estate | Staging & Design Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Susu Vieira, Luxury Real Estate specialist with 22 years experience. 50+ properties sold. Expert in staging, design, and full-service real estate in Cabo San Lucas and La Paz."
+          content="Connect with Susu Vieira, Luxury Real Estate specialist with 22 years experience. Expert in staging, design, and full-service real estate in Cabo San Lucas and La Paz."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Susu Vieira - Cabo San Lucas Luxury Real Estate & Staging Expert" />
-        <meta property="og:description" content="22 years experience, 50+ properties sold. Unmatched expertise in luxury real estate, staging, and interior design." />
+        <meta property="og:description" content="22 years experience. Unmatched expertise in luxury real estate, staging, and interior design." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/susu-vieira.jpg" />
         <meta property="og:type" content="profile" />
@@ -591,14 +590,10 @@ const SusuLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 
