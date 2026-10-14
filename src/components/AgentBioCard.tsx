@@ -14,6 +14,7 @@ interface AgentBioCardProps {
   yearsExperience?: number;
   onViewBio?: () => void;
   showStats?: boolean;
+  profileHref?: string;
   landingPageSlug?: string; // ⭐ Landing page slug (e.g., "bob", "susu")
 }
 
@@ -29,7 +30,8 @@ const AgentBioCard = ({
   yearsExperience,
   onViewBio,
   showStats = true,
-  landingPageSlug
+  landingPageSlug,
+  profileHref
 }: AgentBioCardProps) => {
   const navigate = useNavigate();
   
@@ -131,12 +133,23 @@ const AgentBioCard = ({
           
           {/* ⭐ UPDATED: Single Action Button */}
           <div className="pt-2">
+            {profileHref ? (
+              <a
+                href={profileHref}
+                className="block w-full text-center bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-md transition-colors text-sm pointer-events-auto"
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`View ${name}'s profile`}
+              >
+                View Profile
+              </a>
+            ) : (
             <button
               onClick={handleButtonClick}
               className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-md transition-colors text-sm pointer-events-auto cursor-pointer"
             >
               {landingPageSlug ? 'View Profile' : 'View Full Bio'}
             </button>
+            )}
           </div>
         </div>
       </div>
