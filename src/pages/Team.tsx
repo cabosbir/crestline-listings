@@ -269,26 +269,26 @@ const Team = () => {
       <FloatingContact />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-primary via-primary-dark to-primary text-primary-foreground">
+      <section className="py-7 md:py-8 bg-gradient-to-br from-primary via-primary-dark to-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 animate-fade-in">
              BIR Real Estate Team
           </h1>
-          <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
+          <p className="text-base md:text-lg max-w-3xl mx-auto text-primary-foreground/90">
             Local guidance in Los Cabos, Cerritos, El Pescadero and Todos Santos.
           </p>
+          <a href="#team-agents" className="inline-flex items-center gap-2 mt-4 font-semibold underline underline-offset-4">
+            Meet our agents <span aria-hidden="true" className="text-2xl">↓</span>
+          </a>
         </div>
       </section>
 
       {/* Team Grid */}
-      <section className="py-24">
+      <section id="team-agents" className="pt-7 pb-16">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-foreground mb-4">Our Expert Advisors</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
-                Each member of our team brings unique expertise<br />and a commitment to personal service across Los Cabos and the Pacific coast
-              </p>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Our Expert Advisors</h2>
               <p className="text-sm text-muted-foreground">
                 {agents.filter(agent => agent.active !== false).length} expert agents ready to assist you
               </p>
@@ -347,7 +347,8 @@ const Team = () => {
       </section>
 
       <Footer />
-
+
+
     </div>
   );
 };
