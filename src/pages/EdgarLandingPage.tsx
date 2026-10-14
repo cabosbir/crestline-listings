@@ -63,8 +63,6 @@ const agent = {
   phone: "+52 612 169 8328",
   email: "Edgar@bircabo.com",
   yearsExperience: 1,
-  propertiesSold: 4,
-  totalSales: "$1.5M+",
   bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage with analytical precision and real estate expertise. As a dedicated advisor at Baja International Realty, I combine data-driven market analysis with personalized service to help clients make informed investment decisions. My commitment to excellence and attention to detail ensures that every transaction is smooth, transparent, and aligned with your goals.",
   certifications: ["REALTOR®", "MLS Member"],
   languages: ["English", "Spanish"],
@@ -504,7 +502,7 @@ const EdgarLandingPage = () => {
         <title>Edgar Pacheco - Real Estate Advisor | Luxury Properties Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Edgar Pacheco, Real Estate Advisor specializing in luxury properties in Cabo San Lucas. Data-driven market analysis with personalized service at Baja International Realty. $1.5M+ in sales."
+          content="Connect with Edgar Pacheco, Real Estate Advisor specializing in luxury properties in Cabo San Lucas. Data-driven market analysis with personalized service at Baja International Realty."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Edgar Pacheco - Cabo San Lucas Luxury Real Estate Advisor" />
@@ -591,14 +589,10 @@ const EdgarLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

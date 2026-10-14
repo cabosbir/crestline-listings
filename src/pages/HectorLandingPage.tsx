@@ -63,7 +63,6 @@ const agent = {
   phone: "+52 624 211 4879",
   email: "Hector@BIRCabo.com",
   yearsExperience: 2,
-  propertiesSold: 12,
   bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding. With my background in numbers and market knowledge, I help clients see that buying a home is often better than keeping money in the bank, it's an investment that grows in value and brings lasting satisfaction. From our first conversation to handing you the keys, I'll be by your side with clear communication, data driven insight, and honest guidance to help you invest with confidence.",
   certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
   languages: ["English", "Spanish"],
@@ -503,11 +502,11 @@ const HectorLandingPage = () => {
         <title>Hector Mendoza - Investment Property Advisor | Data-Driven Market Analysis | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Hector Mendoza, Investment Property Advisor with 2 years experience in Cabo San Lucas. 12+ properties sold. Data-driven insights and honest guidance for confident investment decisions."
+          content="Connect with Hector Mendoza, Investment Property Advisor with 2 years experience in Cabo San Lucas. Data-driven insights and honest guidance for confident investment decisions."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Hector Mendoza - Cabo San Lucas Investment Property Expert" />
-        <meta property="og:description" content="2 years experience, 12+ properties sold. Making real estate simple, personal, and rewarding with data-driven market knowledge." />
+        <meta property="og:description" content="2 years experience. Making real estate simple, personal, and rewarding with data-driven market knowledge." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/hector-mendoza.jpg" />
         <meta property="og:type" content="profile" />
@@ -590,14 +589,10 @@ const HectorLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

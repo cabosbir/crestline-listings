@@ -19,7 +19,6 @@ const agent = {
   phone: "+52 624 127 6012",
   email: "robertvanpatten2@gmail.com",
   yearsExperience: 15,
-  propertiesSold: 120,
   bio: "Bob specializes in luxury waterfront estates in Cabo San Lucas with over 15 years of experience in high-end real estate. His deep knowledge of Baja California Sur coastal properties and exceptional negotiation skills have earned him recognition as a top producer in the luxury market.",
   certifications: ["REALTOR®", "CRS", "CLHMS"],
   languages: ["English", "Spanish"],
@@ -155,14 +154,10 @@ const BobLandingPage = () => {
               </p>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold text-accent">{agent.yearsExperience}</div>
                   <div className="text-sm text-primary-foreground/80">Years Experience</div>
-                </div>
-                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 text-center">
-                  <div className="text-3xl font-bold text-accent">{agent.propertiesSold}+</div>
-                  <div className="text-sm text-primary-foreground/80">Properties Sold</div>
                 </div>
               </div>
 

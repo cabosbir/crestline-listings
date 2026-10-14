@@ -10,7 +10,6 @@ interface AgentBioCardProps {
   phone2?: string;
   email?: string;
   specialization?: string;
-  propertiesSold?: number;
   yearsExperience?: number;
   onViewBio?: () => void;
   showStats?: boolean;
@@ -26,7 +25,6 @@ const AgentBioCard = ({
   phone2,
   email,
   specialization,
-  propertiesSold,
   yearsExperience,
   onViewBio,
   showStats = true,
@@ -60,19 +58,13 @@ const AgentBioCard = ({
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       
       {/* Stats Badge - Conditionally Visible */}
-      {showStats && (propertiesSold || yearsExperience) && (
+      {showStats && yearsExperience && (
         <div className="absolute top-4 right-4 bg-yellow-500 text-white px-4 py-2 rounded-lg shadow-lg z-10">
           <div className="flex gap-3 text-center">
             {yearsExperience && (
               <div>
                 <div className="text-2xl font-bold">{yearsExperience}</div>
                 <div className="text-xs">Years</div>
-              </div>
-            )}
-            {propertiesSold && (
-              <div className="border-l border-white/30 pl-3">
-                <div className="text-2xl font-bold">{propertiesSold}+</div>
-                <div className="text-xs">Sold</div>
               </div>
             )}
           </div>

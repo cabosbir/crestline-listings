@@ -63,7 +63,6 @@ const agent = {
   phone: "+1 858-204-3115",
   email: "bonnie@bircabo.com",
   yearsExperience: 15,
-  propertiesSold: 98,
   bio: "Born and raised in California, I bring a unique blend of cultural fluency and professional expertise to the world of real estate. Having lived in Mexico for over 35 years, I've developed deep roots and a strong understanding of both Baja and Mainland markets.",
   bio2: "With 25 years of hands-on experience in real estate, I've guided clients through residential, commercial, and investment opportunities across diverse regions. My bilingual skills allow me to seamlessly connect with clients in both English and Spanish, bridging cultures and building trust.",
   bio3: "I'm passionate about helping people discover the beauty and potential of Mexico—whether they're seeking a dream home, a vacation property, or a strategic investment. My California upbringing combined with decades of local experience gives me a perspective that's both international and deeply personal.",
@@ -508,11 +507,11 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
       <title>Bonnie Renee G. - Senior Real Estate Advisor | 25 Years Experience | Baja International Realty</title>
       <meta 
         name="description" 
-        content="Connect with Bonnie Renee G., Senior Real Estate Advisor with 25 years experience. 200+ properties sold. Bilingual expert in residential, commercial, and investment properties in Cabo San Lucas and Mexico."
+        content="Connect with Bonnie Renee G., Senior Real Estate Advisor with 25 years experience. Bilingual expert in residential, commercial, and investment properties in Cabo San Lucas and Mexico."
       />
       <link rel="canonical" href={canonicalUrl} />
       <meta property="og:title" content="Bonnie Renee G. - Cabo San Lucas Real Estate Expert & Bilingual Specialist" />
-      <meta property="og:description" content="25 years experience, 200+ properties sold. California-born with 35+ years living in Mexico. Expert in residential, commercial, and investment real estate." />
+      <meta property="og:description" content="25 years experience. California-born with 35+ years living in Mexico. Expert in residential, commercial, and investment real estate." />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content="https://www.bircabo.com/bonnie-renee.jpg" />
       <meta property="og:type" content="profile" />
@@ -595,14 +594,10 @@ const canonicalUrl = 'https://www.bircabo.com/bonnie-renee';
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

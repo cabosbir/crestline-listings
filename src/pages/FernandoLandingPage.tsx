@@ -21,8 +21,6 @@ const agent = {
   phone: "+52 624 135 8900",
   email: "fernando@bircabo.com",
   yearsExperience: 5,
-  propertiesSold: 40,
-  totalSales: "$18M+",
   bio: "I'm a former professional tennis player, and now a passionate real-estate advisor in Los Cabos. I know how important it is to feel confident and comfortable when choosing a home. I love meeting new people, listening to their needs, and helping them find the best options available. My goal is simple: to make every client feel supported, informed, and excited about their real estate journey.",
   certifications: ["MLS Member", "NAR Member"],
   languages: ["English", "Spanish"],
@@ -436,11 +434,11 @@ const FernandoLandingPage = () => {
         <title>Fernando Cabrera - Real Estate Advisor | Residential & Vacation Properties Expert | Baja International Realty</title>
         <meta 
           name="description" 
-          content="Connect with Fernando Cabrera, Real Estate Advisor with 5 years experience in Cabo San Lucas. 40+ properties sold, $18M+ in sales. Former professional tennis player bringing dedication and focus to residential and vacation home sales."
+          content="Connect with Fernando Cabrera, Real Estate Advisor with 5 years experience in Cabo San Lucas. Former professional tennis player bringing dedication and focus to residential and vacation home sales."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Fernando Cabrera - Cabo San Lucas Residential & Vacation Properties Expert" />
-        <meta property="og:description" content="5 years experience, 40+ properties sold, $18M+ in sales. Dedicated advisor combining athletic discipline with personalized service." />
+        <meta property="og:description" content="5 years experience. Dedicated advisor combining athletic discipline with personalized service." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/fernando-cabrera.jpg" />
         <meta property="og:type" content="profile" />
@@ -520,14 +518,10 @@ const FernandoLandingPage = () => {
                 Specializing in {agent.specialization}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
 

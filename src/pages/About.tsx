@@ -231,8 +231,6 @@ const About = () => {
 
     // Animate each stat counter
     if (statsRefs.current[0]) animateCounter(statsRefs.current[0], 75, "", "+");
-    if (statsRefs.current[1]) animateCounter(statsRefs.current[1], 1850, "", "+");
-    if (statsRefs.current[2]) animateCounter(statsRefs.current[2], 800, "$", "M+");
 
     // Stats section fade in
     gsap.from(".stats-section", {
@@ -320,7 +318,7 @@ const About = () => {
         <meta property="og:title" content="About Baja International Realty | Cabo San Lucas Real Estate Experts" />
         <meta property="og:image" content="https://www.bircabo.com/bir-office-plaza-nautica.jpg" />
         <meta property="og:type" content="website" />
-        <meta property="og:description" content="35+ years of excellence in Cabo San Lucas luxury real estate. Founding MLS member, 1,850+ properties sold, $800M+ in sales." />
+        <meta property="og:description" content="35+ years of excellence in Cabo San Lucas luxury real estate. Founding MLS member." />
       </Helmet>
       <Navbar />
       <FloatingContact />
@@ -559,18 +557,10 @@ const About = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-3xl mx-auto">
             <div className="text-center">
               <div ref={el => statsRefs.current[0] = el} className="text-5xl font-bold text-accent mb-2">0</div>
               <p className="text-primary-foreground/90">Combined Years of<br />Experience</p>
-            </div>
-            <div className="text-center">
-              <div ref={el => statsRefs.current[1] = el} className="text-5xl font-bold text-accent mb-2">0</div>
-              <p className="text-primary-foreground/90">Properties<br />Sold</p>
-            </div>
-            <div className="text-center">
-              <div ref={el => statsRefs.current[2] = el} className="text-5xl font-bold text-accent mb-2">$0</div>
-              <p className="text-primary-foreground/90">Total Sales<br />Volume</p>
             </div>
             <div className="text-center">
               <div className="text-5xl font-bold text-accent mb-2">MLS</div>

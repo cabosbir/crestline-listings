@@ -62,12 +62,11 @@ const agent = {
   phone: "+52 624 143 5555",
   email: "Don@BIRCabo.com",
   yearsExperience: 35,
-  propertiesSold: 2200,
   bio: "Born and raised in San Mateo, California, Don Weis was first introduced to Mexico in the late 1980s, where he developed a strong interest in foreign real estate ownership. He founded Pan America Ltd., producing real estate investment seminars under the name Mexico Gold to educate international buyers about opportunities in Mexico. The program's success drew national attention, with features on CNN, ABC's 20/20, and numerous radio and television shows. Don later established Baja International, representing major developers in the Baja Norte region.",
   bio2: "Following several family tragedies, Don returned to San Mateo, where he founded and served as CEO of a successful manufacturing company for 14 years. His enduring passion for Mexico eventually brought him back to Cabo San Lucas, where he took a two-year sabbatical before reentering the real estate industry.",
   bio3: "Don founded his own companies — Land's End Realty of Los Cabos, Baja International Realty, and Baja International Real Estate & Development, a private investment firm. Under his leadership, these firms have brokered numerous landmark transactions, including several multi-million-dollar land acquisitions for major resort developments.",
   bio4: "Notably, Don represented Cabo San Cristobal Resorts, one of the largest planned resort communities in the world, featuring four hotels, multiple golf courses, polo fields, a Formula One racetrack, and Cabo's first world-class yacht club. His firm also managed a complex 75-acre acquisition on Medano Beach for Riu Hotels.",
-  bio5: "With more than $250 million USD in personal real estate sales in the Los Cabos market, Don Weis has built a trusted reputation for professionalism, market insight, and results that continue to shape the region's development landscape. Don also founded the very popular Cabo Cantina restaurant/bar in 2007 which is located next-door to BIR office.",
+  bio5: "Don Weis has built a trusted reputation for professionalism, market insight, and results that continue to shape the region's development landscape. Don also founded the very popular Cabo Cantina restaurant/bar in 2007 which is located next-door to BIR office.",
   certifications: ["Real Estate Broker", "International Realtor®", "MLS-BCS Founding Member", "AMPI® Member"],
   languages: ["English", "Spanish"],
 };
@@ -367,11 +366,11 @@ const DonLandingPage = () => {
         <title>Don Weis - Founder & Broker | Luxury Properties & Development Expert | Baja International Realty</title>
         <meta
           name="description"
-          content="Connect with Don Weis, Founder & Broker of Baja International Realty with 35 years experience. 2,200+ properties sold, $250M+ in personal sales. Pioneer of luxury real estate development in Cabo San Lucas since the 1980s."
+          content="Connect with Don Weis, Founder & Broker of Baja International Realty with 35 years experience. Pioneer of luxury real estate development in Cabo San Lucas since the 1980s."
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content="Don Weis - Cabo San Lucas Real Estate Visionary & Founder" />
-        <meta property="og:description" content="35 years experience, 2,200+ properties sold, $250M+ in sales. Legendary founder of Baja International Realty." />
+        <meta property="og:description" content="35 years experience. Legendary founder of Baja International Realty." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://www.bircabo.com/don-weis.jpg" />
         <meta property="og:type" content="profile" />
@@ -434,14 +433,10 @@ const DonLandingPage = () => {
               <p className="text-lg mb-8 max-w-xl mx-auto lg:mx-0" style={{ color: '#666' }}>
                 Specializing in {agent.specialization}
               </p>
-              <div className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto lg:mx-0">
+              <div className="grid grid-cols-1 gap-4 mb-8 max-w-56 mx-auto lg:mx-0">
                 <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
                   <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.yearsExperience}</div>
                   <div className="text-sm" style={{ color: '#666' }}>Years Experience</div>
-                </div>
-                <div className="backdrop-blur-sm rounded-lg p-4 text-center border-2" style={{ backgroundColor: '#f8f9fa', borderColor: '#102f74' }}>
-                  <div className="text-3xl font-bold" style={{ color: '#d4af37' }}>{agent.propertiesSold}+</div>
-                  <div className="text-sm" style={{ color: '#666' }}>Properties Sold</div>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">

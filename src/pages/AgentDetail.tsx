@@ -49,7 +49,6 @@ const AgentDetail = () => {
       phone: "+52 624 143 5555",
       email: "Don@bircabo.com",
       yearsExperience: 35,
-      propertiesSold: 2200,
       bio: "Don Weis is the visionary founder and broker of Baja International Realty, pioneering luxury real estate in Cabo San Lucas since the late 1980s...",
       certifications: [
         "Real Estate Broker",
@@ -69,8 +68,7 @@ const AgentDetail = () => {
       phone: "+52 624 127 6012",
       email: "robertvanpatten2@gmail.com",
       yearsExperience: 9,
-      propertiesSold: 85,
-      bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties and have successfully sold over 85 properties, totaling more than $35 million in sales. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
+      bio: "With nine years of real estate experience in Mexico, I specialize in high-yield investment properties. My deep understanding of Cabo San Lucas's investment landscape and strong negotiation skills have earned me recognition as a top producer in the market. I'm passionate about helping clients identify profitable opportunities and guiding them through every stage of the investment process with transparency, precision, and trust.",
       certifications: ["MLS Member"],
       languages: ["English"]
     },
@@ -84,7 +82,6 @@ const AgentDetail = () => {
      phone: "+52 664 188 8681",
      email: "alfonso@bircabo.com",
      yearsExperience: 18,
-     propertiesSold: 890,
      bio: "Alfonso is a sales manager with a proven track record of leading high-performing commercial teams and achieving exceptional closing rates. Specializing in real estate developments in progress and detailed market analysis, Alfonso helps developers reach their investment goals through clear communication, collaboration, and a results-driven approach that consistently delivers outstanding outcomes for investors throughout Baja California Sur.",
      certifications: ["REALTOR®", "CCIM", "CPM", "MLS Member"],
      languages: ["English", "Spanish"]
@@ -99,7 +96,6 @@ const AgentDetail = () => {
       phone: "+52 624 317 0297",
       email: "David@bircabo.com",
       yearsExperience: 25,
-      propertiesSold: 50,
       bio: "David has over 25 years of experience in the real estate industry, working in many aspects of the business throughout his distinguished career. Licensed in both California and Mexico, his analytical approach and comprehensive market knowledge deliver exceptional results in the Cabo San Lucas luxury real estate market. As a Certified International Property Specialist (C.I.P.S.®), Accredited Buyer's Representative (A.B.R.®), and Resort and Second-Home Property Specialist (R.S.P.S.®), David brings unparalleled expertise to every transaction. As David states: 'As an Ironman triathlete and marathon runner, you can be sure I will go the extra mile for you.'",
       certifications: ["REALTOR®", "NAR® Member", "C.I.P.S.®", "A.B.R.®", "R.S.P.S.®", "MLS Member"],
       languages: ["English"]
@@ -114,7 +110,6 @@ const AgentDetail = () => {
       phone: "+52 624 109 7909",
       email: "erika@bircabo.com",
       yearsExperience: 8,
-      propertiesSold: 60,
       bio: "My passion for luxury coastal living in Cabo San Lucas and my commitment to client satisfaction have made me one of the most sought-after agents in the region. I specialize in oceanfront estates and investment properties throughout Baja California Sur, offering comprehensive market analysis and personalized service to ensure every client finds the perfect property to match their vision and lifestyle.",
       certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
       languages: ["English", "Spanish"]
@@ -129,7 +124,6 @@ const AgentDetail = () => {
       phone: "+52 624 211 4879",
       email: "Hector@bircabo.com",
       yearsExperience: 2,
-      propertiesSold: 12,
       bio: "Real estate in Mexico should feel exciting, not overwhelming. I take pride in making every transaction simple, personal, and rewarding. With my background in numbers and market knowledge, I help clients see that buying a home is often better than keeping money in the bank, it's an investment that grows in value and brings lasting satisfaction. From our first conversation to handing you the keys, I'll be by your side with clear communication, data driven insight, and honest guidance to help you invest with confidence.",
       certifications: ["REALTOR®", "CCIM", "CRS", "MLS Member"],
       languages: ["English", "Spanish"]
@@ -145,7 +139,6 @@ const AgentDetail = () => {
      phoneSecondary: "+52 (612) 120-5289",
      email: "Susu@BIRCabo.com",
      yearsExperience: 22,
-     propertiesSold: 50,
      bio: "With decades of experience in Real Estate, Susu brings unmatched expertise and dedication to every client relationship. Living in Cabo San Lucas and La Paz full-time for six  years, has rewarded her with continuing knowledge on the ever expanding Baja market. Los Cabos has become a world renowned magnet for Billionaires and other investors to enjoy its unique lifestyle, customs, beauty, and high rate of returns on investment. Magically, Cabo has something for everyone's taste, budget, and financial goals. Whether it be helping clients find their dream home, marketing and selling their properties, flipping her own investments, or having the opportunities to stage and design hundreds of homes, she is all about full-service and results.",
      certifications: ["REALTOR®", "MLS Member", "US Real Estate License", "Interior Design Degree"],
      languages: ["English", "Spanish"],
@@ -160,7 +153,6 @@ const AgentDetail = () => {
       phone: "+52 624 264 3896",
       email: "mtortricardi@gmail.com",
       yearsExperience: 12,
-      propertiesSold: 50,
       bio: "As a trusted real estate advisor in Cabo San Lucas, Marisol specializes in identifying profitable investment and luxury property opportunities. Her data-driven approach and sharp negotiation skills give clients an edge in one of Mexico's most desirable markets. Investors turn to Marisol for guidance, confidence, and results that make every deal count.",
       certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
@@ -175,7 +167,6 @@ const AgentDetail = () => {
       phone: "+52 624 118 9512",
       email: "Cozbi@bajainternationalrealty.com",
       yearsExperience: 8,
-      propertiesSold: 105,
       bio: "I bring a strong track record of leading high performance, dedication, and genuine care to every real estate transaction in Cabo San Lucas. Specializing in family houses and condominiums, I guide first time buyers and growing families through each step of the home buying process with patience and expertise. My warm, client focused approach and meticulous attention to detail ensure a smooth, stress free experience from start to finish.",
       certifications: ["REALTOR®", "ABR", "SRS", "MLS Member"],
       languages: ["English", "Spanish"]
@@ -190,7 +181,6 @@ const AgentDetail = () => {
       phone: "+52 612 169 8328",
       email: "Edgar@bircabo.com",
       yearsExperience: 1,
-      propertiesSold: 4,
       bio: "Looking to invest in Cabo San Lucas? I'm your insider advantage. With a unique blend of analytical precision and real estate expertise developed under the guidance of industry veteran Bob Van Patten, I transform complex market data into clear, actionable investment opportunities. I've pioneered innovative digital platforms that give my clients unmatched transparency into property values, market trends, and investment potential across Cabo and Baja California Sur. My approach is simple: I empower you with the knowledge, insights, and local connections you need to invest confidently and smart in paradise.",
       certifications: ["REALTOR®", "MLS Member"],
       languages: ["English", "Spanish"]
@@ -206,12 +196,12 @@ const AgentDetail = () => {
         <title>{agent.name} | {agent.title} | Cabo San Lucas Real Estate Agent</title>
         <meta 
           name="description" 
-          content={`Meet ${agent.name}, ${agent.title} at Baja International Realty. ${agent.yearsExperience} years experience, ${agent.propertiesSold}+ properties sold. Specializing in ${agent.specialization}. Contact: ${agent.phone}`}
+          content={`Meet ${agent.name}, ${agent.title} at Baja International Realty. ${agent.yearsExperience} years experience. Specializing in ${agent.specialization}. Contact: ${agent.phone}`}
         />
         <link rel="canonical" href={`https://www.bircabo.com/agents/${agent.id}`} />
         <meta property="og:url" content={`https://www.bircabo.com/agents/${agent.id}`} />
         <meta property="og:title" content={`${agent.name} | ${agent.title} | Cabo San Lucas`} />
-        <meta property="og:description" content={`${agent.yearsExperience} years experience, ${agent.propertiesSold}+ properties sold. ${agent.specialization} specialist in Cabo San Lucas.`} />
+        <meta property="og:description" content={`${agent.yearsExperience} years experience. ${agent.specialization} specialist in Cabo San Lucas.`} />
         <meta property="og:type" content="profile" />
         <meta property="og:image" content={`https://www.bircabo.com${agent.image}`} />
         
@@ -375,14 +365,10 @@ const AgentDetail = () => {
                   </div>
 
                   {/* Stats */}
-                  <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="grid grid-cols-1 gap-4 mb-8 max-w-xs">
                     <div className="bg-secondary border border-border rounded-xl p-6 text-center">
                       <div className="text-5xl font-bold text-accent mb-2">{agent.yearsExperience}</div>
                       <div className="text-sm text-muted-foreground">Years Experience</div>
-                    </div>
-                    <div className="bg-secondary border border-border rounded-xl p-6 text-center">
-                      <div className="text-5xl font-bold text-accent mb-2">{agent.propertiesSold}+</div>
-                      <div className="text-sm text-muted-foreground">Properties Sold</div>
                     </div>
                   </div>
                 </div>
