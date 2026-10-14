@@ -3,14 +3,12 @@ import statsBackground from "@/assets/stats-bg.jpg";
 
 const StatsSection = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [counts, setCounts] = useState([0, 0, 0, 0]);
+  const [counts, setCounts] = useState([0, 0]);
   const sectionRef = useRef<HTMLElement>(null);
 
   const stats = [
     { number: 75, label: "Combined Years of\nExperience", suffix: "" },
-    { number: 1850, label: "Properties\nSold", suffix: "+" },
     { number: 100, label: "Committed to\nOur Clients", suffix: "%" },
-    { number: 800, label: "Combined Sales\nSince 1987", suffix: "M+", prefix: "$", isDecimal: true },
   ];
 
   // Intersection Observer to detect when section is visible
@@ -69,15 +67,9 @@ const StatsSection = () => {
   const formatNumber = (num: number, index: number) => {
     const stat = stats[index];
     
-    // For decimal numbers (like 1.2B), format with one decimal place
-    if (stat.isDecimal) {
-      const formattedNum = num.toFixed(1);
-      return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
-    }
-    
-    // For whole numbers, use standard formatting
+    // Use standard formatting for the remaining figures.
     const formattedNum = Math.floor(num).toLocaleString();
-    return `${stat.prefix || ""}${formattedNum}${stat.suffix || ""}`;
+    return `${formattedNum}${stat.suffix || ""}`;
   };
 
   return (
