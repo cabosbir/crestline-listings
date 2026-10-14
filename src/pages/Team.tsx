@@ -82,19 +82,28 @@ const agents = [
     languages: ["English", "Spanish"]
   },
   {
-    id: 2,
-    slug: "erika",
-    name: "Erika Aispuro",
-    title: "Luxury Property Specialist",
-    specialization: "Oceanfront Estates",
-    image: "/fotos%20de%20agentes/erika-aispuro.jpg",
-    phone: "+52 624 109 7909",
-    email: "erika@bircabo.com",
-    yearsExperience: 8,
-    propertiesSold: 60,
-    bio: "My passion for luxury coastal living in Cabo San Lucas has made me one of the most sought-after agents in the region.",
-    certifications: ["REALTOR®", "GRI", "ABR", "MLS Member"],
-    languages: ["English", "Spanish"]
+    id: 16,
+    slug: "kenny",
+    name: "Kenneth “Kenny” Gehlhoff",
+    title: "Real Estate Advisor",
+    specialization: "Cerritos · El Pescadero · Todos Santos",
+    image: "/fotos%20de%20agentes/kenneth-gehlhoff.jpeg",
+    profileHref: "/kenneth-gehlhoff.html",
+    bio: "Hi, I’m Kenny Gehlhoff.",
+    phone: "+52 612 231 1639",
+    email: "sweetdreamsbaja@gmail.com",
+  },
+  {
+    id: 17,
+    slug: "matt",
+    name: "Matthew “Matt” Rosenberg",
+    title: "Real Estate Advisor",
+    specialization: "Cerritos · El Pescadero · Todos Santos",
+    image: "/fotos%20de%20agentes/matthew-rosenberg.png",
+    profileHref: "/matthew-rosenberg.html",
+    bio: "I’m Matt Rosenberg with Baja International Realty. After five years of living and working in Mexico, I’ve built a life here—and I love helping others find their place in it.",
+    phone: "+1 (305) 462-7132",
+    email: "mattyrose88@gmail.com",
   },
   {
     id: 5,
@@ -127,21 +136,6 @@ const agents = [
     bio: "With decades of experience in Real Estate, Susu brings unmatched expertise and dedication to every client relationship.",
     certifications: ["REALTOR®", "MLS Member"],
     languages: ["English", "Spanish"]
-  },
-  {
-    id: 14,
-    slug: "erika-graciano",
-    name: "Erika Graciano",
-    title: "Real Estate Agent & Administrative Specialist",
-    specialization: "Client Relations & Property Management",
-    image: "/fotos%20de%20agentes/ErikaGraciano.jpg",
-    phone: "+52 624 157 2154",
-    email: "erikag@bircabo.com",
-    yearsExperience: 15,
-    propertiesSold: 150,
-    bio: "Professional with extensive experience in administrative tasks and organizational skills. With solid knowledge of document management and customer service, Erika brings a unique perspective to real estate in Cabo San Lucas. Her background in administrative management and HR positions her perfectly to guide clients through the complex process of buying or selling property in Los Cabos.",
-    certifications: ["Real Estate Agent", "AMPI® Member", "Administrative Management Specialist"],
-    languages: ["Spanish", "English"]
   },
   {
     id: 7,
@@ -332,14 +326,14 @@ const Team = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-      <title>Meet Our Expert Cabo San Lucas Real Estate Team | Baja International Realty</title>
+      <title>Meet Our Los Cabos & Pacific Coast Real Estate Team | BIR</title>
       <meta 
         name="description" 
-        content="Meet our team of 13 expert real estate advisors in Cabo San Lucas. Led by founder Don Weis with 35+ years experience. 75+ combined years, 1,850+ properties sold, $800M+ in sales."
+        content="Meet Baja International Realty’s agents for Los Cabos, Cerritos, El Pescadero and Todos Santos. Read their bios and find local guidance for your property search."
       />
       <link rel="canonical" href="https://www.bircabo.com/team" />
-      <meta property="og:title" content="Expert Cabo San Lucas Real Estate Team | Baja International Realty" />
-      <meta property="og:description" content="13 professional agents with 75+ years combined experience. $800M+ in sales since 1987." />
+      <meta property="og:title" content="Los Cabos & Pacific Coast Real Estate Team | BIR" />
+      <meta property="og:description" content="Meet BIR’s real estate advisors serving Los Cabos, Cerritos, El Pescadero and Todos Santos." />
       <meta property="og:url" content="https://www.bircabo.com/team" />
       <meta property="og:type" content="website" />
     </Helmet>
@@ -350,10 +344,10 @@ const Team = () => {
       <section className="pt-32 pb-20 bg-gradient-to-br from-primary via-primary-dark to-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-             BIR Cabo San Lucas Real Estate Team
+             BIR Real Estate Team
           </h1>
           <p className="text-xl max-w-3xl mx-auto text-primary-foreground/90">
-            Our expert team is here to help you find the perfect property in Cabo San Lucas.
+            Local guidance in Los Cabos, Cerritos, El Pescadero and Todos Santos.
           </p>
         </div>
       </section>
@@ -389,7 +383,7 @@ const Team = () => {
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-foreground mb-4">Our Expert Advisors</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-2">
-                Each member of our team brings unique expertise<br />and a commitment to exceptional service in Cabo San Lucas
+                Each member of our team brings unique expertise<br />and a commitment to personal service across Los Cabos and the Pacific coast
               </p>
               <p className="text-sm text-muted-foreground">
                 {agents.filter(agent => agent.active !== false).length} expert agents ready to assist you
@@ -412,6 +406,7 @@ const Team = () => {
                       onViewBio={() => handleViewBio(agent.id)}
                       showStats={false}
                       landingPageSlug={agent.slug}
+                      profileHref={agent.profileHref}
                     />
                   </div>
                 ))}
@@ -425,7 +420,7 @@ const Team = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to Work With Us?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Let us help you find your dream property in Cabo San Lucas or sell your current home for the best possible price.
+            Let us help you buy or sell property in Los Cabos, Cerritos, El Pescadero and Todos Santos.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
