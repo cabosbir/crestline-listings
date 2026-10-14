@@ -8,7 +8,6 @@ export interface AgentInfo {
   title: string;
   specialization: string;
   yearsExperience: number;
-  propertiesSold: number;
   phone: string;
   phoneSecondary?: string;
   email: string;
@@ -51,9 +50,6 @@ export interface CompanyInfo {
   };
   stats: {
     combinedYearsExperience: string;
-    propertiesSold: string;
-    totalSalesVolume: string;
-    familiesServed: string;
     totalAgents: number;
   };
   memberships: string[];
@@ -94,9 +90,6 @@ export const COMPANY_INFO: CompanyInfo = {
   },
   stats: {
     combinedYearsExperience: "75+",
-    propertiesSold: "1,850+",
-    totalSalesVolume: "$800M+",
-    familiesServed: "2,200+",
     totalAgents: 13
   },
   memberships: [
@@ -114,7 +107,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Founder & Broker",
     specialization: "Luxury Properties & Development",
     yearsExperience: 35,
-    propertiesSold: 2200,
     phone: "+52 624 143 5555",
     email: "Don@bircabo.com",
     slug: "don",
@@ -127,20 +119,18 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Senior Real Estate Advisor",
     specialization: "High Yield Investment Properties",
     yearsExperience: 9,
-    propertiesSold: 85,
     phone: "+52 624 127 6012",
     email: "robertvanpatten2@gmail.com",
     slug: "bob",
     languages: ["English"],
     certifications: ["MLS Member"],
-    bio: "Specializes in high-yield investment properties with over $35 million in sales."
+    bio: "Specializes in high-yield investment properties."
   },
   {
     name: "Alfonso Puente",
     title: "Sales Manager & Commercial Real Estate Expert",
     specialization: "Real Estate Developments & Market Analysis",
     yearsExperience: 18,
-    propertiesSold: 890,
     phone: "+52 664 188 8681",
     email: "alfonso@bircabo.com",
     slug: "alfonso",
@@ -153,7 +143,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Real Estate Advisor",
     specialization: "Luxury Properties",
     yearsExperience: 10,
-    propertiesSold: 50,
     phone: "+52 624 317 0297",
     email: "David@bircabo.com",
     slug: "david",
@@ -166,7 +155,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Luxury Property Specialist",
     specialization: "Oceanfront Estates",
     yearsExperience: 8,
-    propertiesSold: 60,
     phone: "+52 624 109 7909",
     email: "erika@bircabo.com",
     slug: "erika",
@@ -179,7 +167,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Investment Property Advisor",
     specialization: "Investment & Portfolio",
     yearsExperience: 2,
-    propertiesSold: 12,
     phone: "+52 624 211 4879",
     email: "Hector@bircabo.com",
     slug: "hector",
@@ -192,7 +179,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Luxury Real Estate Advisor",
     specialization: "Staging and Design",
     yearsExperience: 11,
-    propertiesSold: 101,
     phone: "+1 (808) 226 6120",
     phoneSecondary: "+52 (612) 120 5289",
     email: "Susu@bircabo.com",
@@ -206,7 +192,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Real Estate Agent & Administrative Specialist",
     specialization: "Client Relations & Property Management",
     yearsExperience: 15,
-    propertiesSold: 150,
     phone: "+52 624 157 2154",
     email: "erikag@bircabo.com",
     slug: "erika-graciano",
@@ -219,7 +204,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Real Estate Advisor",
     specialization: "Luxury Properties",
     yearsExperience: 12,
-    propertiesSold: 50,
     phone: "+52 624 264 3896",
     email: "mtortricardi@gmail.com",
     slug: "marisol",
@@ -232,7 +216,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Residential Specialist",
     specialization: "Family Homes & Condos",
     yearsExperience: 8,
-    propertiesSold: 105,
     phone: "+52 624 118 9512",
     email: "Cozbi@bajainternationalrealty.com",
     slug: "cozbi",
@@ -245,7 +228,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Real Estate Advisor",
     specialization: "Luxury Properties",
     yearsExperience: 1,
-    propertiesSold: 4,
     phone: "+52 612 169 8328",
     email: "Edgar@bircabo.com",
     slug: "edgar",
@@ -258,7 +240,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Real Estate Advisor",
     specialization: "Residential Properties & Vacation Homes",
     yearsExperience: 5,
-    propertiesSold: 40,
     phone: "+52 624 135 8900",
     email: "fernando@bircabo.com",
     slug: "fernando-cabrera",
@@ -271,7 +252,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Senior Real Estate Advisor",
     specialization: "Residential, Commercial & Investment Properties",
     yearsExperience: 15,
-    propertiesSold: 200,
     phone: "+1 858-204-3115",
     email: "bonnie@bircabo.com",
     slug: "bonnie-renee",
@@ -284,7 +264,6 @@ export const TEAM_INFO: AgentInfo[] = [
     title: "Luxury Property Specialist",
     specialization: "Pedregal & Luxury Vacation Rentals",
     yearsExperience: 30,
-    propertiesSold: 250,
     phone: "+1 858 964 4629",
     email: "cabocharlie79@gmail.com",
     slug: "charles-jones",
@@ -331,5 +310,5 @@ export const WHY_WORK_WITH_US = {
   family: "We're a family-run business, which means every client gets personalized attention. You're not just another transaction to us – we treat your property search with the same care we'd give our own family.",
   experience: "Our team has decades of combined experience in Los Cabos real estate. Many of our agents have successful careers in the US and Canada before specializing here, so we understand what international buyers need.",
   innovation: "We use modern technology and AI tools to make your search easier. Our marketing team knows how to showcase properties professionally, and our systems ensure you get timely updates throughout the process.",
-  results: "We've helped over 2,200 families find properties in Los Cabos, with more than $800M in sales since the late 1980s. Our track record speaks for itself."
+  results: "We help buyers and sellers compare properties and navigate the Los Cabos market with local guidance and personal service."
 };

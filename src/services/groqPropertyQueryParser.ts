@@ -77,7 +77,7 @@ export async function parsePropertyQuery(
 - Address: Blvd. Marina 14, Plaza Nautica local A6, Colonia Centro, Cabo San Lucas, BCS 23450
 - Google Maps: https://maps.app.goo.gl/DsyfVAHBARUKDJAX8
 - Office Hours: Mon-Fri 9AM-6PM PT, Sat-Sun 10AM-4PM PT
-- Stats: 13 agents, 75+ years combined experience, 1,850+ properties sold, $800M+ sales, 2,200+ families served
+- Stats: 13 agents, 75+ years combined experience
 - Memberships: MLS-BCS Founding Member, AMPI, International Realtor®
 - Featured On: CNN, ABC 20/20, National Radio
 - Services: Residential, Commercial, Land, Luxury Properties, Investment Properties, Property Management
