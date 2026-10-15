@@ -1,0 +1,53 @@
+.pacific-guide .pacific-hero{padding:18px 0 22px;background:#f3f5f7}
+.pacific-hero .breadcrumbs{margin-bottom:12px}
+.pacific-hero h1{font-size:clamp(30px,3.5vw,44px);margin:8px 0}
+.pacific-hero .subtitle{font-size:17px;margin:0 0 12px}
+.pacific-jumps{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:14px;font-weight:650}
+.pacific-start{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:38px;padding-top:30px;padding-bottom:34px;align-items:start}
+.pacific-start h2{font-size:29px;line-height:1.2;margin:0 0 15px}
+.pacific-start p{font-size:15px;line-height:1.65;margin-bottom:16px}
+.pacific-start .intro{font-size:17px;line-height:1.65}
+.pacific-guide .pacific-quick{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 12px}
+.pacific-quick a{padding:12px 10px;font-size:14px;text-align:center}
+.pacific-all{width:100%;margin-bottom:20px}
+.pacific-community-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pacific-community-card{padding:18px;border:1px solid #dce3e9;border-radius:7px;background:#f7f9fa;min-width:0}
+.pacific-community-card h3{font-size:24px;margin:0 0 10px}
+.pacific-community-card p{font-size:14px;line-height:1.6;margin-bottom:12px}
+.pacific-card-links{display:grid;gap:9px;font-size:13px;line-height:1.5;font-weight:600}
+.pacific-living{padding-left:28px;border-left:1px solid #dce3e9}
+.pacific-living .guide-section.first{margin:0;padding:0}
+.pacific-weather{margin-top:24px;border-top:1px solid #dce3e9;padding-top:16px}
+.pacific-guide summary{cursor:pointer;font-weight:650;color:#173b66;line-height:1.55}
+.pacific-weather-content{padding-top:22px}
+.pacific-weather .seasons{grid-template-columns:1fr;gap:10px}
+.pacific-weather .seasons div{padding:16px}
+.pacific-weather h3{font-size:23px}
+.pacific-guide .pacific-search-section{padding:30px 0 40px;background:#f7f9fa;border-top:1px solid #e1e6ec}
+.pacific-search-section h2{font-size:31px;margin-bottom:12px}
+.pacific-search-intro{max-width:920px;font-size:16px}
+.pacific-search-tools{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:30px;align-items:start;margin:24px 0}
+.pacific-guide .pacific-filters{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin:0;padding:24px;background:#fff;border:1px solid #dce3e9;border-radius:7px}
+.pacific-filters label{font-size:14px;min-width:0}
+.pacific-filters select{width:100%;min-width:0;font-size:15px;min-height:44px;background:white}
+.pacific-filters button{align-self:end;min-height:44px}
+.pacific-more-filters{grid-column:1/-1;margin:0;border-top:1px solid #e1e6ec;padding-top:12px}
+.pacific-more-filters>div{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-top:16px}
+.pacific-more-filters [hidden]{display:none}
+.pacific-search-guide{background:#eef3f8;border-left:3px solid #c4a05b;padding:22px 24px;font-size:15px;line-height:1.65}
+.pacific-search-guide h2{font-size:26px}
+.pacific-search-guide ol{padding-left:22px;margin:0 0 15px}
+.pacific-search-guide li{padding-left:3px;margin-bottom:12px}
+.pacific-search-guide details{margin:12px 0}
+.pacific-search-guide details p{margin:12px 0;font-size:14px}
+.pacific-search-guide .fine{font-size:13px;margin-bottom:0}
+.pacific-guide .ov-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pacific-guide .ov-status{font-size:20px;margin:24px 0}
+.pacific-guide .ov-sort-toggle{font:700 15px/1.4 Inter,system-ui,sans-serif;min-height:44px;padding:10px 15px;background:#173b66;color:white;border:0;border-radius:5px;cursor:pointer}
+.pacific-guide .ov-checked{display:block;width:100%;font-size:13px}
+.pacific-guide #properties,.pacific-guide #living,.pacific-guide #weather{scroll-margin-top:20px}
+.pacific-guide #ov-status{scroll-margin-top:20px}
+.pacific-anchor{display:block}
+.pacific-guide :is(summary,select,button):focus-visible{outline:3px solid #ab792d;outline-offset:3px}
+@media(max-width:900px){.pacific-start{gap:24px}.pacific-community-grid{grid-template-columns:1fr}.pacific-living{padding-left:20px}.pacific-search-tools{gap:20px}.pacific-guide .pacific-filters{padding:17px;gap:12px}.pacific-search-guide{padding:18px}.pacific-guide .ov-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.pacific-start,.pacific-search-tools{grid-template-columns:1fr}.pacific-start{padding-top:24px;gap:26px}.pacific-living{padding:24px 0 0;border-left:0;border-top:1px solid #dce3e9}.pacific-start h2,.pacific-search-section h2{font-size:27px}.pacific-community-grid{grid-template-columns:1fr 1fr;gap:10px}.pacific-community-card{padding:14px}.pacific-community-card h3{font-size:22px}.pacific-community-card p{font-size:13px}.pacific-guide .pacific-quick a{font-size:12px;padding:10px 7px}.pacific-search-guide h2{font-size:25px}.pacific-guide .ov-grid{grid-template-columns:1fr}.pacific-filters select{font-size:14px}.pacific-more-filters>div{grid-template-columns:1fr}.pacific-jumps{font-size:13px;gap:8px 16px}}
