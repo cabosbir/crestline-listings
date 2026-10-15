@@ -1,0 +1,10 @@
+/* El Tezal additions are scoped to this guide. */
+.tezal-guide .tezal-quick-nav{margin:16px 0 0;padding:0;gap:12px 24px;font-size:15px}
+.tezal-guide .tezal-listing-note{font-size:14px;line-height:1.55;margin:10px 0 0;max-width:850px;color:#42556b}
+.tezal-guide .tezal-check-grid{margin:26px 0}
+.tezal-guide .tezal-check-grid li{margin-bottom:12px;line-height:1.65}
+.tezal-guide #buyer-checks .buyer-box,.tezal-guide #future-views .buyer-box{padding:26px}
+.tezal-guide #water-costs .buyer-callout{margin-top:24px}
+.tezal-guide #water-costs .buyer-callout p:last-child{margin-bottom:0}
+.tezal-guide .buyer-box a{font-weight:700}
+@media(max-width:620px){.tezal-guide .tezal-quick-nav{font-size:13px;gap:10px 16px}.tezal-guide .tezal-listing-note{font-size:13px}.tezal-guide #buyer-checks .buyer-box,.tezal-guide #future-views .buyer-box{padding:20px}}
