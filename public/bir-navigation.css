@@ -22,3 +22,11 @@ html{scroll-padding-top:190px}
  .bir-nav-links{max-height:calc(100dvh - 185px)}
  html{scroll-padding-top:190px}
 }
+
+/* Visible language access, including when visitors arrive at a section anchor. */
+.bir-language-menu>summary{border:1px solid #183b61;border-radius:5px;padding:11px 13px;background:#f0f5f9;color:#183b61;font-size:15px;min-height:44px;display:flex;align-items:center;gap:4px}
+.bir-language-menu[open]>summary,.bir-language-menu>summary:hover{background:#e0eaf3}
+.bir-language-menu>.bir-nav-dropdown{left:auto;right:0;width:310px;max-width:calc(100vw - 28px);z-index:70;text-align:left}
+.bir-language-menu>.bir-nav-dropdown a{font-size:15px;line-height:1.5;white-space:normal}
+@media(max-width:900px){.bir-language-menu>.bir-nav-dropdown{position:absolute;top:100%;border:1px solid #dce3e8;box-shadow:0 14px 30px #12324c22;max-height:calc(100dvh - 200px);overflow-y:auto;margin:0;padding:10px}}
+@media(max-width:640px){.bir-nav-actions{gap:8px}.bir-language-menu{position:static}.bir-language-menu>.bir-nav-dropdown{left:14px;right:14px;top:100%;width:auto;max-width:none}.bir-language-menu>summary{padding:10px;font-size:14px}}
