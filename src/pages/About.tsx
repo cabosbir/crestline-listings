@@ -363,7 +363,7 @@ const About = () => {
             </div>
             <div className="story-image relative">
               <a 
-                href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
+                href="https://www.google.com/maps/search/?api=1&query=Baja+International+Realty&query_place_id=ChIJcTwoxOVKr4YRS3pyN5KCw3E" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="block h-full group"

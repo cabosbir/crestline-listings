@@ -23,7 +23,7 @@ const Footer = () => {
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: '#0f3074' }} />
                 <a 
-                  href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
+                  href="https://www.google.com/maps/search/?api=1&query=Baja+International+Realty&query_place_id=ChIJcTwoxOVKr4YRS3pyN5KCw3E" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-sm text-white/80 hover:text-white transition-fast"
