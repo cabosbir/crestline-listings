@@ -188,7 +188,7 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Address</h3>
                     <a 
-                      href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8" 
+                      href="https://www.google.com/maps/search/?api=1&query=Baja+International+Realty&query_place_id=ChIJcTwoxOVKr4YRS3pyN5KCw3E" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-muted-foreground text-sm hover:text-accent transition-fast"
@@ -484,7 +484,7 @@ const Contact = () => {
           </div>
           <div className="text-center mt-6">
             <a
-              href="https://maps.app.goo.gl/DsyfVAHBARUKDJAX8"
+              href="https://www.google.com/maps/dir/?api=1&destination=Baja+International+Realty&destination_place_id=ChIJcTwoxOVKr4YRS3pyN5KCw3E"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-accent hover:text-accent/80 font-semibold transition-fast"
