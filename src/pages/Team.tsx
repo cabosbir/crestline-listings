@@ -296,7 +296,7 @@ const Team = () => {
                       onViewBio={() => handleViewBio(agent.id)}
                       showStats={false}
                       landingPageSlug={agent.slug}
-                      profileHref={agent.profileHref}
+                      profileHref={agent.profileHref || `/${agent.slug}`}
                     />
                   </div>
                 ))}

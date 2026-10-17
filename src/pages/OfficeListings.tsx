@@ -207,6 +207,7 @@ const OfficeListings = () => {
           name="description"
           content="Browse our active office listings in Cabo San Lucas and the Cabo Corridor. Properties for sale by Baja International Realty."
         />
+        <link rel="canonical" href="https://www.bircabo.com/office-listings" />
       </Helmet>
       <Navbar />
 
