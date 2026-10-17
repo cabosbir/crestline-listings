@@ -6,7 +6,7 @@
  if(['mlsArea','mlsCommunity','subdivision','community','view'].some(key=>params.get(key)))disclosure.open=true;
  const panel=document.getElementById('property-filter-panel');
  const narrow=matchMedia('(max-width:900px)');
- const hasFilters=['area','price','beds','size','kind','golf','sort','mlsArea','mlsCommunity','subdivision','community','view'].some(key=>params.get(key));
+ const hasFilters=['area','price','beds','size','maxSize','kind','golf','sort','mlsArea','mlsCommunity','subdivision','community','view'].some(key=>params.get(key));
  if(narrow.matches&&!hasFilters)panel.open=false;
  narrow.addEventListener('change',event=>{if(!event.matches)panel.open=true;});
 })();
