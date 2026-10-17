@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
@@ -193,36 +193,8 @@ const AgentDetail = () => {
     return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>{agent.name} | {agent.title} | Cabo San Lucas Real Estate Agent</title>
-        <meta 
-          name="description" 
-          content={`Meet ${agent.name}, ${agent.title} at Baja International Realty. ${agent.yearsExperience} years experience. Specializing in ${agent.specialization}. Contact: ${agent.phone}`}
-        />
-        <link rel="canonical" href={`https://www.bircabo.com/agents/${agent.id}`} />
-        <meta property="og:url" content={`https://www.bircabo.com/agents/${agent.id}`} />
-        <meta property="og:title" content={`${agent.name} | ${agent.title} | Cabo San Lucas`} />
-        <meta property="og:description" content={`${agent.yearsExperience} years experience. ${agent.specialization} specialist in Cabo San Lucas.`} />
-        <meta property="og:type" content="profile" />
-        <meta property="og:image" content={`https://www.bircabo.com${agent.image}`} />
-        
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "name": agent.name,
-            "jobTitle": agent.title,
-            "worksFor": {
-              "@type": "RealEstateAgent",
-              "name": "Baja International Realty"
-            },
-            "telephone": agent.phone,
-            "email": agent.email,
-            "image": `https://www.bircabo.com${agent.image}`,
-            "url": `https://www.bircabo.com/agents/${agent.id}`,
-            "alumniOf": agent.certifications,
-            "knowsLanguage": agent.languages
-          })}
-        </script>
+        <title>Agent Not Found | Baja International Realty</title>
+        <meta name="robots" content="noindex, follow" />
       </Helmet>
       
       <FloatingContact />
@@ -242,8 +214,23 @@ const AgentDetail = () => {
     );
   }
 
+  if (agent.slug === "susu") {
+    return <Navigate to="/team" replace />;
+  }
+
+  const canonicalUrl = `https://www.bircabo.com/${agent.slug}`;
+
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>{agent.name} | Baja International Realty</title>
+        <meta name="description" content={`Meet ${agent.name}, ${agent.title} at Baja International Realty. Explore their profile and contact details for real estate guidance in Los Cabos.`} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:title" content={`${agent.name} | Baja International Realty`} />
+        <meta property="og:type" content="profile" />
+        <meta property="og:image" content={`https://www.bircabo.com${agent.image}`} />
+      </Helmet>
       <Navbar />
       <FloatingContact />
 

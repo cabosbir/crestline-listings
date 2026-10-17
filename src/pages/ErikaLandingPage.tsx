@@ -245,7 +245,7 @@ const ErikaLandingPage = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const canonicalUrl = 'https://www.bircabo.com/erika-aispuro';
+  const canonicalUrl = 'https://www.bircabo.com/erika';
   
   // ⭐ Initialize from saved state if returning
   const getInitialPage = () => {

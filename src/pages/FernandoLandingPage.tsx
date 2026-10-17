@@ -138,7 +138,7 @@ const FernandoLandingPage = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const canonicalUrl = 'https://www.bircabo.com/fernando';
+  const canonicalUrl = 'https://www.bircabo.com/fernando-cabrera';
   
   const getInitialPage = () => {
     if (typeof window !== 'undefined') {
