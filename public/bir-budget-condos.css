@@ -1,0 +1,9 @@
+/* Compact price routes keep the listing photos close to the page introduction. */
+.budget-links{display:flex;flex-wrap:wrap;align-items:center;gap:9px 12px;margin:12px 0 0}
+.budget-links a{display:inline-flex;align-items:center;min-height:42px;padding:9px 13px;border:1px solid #9dafc0;border-radius:5px;background:#fff;color:#173b66;font:700 14px/1.35 Inter,system-ui,sans-serif;text-decoration:none}
+.budget-links a:hover{background:#e8eef4}.budget-links a:focus-visible{outline:3px solid #ab792d;outline-offset:3px}
+.budget-links .budget-label{font:700 14px/1.4 Inter,system-ui,sans-serif;color:#173b66}
+.budget-next{padding:22px 0}.budget-next h2{font-size:26px;margin:0}
+.budget-directory{padding:28px 0;background:#eef3f6}.budget-directory h2{font-size:28px;margin:0 0 10px}.budget-directory p{margin:0;max-width:790px}
+.budget-condos .property-results-heading h2{font-size:23px}
+@media(max-width:620px){.budget-links{gap:8px}.budget-links a{font-size:13px;padding:9px 10px}.budget-links .budget-label{width:100%}.budget-condos .property-results-heading h2{font-size:21px}}
