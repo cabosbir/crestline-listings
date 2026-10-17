@@ -183,7 +183,7 @@ const Index = () => {
           <h2 id="focused-search-title" className="text-2xl sm:text-3xl font-bold text-blue-950">Find properties by budget, area or lifestyle</h2>
           <p className="mt-3 text-lg text-slate-700">Start with a price range, an ocean view or one of nine areas. Browse current properties, compare community guides and ask Don to help narrow your choices.</p>
           <nav aria-label="Focused property searches" className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/property-guides.html#price-searches">Search by price · completed properties →</a>
+            <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/property-guides.html#price-searches">Search by price →</a>
             <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/property-guides.html#ocean-views">Ocean-view properties · 9 areas →</a>
             <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/los-cabos-golf-properties.html#compare-golf">Golf communities &amp; memberships →</a>
             <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/beachfront-properties-for-sale-los-cabos.html#ov-status">Beachfront properties →</a>
