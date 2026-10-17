@@ -19,7 +19,8 @@ export function currentRows(data,config,now=Date.now()){
   (x.PropertyType==='Land'||x.General_sp_Description_co_Construction==='Completed')&&
   (config.golf?golfIds(x).length>0:matchesScope(x,config.scope))&&
   (!config.water||WATER_VIEWS.includes(x.General_sp_Description_co_Primary_sp_View))&&
-  (!config.frontage||x.General_sp_Description_co_Primary_sp_View==='Oceanfront')
+  (!config.frontage||x.General_sp_Description_co_Primary_sp_View==='Oceanfront')&&
+  (config.maxPriceExclusive==null||(Number.isFinite(x.ListPrice)&&x.ListPrice>0&&x.ListPrice<config.maxPriceExclusive))
  ).map(x=>({key:x.ListingKey,mls:x.ListingId,kind:x.PropertyType,area:x.City,...collectionLocation(x),
   name:x.InternetAddressDisplayYN===false?'Property · address on request':x.UnparsedAddress||x.SubdivisionName||'Property details',
   community:x.InternetAddressDisplayYN===false?'Address on request':x.SubdivisionName||'Subdivision on request',
