@@ -5,8 +5,8 @@
 .budget-links .budget-label{font:700 14px/1.4 Inter,system-ui,sans-serif;color:#173b66}
 .budget-next{padding:22px 0}.budget-next h2{font-size:26px;margin:0}
 .budget-directory{padding:28px 0;background:#eef3f6}.budget-directory h2{font-size:28px;margin:0 0 10px}.budget-directory p{margin:0;max-width:790px}
-:is(.budget-condos,.budget-houses) .property-results-heading h2{font-size:23px}
-@media(max-width:620px){.budget-links{gap:8px}.budget-links a{font-size:13px;padding:9px 10px}.budget-links .budget-label{width:100%}:is(.budget-condos,.budget-houses) .property-results-heading h2{font-size:21px}}
+:is(.budget-condos,.budget-houses,.budget-land) .property-results-heading h2{font-size:23px}
+@media(max-width:620px){.budget-links{gap:8px}.budget-links a{font-size:13px;padding:9px 10px}.budget-links .budget-label{width:100%}:is(.budget-condos,.budget-houses,.budget-land) .property-results-heading h2{font-size:21px}}
 
 /* Group budget routes without changing listing filters or result layout. */
 .budget-links a.budget-featured{background:#173b66;color:#fff;border-color:#173b66}.budget-links a.budget-featured:hover{background:#284f7d}.budget-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.budget-group{padding:16px;background:white;border:1px solid #c8d4df;border-radius:7px}.budget-group h4{margin:0;font:700 18px/1.4 Inter,system-ui,sans-serif}.budget-group .budget-links{margin-top:12px}@media(max-width:700px){.budget-groups{grid-template-columns:1fr}}
@@ -14,3 +14,5 @@
 .condos-browse .budget-links[aria-label="Condo price and view searches"]{gap:8px}
 
 .budget-directory h3{margin:22px 0 12px}
+
+.budget-search-note{font-size:14px;line-height:1.5;margin:10px 0 0;color:#42556b}.budget-land .property-main-filters{gap:12px}

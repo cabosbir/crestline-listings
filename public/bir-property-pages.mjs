@@ -28,10 +28,10 @@ export function currentRows(data,config,now=Date.now()){
   lotM2:Number.isFinite(x.General_sp_Description_co_Lot_sp_M2)&&x.General_sp_Description_co_Lot_sp_M2>0?x.General_sp_Description_co_Lot_sp_M2:null,
   view:x.General_sp_Description_co_Primary_sp_View==='Select One'?'':x.General_sp_Description_co_Primary_sp_View||'',office:x.ListOfficeName||'',golf:golfIds(x)}));
 }
-export function filterRows(rows,{kind='',golf='',price='all',beds='0',size='0',view='',sort='price-desc',...location}={}){
+export function filterRows(rows,{kind='',golf='',price='all',beds='0',size='0',maxSize='0',view='',sort='price-desc',...location}={}){
  const range=price==='all'?null:price.split('-').map(Number);
  return sortByPrice(rows.filter(x=>(!kind||x.kind===kind)&&(!golf||x.golf.includes(golf))&&(!range||(x.price!==null&&x.price>=range[0]&&x.price<range[1]))&&
-  (!Number(beds)||(x.kind!=='Land'&&x.beds!=null&&x.beds>=Number(beds)))&&(!Number(size)||(x.lotM2!==null&&x.lotM2>=Number(size)))&&(!view||x.view===view)&&matchesCollectionLocation(x,location)),sort);
+  (!Number(beds)||(x.kind!=='Land'&&x.beds!=null&&x.beds>=Number(beds)))&&(!Number(size)||(x.lotM2!==null&&x.lotM2>=Number(size)))&&(!Number(maxSize)||(x.lotM2!==null&&x.lotM2<=Number(maxSize)))&&(!view||x.view===view)&&matchesCollectionLocation(x,location)),sort);
 }
 export function requestPayload(form,config){return {name:String(form.get('name')||'').trim(),email:String(form.get('email')||'').trim(),phone:'',inquiryType:'buying',
  propertyType:config.types?.length===1?({Condos:'condo',Houses:'house',Land:'land'}[config.types[0]]):'',preferredAgent:'Don Weis',agentEmail:'don@bircabo.com',website:String(form.get('website')||''),
@@ -44,6 +44,7 @@ if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
  if(!simpleListings)setupPriceSort(status,document.getElementById('ov-sort'));
  const details=setupPropertyDetails({completedOnly:true,returnLabel:'Back to your results'}),photos=new Map();let rows=[],limit=12,busy=false,expiry,version=0,checked='';
  const controls=[...COLLECTION_LOCATION_FIELDS,['kind','ov-kind',''],['golf','ov-golf',''],['price','ov-price','all'],['beds','ov-beds','0'],['size','ov-size','0'],['view','ov-view',''],['sort','ov-sort',simpleListings?'price-asc':'price-desc']];
+ if(document.getElementById('ov-max-size'))controls.push(['maxSize','ov-max-size','0']);
  const choices=()=>Object.fromEntries(controls.map(([key,id,fallback])=>[key,simpleListings?fallback:document.getElementById(id).value]));
  const locationRows=()=>rows.filter(x=>(!document.getElementById('ov-kind').value||x.kind===document.getElementById('ov-kind').value)&&(!document.getElementById('ov-golf').value||x.golf.includes(document.getElementById('ov-golf').value)));
  const locations=setupCollectionLocations(locationRows);
