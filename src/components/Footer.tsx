@@ -38,19 +38,19 @@ const Footer = () => {
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 flex-shrink-0" style={{ color: '#0f3074' }} />
                 <a 
-                  href="tel:+526241435555" 
+                  href="https://wa.me/526241296245" target="_blank" rel="noopener" 
                   className="text-sm text-white/80 hover:text-white transition-fast"
                 >
-                  +52 624 143 5555
+                  WhatsApp
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 flex-shrink-0" style={{ color: '#0f3074' }} />
                 <a 
-                  href="mailto:info@bircabo.com" 
+                  href="#bir-inquiry" data-bir-inquiry 
                   className="text-sm text-white/80 hover:text-white transition-fast"
                 >
-                  info@bircabo.com
+                  Send an inquiry
                 </a>
               </div>
             </div>
