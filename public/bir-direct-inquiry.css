@@ -1,0 +1,28 @@
+.bir-direct-form{position:relative;margin-top:24px;min-width:0;text-align:left;font:16px/1.5 Arial,sans-serif;color:#fff}
+.bir-direct-form *{box-sizing:border-box}
+.bir-direct-form .bir-form-intro{font-size:16px;margin:0 0 20px;color:inherit}
+.bir-phone-shortcut{display:none}
+.bir-direct-form label{display:block;font-size:14px;font-weight:600;margin:0 0 16px;color:inherit;min-width:0}
+.bir-direct-form input,.bir-direct-form textarea{display:block;width:100%;min-width:0;max-width:100%;margin-top:7px;border:1px solid #a7bbc4;border-radius:5px;background:#fff;color:#173340;padding:12px;font:16px/1.5 Arial,sans-serif}
+.bir-direct-form textarea{resize:vertical;min-height:120px}
+.bir-direct-form input:focus,.bir-direct-form textarea:focus,.bir-direct-form button:focus-visible{outline:3px solid #edb36c;outline-offset:3px}
+.bir-direct-form .bir-optional{font-weight:400}
+.bir-direct-form .bir-form-note{font-size:13px;line-height:1.5;margin:0 0 18px;color:inherit}
+.bir-direct-form .bir-form-trap{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.bir-direct-form .bir-form-submit{display:block;width:100%;min-height:48px;padding:13px 18px;border:2px solid #fff;border-radius:5px;background:#fff;color:#153c51;font:700 16px/1.4 Arial,sans-serif;white-space:normal;cursor:pointer}
+.bir-direct-form .bir-form-submit:hover{background:#edf5f4}
+.bir-direct-form .bir-form-submit:disabled{opacity:.75;cursor:default}
+.bir-direct-form .bir-form-status{margin:14px 0 0;padding:0;font-size:15px;color:inherit}
+.bir-direct-form .bir-form-status:empty{display:none}
+.bir-direct-form .bir-form-status[data-outcome]{padding:12px;border:1px solid currentColor;border-radius:5px}
+.bir-contact-choices{display:flex;flex-wrap:wrap;gap:12px 20px;margin-top:28px;border-top:1px solid #ffffff50;padding-top:20px;color:#fff;font-size:14px;overflow-wrap:anywhere}
+.bir-contact-choices p{flex-basis:100%;margin:0;font-size:14px;color:inherit}
+.bir-contact-choices a{color:inherit;text-decoration:underline;text-underline-offset:4px;min-height:32px}
+.bir-contact-address{flex-basis:100%;user-select:text}
+.bir-contact-section.contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:start;gap:40px;scroll-margin-top:24px}
+.bir-contact-section>div,.co-contact{min-width:0}
+.bir-contact-section .bir-contact-eyebrow{font-size:12px;letter-spacing:.12em;margin-bottom:14px}
+.bir-contact-section .bir-direct-form{margin-top:0}
+#inquire{scroll-margin-top:100px}
+@media(min-width:600px){.bir-form-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}}
+@media(max-width:760px){.bir-direct-form .bir-phone-shortcut{display:block;margin:0 0 22px;color:inherit;text-underline-offset:4px;min-height:32px}.bir-contact-section.contact{grid-template-columns:minmax(0,1fr);padding:24px;gap:25px}.bir-contact-section .bir-contact-choices{margin-top:20px}.bir-contact-section>div:first-child{display:contents}.bir-contact-section>div:first-child>.bir-contact-choices{order:2}.bir-contact-section>div:last-child{order:1}.bir-contact-section>div:first-child>.bir-contact-eyebrow,.bir-contact-section>div:first-child>h2,.bir-contact-section>div:first-child>p{margin-bottom:0}}
