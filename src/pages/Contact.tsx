@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Phone, Mail, Clock, UserPlus } from "lucide-react";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
@@ -153,9 +153,9 @@ const Contact = () => {
   <FloatingContact />
 
       {/* Header */}
-      <section className="pt-32 pb-16 bg-secondary">
+      <section className="pt-28 pb-8 md:pt-32 md:pb-12 bg-secondary">
         <div className="container mx-auto px-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
             Contact Baja International Realty
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl">
@@ -165,11 +165,11 @@ const Contact = () => {
       </section>
 
       {/* Contact Form & Info */}
-      <section className="py-24">
+      <section className="py-8 md:py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Contact Information */}
-            <div className="space-y-8">
+            <div className="space-y-8 min-w-0 order-2 lg:order-1">
               <div>
                 <h2 className="text-3xl font-bold text-foreground mb-6">Get in Touch</h2>
                 <p className="text-muted-foreground leading-relaxed">
@@ -256,39 +256,14 @@ const Contact = () => {
             </div>
 
             {/* Contact Form */}
-            <div className="lg:col-span-2">
-              {/* New Client Registration Banner */}
-              <div className="mb-6 bg-gradient-to-r from-accent/10 to-accent/5 p-6 rounded-2xl border-2 border-accent/20">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="p-3 rounded-full bg-accent/20">
-                      <UserPlus className="h-6 w-6 text-accent" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-foreground mb-2">
-                      New Client? Register Here
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      Complete our New Client Registration form for personalized service. Select your preferred agent and share your property preferences.
-                    </p>
-                    <Button 
-                      variant="luxury" 
-                      size="lg"
-                      onClick={() => window.location.href = '/new-client'}
-                    >
-                      📋 Complete New Client Form
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <form data-bir-lead-form="general_contact" onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border border-border shadow-elegant">
+            <div className="lg:col-span-2 min-w-0 order-1 lg:order-2">
+              <form data-bir-lead-form="general_contact" onSubmit={handleSubmit} className="bg-card p-5 sm:p-8 rounded-2xl border border-border shadow-elegant min-w-0">
                 <div aria-hidden="true" style={{position:'absolute',left:'-10000px',width:1,height:1,overflow:'hidden'}}><label>Leave this field empty<input name="website" value={website} onChange={e=>setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" /></label></div>
-                <h2 className="text-2xl font-bold text-foreground mb-6">Send Us a General Message</h2>
+                <h2 className="text-2xl font-bold text-foreground mb-3">Send a Message</h2>
+                <p className="text-muted-foreground mb-6">Send your inquiry right here. No email app, WhatsApp or registration needed.</p>
                 
                 {submitStatus === 'success' && (
-                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+                  <div role="status" className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                     <strong>✓ Message sent successfully!</strong>
                     <p className="text-sm mt-1">
                       {formData.preferredAgent 
@@ -300,7 +275,7 @@ const Contact = () => {
                 )}
 
                 {submitStatus === 'error' && (
-                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                  <div role="alert" className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                     <strong>✗ Failed to send message.</strong>
                     <p className="text-sm mt-1">Please call us at +52 624 143 5555 or email info@bircabo.com</p>
                   </div>
@@ -437,12 +412,12 @@ const Contact = () => {
                   />
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     type="submit" 
                     variant="luxury" 
                     size="lg" 
-                    className="flex-1"
+                    className="w-full sm:flex-1 min-w-0"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? 'Sending...' : 'Send Message'}
@@ -451,9 +426,10 @@ const Contact = () => {
                     type="button" 
                     variant="outline" 
                     size="lg"
-                    onClick={() => window.open('tel:+526241435555')}
+                    className="w-full sm:w-auto"
+                    onClick={() => window.location.href = 'tel:+526241435555'}
                   >
-                    Call Now
+                    Call the Office
                   </Button>
                 </div>
 
@@ -461,6 +437,7 @@ const Contact = () => {
                   * Required fields. We'll respond within 24 hours during business hours.
                 </p>
               </form>
+              <p className="mt-6 text-sm text-muted-foreground">Already planning your search? <a href="/new-client" className="underline underline-offset-4">Optional new client registration</a> lets you share more about your property preferences.</p>
             </div>
           </div>
         </div>
