@@ -103,5 +103,5 @@
     });
   }
   enhance(document.body);
-  new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) enhance(node); }).observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(records => { for (const record of records) { if (record.type === 'attributes') enhance(record.target); else for (const node of record.addedNodes) enhance(node); } }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['href']});
 })();
