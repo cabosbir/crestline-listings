@@ -398,7 +398,7 @@ const DonLandingPage = () => {
       </div>
 
       <a
-        href={getWhatsAppLink(agent.phone, agent.name)}
+        href={getWhatsAppLink("+52 624 129 6245", agent.name)}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-16 h-16 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-3xl group"
@@ -441,9 +441,9 @@ const DonLandingPage = () => {
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button variant="default" size="lg" asChild style={{ backgroundColor: '#102f74', color: 'white' }} className="hover:opacity-90">
-                  <a href={`tel:${agent.phone}`}>
+                  <a href="https://wa.me/526241296245" target="_blank" rel="noopener">
                     <Phone className="mr-2 h-5 w-5" />
-                    Call {agent.name.split(' ')[0]} Now
+                    WhatsApp Now
                   </a>
                 </Button>
                 <Button variant="outline" size="lg" style={{ borderColor: '#102f74', color: '#102f74' }} className="bg-transparent hover:bg-[#102f74] hover:text-white"
@@ -613,22 +613,22 @@ const DonLandingPage = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              <a href={`tel:${agent.phone}`} className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <a href="https://wa.me/526241296245" target="_blank" rel="noopener" className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
                   <Phone className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Call {agent.name.split(' ')[0]}</div>
-                  <div className="text-xl font-bold text-white">{agent.phone}</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>WhatsApp</div>
+                  <div className="text-xl font-bold text-white">WhatsApp</div>
                 </div>
               </a>
-              <a href={`mailto:${agent.email}`} className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <a href="#bir-inquiry" data-bir-inquiry className="flex items-center gap-4 backdrop-blur-sm p-6 rounded-xl transition-all hover:scale-105 border-2 border-white/30 hover:border-white/60" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: '#d4af37' }}>
                   <Mail className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Email {agent.name.split(' ')[0]}</div>
-                  <div className="text-lg font-bold text-white break-all">{agent.email}</div>
+                  <div className="text-sm font-medium" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Send an inquiry</div>
+                  <div className="text-lg font-bold text-white break-all">Send an inquiry</div>
                 </div>
               </a>
             </div>

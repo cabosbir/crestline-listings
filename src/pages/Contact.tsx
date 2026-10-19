@@ -118,7 +118,7 @@ const Contact = () => {
     <title>Contact Baja International Realty | Cabo San Lucas Real Estate Experts</title>
     <meta 
       name="description" 
-      content="Contact Baja International Realty in Cabo San Lucas. Call +52 624 143 5555 or email info@bircabo.com. Office located at Boulevard Marina, downtown Cabo. Open Monday-Sunday."
+      content="Contact Baja International Realty in Cabo San Lucas. Use WhatsApp or send an inquiry directly from our website."
     />
     <link rel="canonical" href="https://www.bircabo.com/contact" />
     <meta property="og:title" content="Contact Baja International Realty | Cabo Real Estate" />
@@ -141,7 +141,6 @@ const Contact = () => {
           "addressCountry": "MX"
         },
         "telephone": "+52-624-143-5555",
-        "email": "info@bircabo.com",
         "openingHours": "Mo-Fr 09:00-18:00, Sa-Su 10:00-16:00",
         "url": "https://www.bircabo.com"
       })}
@@ -209,13 +208,13 @@ const Contact = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Phone</h3>
+                    <h3 className="font-semibold text-foreground mb-1">WhatsApp</h3>
                     <p className="text-muted-foreground text-sm">
-                      <a href="tel:+526241435555" className="hover:text-accent transition-fast">
-                        +52 624 143 5555
+                      <a href="https://wa.me/526241296245" target="_blank" rel="noopener" className="hover:text-accent transition-fast">
+                        WhatsApp
                       </a>
                       <br />
-                      Office Main Line
+                      Message Don on WhatsApp
                     </p>
                   </div>
                 </div>
@@ -227,12 +226,12 @@ const Contact = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
+                    <h3 className="font-semibold text-foreground mb-1">Send an inquiry</h3>
                     <a 
-                      href="mailto:info@bircabo.com" 
+                      href="#bir-inquiry" data-bir-inquiry 
                       className="text-muted-foreground text-sm hover:text-accent transition-fast"
                     >
-                      info@bircabo.com
+                      Send an inquiry
                     </a>
                   </div>
                 </div>
@@ -277,7 +276,7 @@ const Contact = () => {
                 {submitStatus === 'error' && (
                   <div role="alert" className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                     <strong>✗ Failed to send message.</strong>
-                    <p className="text-sm mt-1">Please call us at +52 624 143 5555 or email info@bircabo.com</p>
+                    <p className="text-sm mt-1">Please try again, or use WhatsApp to contact Don.</p>
                   </div>
                 )}
                 
@@ -427,16 +426,17 @@ const Contact = () => {
                     variant="outline" 
                     size="lg"
                     className="w-full sm:w-auto"
-                    onClick={() => window.location.href = 'tel:+526241435555'}
+                    onClick={() => window.location.href = 'https://wa.me/526241296245'}
                   >
-                    Call the Office
+                    WhatsApp Don
                   </Button>
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-4">
                   * Required fields. We'll respond within 24 hours during business hours.
                 </p>
-              </form>
+              <p className="bir-contact-call">Prefer to call Don? <a href="tel:+526241296245">+52 624 129 6245</a></p>
+                  </form>
               <p className="mt-6 text-sm text-muted-foreground">Already planning your search? <a href="/new-client" className="underline underline-offset-4">Optional new client registration</a> lets you share more about your property preferences.</p>
             </div>
           </div>

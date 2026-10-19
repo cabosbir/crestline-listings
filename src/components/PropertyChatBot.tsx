@@ -84,8 +84,8 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
       const limitMessage: Message = {
         role: "assistant",
         content: rateLimitCheck.reason === 'daily'
-          ? `⏸️ **Daily Message Limit Reached**\n\nYou've reached the maximum of 20 messages per day. This helps us manage our AI costs while keeping the chatbot free for everyone.\n\n**Your limit resets in:** ${resetTimeMsg}\n\n**In the meantime:**\n📞 Call us: ${COMPANY_INFO.phone}\n📧 Email: ${COMPANY_INFO.email}\n👉 [Contact Form](/contact)\n\nOur team is available ${COMPANY_INFO.officeHours.formatted} and happy to help!`
-          : `⏸️ **Hourly Message Limit Reached**\n\nYou've sent 5 messages in the last hour. Please wait ${resetTimeMsg} before sending more.\n\nThis helps prevent spam and ensures quality responses for all users.\n\n**Need immediate help?**\n📞 Call: ${COMPANY_INFO.phone}\n📧 Email: ${COMPANY_INFO.email}`,
+          ? `⏸️ **Daily Message Limit Reached**\n\nYou've reached the maximum of 20 messages per day. This helps us manage our AI costs while keeping the chatbot free for everyone.\n\n**Your limit resets in:** ${resetTimeMsg}\n\n**In the meantime:**\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n👉 [Contact Form](/contact)\n\nOur team is available ${COMPANY_INFO.officeHours.formatted} and happy to help!`
+          : `⏸️ **Hourly Message Limit Reached**\n\nYou've sent 5 messages in the last hour. Please wait ${resetTimeMsg} before sending more.\n\nThis helps prevent spam and ensures quality responses for all users.\n\n**Need immediate help?**\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, limitMessage]);
@@ -128,11 +128,11 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
 
           let fallbackResponse = '';
           if (isWeekendQuestion) {
-            fallbackResponse = `Yes! We're open on weekends.\n\n📅 **Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+            fallbackResponse = `Yes! We're open on weekends.\n\n📅 **Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
           } else if (isLocationQuestion) {
-            fallbackResponse = `**Our Office Location:**\n\n📍 ${formatAddress()}\n\n**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+            fallbackResponse = `**Our Office Location:**\n\n📍 ${formatAddress()}\n\n**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
           } else {
-            fallbackResponse = `**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n📍 ${formatAddress()}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+            fallbackResponse = `**Office Hours:** ${COMPANY_INFO.officeHours.formatted}\n\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n📍 ${formatAddress()}\n\n[View on Google Maps](${COMPANY_INFO.address.googleMapsLink})\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
           }
 
           const fallbackMessage: Message = {
@@ -361,7 +361,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           // Fallback to basic contact info
           const fallbackMessage: Message = {
             role: "assistant",
-            content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
+            content: `I'd be happy to help! Please contact us:\n\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
             timestamp: new Date(),
           };
           setMessages((prev) => [...prev, fallbackMessage]);
@@ -388,7 +388,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           // Fallback to basic team info
           const fallbackMessage: Message = {
             role: "assistant",
-            content: `**Our Expert Team:**\n\nWe have ${TEAM_INFO.length} experienced agents ready to help.\n\n[View Full Team](/team)\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
+            content: `**Our Expert Team:**\n\nWe have ${TEAM_INFO.length} experienced agents ready to help.\n\n[View Full Team](/team)\n\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
             timestamp: new Date(),
           };
           setMessages((prev) => [...prev, fallbackMessage]);
@@ -417,7 +417,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
             console.error('❌ Error generating business response:', error);
             const fallbackMessage: Message = {
               role: "assistant",
-              content: `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
+              content: `I'd be happy to help! Please contact us:\n\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`,
               timestamp: new Date(),
             };
             setMessages((prev) => [...prev, fallbackMessage]);
@@ -447,7 +447,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         let responseContent = "";
 
         if (parsedQuery.infoType === "office") {
-          responseContent = `**${COMPANY_INFO.name}**\n\n📍 **Location:** ${formatAddress()}\n📞 **Phone:** ${COMPANY_INFO.phone}\n📧 **Email:** ${COMPANY_INFO.email}\n⏰ **Hours:** ${formatOfficeHours()}\n\nWe handle residential, commercial, and land sales throughout Los Cabos. Our team of ${COMPANY_INFO.stats.totalAgents} agents can help you find what you're looking for.\n\nWant to search properties or meet our team?`;
+          responseContent = `**${COMPANY_INFO.name}**\n\n📍 **Location:** ${formatAddress()}\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n⏰ **Hours:** ${formatOfficeHours()}\n\nWe handle residential, commercial, and land sales throughout Los Cabos. Our team of ${COMPANY_INFO.stats.totalAgents} agents can help you find what you're looking for.\n\nWant to search properties or meet our team?`;
         } else if (parsedQuery.infoType === "agents") {
           responseContent = `We have ${TEAM_INFO.length} local agents who know Los Cabos well.\n\n👥 **Meet Our Team:** [View All Agents](/team)\n\n**Stats:**\n• ${COMPANY_INFO.stats.combinedYearsExperience} combined years experience\n• All agents are MLS/AMPI certified\n\nEach agent has different expertise in areas and property types. Want to search properties or contact an agent?`;
         } else if (parsedQuery.infoType === "areas") {
@@ -533,7 +533,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
               return;
             } catch (error) {
               console.error('❌ Error generating business response:', error);
-              responseContent = `I'd be happy to help! Please contact us:\n\n📞 ${COMPANY_INFO.phone}\n📧 ${COMPANY_INFO.email}\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
+              responseContent = `I'd be happy to help! Please contact us:\n\n[WhatsApp](https://wa.me/526241296245) or [Send an inquiry](#bir-inquiry)\n\nOur team is available ${COMPANY_INFO.officeHours.formatted}.\n\n---\n\n*Due to high website traffic, our AI assistant has reached its daily capacity. This response is based on our website information. For personalized assistance, please contact our team directly.*`;
             }
           } else {
             // Generic fallback for non-business questions
