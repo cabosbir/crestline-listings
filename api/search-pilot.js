@@ -56,15 +56,29 @@ export function propertyDetails(row) {
   if(!groups.has(group))groups.set(group,[]);
   const list=groups.get(group);if(!list.some(x=>x.label===label))list.push({label,value:typeof value==='boolean'?(value?'Yes':'No'):value});
  };
- const standard={YearBuilt:'Year built',LotSizeSquareMeters:'Lot size (m²)',LotSizeSquareFeet:'Lot size (sq ft)',LotSizeAcres:'Lot size (acres)',LotSizeDimensions:'Lot dimensions',LivingArea:'Living area',LivingAreaUnits:'Living area units',BuildingAreaTotal:'Building area',BuildingAreaUnits:'Building area units',Stories:'Stories',GarageSpaces:'Garage spaces',CarportSpaces:'Carport spaces',BathroomsHalf:'Half bathrooms',Furnished:'Furnished',ArchitecturalStyle:'Style',ConstructionMaterials:'Construction materials',Cooling:'Cooling',Heating:'Heating',Appliances:'Appliances',PoolFeatures:'Pool',PatioAndPorchFeatures:'Patios and decks',WaterSource:'Water',Sewer:'Sewer',Utilities:'Utilities',View:'Views',AssociationFee:'HOA fee',AssociationFeeFrequency:'HOA fee frequency',AssociationAmenities:'Community amenities'};
- for(const [key,label] of Object.entries(standard))add('Property facts',label,row[key]);
+ const standard={BedroomsTotal:'Bedrooms',BathroomsTotalDecimal:'Bathrooms (total)',BathroomsFull:'Full bathrooms',BathroomsHalf:'Half bathrooms',YearBuilt:'Year built',LotSizeSquareMeters:'Lot size (m²)',LotSizeSquareFeet:'Lot size (sq ft)',LotSizeAcres:'Lot size (acres)',LotSizeDimensions:'Lot dimensions',LivingArea:'Living area',LivingAreaUnits:'Living area units',BuildingAreaTotal:'Building area',BuildingAreaUnits:'Building area units',Stories:'Stories',GarageSpaces:'Garage spaces',CarportSpaces:'Carport spaces',Furnished:'Furnished',ArchitecturalStyle:'Style',ConstructionMaterials:'Construction materials',Cooling:'Cooling',Heating:'Heating',Appliances:'Appliances',PoolFeatures:'Pool',PatioAndPorchFeatures:'Patios and decks',WaterSource:'Water',Sewer:'Sewer',Utilities:'Utilities',View:'Views',AssociationFee:'HOA fee',AssociationFeeFrequency:'HOA fee frequency',AssociationAmenities:'Community amenities'};
+ for(const [key,label] of Object.entries(standard)){
+  const unitKey=key==='BuildingAreaTotal'?'BuildingAreaUnits':key==='LivingArea'?'LivingAreaUnits':null;
+  const units=unitKey&&typeof row[unitKey]==='string'?row[unitKey].trim():'';
+  const unitLabel=/^(square feet|sq\.?\s*ft|sqft|ft2|ft²)$/i.test(units)?'sq ft':/^(square meters|sq\.?\s*m|sqm|m2|m²)$/i.test(units)?'m²':units;
+  add('Property facts',unitKey?label+' ('+(unitLabel||'unit not supplied')+')':label,row[key]);
+ }
  const categories=new Set(['Amenities','Common Amenities','Appliances','Devices','Road Type','Title','Electricity','Water','Sewage','HOA Info','Construction','Const.','Flooring','Flooring Types']);
- const general=new Set(['Construction','Total SqFt','Total M2','AC M2','AC SqFt','Decks/Patios M2','Decks/Patios SqFt','Lot M2','Lot Dimensions','Total Bedrooms','FullBaths','1/2Baths','Year Built','Furnished','Style','Primary View','Secondary View','Garage Stalls','Carport','Mstr Plan Community','Seller Financing Offered?','Seller Financing Offered','Ocean Front Meters']);
+ const general=new Set(['Construction','Total SqFt','Total M2','AC M2','AC SqFt','Decks/Patios M2','Decks/Patios SqFt','Lot M2','Lot Dimensions','Total Bedrooms','FullBaths','Full Baths','1/2Baths','1/2 Bath','Year Built','Furnished','Style','Primary View','Secondary View','Garage Stalls','Carport','Mstr Plan Community','Seller Financing Offered?','Seller Financing Offered','Ocean Front Meters']);
  const decode=s=>s.replaceAll('_sp_',' ').replaceAll('_co_',':').replaceAll('_sl_','/').replaceAll('_fs_','/').replaceAll('_qm_','?').replaceAll('_dot_','.');
  for(const [key,value] of Object.entries(row)){
   if(!key.includes('_co_')||/private|confidential|showing|lockbox|password|contact|agent|office|owner/i.test(key))continue;
   const [encodedGroup,...parts]=key.split('_co_'),group=decode(encodedGroup),label=decode(parts.join('_co_'));
-  if(group==='General Description'&&general.has(label))add('Property facts',label,value);
+  if(group==='General Description'){
+   // Spark encodes punctuation in custom field names. Only accept the
+   // already-approved deck/patio area labels, including slash variants.
+   const deck=/^Decks(?:\/|_[a-z]+_|\s)?Patios\s*(M2|SqFt)$/i.exec(label);
+   const canonical=deck?'Decks/Patios '+(deck[1].toLowerCase()==='m2'?'M2':'SqFt'):label;
+   if(general.has(canonical)){
+    const aliases={'Total Bedrooms':'Bedrooms',FullBaths:'Full bathrooms','Full Baths':'Full bathrooms','1/2Baths':'Half bathrooms','1/2 Bath':'Half bathrooms','Decks/Patios M2':'Deck / patio area (m²)','Decks/Patios SqFt':'Deck / patio area (sq ft)'};
+    add('Property facts',aliases[canonical]||canonical,value);
+   }
+  }
   else if(categories.has(group)&&label.length<100){
    if(value===false||value===null||value==='')continue;
    add(group,label,value);
