@@ -89,8 +89,9 @@ try{const value=JSON.parse(localStorage.getItem(savedKey)||'[]');if(Array.isArra
 const savedBar=document.createElement('div');savedBar.className='saved-bar';
 const savedOpen=document.createElement('button');savedOpen.type='button';savedOpen.className='saved-primary';
 const savedNote=document.createElement('p');savedNote.innerHTML='<strong>Keep your favorites. Compare your choices.</strong><span>Click <b>Save property</b> (up to 50) on any listing, then open <b>Saved &amp; Compare</b> to review your favorites and compare up to three side by side.</span><small>Two free ways to save: keep favorites on this device without signing in, or use My Account to save across devices.</small>';
+const savedHelp=document.createElement('details');savedHelp.className='saved-help';const savedSummary=document.createElement('summary');savedSummary.textContent='How to save and compare properties';savedHelp.append(savedSummary,savedNote);
 const savedStatus=document.createElement('p');savedStatus.setAttribute('role','status');savedStatus.className='saved-status';
-const resultActions=document.createElement('div');resultActions.className='result-actions';count.before(resultActions);resultActions.append(count,savedOpen);savedBar.append(savedNote,savedStatus);document.querySelector('main .bar').after(savedBar);
+const resultActions=document.createElement('div');resultActions.className='result-actions';count.before(resultActions);resultActions.append(count,savedOpen);savedBar.append(savedHelp,savedStatus);document.querySelector('main .bar').after(savedBar);
 const savedDialog=document.createElement('dialog');savedDialog.className='saved-dialog';savedDialog.setAttribute('aria-label','Saved properties');document.body.append(savedDialog);
 function refreshSaveButtons(){
  savedOpen.textContent=`\u2665 Saved & Compare (${savedProperties.length})`;
