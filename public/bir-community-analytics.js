@@ -54,6 +54,8 @@
     if(!field.closest?.('#filters')||!filters.has(field.id))return;clearTimeout(timer);timer=setTimeout(()=>emit('mls_filter_change',{filter_name:field.id}),1000);
   });
   document.addEventListener('change',event=>{const field=event.target;if(field.closest?.('#ov-filters')&&['ov-price','ov-beds','ov-community','ov-kind','ov-golf','ov-area','ov-mls-area','ov-mls-community','ov-subdivision','ov-size','ov-view','ov-sort'].includes(field.id))emit('property_filter_change',{filter_name:field.id});});
+  // Opening the shared inquiry dialog is interest, never a successful inquiry.
+  document.addEventListener('bir-contact-open',()=>emit('contact_click',{contact_method:'inquiry_dialog',form_name:'general_contact'}));
   // Explicit success comes only from the form's successful server response.
   document.addEventListener('bir-lead-result',event=>{
     const detail=event.detail||{};
