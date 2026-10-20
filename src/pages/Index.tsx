@@ -190,6 +190,12 @@ const Index = () => {
             <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/las-cascadas-de-pedregal-condos-for-sale.html">Las Cascadas de Pedregal condos →</a>
             <a className="rounded-lg border border-blue-200 bg-white p-4 font-semibold text-blue-950 hover:bg-blue-100" href="/property-guides.html">All areas &amp; property types →</a>
           </nav>
+          <div className="mt-6 border-t border-blue-200 pt-5">
+            <h3 className="text-lg font-semibold text-blue-950">Compare the places on your shortlist</h3>
+            <p className="mt-2 text-slate-700">Check the exact setting, current properties and ownership questions before planning a showing.</p>
+            <nav aria-label="Buyer location guides" className="mt-3 flex flex-wrap gap-x-6 gap-y-3 font-semibold text-blue-900"><a className="underline underline-offset-4" href="/pedregal-real-estate.html">Pedregal homes, condos &amp; lots</a><a className="underline underline-offset-4" href="/cabo-san-lucas-marina-condos-for-sale.html">Marina condos</a><a className="underline underline-offset-4" href="/condos-for-sale-cabo-san-lucas-corridor.html">El Tezal &amp; Cabo Corridor condos</a><a className="underline underline-offset-4" href="/condos-for-sale-san-jose-del-cabo.html">San José del Cabo condos</a><a className="underline underline-offset-4" href="/cerritos-pescadero-condos-for-sale.html">Cerritos &amp; Pescadero condos</a><a className="underline underline-offset-4" href="/beachfront-condos-for-sale-los-cabos.html">Beachfront condos</a></nav>
+            <p className="mt-4 text-slate-700">Starting with a budget? <a className="font-semibold text-blue-900 underline" href="/el-tezal-condos-for-sale-under-500k.html">El Tezal condos under $500K</a> · <a className="font-semibold text-blue-900 underline" href="/cabo-san-lucas-condos-for-sale-under-500k.html">Cabo San Lucas condos under $500K</a> · <a className="font-semibold text-blue-900 underline" href="/san-jose-del-cabo-condos-for-sale-under-750k.html">San José condos under $750K</a></p>
+          </div>
         </div>
       </section>
 
