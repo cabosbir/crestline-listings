@@ -40,7 +40,7 @@ export function checkFormSubmission(req,kind,now=Date.now()){
   if(phone!==undefined&&(typeof phone!=='string'||phone.length>60||/[<>\r\n]/.test(phone)))return fail(400,'Please check your phone number.');
   if(kind==='seller'&&body.valuationPreference!==undefined&&!['preliminary','detailed'].includes(body.valuationPreference))return fail(400,'Please choose your valuation preference.');
   if(body.agentEmail){
-    const allowed=new Set(['robertvanpatten2@gmail.com','erika80@gmail.com','alfonso@bircabo.com','cozbi@bajainternationalrealty.com','hector@bircabo.com','charles@bircabo.com','mtortricardi@gmail.com','david@bircabo.com','susu@bircabo.com','edgar@bircabo.com','erikagraciano@bircabo.com','don@bircabo.com','fernando@bircabo.com','erika@bircabo.com','bonnie@bircabo.com','erikag@bircabo.com','cabocharlie79@gmail.com','info@bircabo.com']);
+    const allowed=new Set(['robertvanpatten2@gmail.com','erika80@gmail.com','alfonso@bircabo.com','cozbi@bajainternationalrealty.com','hector@bircabo.com','charles@bircabo.com','mtortricardi@gmail.com','david@bircabo.com','susu@bircabo.com','edgar@bircabo.com','erikagraciano@bircabo.com','don@bircabo.com','fernando@bircabo.com','erika@bircabo.com','bonnie@bircabo.com','erikag@bircabo.com','cabocharlie79@gmail.com','sweetdreamsbaja@gmail.com','mattyrose88@gmail.com','humberto@bircabo.com','info@bircabo.com']);
     if(typeof body.agentEmail!=='string'||!allowed.has(body.agentEmail.toLowerCase()))return fail(400,'Please select an agent from the website.');
   }
   // Prevent submitted markup being embedded in office/client notification emails.
@@ -135,7 +135,7 @@ export default async function handler(req, res) {
     let emailRecipients = [officeEmail];
     
     // Add agent email if an agent was selected
-    if (agentEmail && agentEmail !== officeEmail) {
+    if (agentEmail && agentEmail.toLowerCase() !== officeEmail) {
       emailRecipients.push(agentEmail);
     }
 

@@ -654,8 +654,8 @@ const BobLandingPage = () => {
                 </Button>
                 {isDropdownOpen && (
                   <div className="absolute w-full mt-2 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden z-10">
-                    <Link to={`/agents/${agent.slug}/new-client`} onClick={() => setIsDropdownOpen(false)} className="block px-6 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100 text-left">
-                      <div className="font-bold text-gray-900 text-lg mb-1">🏠 New Client Form</div>
+                    <Link to={`/contact?agent=${encodeURIComponent(agent.slug)}`} onClick={() => setIsDropdownOpen(false)} className="block px-6 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100 text-left">
+                      <div className="font-bold text-gray-900 text-lg mb-1">🏠 Send an inquiry</div>
                       <div className="text-sm text-gray-600">Looking to buy property in Cabo</div>
                     </Link>
                     <Link to={`/agents/${agent.slug}/seller-evaluation`} onClick={() => setIsDropdownOpen(false)} className="block px-6 py-4 hover:bg-gray-50 transition-colors text-left">

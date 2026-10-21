@@ -39,6 +39,14 @@
   const submit = dialog.querySelector('.bir-contact-send');
   let sending = false, completed = false, originator = null, context = '';
   function open(trigger) {
+    // Use the contact page's existing agent-aware form instead of opening a second inquiry.
+    const pageForm = document.querySelector('form#inquiry-form[data-bir-lead-form="general_contact"]');
+    if (pageForm && pageForm.offsetParent !== null) {
+      pageForm.scrollIntoView({behavior:'smooth',block:'start'});
+      pageForm.querySelector('input[name="name"]')?.focus({preventScroll:true});
+      document.dispatchEvent(new CustomEvent('bir-contact-open'));
+      return;
+    }
     originator = trigger;
     if (completed) { form.reset(); status.textContent = ''; submit.disabled = false; submit.textContent = 'Send inquiry to Don'; completed = false; }
     context = trigger?.dataset.birInquiryContext || document.querySelector('h1')?.textContent?.trim() || document.title;

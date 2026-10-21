@@ -704,7 +704,7 @@ const PropertyDetail = () => {
                       variant="outline" 
                       size="lg" 
                       className="w-full"
-                      onClick={() => navigate('/new-client', {
+                      onClick={() => navigate('/contact', {
                         state: {
                           propertyId: property.id,
                           mlsNumber: property.mlsNumber,
