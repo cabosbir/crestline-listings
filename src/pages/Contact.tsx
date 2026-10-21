@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
@@ -16,14 +16,90 @@ import {
 } from "@/components/ui/select";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
+const agents = [
+  {
+    "id": 12,
+    "slug": "don",
+    "name": "Don Weis",
+    "email": "Don@bircabo.com"
+  },
+  {
+    "id": 1,
+    "slug": "bob",
+    "name": "Bob Van Patten",
+    "email": "robertvanpatten2@gmail.com"
+  },
+  {
+    "id": 3,
+    "slug": "alfonso",
+    "name": "Alfonso Puente",
+    "email": "alfonso@bircabo.com"
+  },
+  {
+    "id": 8,
+    "slug": "david",
+    "name": "David Scott Piper",
+    "email": "David@bircabo.com"
+  },
+  {
+    "id": 16,
+    "slug": "kenny",
+    "name": "Kenneth “Kenny” Gehlhoff",
+    "email": "sweetdreamsbaja@gmail.com"
+  },
+  {
+    "id": 17,
+    "slug": "matt",
+    "name": "Matthew “Matt” Rosenberg",
+    "email": "mattyrose88@gmail.com"
+  },
+  {
+    "id": 5,
+    "slug": "hector",
+    "name": "Hector Mendoza",
+    "email": "Hector@bircabo.com"
+  },
+  {
+    "id": 7,
+    "slug": "marisol",
+    "name": "Marisol Tort",
+    "email": "mtortricardi@gmail.com"
+  },
+  {
+    "id": 4,
+    "slug": "cozbi",
+    "name": "Cozbi Sanchez",
+    "email": "Cozbi@bajainternationalrealty.com"
+  },
+  {
+    "id": 10,
+    "slug": "edgar",
+    "name": "Edgar Pacheco",
+    "email": "Edgar@bircabo.com"
+  },
+  {
+    "id": 11,
+    "slug": "fernando-cabrera",
+    "name": "Fernando Cabrera",
+    "email": "fernando@bircabo.com"
+  },
+  {
+    "id": 15,
+    "slug": "humberto",
+    "name": "Humberto Escoto",
+    "email": "humberto@bircabo.com"
+  }
+];
+
 const Contact = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    inquiryType: '',
+    inquiryType: 'general',
     propertyType: '',
     preferredAgent: '',
     message: ''
@@ -33,34 +109,16 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
 
-  // Pre-fill agent if coming from agent page
+  // Accept both current agent names and slugs preserved by old registration links.
   useEffect(() => {
-    const agentFromUrl = searchParams.get('agent');
-    if (agentFromUrl) {
-      setFormData(prev => ({
-        ...prev,
-        preferredAgent: agentFromUrl,
-        message: `I would like to discuss properties with ${agentFromUrl}.`
-      }));
-    }
-  }, [searchParams]);
-
-  // List of agents - matches Team.tsx
-  const agents = [
-    { id: 1, name: "Bob Van Patten", email: "robertvanpatten2@gmail.com" },
-    { id: 2, name: "Erika Aispuro", email: "Erika80@gmail.com" },
-    { id: 3, name: "Alfonso Puente", email: "alfonso@bircabo.com" },
-    { id: 4, name: "Cozbi Sanchez", email: "Cozbi@bajainternationalrealty.com" },
-    { id: 5, name: "Hector Mendoza", email: "Hector@bircabo.com" },
-    { id: 6, name: "Charles Jones", email: "charles@bircabo.com" },
-    { id: 7, name: "Marisol Tort", email: "mtortricardi@gmail.com" },
-    { id: 8, name: "David Scott Piper", email: "David@bircabo.com" },
-    { id: 9, name: "Susu Vieira", email: "Susu@bircabo.com" },
-    { id: 10, name: "Edgar Pacheco", email: "Edgar@bircabo.com" },
-    { id: 11, name: "Erika Graciano", email: "erikagraciano@bircabo.com" },
-    { id: 12, name: "Don Weis", email: "Don@bircabo.com" },
-    { id: 13, name: "Fernando Cabrera", email: "fernando@bircabo.com" }
-  ];
+    const requested = searchParams.get('agent') || '';
+    const selected = agents.find(a => a.slug === requested || a.name === requested);
+    const property = location.state;
+    const propertyMessage = property?.propertyAddress
+      ? `I would like more information about ${property.propertyAddress}${property.mlsNumber ? ' (MLS ' + property.mlsNumber + ')' : ''}.`
+      : '';
+    setFormData(prev => ({...prev, preferredAgent: selected?.name || '', message: propertyMessage}));
+  }, [searchParams, location.state]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,9 +151,9 @@ const Contact = () => {
           name: '',
           email: '',
           phone: '',
-          inquiryType: '',
+          inquiryType: 'general',
           propertyType: '',
-          preferredAgent: '',
+          preferredAgent: selectedAgent?.name || '',
           message: ''
         });
       } else {
@@ -122,7 +180,7 @@ const Contact = () => {
     />
     <link rel="canonical" href="https://www.bircabo.com/contact" />
     <meta property="og:title" content="Contact Baja International Realty | Cabo Real Estate" />
-    <meta property="og:description" content="Get in touch with our expert team in Cabo San Lucas. Call, email, or visit our downtown office today." />
+    <meta property="og:description" content="Ask our Cabo real estate team a question using WhatsApp or the inquiry form. No email app or registration needed." />
     <meta property="og:url" content="https://www.bircabo.com/contact" />
     <meta property="og:type" content="website" />
     
@@ -256,10 +314,11 @@ const Contact = () => {
 
             {/* Contact Form */}
             <div className="lg:col-span-2 min-w-0 order-1 lg:order-2">
-              <form data-bir-lead-form="general_contact" onSubmit={handleSubmit} className="bg-card p-5 sm:p-8 rounded-2xl border border-border shadow-elegant min-w-0">
+              <form id="inquiry-form" data-bir-lead-form="general_contact" onSubmit={handleSubmit} className="bg-card p-5 sm:p-8 rounded-2xl border border-border shadow-elegant min-w-0">
                 <div aria-hidden="true" style={{position:'absolute',left:'-10000px',width:1,height:1,overflow:'hidden'}}><label>Leave this field empty<input name="website" value={website} onChange={e=>setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" /></label></div>
-                <h2 className="text-2xl font-bold text-foreground mb-3">Send a Message</h2>
-                <p className="text-muted-foreground mb-6">Send your inquiry right here. No email app, WhatsApp or registration needed.</p>
+                <h2 className="text-2xl font-bold text-foreground mb-3">Send an inquiry</h2>
+                <p className="text-muted-foreground mb-3">Send your inquiry right here. No email app, WhatsApp or registration needed.</p>
+                <p className="text-sm text-muted-foreground mb-6">{formData.preferredAgent && formData.preferredAgent !== 'no-preference' && formData.preferredAgent !== 'Don Weis' ? `Your inquiry will go to ${formData.preferredAgent}, with a copy to Don Weis.` : 'Your inquiry will go directly to Don Weis.'}</p>
                 
                 {submitStatus === 'success' && (
                   <div role="status" className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
@@ -286,7 +345,10 @@ const Contact = () => {
                       Full Name *
                     </label>
                     <Input 
-                      id="name" 
+                      id="name"
+                      name="name"
+                      autoComplete="name"
+                      maxLength={160} 
                       required 
                       placeholder="John Doe"
                       value={formData.name}
@@ -299,7 +361,10 @@ const Contact = () => {
                       Email Address *
                     </label>
                     <Input 
-                      id="email" 
+                      id="email"
+                      name="email"
+                      autoComplete="email"
+                      maxLength={254} 
                       type="email" 
                       required 
                       placeholder="john@example.com"
@@ -313,10 +378,13 @@ const Contact = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-                      Phone Number
+                      Phone Number (optional)
                     </label>
                     <Input 
-                      id="phone" 
+                      id="phone"
+                      name="phone"
+                      autoComplete="tel"
+                      maxLength={60} 
                       type="tel" 
                       placeholder="+1 (555) 123-4567"
                       value={formData.phone}
@@ -325,56 +393,8 @@ const Contact = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="inquiry-type" className="block text-sm font-medium text-foreground mb-2">
-                      Inquiry Type *
-                    </label>
-                    <Select 
-                      required
-                      value={formData.inquiryType}
-                      onValueChange={(value) => setFormData({...formData, inquiryType: value})}
-                      disabled={isSubmitting}
-                    >
-                      <SelectTrigger id="inquiry-type">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="buying">Buying</SelectItem>
-                        <SelectItem value="selling">Selling</SelectItem>
-                        <SelectItem value="renting">Renting</SelectItem>
-                        <SelectItem value="investment">Investment Opportunity</SelectItem>
-                        <SelectItem value="general">General Inquiry</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label htmlFor="property-type" className="block text-sm font-medium text-foreground mb-2">
-                      Property Type of Interest
-                    </label>
-                    <Select
-                      value={formData.propertyType}
-                      onValueChange={(value) => setFormData({...formData, propertyType: value})}
-                      disabled={isSubmitting}
-                    >
-                      <SelectTrigger id="property-type">
-                        <SelectValue placeholder="Select property type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="oceanfront-villa">Oceanfront Villa</SelectItem>
-                        <SelectItem value="beachfront-condo">Beachfront Condo</SelectItem>
-                        <SelectItem value="penthouse">Penthouse</SelectItem>
-                        <SelectItem value="luxury-estate">Luxury Estate</SelectItem>
-                        <SelectItem value="investment-property">Investment Property</SelectItem>
-                        <SelectItem value="land">Land/Lot</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
                     <label htmlFor="preferred-agent" className="block text-sm font-medium text-foreground mb-2">
-                      Preferred Agent
+                      Preferred Agent (optional)
                     </label>
                     <Select
                       value={formData.preferredAgent}
@@ -401,7 +421,10 @@ const Contact = () => {
                     Message *
                   </label>
                   <Textarea 
-                    id="message" 
+                    id="message"
+                    name="message"
+                    minLength={3}
+                    maxLength={6000} 
                     required 
                     placeholder="Tell us about your real estate needs in Cabo San Lucas..."
                     className="min-h-32"
@@ -419,7 +442,7 @@ const Contact = () => {
                     className="w-full sm:flex-1 min-w-0"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                    {isSubmitting ? 'Sending...' : 'Send inquiry'}
                   </Button>
                   <Button 
                     type="button" 
@@ -437,7 +460,6 @@ const Contact = () => {
                 </p>
               <p className="bir-contact-call">Prefer to call Don? <a href="tel:+526241296245">+52 624 129 6245</a></p>
                   </form>
-              <p className="mt-6 text-sm text-muted-foreground">Already planning your search? <a href="/new-client" className="underline underline-offset-4">Optional new client registration</a> lets you share more about your property preferences.</p>
             </div>
           </div>
         </div>

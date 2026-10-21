@@ -315,12 +315,12 @@ const AgentDetail = () => {
                         <div className="absolute w-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-10">
                           <button
                             onClick={() => {
-                              navigate(`/agents/${agent.slug}/new-client`);
+                              navigate(`/contact?agent=${encodeURIComponent(agent.slug)}`);
                               setIsDropdownOpen(false);
                             }}
                             className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100"
                           >
-                            <div className="font-semibold text-gray-900">New Client Form</div>
+                            <div className="font-semibold text-gray-900">Send an inquiry</div>
                             <div className="text-xs text-gray-600 mt-1">Looking to buy property</div>
                           </button>
                           <button
@@ -429,12 +429,12 @@ const AgentDetail = () => {
                         <div className="absolute w-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-10">
                           <button
                             onClick={() => {
-                              navigate(`/agents/${agent.slug}/new-client`);
+                              navigate(`/contact?agent=${encodeURIComponent(agent.slug)}`);
                               setIsCTADropdownOpen(false);
                             }}
                             className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100"
                           >
-                            <div className="font-semibold text-gray-900">New Client Form</div>
+                            <div className="font-semibold text-gray-900">Send an inquiry</div>
                             <div className="text-xs text-gray-600 mt-1">Looking to buy property</div>
                           </button>
                           <button
