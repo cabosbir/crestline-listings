@@ -1,0 +1,43 @@
+.rh-feature .rh-hero{padding:24px 0 42px;background:#f4f2ec;border-bottom:1px solid #e2e0d8}
+.rh-feature .rh-hero .breadcrumbs{margin-bottom:24px}
+.rh-hero-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:42px;align-items:center}
+.rh-hero-copy h1{font-size:clamp(38px,4.3vw,57px);margin:12px 0 16px}
+.rh-hero-copy p:not(.eyebrow){line-height:1.6;color:#42556b}
+.rh-hero-copy .rh-lead{font-size:22px;color:#173b66;font-weight:500}
+.rh-feature figure{margin:0}
+.rh-feature figure img{display:block;width:100%;height:auto;border-radius:6px}
+.rh-feature figcaption{font-size:12px;line-height:1.6;color:#58697b;margin:10px 0 0}
+.rh-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.rh-contact{margin-top:10px}
+.rh-jumps{display:flex;flex-wrap:wrap;gap:9px 20px;margin-top:24px;font-size:14px;font-weight:600}
+.rh-story-section{padding:52px 0}
+.rh-story-grid{display:grid;grid-template-columns:minmax(0,740px) minmax(0,280px);gap:64px;align-items:start}
+.rh-story .eyebrow{margin-bottom:12px}
+.rh-story h2{font-size:34px;margin-bottom:24px}
+.rh-story h3{font-size:28px;margin:34px 0 18px}
+.rh-story p{font-size:17px;line-height:1.85}
+.rh-feature .rh-inline-photo{margin:28px 0 36px}
+.rh-personal{padding-top:8px}
+.rh-personal>p{font-family:Marcellus,Georgia,serif;font-size:23px;line-height:1.5;margin:24px 0 16px;color:#173b66}
+.rh-personal>a{font-size:14px;font-weight:650}
+.rh-beach-section{padding:42px 0 48px;background:#f4f2ec}
+.rh-section-heading{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:24px}
+.rh-section-heading h2{margin:8px 0 0}
+.rh-section-heading>a{font-size:14px;font-weight:600}
+.rh-beach-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.85fr);gap:26px;align-items:start}
+.rh-beach-grid video{display:block;background:#11283d;width:100%;height:auto;aspect-ratio:16/9;border-radius:6px}
+.rh-feature .property-results{padding:48px 0}
+.rh-feature .property-results-heading{align-items:baseline}
+.rh-feature .property-results-heading h2{font-size:32px;max-width:800px}
+.rh-listing-tabs{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 15px}
+.rh-listing-tabs a{padding:10px 17px;border:1px solid #a7b7c7;border-radius:5px;text-decoration:none;font-weight:650;font-size:14px;background:#fff}
+.rh-listing-tabs a:hover{background:#edf3f7}
+.rh-listing-intro{max-width:850px;color:#42556b;font-size:16px}
+.rh-buying-section{background:#f6f8fa;padding:40px 0}
+.rh-buying-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin:20px 0 28px}
+.rh-buying-grid p{font-size:16px}
+.rh-buying-grid a{font-weight:650}
+.rh-feature #your-shortlist{padding:44px 0}
+.rh-feature #properties,.rh-feature #don-perspective,.rh-feature #beach-video{scroll-margin-top:20px}
+@media(max-width:950px){.rh-hero-grid{gap:26px;grid-template-columns:1fr 1fr}.rh-story-grid{gap:30px;grid-template-columns:minmax(0,1fr) 240px}.rh-hero-copy .rh-lead{font-size:19px}.rh-story h2{font-size:30px}}
+@media(max-width:720px){.rh-hero-grid,.rh-story-grid,.rh-beach-grid,.rh-buying-grid{grid-template-columns:minmax(0,1fr)}.rh-hero-grid{gap:28px}.rh-story-grid{gap:28px}.rh-hero-copy h1{font-size:42px}.rh-story-section{padding:32px 0}.rh-story h2{font-size:30px}.rh-story p{font-size:16px}.rh-personal{max-width:420px;padding-top:0}.rh-personal>p{font-size:21px}.rh-feature .rh-inline-photo{margin:24px 0 28px}.rh-section-heading{display:block}.rh-section-heading>a{display:inline-block;margin-top:14px}.rh-beach-section{padding:32px 0}.rh-feature .property-results{padding:32px 0}.rh-feature .property-results-heading h2{font-size:28px}.rh-buying-grid{gap:26px}.rh-actions .button{flex:1;min-width:135px}.rh-jumps{font-size:13px}}
