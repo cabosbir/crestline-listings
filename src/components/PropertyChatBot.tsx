@@ -464,7 +464,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
           });
           responseContent += `**Total Timeline:** Typically 60-90 days from offer to closing\n`;
           responseContent += `**Total Closing Costs:** 4-6% of purchase price\n\n`;
-          responseContent += `📝 **Ready to start?** [New Client Form](https://www.bircabo.com/new-client)\n\n`;
+          responseContent += `📝 **Ready to start?** [Send an inquiry](https://www.bircabo.com/contact)\n\n`;
           responseContent += `Would you like to search for properties now?`;
         } else if (parsedQuery.infoType === "buying_costs") {
           responseContent = "**Complete Cost Breakdown for Buying in Los Cabos:**\n\n";
@@ -555,7 +555,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
         // User wants to get started with forms
         const formsMessage: Message = {
           role: "assistant",
-          content: "Great! I'm excited to help you get started with your Los Cabos real estate journey!\n\n📝 **For Buyers:**\nReady to explore properties? Fill out our New Client Form and one of our expert agents will contact you:\n👉 [New Client Registration](https://www.bircabo.com/new-client)\n\n🏠 **For Sellers:**\nInterested in selling your property? Get a professional evaluation:\n👉 [Seller Property Evaluation](https://www.bircabo.com/seller-evaluation)\n\n📅 **Want to Talk First?**\nSchedule a consultation with our team:\n👉 [Contact Us](/contact)\n\nOr feel free to keep chatting with me to search for properties!",
+          content: "Great! I'm excited to help you get started with your Los Cabos real estate journey!\n\n📝 **For Buyers:**\nReady to explore properties? Send an inquiry and one of our expert agents will contact you:\n👉 [Send an inquiry](https://www.bircabo.com/contact)\n\n🏠 **For Sellers:**\nInterested in selling your property? Get a professional evaluation:\n👉 [Seller Property Evaluation](https://www.bircabo.com/seller-evaluation)\n\n📅 **Want to Talk First?**\nSchedule a consultation with our team:\n👉 [Contact Us](/contact)\n\nOr feel free to keep chatting with me to search for properties!",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, formsMessage]);
@@ -677,7 +677,7 @@ const PropertyChatBot = ({ onClose, fullPage = false }: PropertyChatBotProps) =>
 
         if (properties.length > 0) {
           // Add form recommendation
-          finalResponse += "\n\n💡 **Interested in any of these properties?**\nFill out our [New Client Form](https://www.bircabo.com/new-client) and one of our expert agents will reach out to schedule viewings and answer your questions!";
+          finalResponse += "\n\n💡 **Interested in any of these properties?**\nUse our [inquiry form](https://www.bircabo.com/contact) and one of our expert agents will reach out to schedule viewings and answer your questions!";
         } else {
           // No results - provide helpful suggestions
           finalResponse += "\n\n**Try adjusting your search:**\n• Increase your budget range\n• Expand to nearby areas\n• Reduce bedroom/bathroom requirements\n• Remove specific amenities\n\n**Or I can help you:**\n• Search in a different area\n• [Contact an agent](/contact) for personalized assistance\n• [Browse all properties](/properties)";

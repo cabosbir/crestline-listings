@@ -55,10 +55,10 @@ const PropertyCard = ({
     navigate(`/property/${routeId}?page=${currentPage}`);
   };
 
-  const handleNewClientForm = (e: React.MouseEvent) => {
+  const handleInquiry = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    navigate('/new-client', {
+    navigate('/contact', {
       state: { 
         propertyId: id,
         mlsNumber,
@@ -160,7 +160,7 @@ const PropertyCard = ({
             variant="outline"
             size="lg"
             className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-black font-semibold px-6"
-            onClick={handleNewClientForm}
+            onClick={handleInquiry}
           >
             <FileText className="w-4 h-4 mr-2" />
             Request Info
