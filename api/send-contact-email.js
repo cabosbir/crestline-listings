@@ -75,7 +75,7 @@ export default async function handler(req, res) {
     let emailRecipients = [officeEmail];
     
     // Add agent email if an agent was selected
-    if (agentEmail && agentEmail !== officeEmail) {
+    if (agentEmail && agentEmail.toLowerCase() !== officeEmail) {
       emailRecipients.push(agentEmail);
     }
 
