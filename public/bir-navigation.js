@@ -13,3 +13,19 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&header.contains(doc
 (()=>{const menu=document.querySelector('.bir-header .bir-nav-links');if(!menu)return;for(const [label,anchor,text]of [['Buying','buying','Buying ejido land'],['Selling','selling','Selling ejido land']]){const group=[...menu.querySelectorAll('.bir-nav-group')].find(x=>x.querySelector('summary')?.textContent.trim().startsWith(label));const dropdown=group?.querySelector('.bir-nav-dropdown');const href='/ejido-land-baja-california-sur.html#'+anchor;if(!dropdown||dropdown.querySelector('a[href="'+href+'"]'))continue;const a=document.createElement('a');a.href=href;a.textContent=text;dropdown.append(a);}})();
 
 (()=>{const group=[...document.querySelectorAll(".bir-header .bir-nav-links .bir-nav-group")].find(x=>x.querySelector("summary")?.textContent.trim().startsWith("Properties"));const dropdown=group?.querySelector(".bir-nav-dropdown");if(!dropdown)return;let after=dropdown.querySelector('a[href="/las-cascadas-de-pedregal-condos-for-sale.html"]');for(const [label,href] of [["El Tezal condos under $500K", "/el-tezal-condos-for-sale-under-500k.html"], ["Cabo San Lucas condos under $500K", "/cabo-san-lucas-condos-for-sale-under-500k.html"], ["San José condos under $750K", "/san-jose-del-cabo-condos-for-sale-under-750k.html"], ["El Tezal houses under $750K", "/el-tezal-houses-for-sale-under-750k.html"], ["San José houses & villas under $2.5M", "/san-jose-del-cabo-houses-for-sale-under-2-5-million.html"], ["San José land under $500K", "/san-jose-del-cabo-land-for-sale-under-500k.html"]]){let link=dropdown.querySelector('a[href="'+href+'"]');if(!link){link=document.createElement("a");link.href=href;link.textContent=label;if(after)after.after(link);else dropdown.append(link);}after=link;}})();
+
+(() => {
+  const properties = [...document.querySelectorAll('.bir-header .bir-nav-links .bir-nav-group')]
+    .find(group => group.querySelector('summary')?.textContent.trim().startsWith('Properties'))
+    ?.querySelector('.bir-nav-dropdown');
+  const cascadas = properties?.querySelector('a[href="/las-cascadas-de-pedregal-condos-for-sale.html"]');
+  if (!cascadas) return;
+  const path = '/rolling-hills-real-estate.html';
+  let rollingHills = properties.querySelector('a[href="' + path + '"]');
+  if (!rollingHills) {
+    rollingHills = document.createElement('a');
+    rollingHills.href = path;
+    rollingHills.textContent = 'Rolling Hills Estates';
+  }
+  if (cascadas.nextElementSibling !== rollingHills) cascadas.after(rollingHills);
+})();
