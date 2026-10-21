@@ -1,0 +1,13 @@
+/* Rolling Hills cross-link, scoped to El Tezal page callouts. */
+.rh-promo{padding:8px 0 24px;background:#fff;scroll-margin-top:20px}
+.rh-promo .rh-promo-card{display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:center;gap:28px;padding:24px 28px;border:1px solid #d9d8cc;border-left:4px solid #ad925a;border-radius:7px;background:#f7f6f0}
+.rh-promo .rh-promo-eyebrow{font-size:11px;line-height:1.5;letter-spacing:.12em;text-transform:uppercase;color:#6e5d38;font-weight:750;margin:0 0 6px}
+.rh-promo h2{font-size:27px;line-height:1.25;margin:0 0 10px;color:#173b55}
+.rh-promo .rh-promo-copy>p:last-child{font-size:15px;line-height:1.65;max-width:760px;margin:0;color:#42556b}
+.rh-promo .rh-promo-links{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center}
+.rh-promo .rh-promo-link{font-size:14px;font-weight:650;line-height:1.5;color:#173b55;text-underline-offset:4px;min-height:36px;display:inline-flex;align-items:center}
+.rh-promo .rh-promo-primary{display:flex;justify-content:center;width:100%;padding:11px 15px;background:#173b55;color:#fff;border:1px solid #173b55;border-radius:5px;text-decoration:none}
+.rh-promo .rh-promo-primary:hover{background:#244d6c}
+.rh-promo a:focus-visible{outline:3px solid #ad792c;outline-offset:4px}
+.rh-promo .rh-promo-note{margin:7px 0 0;font-size:12px;line-height:1.5;color:#556577;text-align:center}
+@media(max-width:720px){.rh-promo{padding-bottom:18px}.rh-promo .rh-promo-card{grid-template-columns:minmax(0,1fr);gap:16px;padding:20px}.rh-promo h2{font-size:24px}.rh-promo .rh-promo-links{justify-content:flex-start;gap:8px 18px}.rh-promo .rh-promo-primary{width:auto;min-height:44px}.rh-promo .rh-promo-note{text-align:left}.rh-promo .rh-promo-link:not(.rh-promo-primary){min-height:44px}}
