@@ -54,6 +54,26 @@
   ],
   "redirects": [
     {
+      "source": "/new-client",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/new-client-form",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/new-client/:agentSlug",
+      "destination": "/contact?agent=:agentSlug",
+      "permanent": true
+    },
+    {
+      "source": "/agents/:agentSlug/new-client",
+      "destination": "/contact?agent=:agentSlug",
+      "permanent": true
+    },
+    {
       "source": "/susu",
       "destination": "/team",
       "permanent": true
