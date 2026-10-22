@@ -1,4 +1,4 @@
-/* Rolling Hills cross-link, scoped to El Tezal page callouts. */
+/* Rolling Hills cross-link, scoped to community page callouts. */
 .rh-promo{padding:8px 0 24px;background:#fff;scroll-margin-top:20px}
 .rh-promo .rh-promo-card{display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:center;gap:28px;padding:24px 28px;border:1px solid #d9d8cc;border-left:4px solid #ad925a;border-radius:7px;background:#f7f6f0}
 .rh-promo .rh-promo-eyebrow{font-size:11px;line-height:1.5;letter-spacing:.12em;text-transform:uppercase;color:#6e5d38;font-weight:750;margin:0 0 6px}
@@ -11,3 +11,5 @@
 .rh-promo a:focus-visible{outline:3px solid #ad792c;outline-offset:4px}
 .rh-promo .rh-promo-note{margin:7px 0 0;font-size:12px;line-height:1.5;color:#556577;text-align:center}
 @media(max-width:720px){.rh-promo{padding-bottom:18px}.rh-promo .rh-promo-card{grid-template-columns:minmax(0,1fr);gap:16px;padding:20px}.rh-promo h2{font-size:24px}.rh-promo .rh-promo-links{justify-content:flex-start;gap:8px 18px}.rh-promo .rh-promo-primary{width:auto;min-height:44px}.rh-promo .rh-promo-note{text-align:left}.rh-promo .rh-promo-link:not(.rh-promo-primary){min-height:44px}}
+
+.rh-promo .rh-promo-firsthand{display:block;margin-top:12px;font-size:14px;line-height:1.65;color:#42556b}
