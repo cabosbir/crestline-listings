@@ -22,15 +22,15 @@
     }
   ],
   "functions": {
+    "api/las-cascadas.js": {
+      "maxDuration": 30,
+      "includeFiles": "templates/las-cascadas-de-pedregal-condos-for-sale.html"
+    },
     "api/**/*.ts": {
       "maxDuration": 30
     },
     "api/**/*.js": {
       "maxDuration": 30
-    },
-    "api/las-cascadas.js": {
-      "maxDuration": 30,
-      "includeFiles": "templates/las-cascadas-de-pedregal-condos-for-sale.html"
     }
   },
   "headers": [
