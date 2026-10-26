@@ -95,6 +95,8 @@ User-agent: GPTBot
 Disallow: /
 
 User-agent: ChatGPT-User
+# Allow requested reads of the public Las Cascadas listings and guide.
+Allow: /las-cascadas-de-pedregal-condos-for-sale.html
 Disallow: /
 
 User-agent: Google-Extended
