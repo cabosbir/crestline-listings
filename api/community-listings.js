@@ -9,7 +9,27 @@ export const pagePaths=[
   "/el-tezal-condos-for-sale-under-500k.html",
   "/el-tezal-houses-for-sale-under-750k.html",
   "/es/departamentos-en-venta-el-tezal.html",
-  "/es/terrenos-en-venta-el-tezal.html"
+  "/es/terrenos-en-venta-el-tezal.html",
+  "/pedregal-real-estate.html",
+  "/cabo-del-sol-real-estate.html",
+  "/cabo-real-real-estate.html",
+  "/cabo-san-lucas-country-club-real-estate.html",
+  "/chileno-bay-real-estate.html",
+  "/club-campestre-san-jose-real-estate.html",
+  "/condos-los-cabos-golf-communities.html",
+  "/costa-palmas-real-estate.html",
+  "/diamante-real-estate.html",
+  "/el-dorado-real-estate.html",
+  "/houses-villas-los-cabos-golf-communities.html",
+  "/land-los-cabos-golf-communities.html",
+  "/los-cabos-golf-properties.html",
+  "/palmilla-real-estate.html",
+  "/puerto-los-cabos-real-estate.html",
+  "/querencia-real-estate.html",
+  "/quivira-real-estate.html",
+  "/rancho-san-lucas-real-estate.html",
+  "/san-jose-golf-district-real-estate.html",
+  "/twin-dolphin-real-estate.html"
 ];
 const handlers=new Map(pagePaths.map(page=>{
  let pending;
