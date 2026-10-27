@@ -5,7 +5,9 @@ import {storedSnapshot,createVisitorInventory} from './search-pilot.js';
 
 // All guides in a warm function share one public snapshot read. Preserve its
 // original checked time and never fall back to direct MLS-provider requests.
-export function createCommunityInventory(loadStored=storedSnapshot,now=Date.now){
+// The public snapshot is roughly 3.7 MB; cold concurrent readers need more than
+// the interactive search's short deadline to finish transferring it.
+export function createCommunityInventory(loadStored=()=>storedSnapshot(fetch,Date.now,12000),now=Date.now){
  const inventory=createVisitorInventory(loadStored,async()=>{throw new Error('Waiting for public inventory');},now);
  return async()=>(await inventory()).data;
 }

@@ -149,8 +149,8 @@ export async function buildSnapshot(endpoint,key,fetcher=fetch) {
   if(Buffer.byteLength(JSON.stringify(snapshot))>4000000)throw new Error('Inventory exceeds safe response size');
   return snapshot;
 }
-export async function storedSnapshot(fetcher=fetch,now=Date.now) {
-  const response=await fetcher('https://inventory.bircabo.com/',{signal:AbortSignal.timeout(3500),redirect:'error',headers:{Accept:'application/json'}});
+export async function storedSnapshot(fetcher=fetch,now=Date.now,timeoutMs=3500) {
+  const response=await fetcher('https://inventory.bircabo.com/',{signal:AbortSignal.timeout(timeoutMs),redirect:'error',headers:{Accept:'application/json'}});
   if(!response.ok)throw new Error(`Stored inventory unavailable (HTTP ${response.status})`);
   const body=await response.text();
   if(Buffer.byteLength(body)>4000000)throw new Error('Stored inventory too large');
