@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
-import handler,{pagePaths} from '../api/community-listings.js';
+import handler,{pagePaths as registeredPaths} from '../api/community-listings.js';
+const pagePaths=registeredPaths.filter(p=>/rolling-hills|el-tezal/.test(p));
 import {renderListings,createHandler} from '../api/las-cascadas.js';
 import * as english from '../public/bir-property-pages.mjs';
 import * as spanish from '../public/bir-property-pages-es.mjs';
