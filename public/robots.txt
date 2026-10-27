@@ -95,8 +95,14 @@ User-agent: GPTBot
 Disallow: /
 
 User-agent: ChatGPT-User
-# Allow requested reads of the public Las Cascadas listings and guide.
+# Allow requested reads of these public community listings and guides.
 Allow: /las-cascadas-de-pedregal-condos-for-sale.html
+Allow: /rolling-hills-real-estate.html
+Allow: /el-tezal-real-estate.html
+Allow: /el-tezal-condos-for-sale-under-500k.html
+Allow: /el-tezal-houses-for-sale-under-750k.html
+Allow: /es/departamentos-en-venta-el-tezal.html
+Allow: /es/terrenos-en-venta-el-tezal.html
 Disallow: /
 
 User-agent: Google-Extended

@@ -5,6 +5,30 @@
       "destination": "/api/las-cascadas"
     },
     {
+      "source": "/rolling-hills-real-estate.html",
+      "destination": "/api/community-listings?guide=/rolling-hills-real-estate.html"
+    },
+    {
+      "source": "/el-tezal-real-estate.html",
+      "destination": "/api/community-listings?guide=/el-tezal-real-estate.html"
+    },
+    {
+      "source": "/el-tezal-condos-for-sale-under-500k.html",
+      "destination": "/api/community-listings?guide=/el-tezal-condos-for-sale-under-500k.html"
+    },
+    {
+      "source": "/el-tezal-houses-for-sale-under-750k.html",
+      "destination": "/api/community-listings?guide=/el-tezal-houses-for-sale-under-750k.html"
+    },
+    {
+      "source": "/es/departamentos-en-venta-el-tezal.html",
+      "destination": "/api/community-listings?guide=/es/departamentos-en-venta-el-tezal.html"
+    },
+    {
+      "source": "/es/terrenos-en-venta-el-tezal.html",
+      "destination": "/api/community-listings?guide=/es/terrenos-en-venta-el-tezal.html"
+    },
+    {
       "source": "/api/flexmls-listings",
       "destination": "/api/flexmls-listings-v2"
     },
@@ -22,6 +46,10 @@
     }
   ],
   "functions": {
+    "api/community-listings.js": {
+      "maxDuration": 30,
+      "includeFiles": "templates/**/*.html"
+    },
     "api/las-cascadas.js": {
       "maxDuration": 30,
       "includeFiles": "templates/las-cascadas-de-pedregal-condos-for-sale.html"
