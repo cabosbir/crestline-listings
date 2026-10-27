@@ -123,7 +123,7 @@ function saveButton(p){const button=document.createElement('button');button.type
 function propertyLink(p){return 'https://www.bircabo.com/property-search.html?mls='+encodeURIComponent(p.ListingId);}
 function sharingActions(p){
  const bar=document.createElement('div');bar.className='listing-share-actions';
- const agent=document.createElement('button');agent.type='button';agent.textContent='Send to a BIR agent';agent.className='share-agent';agent.onclick=()=>{inquire(p);question.value='I would like to discuss this property with a BIR agent.\n'+propertyLink(p);updateInquiry();};
+ const agent=document.createElement('button');agent.type='button';agent.textContent='Send to a BIR agent';agent.className='share-agent';agent.onclick=()=>{inquire(p);question.value='I would like to discuss this property with a BIR agent.';updateInquiry();};
  const friend=document.createElement('button');friend.type='button';friend.textContent='Share listing';friend.onclick=()=>openShare(p);bar.append(agent,friend);return bar;
 }
 const shareDialog=document.createElement('dialog');shareDialog.setAttribute('aria-label','Share listing');shareDialog.className='saved-dialog';document.body.append(shareDialog);
