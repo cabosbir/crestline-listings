@@ -5,6 +5,86 @@
       "destination": "/api/las-cascadas"
     },
     {
+      "source": "/pedregal-real-estate.html",
+      "destination": "/api/community-listings?guide=/pedregal-real-estate.html"
+    },
+    {
+      "source": "/cabo-del-sol-real-estate.html",
+      "destination": "/api/community-listings?guide=/cabo-del-sol-real-estate.html"
+    },
+    {
+      "source": "/cabo-real-real-estate.html",
+      "destination": "/api/community-listings?guide=/cabo-real-real-estate.html"
+    },
+    {
+      "source": "/cabo-san-lucas-country-club-real-estate.html",
+      "destination": "/api/community-listings?guide=/cabo-san-lucas-country-club-real-estate.html"
+    },
+    {
+      "source": "/chileno-bay-real-estate.html",
+      "destination": "/api/community-listings?guide=/chileno-bay-real-estate.html"
+    },
+    {
+      "source": "/club-campestre-san-jose-real-estate.html",
+      "destination": "/api/community-listings?guide=/club-campestre-san-jose-real-estate.html"
+    },
+    {
+      "source": "/condos-los-cabos-golf-communities.html",
+      "destination": "/api/community-listings?guide=/condos-los-cabos-golf-communities.html"
+    },
+    {
+      "source": "/costa-palmas-real-estate.html",
+      "destination": "/api/community-listings?guide=/costa-palmas-real-estate.html"
+    },
+    {
+      "source": "/diamante-real-estate.html",
+      "destination": "/api/community-listings?guide=/diamante-real-estate.html"
+    },
+    {
+      "source": "/el-dorado-real-estate.html",
+      "destination": "/api/community-listings?guide=/el-dorado-real-estate.html"
+    },
+    {
+      "source": "/houses-villas-los-cabos-golf-communities.html",
+      "destination": "/api/community-listings?guide=/houses-villas-los-cabos-golf-communities.html"
+    },
+    {
+      "source": "/land-los-cabos-golf-communities.html",
+      "destination": "/api/community-listings?guide=/land-los-cabos-golf-communities.html"
+    },
+    {
+      "source": "/los-cabos-golf-properties.html",
+      "destination": "/api/community-listings?guide=/los-cabos-golf-properties.html"
+    },
+    {
+      "source": "/palmilla-real-estate.html",
+      "destination": "/api/community-listings?guide=/palmilla-real-estate.html"
+    },
+    {
+      "source": "/puerto-los-cabos-real-estate.html",
+      "destination": "/api/community-listings?guide=/puerto-los-cabos-real-estate.html"
+    },
+    {
+      "source": "/querencia-real-estate.html",
+      "destination": "/api/community-listings?guide=/querencia-real-estate.html"
+    },
+    {
+      "source": "/quivira-real-estate.html",
+      "destination": "/api/community-listings?guide=/quivira-real-estate.html"
+    },
+    {
+      "source": "/rancho-san-lucas-real-estate.html",
+      "destination": "/api/community-listings?guide=/rancho-san-lucas-real-estate.html"
+    },
+    {
+      "source": "/san-jose-golf-district-real-estate.html",
+      "destination": "/api/community-listings?guide=/san-jose-golf-district-real-estate.html"
+    },
+    {
+      "source": "/twin-dolphin-real-estate.html",
+      "destination": "/api/community-listings?guide=/twin-dolphin-real-estate.html"
+    },
+    {
       "source": "/rolling-hills-real-estate.html",
       "destination": "/api/community-listings?guide=/rolling-hills-real-estate.html"
     },
