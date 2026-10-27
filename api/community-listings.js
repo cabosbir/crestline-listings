@@ -1,6 +1,15 @@
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createHandler} from './las-cascadas.js';
+import {storedSnapshot,createVisitorInventory} from './search-pilot.js';
+
+// All guides in a warm function share one public snapshot read. Preserve its
+// original checked time and never fall back to direct MLS-provider requests.
+export function createCommunityInventory(loadStored=storedSnapshot,now=Date.now){
+ const inventory=createVisitorInventory(loadStored,async()=>{throw new Error('Waiting for public inventory');},now);
+ return async()=>(await inventory()).data;
+}
+const load=createCommunityInventory();
 
 // Only these public community guides can select a bundled template.
 export const pagePaths=[
@@ -34,7 +43,7 @@ export const pagePaths=[
 const handlers=new Map(pagePaths.map(page=>{
  let pending;
  const template=()=>pending??=readFile(join(process.cwd(),'templates',page.slice(1)),'utf8').catch(error=>{pending=null;throw error;});
- return [page,createHandler({template})];
+ return [page,createHandler({template,load})];
 }));
 export default function handler(req,res){
  const page=req.query?.guide;
