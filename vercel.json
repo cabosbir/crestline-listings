@@ -5,6 +5,358 @@
       "destination": "/api/las-cascadas"
     },
     {
+      "source": "/property-search.html",
+      "destination": "/api/mls-page"
+    },
+    {
+      "source": "/beachfront-condos-for-sale-los-cabos.html",
+      "destination": "/api/community-listings?guide=/beachfront-condos-for-sale-los-cabos.html"
+    },
+    {
+      "source": "/beachfront-houses-villas-for-sale-los-cabos.html",
+      "destination": "/api/community-listings?guide=/beachfront-houses-villas-for-sale-los-cabos.html"
+    },
+    {
+      "source": "/beachfront-land-for-sale-los-cabos.html",
+      "destination": "/api/community-listings?guide=/beachfront-land-for-sale-los-cabos.html"
+    },
+    {
+      "source": "/beachfront-properties-for-sale-los-cabos.html",
+      "destination": "/api/community-listings?guide=/beachfront-properties-for-sale-los-cabos.html"
+    },
+    {
+      "source": "/buena-vista-real-estate.html",
+      "destination": "/api/community-listings?guide=/buena-vista-real-estate.html"
+    },
+    {
+      "source": "/cabo-homes-for-sale.html",
+      "destination": "/api/community-listings?guide=/cabo-homes-for-sale.html"
+    },
+    {
+      "source": "/cabo-land-for-sale.html",
+      "destination": "/api/community-listings?guide=/cabo-land-for-sale.html"
+    },
+    {
+      "source": "/cabo-pulmo-real-estate.html",
+      "destination": "/api/community-listings?guide=/cabo-pulmo-real-estate.html"
+    },
+    {
+      "source": "/cabo-san-lucas-condos-for-sale-under-500k.html",
+      "destination": "/api/community-listings?guide=/cabo-san-lucas-condos-for-sale-under-500k.html"
+    },
+    {
+      "source": "/cabo-san-lucas-condos-for-sale.html",
+      "destination": "/api/community-listings?guide=/cabo-san-lucas-condos-for-sale.html"
+    },
+    {
+      "source": "/cabo-san-lucas-corridor-real-estate.html",
+      "destination": "/api/community-listings?guide=/cabo-san-lucas-corridor-real-estate.html"
+    },
+    {
+      "source": "/cabo-san-lucas-marina-condos-for-sale.html",
+      "destination": "/api/community-listings?guide=/cabo-san-lucas-marina-condos-for-sale.html"
+    },
+    {
+      "source": "/cabo-san-lucas-pacific-side-real-estate.html",
+      "destination": "/api/community-listings?guide=/cabo-san-lucas-pacific-side-real-estate.html"
+    },
+    {
+      "source": "/casa-del-mar-condos-for-sale.html",
+      "destination": "/api/community-listings?guide=/casa-del-mar-condos-for-sale.html"
+    },
+    {
+      "source": "/condos-for-sale-cabo-san-lucas-corridor.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-cabo-san-lucas-corridor.html"
+    },
+    {
+      "source": "/condos-for-sale-cabo-san-lucas-pacific-side.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-cabo-san-lucas-pacific-side.html"
+    },
+    {
+      "source": "/condos-for-sale-cabo-san-lucas.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-cabo-san-lucas.html"
+    },
+    {
+      "source": "/condos-for-sale-cerritos-beach.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-cerritos-beach.html"
+    },
+    {
+      "source": "/condos-for-sale-east-cape.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-east-cape.html"
+    },
+    {
+      "source": "/condos-for-sale-el-pescadero.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-el-pescadero.html"
+    },
+    {
+      "source": "/condos-for-sale-san-jose-del-cabo-corridor.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-san-jose-del-cabo-corridor.html"
+    },
+    {
+      "source": "/condos-for-sale-san-jose-del-cabo.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-san-jose-del-cabo.html"
+    },
+    {
+      "source": "/condos-for-sale-todos-santos.html",
+      "destination": "/api/community-listings?guide=/condos-for-sale-todos-santos.html"
+    },
+    {
+      "source": "/costa-azul-real-estate.html",
+      "destination": "/api/community-listings?guide=/costa-azul-real-estate.html"
+    },
+    {
+      "source": "/es/casas-en-venta-los-cabos.html",
+      "destination": "/api/community-listings?guide=/es/casas-en-venta-los-cabos.html"
+    },
+    {
+      "source": "/es/departamentos-en-venta-los-cabos.html",
+      "destination": "/api/community-listings?guide=/es/departamentos-en-venta-los-cabos.html"
+    },
+    {
+      "source": "/es/terrenos-en-venta-los-cabos.html",
+      "destination": "/api/community-listings?guide=/es/terrenos-en-venta-los-cabos.html"
+    },
+    {
+      "source": "/hacienda-beach-club-condos-for-sale.html",
+      "destination": "/api/community-listings?guide=/hacienda-beach-club-condos-for-sale.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-cabo-san-lucas-corridor.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-cabo-san-lucas-corridor.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-cabo-san-lucas-pacific-side.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-cabo-san-lucas-pacific-side.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-cabo-san-lucas.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-cabo-san-lucas.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-cerritos-beach.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-cerritos-beach.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-east-cape.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-east-cape.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-el-pescadero.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-el-pescadero.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-san-jose-del-cabo-corridor.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-san-jose-del-cabo-corridor.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-san-jose-del-cabo.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-san-jose-del-cabo.html"
+    },
+    {
+      "source": "/houses-villas-for-sale-todos-santos.html",
+      "destination": "/api/community-listings?guide=/houses-villas-for-sale-todos-santos.html"
+    },
+    {
+      "source": "/la-fortuna-east-cape-real-estate.html",
+      "destination": "/api/community-listings?guide=/la-fortuna-east-cape-real-estate.html"
+    },
+    {
+      "source": "/la-ribera-real-estate.html",
+      "destination": "/api/community-listings?guide=/la-ribera-real-estate.html"
+    },
+    {
+      "source": "/land-for-sale-cabo-san-lucas-corridor.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-cabo-san-lucas-corridor.html"
+    },
+    {
+      "source": "/land-for-sale-cabo-san-lucas-pacific-side.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-cabo-san-lucas-pacific-side.html"
+    },
+    {
+      "source": "/land-for-sale-cabo-san-lucas.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-cabo-san-lucas.html"
+    },
+    {
+      "source": "/land-for-sale-cerritos-beach.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-cerritos-beach.html"
+    },
+    {
+      "source": "/land-for-sale-east-cape.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-east-cape.html"
+    },
+    {
+      "source": "/land-for-sale-el-pescadero.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-el-pescadero.html"
+    },
+    {
+      "source": "/land-for-sale-san-jose-del-cabo-corridor.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-san-jose-del-cabo-corridor.html"
+    },
+    {
+      "source": "/land-for-sale-san-jose-del-cabo.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-san-jose-del-cabo.html"
+    },
+    {
+      "source": "/land-for-sale-todos-santos.html",
+      "destination": "/api/community-listings?guide=/land-for-sale-todos-santos.html"
+    },
+    {
+      "source": "/las-mananitas-condos-for-sale.html",
+      "destination": "/api/community-listings?guide=/las-mananitas-condos-for-sale.html"
+    },
+    {
+      "source": "/las-tunas-todos-santos-real-estate.html",
+      "destination": "/api/community-listings?guide=/las-tunas-todos-santos-real-estate.html"
+    },
+    {
+      "source": "/los-barriles-real-estate.html",
+      "destination": "/api/community-listings?guide=/los-barriles-real-estate.html"
+    },
+    {
+      "source": "/misiones-del-cabo-condos-for-sale.html",
+      "destination": "/api/community-listings?guide=/misiones-del-cabo-condos-for-sale.html"
+    },
+    {
+      "source": "/ocean-view-condos-cabo-san-lucas.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-cabo-san-lucas.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-cabo-san-lucas-corridor.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-cabo-san-lucas-corridor.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-cabo-san-lucas-pacific-side.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-cabo-san-lucas-pacific-side.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-cerritos-beach.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-cerritos-beach.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-east-cape.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-east-cape.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-el-pescadero.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-el-pescadero.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-los-barriles.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-los-barriles.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-san-jose-del-cabo-corridor.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-san-jose-del-cabo-corridor.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-san-jose-del-cabo.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-san-jose-del-cabo.html"
+    },
+    {
+      "source": "/ocean-view-condos-for-sale-todos-santos.html",
+      "destination": "/api/community-listings?guide=/ocean-view-condos-for-sale-todos-santos.html"
+    },
+    {
+      "source": "/ocean-view-homes-cabo-san-lucas.html",
+      "destination": "/api/community-listings?guide=/ocean-view-homes-cabo-san-lucas.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-cabo-san-lucas-corridor.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-cabo-san-lucas-corridor.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-cabo-san-lucas-pacific-side.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-cabo-san-lucas-pacific-side.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-cerritos-beach.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-cerritos-beach.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-east-cape.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-east-cape.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-el-pescadero.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-el-pescadero.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-los-barriles.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-los-barriles.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-san-jose-del-cabo-corridor.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-san-jose-del-cabo-corridor.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-san-jose-del-cabo.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-san-jose-del-cabo.html"
+    },
+    {
+      "source": "/ocean-view-houses-villas-for-sale-todos-santos.html",
+      "destination": "/api/community-listings?guide=/ocean-view-houses-villas-for-sale-todos-santos.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-cabo-san-lucas-corridor.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-cabo-san-lucas-corridor.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-cabo-san-lucas-pacific-side.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-cabo-san-lucas-pacific-side.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-cabo-san-lucas.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-cabo-san-lucas.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-cerritos-beach.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-cerritos-beach.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-east-cape.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-east-cape.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-el-pescadero.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-el-pescadero.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-los-barriles.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-los-barriles.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-san-jose-del-cabo-corridor.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-san-jose-del-cabo-corridor.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-san-jose-del-cabo.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-san-jose-del-cabo.html"
+    },
+    {
+      "source": "/ocean-view-land-for-sale-todos-santos.html",
+      "destination": "/api/community-listings?guide=/ocean-view-land-for-sale-todos-santos.html"
+    },
+    {
+      "source": "/san-jose-del-cabo-condos-for-sale-under-750k.html",
+      "destination": "/api/community-listings?guide=/san-jose-del-cabo-condos-for-sale-under-750k.html"
+    },
+    {
+      "source": "/san-jose-del-cabo-corridor-real-estate.html",
+      "destination": "/api/community-listings?guide=/san-jose-del-cabo-corridor-real-estate.html"
+    },
+    {
+      "source": "/san-jose-del-cabo-houses-for-sale-under-2-5-million.html",
+      "destination": "/api/community-listings?guide=/san-jose-del-cabo-houses-for-sale-under-2-5-million.html"
+    },
+    {
+      "source": "/san-jose-del-cabo-land-for-sale-under-500k.html",
+      "destination": "/api/community-listings?guide=/san-jose-del-cabo-land-for-sale-under-500k.html"
+    },
+    {
+      "source": "/zacatitos-real-estate.html",
+      "destination": "/api/community-listings?guide=/zacatitos-real-estate.html"
+    },
+    {
       "source": "/pedregal-real-estate.html",
       "destination": "/api/community-listings?guide=/pedregal-real-estate.html"
     },
@@ -126,6 +478,10 @@
     }
   ],
   "functions": {
+    "api/mls-page.js": {
+      "maxDuration": 30,
+      "includeFiles": "templates/property-search.html"
+    },
     "api/community-listings.js": {
       "maxDuration": 30,
       "includeFiles": "templates/**/*.html"
