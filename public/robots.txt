@@ -98,6 +98,26 @@ User-agent: ChatGPT-User
 # Allow requested reads of these public community listings and guides.
 Allow: /las-cascadas-de-pedregal-condos-for-sale.html
 Allow: /rolling-hills-real-estate.html
+Allow: /pedregal-real-estate.html
+Allow: /cabo-del-sol-real-estate.html
+Allow: /cabo-real-real-estate.html
+Allow: /cabo-san-lucas-country-club-real-estate.html
+Allow: /chileno-bay-real-estate.html
+Allow: /club-campestre-san-jose-real-estate.html
+Allow: /condos-los-cabos-golf-communities.html
+Allow: /costa-palmas-real-estate.html
+Allow: /diamante-real-estate.html
+Allow: /el-dorado-real-estate.html
+Allow: /houses-villas-los-cabos-golf-communities.html
+Allow: /land-los-cabos-golf-communities.html
+Allow: /los-cabos-golf-properties.html
+Allow: /palmilla-real-estate.html
+Allow: /puerto-los-cabos-real-estate.html
+Allow: /querencia-real-estate.html
+Allow: /quivira-real-estate.html
+Allow: /rancho-san-lucas-real-estate.html
+Allow: /san-jose-golf-district-real-estate.html
+Allow: /twin-dolphin-real-estate.html
 Allow: /el-tezal-real-estate.html
 Allow: /el-tezal-condos-for-sale-under-500k.html
 Allow: /el-tezal-houses-for-sale-under-750k.html
