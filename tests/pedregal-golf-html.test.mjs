@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync,existsSync} from 'node:fs';
 import {pagePaths,createCommunityInventory} from '../api/community-listings.js';import {renderListings} from '../api/las-cascadas.js';import {SCOPES,GOLF_COMMUNITIES} from '../public/bir-property-scopes.mjs';
-const paths=pagePaths.filter(p=>!(/rolling-hills|el-tezal/.test(p))),now=Date.parse('2026-10-27T01:00:00Z');
+const paths=["/pedregal-real-estate.html","/cabo-del-sol-real-estate.html","/cabo-real-real-estate.html","/cabo-san-lucas-country-club-real-estate.html","/chileno-bay-real-estate.html","/club-campestre-san-jose-real-estate.html","/condos-los-cabos-golf-communities.html","/costa-palmas-real-estate.html","/diamante-real-estate.html","/el-dorado-real-estate.html","/houses-villas-los-cabos-golf-communities.html","/land-los-cabos-golf-communities.html","/los-cabos-golf-properties.html","/palmilla-real-estate.html","/puerto-los-cabos-real-estate.html","/querencia-real-estate.html","/quivira-real-estate.html","/rancho-san-lucas-real-estate.html","/san-jose-golf-district-real-estate.html","/twin-dolphin-real-estate.html"],now=Date.parse('2026-10-27T01:00:00Z');
 const templates=Object.fromEntries(paths.map(p=>[p,readFileSync(new URL('../templates'+p,import.meta.url),'utf8')]));
 const config=h=>JSON.parse(h.match(/<script id="bir-page-config" type="application\/json">([\s\S]*?)<\/script>/)[1]);
 const fields={city:'City',area:'MLSAreaMajor',community:'Address_co_Community2',subdivision:'SubdivisionName'};

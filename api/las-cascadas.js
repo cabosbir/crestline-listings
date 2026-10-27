@@ -5,6 +5,13 @@ import {currentRows, filterRows} from '../public/bir-property-pages.mjs';
 import {listingCard} from '../public/bir-listing-card.mjs';
 import * as spanishProperties from '../public/bir-property-pages-es.mjs';
 import * as spanishLand from '../public/bir-development-land-es.mjs';
+import '../public/bir-pacific-guide.mjs';
+import * as condos from '../public/bir-condos.mjs';
+import * as homes from '../public/bir-homes.mjs';
+import * as land from '../public/bir-land.mjs';
+import * as oceanCondos from '../public/bir-ocean-condos.mjs';
+import * as oceanHomes from '../public/bir-ocean-homes.mjs';
+const legacyEngines={condos:{read:condos.eligibleCondos,filter:condos.filterCondos},homes:{read:homes.eligibleHomes,filter:homes.filterHomes},land:{read:land.eligibleLand,filter:land.filterLand},oceanCondos:{read:oceanCondos.eligibleCondos,filter:oceanCondos.filterCondos},oceanHomes:{read:oceanHomes.eligibleHomes,filter:oceanHomes.filterHomes}};
 
 export const pagePath='/las-cascadas-de-pedregal-condos-for-sale.html';
 const templatePath=join(process.cwd(),'templates',pagePath.slice(1));
@@ -19,8 +26,9 @@ export function renderListings(template,data,now=Date.now()){
  const config=JSON.parse(template.match(/<script id="bir-page-config" type="application\/json">([\s\S]*?)<\/script>/)[1]);
  const spanish=/<html\b[^>]*lang="es(?:-[^"]*)?"/.test(template),isCascadas=config.path===pagePath.slice(1);
  const route='/'+config.path;
- const spanishEngine=spanish?(config.path==='es/terrenos-en-venta-el-tezal.html'?spanishLand:spanishProperties):null;
- const select=spanishEngine||{currentRows,filterRows};
+ const spanishEngine=spanish?(template.includes('bir-development-land-es.mjs')?spanishLand:spanishProperties):null;
+ const legacy=legacyEngines[config.engine];
+ const select=legacy?{currentRows:(data,config,now)=>legacy.read(data,now).map(row=>({...row,kind:config.kind})),filterRows:legacy.filter}:spanishEngine||{currentRows,filterRows};
  const card=spanishEngine?.listingCardEs||listingCard;
  const unavailable=isCascadas?cascadasUnavailable:spanish?'No podemos confirmar la disponibilidad actual. Consulta a Don o vuelve a intentarlo en unos momentos.':'We cannot confirm current availability right now. Please ask Don for the latest listings or try again shortly.';
  let rows=[],status=unavailable,headers={'Cache-Control':'no-store','Vercel-CDN-Cache-Control':'no-store'};
@@ -32,13 +40,13 @@ export function renderListings(template,data,now=Date.now()){
   status=`${count} · ${spanish?'Disponibilidad consultada':'Availability checked'} <time datetime="${new Date(data.fetchedAt).toISOString()}">${checked} ${spanish?'hora de Cabo':'Cabo time'}</time>.${delayed}`;
   headers=snapshotCacheHeaders(data,false,()=>now);
  }
- const cards=rows.map(row=>card(row,{href:route+'?property='+encodeURIComponent(row.mls)+'#properties'})).join('');
+ const cards=rows.map(row=>{const rendered=card(row,{href:route+'?'+(config.detail||'property')+'='+encodeURIComponent(row.mls)+'#'+(config.anchor||'properties')});return config.detail?rendered.replaceAll('data-property-details=','data-'+config.detail+'-details='):rendered;}).join('');
  let html=template.replace('<!--BIR_LISTING_STATUS-->',()=>status).replace('<!--BIR_LISTING_CARDS-->',()=>cards);
  if(data&&rows.length===0)html=html.replace(/<p\b(?=[^>]*\bid="ov-empty")[^>]*>[\s\S]*?<\/p>/,element=>element.replace(/\s+hidden(?:="[^"]*")?/, '').replace('></p>', '>'+noListings+'</p>'));
  return {html,headers,rows};
 }
 
-export function createHandler({load=storedSnapshot,template=loadTemplate,now=Date.now}={}){
+export function createHandler({load=storedSnapshot,template=loadTemplate,now=Date.now,render=renderListings}={}){
  return async(req,res)=>{
   res.setHeader('Content-Type','text/html; charset=utf-8');
   res.setHeader('X-Content-Type-Options','nosniff');
@@ -50,8 +58,8 @@ export function createHandler({load=storedSnapshot,template=loadTemplate,now=Dat
   let html;
   try{html=await template();}catch{return res.status(503).send('This page is temporarily unavailable. Please try again shortly.');}
   let result;
-  try{result=renderListings(html,await load(),now());}
-  catch{result=renderListings(html,null,now());}
+  try{result=render(html,await load(),now(),req);}
+  catch{result=render(html,null,now(),req);}
   for(const [key,value] of Object.entries(result.headers))res.setHeader(key,value);
   res.status(200);
   return req.method==='HEAD'?res.end():res.send(result.html);
