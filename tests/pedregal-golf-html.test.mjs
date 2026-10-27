@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync,existsSync} from 'node:fs';
-import {pagePaths} from '../api/community-listings.js';import {renderListings} from '../api/las-cascadas.js';import {SCOPES,GOLF_COMMUNITIES} from '../public/bir-property-scopes.mjs';
+import {pagePaths,createCommunityInventory} from '../api/community-listings.js';import {renderListings} from '../api/las-cascadas.js';import {SCOPES,GOLF_COMMUNITIES} from '../public/bir-property-scopes.mjs';
 const paths=pagePaths.filter(p=>!(/rolling-hills|el-tezal/.test(p))),now=Date.parse('2026-10-27T01:00:00Z');
 const templates=Object.fromEntries(paths.map(p=>[p,readFileSync(new URL('../templates'+p,import.meta.url),'utf8')]));
 const config=h=>JSON.parse(h.match(/<script id="bir-page-config" type="application\/json">([\s\S]*?)<\/script>/)[1]);
@@ -30,4 +30,22 @@ test('all twenty routes retain complete guides and distinguish zero inventory fr
 test('Pedregal preserves its existing guide, full MLS choices and shared inquiry dialog',()=>{
  const h=templates['/pedregal-real-estate.html'];for(const s of ['id="living"','id="pedregal-comparison"','id="explore-rolling-hills"','id="questions"','id="local-help"','community=Pedregal+CSL','data-bir-inquiry','bir-contact-options.js','bir-property-layout.js','id="ov-filters"'])assert.ok(h.includes(s),s);
  assert.equal((h.match(/id="ov-grid"/g)||[]).length,1);assert.equal((h.match(/id="bir-page-config"/g)||[]).length,1);
+});
+
+
+test('simultaneous community pages share one public inventory read and retain its timestamp',async()=>{
+ let reads=0,release;const gate=new Promise(resolve=>{release=resolve});const snapshot=data([]);
+ const load=createCommunityInventory(async()=>{reads++;await gate;return snapshot;},()=>now);
+ const requests=pagePaths.map(()=>load());assert.equal(reads,1);release();
+ const results=await Promise.all(requests);assert.ok(results.every(x=>x===snapshot));assert.equal(reads,1);
+ assert.equal(await load(),snapshot);assert.equal(reads,1);
+});
+
+test('shared inventory survives a brief read failure but rejects expired inventory without a provider fallback',async()=>{
+ let time=now,reads=0;const snapshot=data([]);
+ const load=createCommunityInventory(async()=>{if(++reads>1)throw Error('Temporary storage failure');return snapshot;},()=>time);
+ assert.equal(await load(),snapshot);time+=180000;
+ assert.equal(await load(),snapshot);assert.equal(reads,2);assert.equal((await load()).fetchedAt,snapshot.fetchedAt);assert.equal(reads,2);
+ time+=3600000;await assert.rejects(load(),/Waiting for public inventory/);assert.equal(reads,3);
+ await assert.rejects(load(),/cooling down/);assert.equal(reads,3);
 });
