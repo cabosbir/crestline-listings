@@ -96,6 +96,7 @@ Disallow: /
 
 User-agent: ChatGPT-User
 # Allow requested reads of these public community listings and guides.
+Allow: /casa-sol-y-luna-cerritos.html
 Allow: /las-cascadas-de-pedregal-condos-for-sale.html
 Allow: /property-search.html
 Allow: /rolling-hills-real-estate.html
