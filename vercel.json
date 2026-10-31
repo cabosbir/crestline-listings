@@ -482,6 +482,10 @@
     }
   ],
   "functions": {
+    "api/featured-home.js": {
+      "maxDuration": 30,
+      "includeFiles": "templates/casa-sol-y-luna-cerritos.html"
+    },
     "api/mls-page.js": {
       "maxDuration": 30,
       "includeFiles": "templates/property-search.html"
@@ -499,10 +503,6 @@
     },
     "api/**/*.js": {
       "maxDuration": 30
-    },
-    "api/featured-home.js": {
-      "maxDuration": 30,
-      "includeFiles": "templates/casa-sol-y-luna-cerritos.html"
     }
   },
   "headers": [
