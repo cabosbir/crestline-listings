@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/casa-sol-y-luna-cerritos.html",
+      "destination": "/api/featured-home"
+    },
+    {
       "source": "/las-cascadas-de-pedregal-condos-for-sale.html",
       "destination": "/api/las-cascadas"
     },
@@ -495,6 +499,10 @@
     },
     "api/**/*.js": {
       "maxDuration": 30
+    },
+    "api/featured-home.js": {
+      "maxDuration": 30,
+      "includeFiles": "templates/casa-sol-y-luna-cerritos.html"
     }
   },
   "headers": [
