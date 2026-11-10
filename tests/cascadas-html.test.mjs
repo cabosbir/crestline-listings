@@ -58,7 +58,7 @@ test('handler serves the full guide during outages, handles HEAD and rejects wri
 });
 test('the public URL routes to its bundled template and retains search and contact features',()=>{
  const config=JSON.parse(readFileSync(new URL('../vercel.json',import.meta.url),'utf8'));
- assert.deepEqual(config.rewrites[0],{source:pagePath,destination:'/api/las-cascadas'});
+ assert.deepEqual(config.rewrites.find(rule=>rule.source===pagePath),{source:pagePath,destination:'/api/las-cascadas'});
  assert.equal(existsSync(new URL('../public'+pagePath,import.meta.url)),false);
  assert.equal(config.functions['api/las-cascadas.js'].includeFiles,'templates'+pagePath);
  assert.match(template,new RegExp('rel="canonical" href="https://www.bircabo.com'+pagePath));
