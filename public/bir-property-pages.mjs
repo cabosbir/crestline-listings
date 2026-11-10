@@ -1,4 +1,5 @@
 import {listingCard} from './bir-listing-card.mjs';
+import {cascadasMarketSummary} from './bir-cascadas-market.mjs';
 import {priceSortButton,setupPriceSort} from './bir-property-sort.mjs';
 import { SCOPES, GOLF_COMMUNITIES } from './bir-property-scopes.mjs';
 import {collectionLocation,sortByPrice,matchesCollectionLocation,setupCollectionLocations,COLLECTION_LOCATION_FIELDS,restoreCollectionFilters,rememberCollectionFilters} from './bir-collection-utils.mjs';
@@ -42,6 +43,7 @@ if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
  const config=JSON.parse(document.getElementById('bir-page-config').textContent),grid=document.getElementById('ov-grid'),status=document.getElementById('ov-status'),more=document.getElementById('ov-more'),empty=document.getElementById('ov-empty'),form=document.getElementById('ov-filters');
  const emptyMessage=empty.textContent||empty.dataset.emptyMessage||'';
  const simpleListings=config.simpleListings===true;
+ const marketSummary=document.getElementById('cascadas-market-summary');
  if(!simpleListings)setupPriceSort(status,document.getElementById('ov-sort'));
  const details=setupPropertyDetails({completedOnly:true,returnLabel:'Back to your results'}),photos=new Map();let rows=[],limit=12,busy=false,expiry,version=0,checked='';
  const controls=[...COLLECTION_LOCATION_FIELDS,['kind','ov-kind',''],['golf','ov-golf',''],['price','ov-price','all'],['beds','ov-beds','0'],['size','ov-size','0'],['view','ov-view',''],['sort','ov-sort',simpleListings?'price-asc':'price-desc']];
@@ -58,7 +60,7 @@ if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
  if(stamp!==version)return;for(const row of visible){const container=[...grid.querySelectorAll('[data-mls]')].find(x=>x.dataset.mls===row.mls)?.querySelector('.ov-image-link');if(!container)continue;const src=photos.get(row.key);if(src&&!container.querySelector('img')){const img=document.createElement('img');img.src=src;img.alt=row.name+' — listing photo';img.width=600;img.height=400;img.loading='lazy';container.replaceChildren(img);}else if(!src){const span=container.querySelector('span');if(span)span.textContent='Open photos & details';}}}
  function render(){if(!simpleListings)rememberCollectionFilters(controls);const selected=filterRows(rows,choices()),visible=selected.slice(0,limit),stamp=++version;grid.innerHTML=visible.map(card).join('');more.hidden=selected.length<=limit;more.textContent=`Show ${Math.min(12,Math.max(0,selected.length-limit))} more properties`;empty.hidden=selected.length!==0;empty.textContent=selected.length===0?emptyMessage:'';
  status.innerHTML=simpleListings?`<span class="ov-checked">Availability checked ${esc(checked)}.</span>`:`<span>${selected.length} matching ${selected.length===1?'property':'properties'} · Showing ${visible.length}</span>${priceSortButton(choices().sort)}<span class="ov-checked">Availability checked ${esc(checked)}.</span>`;details.update(rows);void loadPhotos(visible,stamp);}
- function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);}
+ function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);if(marketSummary)marketSummary.innerHTML=cascadasMarketSummary(null);}
  async function refresh(){
   if(busy)return;busy=true;
   try{
@@ -68,6 +70,7 @@ if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
    const data=await response.json(),serverNow=snapshotResponseTime(response.headers,performance.now()-started);
    rows=currentRows(data,config,serverNow);
    const inventoryAge=serverNow-Date.parse(data.fetchedAt);
+   if(marketSummary)marketSummary.innerHTML=cascadasMarketSummary(rows,data.fetchedAt,inventoryAge>=300000);
    locations.refresh();
    checked=new Date(data.fetchedAt).toLocaleString('en-US',{timeZone:'America/Mazatlan',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' Cabo time';
    if(inventoryAge>=300000)checked+=' (update delayed; confirm with Don)';
