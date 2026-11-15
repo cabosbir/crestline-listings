@@ -93,6 +93,11 @@ export function publicListing(row,fullPhotos=false,includeReservations=false) {
   // Keep the verified corridor area in its zone when a listing has an inconsistent City.
   if(result.MLSAreaMajor==='CSL-Corr. Oceanside'&&result.City==='Cabo San Lucas')result.City='Cabo Corridor';
   result.Address_co_Community2=communityFields.map(k=>row[k]).find(v=>typeof v==='string'&&v.trim()&&!/^\*+$/.test(v))||null;
+  if(typeof result.UnparsedAddress==='string'){
+    // Repair UTF-8 accents that the MLS sometimes supplies as Latin-1 text.
+    result.UnparsedAddress=result.UnparsedAddress.replace(/[\u00c2\u00c3][\u0080-\u00bf]/g, pair =>
+      Buffer.from(pair,'latin1').toString('utf8'));
+  }
   if(row.InternetAddressDisplayYN===false){
     result.UnparsedAddress='Address available on request';
     result.Latitude=null;result.Longitude=null;

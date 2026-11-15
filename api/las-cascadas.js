@@ -45,6 +45,7 @@ export function renderListings(template,data,now=Date.now()){
  let html=template.replace('<!--BIR_LISTING_STATUS-->',()=>status).replace('<!--BIR_LISTING_CARDS-->',()=>cards);
  if(isCascadas)html=html.replace('<!--BIR_CASCADAS_MARKET-->',()=>cascadasMarketSummary(data?rows:null,data?.fetchedAt,data?now-Date.parse(data.fetchedAt)>=300000:false));
  if(data&&rows.length===0)html=html.replace(/<p\b(?=[^>]*\bid="ov-empty")[^>]*>[\s\S]*?<\/p>/,element=>element.replace(/\s+hidden(?:="[^"]*")?/, '').replace('></p>', '>'+noListings+'</p>'));
+ if(!data||rows.length>0)html=html.replace(/(<p\b(?=[^>]*\bid="ov-empty")[^>]*>)[\s\S]*?<\/p>/,'$1</p>');
  return {html,headers,rows};
 }
 

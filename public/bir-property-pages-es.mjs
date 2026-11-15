@@ -4,6 +4,7 @@ import {priceSortButton,setupPriceSort} from './bir-property-sort-es.mjs';
 import { SCOPES, GOLF_COMMUNITIES } from './bir-property-scopes.mjs';
 import {CABO_AREAS,collectionLocation,sortByPrice,matchesCollectionLocation,setupCollectionLocations,COLLECTION_LOCATION_FIELDS,restoreCollectionFilters,rememberCollectionFilters} from './bir-collection-utils-es.mjs';
 import {propertyDetailsHref,setupPropertyDetails} from './bir-property-details-es.mjs';
+const emptyMessage='No hay anuncios públicos actuales que coincidan con esta selección. Amplía la búsqueda, elimina un filtro o pide alternativas a BIR. Esto no descarta opciones privadas.';
 export const WATER_VIEWS=['Ocean','Oceanfront','Arch','Marina'];
 const fields={city:'City',area:'MLSAreaMajor',community:'Address_co_Community2',subdivision:'SubdivisionName'};
 export function matchesRule(row,rule){
@@ -56,7 +57,7 @@ if(typeof document!=='undefined'&&document.getElementById('bir-page-config')){
   for(const x of data.results||[]){if(!requested.has(x.ListingKey)||x.StandardStatus!=='Active'||x.InternetEntireListingDisplayYN===false||!['Condos','Houses','Land'].includes(x.PropertyType)||(x.PropertyType!=='Land'&&x.General_sp_Description_co_Construction!=='Completed'))continue;const src=x.Media?.[0]?.MediaURL;if(typeof src==='string'&&src.startsWith('https://'))photos.set(x.ListingKey,src);}
  }catch{/* Details and contact remain available if a photo service is unavailable. */}}
  if(stamp!==version)return;for(const row of visible){const container=[...grid.querySelectorAll('[data-mls]')].find(x=>x.dataset.mls===row.mls)?.querySelector('.ov-image-link');if(!container)continue;const src=photos.get(row.key);if(src&&!container.querySelector('img')){const img=document.createElement('img');img.src=src;img.alt=row.name+' — foto de la propiedad';img.width=600;img.height=400;img.loading='lazy';container.replaceChildren(img);}else if(!src){const span=container.querySelector('span');if(span)span.textContent='Ver fotos y detalles';}}}
- function render(){if(!simpleListings)rememberCollectionFilters(controls);const selected=filterRows(rows,choices()),visible=selected.slice(0,limit),stamp=++version;grid.innerHTML=visible.map(card).join('');more.hidden=selected.length<=limit;more.textContent=`Ver ${Math.min(12,Math.max(0,selected.length-limit))} propiedades más`;empty.hidden=selected.length!==0;
+ function render(){if(!simpleListings)rememberCollectionFilters(controls);const selected=filterRows(rows,choices()),visible=selected.slice(0,limit),stamp=++version;grid.innerHTML=visible.map(card).join('');more.hidden=selected.length<=limit;more.textContent=`Ver ${Math.min(12,Math.max(0,selected.length-limit))} propiedades más`;empty.hidden=selected.length!==0;empty.textContent=selected.length===0?emptyMessage:'';
  status.innerHTML=simpleListings?`<span class="ov-checked">Disponibilidad consultada: ${esc(checked)}.</span>`:`<span>${selected.length} ${selected.length===1?'propiedad encontrada':'propiedades encontradas'} · Mostrando ${visible.length}</span>${priceSortButton(choices().sort)}<span class="ov-checked">Disponibilidad consultada: ${esc(checked)}.</span>`;details.update(rows);void loadPhotos(visible,stamp);}
  function clear(message){rows=[];version++;grid.replaceChildren();more.hidden=true;empty.hidden=true;status.textContent=message;details.update([]);}
  async function refresh(){
