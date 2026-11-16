@@ -28,6 +28,8 @@ export function currentRows(data,config,now=Date.now()){
   community:x.InternetAddressDisplayYN===false?'Address on request':x.SubdivisionName||'Subdivision on request',
   price:Number.isFinite(x.ListPrice)&&x.ListPrice>0?x.ListPrice:null,beds:x.BedroomsTotal,baths:x.BathroomsTotalDecimal??x.BathroomsFull,
   lotM2:Number.isFinite(x.General_sp_Description_co_Lot_sp_M2)&&x.General_sp_Description_co_Lot_sp_M2>0?x.General_sp_Description_co_Lot_sp_M2:null,
+  interiorSqFt:x.General_sp_Description_co_AC_sp_SqFt,
+  modifiedAt:x.ModificationTimestamp,
   view:x.General_sp_Description_co_Primary_sp_View==='Select One'?'':x.General_sp_Description_co_Primary_sp_View||'',office:x.ListOfficeName||'',golf:golfIds(x)}));
 }
 export function filterRows(rows,{kind='',golf='',price='all',beds='0',size='0',maxSize='0',view='',sort='price-desc',...location}={}){

@@ -30,6 +30,19 @@ export function cascadasPlanLinks(html) {
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char =>
   ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'})[char]);
 
+// Parking details checked against the public MLS listing for each revision.
+const verifiedParking = {
+  "20251020181417672130000000": ["2026-10-20T21:46:39Z","1 enclosed garage space + 1 underground space"],
+  "20260109233353749431000000": ["2026-07-25T21:28:11Z","1 private enclosed garage space + 1 general parking space"],
+  "20260403202143087547000000": ["2026-10-31T17:46:37Z","Private 2-car garage"],
+  "20260521020637115794000000": ["2026-07-12T23:35:37Z","Enclosed 1-car garage + 1 parking space"],
+  "20260607221244257570000000": ["2026-06-19T17:34:20Z","2 garage spaces"],
+  "20260702175259016894000000": ["2026-07-05T22:30:56Z","2 underground parking spaces"],
+  "20261002013434742478000000": ["2026-10-30T23:25:34Z","2 garage spaces"],
+  "20261027233813174620000000": ["2026-11-14T00:15:04Z","2 underground parking spaces"],
+  "20261113013618777607000000": ["2026-11-13T09:01:20Z","2 garage spaces"]
+};
+
 export function cascadasComparison(rows, plans) {
   if (!rows) return '<p>Current availability could not be confirmed.</p>';
   if (!rows.length) return '<p>There are no active public MLS listings in this collection.</p>';
@@ -44,12 +57,16 @@ export function cascadasComparison(rows, plans) {
     const unit = possibleUnits.size === 1 ? [...possibleUnits][0] : null;
     const plan = unit && plans.get(unit);
     const price = Number.isFinite(row.price) && row.price > 0 ? '$' + row.price.toLocaleString('en-US') + ' USD' : 'On request';
+    const interior = Number.isFinite(row.interiorSqFt) && row.interiorSqFt > 0
+      ? Math.round(row.interiorSqFt).toLocaleString('en-US') + ' sq ft' : 'Confirm with BIR';
+    const parking = verifiedParking[row.key];
+    const parkingText = parking && Date.parse(parking[0]) === Date.parse(row.modifiedAt) ? parking[1] : 'Confirm with BIR';
     const listing = row.mls ? '<a href="?property=' + encodeURIComponent(row.mls) + '#properties">' + escapeHtml(row.mls) + '</a>' : 'On request';
     return '<tr><th scope="row">' + (unit ? 'Unit ' + unit : 'Confirm with BIR') +
-      '</th><td>' + price + '</td><td>' + listing + '</td><td>' +
+      '</th><td>' + price + '</td><td>' + listing + '</td><td>' + interior + '</td><td>' + parkingText + '</td><td>' +
       (plan ? '<a href="' + escapeHtml(plan) + '" aria-label="View floor plan for Unit ' + unit + '">View plan</a>' : 'Confirm with BIR') + '</td></tr>';
   });
   return '<table aria-labelledby="cascadas-compare-title" width="100%" cellpadding="8"><thead><tr>' +
-    '<th scope="col">Unit</th><th scope="col">Asking price</th><th scope="col">MLS number</th><th scope="col">Floor plan</th>' +
+    '<th scope="col">Unit</th><th scope="col">Asking price</th><th scope="col">MLS number</th><th scope="col">Indoor area</th><th scope="col">Parking (MLS)</th><th scope="col">Floor plan</th>' +
     '</tr></thead><tbody>' + entries.join('') + '</tbody></table>';
 }
