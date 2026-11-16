@@ -231,7 +231,7 @@ const Index = () => {
           <div className="rounded-xl bg-blue-50 border border-blue-200 p-6">
             <h3 className="text-xl font-bold text-blue-950">Know a subdivision already? Go straight to it.</h3>
             <p className="mt-2 mb-5 text-slate-700 leading-relaxed">Our MLS search lets you start with a zone and narrow down to area, community and subdivision—or choose a subdivision directly. Use the map, save up to 50 favorites and compare up to three properties side by side.</p>
-            <Button asChild size="lg" className="bg-blue-900 hover:bg-blue-800 text-white"><a href="/property-search.html">Explore the MLS Map <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" /></a></Button>
+            <Button asChild size="lg" className="bg-blue-900 hover:bg-blue-800 text-white"><a href="/property-search.html">Search Cabo MLS <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" /></a></Button>
             <p className="mt-4 text-base text-slate-700">No signup required. Favorites stay saved in this browser; clearing browser data removes them.</p>
           </div>
         </div>
