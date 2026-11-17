@@ -3,14 +3,14 @@ import {join} from 'node:path';
 import {createHandler} from './las-cascadas.js';
 import {createCommunityInventory} from './community-listings.js';
 import {snapshotCacheHeaders} from './search-pilot.js';
-import {defaults,filterListings} from '../public/bir-pilot-search.mjs';
+import {defaults,filterListings,TODOS_SANTOS_COMMUNITIES} from '../public/bir-pilot-search.mjs';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>Number.isFinite(n)&&n>0?'$'+Math.round(n).toLocaleString('en-US')+' USD':'Price on request';
 export function mlsPageRows(data,query={},now=Date.now()){
  const age=now-Date.parse(data.fetchedAt);
  if(data.complete!==true||!Array.isArray(data.results)||data.total!==data.results.length||new Set(data.results.map(x=>x.ListingKey)).size!==data.total||!Number.isFinite(age)||age< -60000||age>=3600000)throw Error('Current inventory unavailable');
  const type=({land:'Land',houses:'Houses',house:'Houses',homes:'Houses',condos:'Condos',condo:'Condos'})[String(query.type||'').toLowerCase()]||'';
- const community=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos'].includes(query.community)?query.community:'';
+ const community=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos','Todos Santos','Todos Santos North',TODOS_SANTOS_COMMUNITIES].includes(query.community)?query.community:'';
  const subdivision=query.subdivision==='Cascadas'?'Cascadas':'';
  const mls=typeof query.mls==='string'&&query.mls.split(',').length<=50&&query.mls.split(',').every(id=>/^[\d-]{3,20}$/.test(id))?query.mls:'';
  return filterListings(data.results.filter(p=>p.PropertyType!=='Reservations Only'),{...defaults(),PropertyType:type,Address_co_Community2:community,SubdivisionName:subdivision,query:mls}).sort((a,b)=>String(b.ModificationTimestamp||'').localeCompare(String(a.ModificationTimestamp||'')));
