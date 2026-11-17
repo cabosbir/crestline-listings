@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/todos-santos-real-estate.html",
+      "destination": "/api/todos-santos-guide"
+    },
+    {
       "source": "/cerritos-beach-real-estate.html",
       "destination": "/api/cerritos-guide"
     },
@@ -508,6 +512,10 @@
     "api/cerritos-guide.js": {
       "maxDuration": 30,
       "includeFiles": "templates/cerritos-beach-real-estate.html"
+    },
+    "api/todos-santos-guide.js": {
+      "maxDuration": 30,
+      "includeFiles": "templates/todos-santos-real-estate.html"
     },
     "api/**/*.js": {
       "maxDuration": 30

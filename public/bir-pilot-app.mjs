@@ -1,5 +1,5 @@
 import {snapshotResponseTime} from './bir-inventory-time.mjs';
-import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates, convertSizeUnits} from './bir-pilot-search.mjs';
+import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates, convertSizeUnits,TODOS_SANTOS_COMMUNITIES} from './bir-pilot-search.mjs';
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
 document.querySelector('.intro').textContent='Choose a property type, then narrow your search by zone, area, community and subdivision. Each choice narrows the options below it. If you already know the subdivision you want, select it directly.';
@@ -27,7 +27,7 @@ const initialType = ({land:'Land',houses:'Houses',house:'Houses',homes:'Houses',
 const typeLabel=document.querySelector('label[for="PropertyType"]');typeLabel.textContent='TYPE';
 $('filters').prepend(typeLabel,$('PropertyType'));
 const requestedCommunity=new URLSearchParams(location.search).get('community');
-const initialCommunity=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos'].includes(requestedCommunity)?requestedCommunity:'';
+const initialCommunity=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos','Todos Santos','Todos Santos North',TODOS_SANTOS_COMMUNITIES].includes(requestedCommunity)?requestedCommunity:'';
 const initialSubdivision=new URLSearchParams(location.search).get('subdivision')==='Cascadas'?'Cascadas':'';
 let filters={...defaults(),PropertyType:initialType,Address_co_Community2:initialCommunity,SubdivisionName:initialSubdivision},rows=[],matches=[],shown=24,map,layer;
 const alertParam=new URLSearchParams(location.hash.slice(1)).get('alert');
