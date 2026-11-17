@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/cerritos-beach-real-estate.html",
+      "destination": "/api/cerritos-guide"
+    },
+    {
       "source": "/casa-sol-y-luna-cerritos.html",
       "destination": "/api/featured-home"
     },
@@ -503,6 +507,10 @@
     },
     "api/**/*.js": {
       "maxDuration": 30
+    },
+    "api/cerritos-guide.js": {
+      "maxDuration": 30,
+      "includeFiles": "templates/cerritos-beach-real-estate.html"
     }
   },
   "headers": [
