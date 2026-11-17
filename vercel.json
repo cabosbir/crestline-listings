@@ -505,12 +505,12 @@
     "api/**/*.ts": {
       "maxDuration": 30
     },
-    "api/**/*.js": {
-      "maxDuration": 30
-    },
     "api/cerritos-guide.js": {
       "maxDuration": 30,
       "includeFiles": "templates/cerritos-beach-real-estate.html"
+    },
+    "api/**/*.js": {
+      "maxDuration": 30
     }
   },
   "headers": [
