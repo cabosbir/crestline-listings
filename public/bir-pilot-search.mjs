@@ -1,4 +1,10 @@
 export const locationFields = ['City', 'MLSAreaMajor', 'Address_co_Community2', 'SubdivisionName'];
+export const TODOS_SANTOS_COMMUNITIES='Todos Santos + Todos Santos North';
+function matchesLocation(row,filters,key){
+  if(!filters[key])return true;
+  if(key==='Address_co_Community2'&&filters[key]===TODOS_SANTOS_COMMUNITIES)return row.MLSAreaMajor==='Pacific North'&&['Todos Santos','Todos Santos North'].includes(row.Address_co_Community2);
+  return row[key]===filters[key];
+}
 export const defaults = () => ({City:'', MLSAreaMajor:'', Address_co_Community2:'', SubdivisionName:'', PropertyType:'', minPrice:'', maxPrice:'', beds:'', view:'', financing:false, query:'', construction:'', minLot:'', maxLot:'', areaUnit:'ft2', minTotal:'', maxTotal:'', minAC:'', maxAC:''});
 export function changeLocation(filters, field, value) {
   const next = {...filters, [field]:value};
@@ -9,7 +15,10 @@ export function changeLocation(filters, field, value) {
 }
 export function locationOptions(rows, filters, field) {
   const parents = locationFields.slice(0, locationFields.indexOf(field));
-  return [...new Set(rows.filter(p => parents.every(k => !filters[k] || p[k] === filters[k])).map(p => p[field]).filter(Boolean))].sort();
+  const eligible=rows.filter(p=>parents.every(k=>matchesLocation(p,filters,k)));
+  const values=[...new Set(eligible.map(p=>p[field]).filter(Boolean))];
+  if(field==='Address_co_Community2'&&eligible.some(p=>matchesLocation(p,{Address_co_Community2:TODOS_SANTOS_COMMUNITIES},field)))values.push(TODOS_SANTOS_COMMUNITIES);
+  return values.sort();
 }
 export function lotSquareMeters(p) {
   const value=p.General_sp_Description_co_Lot_sp_M2;
@@ -42,7 +51,7 @@ export function filterListings(rows, f) {
   const query = String(f.query || '').trim();
   const mlsNumbers = new Set(query.toLowerCase().replace(/[‐-―−]/g, '-').split(/[,;\s]+/).filter(Boolean));
   return rows.filter(p => p.StandardStatus === 'Active' && p.InternetEntireListingDisplayYN !== false)
-    .filter(p => locationFields.every(k => !f[k] || p[k] === f[k]))
+    .filter(p => locationFields.every(k => matchesLocation(p,f,k)))
     .filter(p => !f.PropertyType || p.PropertyType === f.PropertyType)
     .filter(p => !f.minPrice || (p.ListPrice != null && Number(p.ListPrice) >= Number(f.minPrice)))
     .filter(p => !f.maxPrice || (p.ListPrice != null && Number(p.ListPrice) <= Number(f.maxPrice)))
