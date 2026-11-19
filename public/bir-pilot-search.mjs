@@ -1,11 +1,27 @@
 export const locationFields = ['City', 'MLSAreaMajor', 'Address_co_Community2', 'SubdivisionName'];
 export const TODOS_SANTOS_COMMUNITIES='Todos Santos + Todos Santos North';
+export const ALL_CABO_LOCATIONS='All Cabo locations';
+export const CABO_CORRIDORS='Tourist Corridor';
+export const HOMES_CONDOS_LAND='Homes, condos & land';
+const caboCities=['Cabo San Lucas','San Jose del Cabo','Cabo Corridor','San Jose Corridor'];
 function matchesLocation(row,filters,key){
   if(!filters[key])return true;
+  if(key==='City'&&filters[key]===ALL_CABO_LOCATIONS)return caboCities.includes(row.City);
+  if(key==='City'&&filters[key]===CABO_CORRIDORS)return ['Cabo Corridor','San Jose Corridor'].includes(row.City);
   if(key==='Address_co_Community2'&&filters[key]===TODOS_SANTOS_COMMUNITIES)return row.MLSAreaMajor==='Pacific North'&&['Todos Santos','Todos Santos North'].includes(row.Address_co_Community2);
   return row[key]===filters[key];
 }
 export const defaults = () => ({City:'', MLSAreaMajor:'', Address_co_Community2:'', SubdivisionName:'', PropertyType:'', minPrice:'', maxPrice:'', beds:'', view:'', financing:false, query:'', construction:'', minLot:'', maxLot:'', areaUnit:'ft2', minTotal:'', maxTotal:'', minAC:'', maxAC:''});
+// Use the same entry selections for readable HTML and the interactive search.
+export function searchEntryFilters(query={}) {
+  const type=typeof query.type==='string'?query.type.toLowerCase():'';
+  const zone=typeof query.zone==='string'?query.zone:'';
+  const types={land:'Land',houses:'Houses',house:'Houses',homes:'Houses',condos:'Condos',condo:'Condos','homes-condos-land':HOMES_CONDOS_LAND};
+  const zones={'all-cabo':ALL_CABO_LOCATIONS,'cabo-san-lucas':'Cabo San Lucas','san-jose-del-cabo':'San Jose del Cabo',corridor:CABO_CORRIDORS};
+  const community=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos','Todos Santos','Todos Santos North',TODOS_SANTOS_COMMUNITIES].includes(query.community)?query.community:'';
+  const mls=typeof query.mls==='string'&&query.mls.split(',').length<=50&&query.mls.split(',').every(id=>/^[\d-]{3,20}$/.test(id))?query.mls:'';
+  return {...defaults(),City:Object.hasOwn(zones,zone)?zones[zone]:'',PropertyType:Object.hasOwn(types,type)?types[type]:'',Address_co_Community2:community,SubdivisionName:query.subdivision==='Cascadas'?'Cascadas':'',query:mls};
+}
 export function changeLocation(filters, field, value) {
   const next = {...filters, [field]:value};
   const index = locationFields.indexOf(field);
@@ -17,6 +33,7 @@ export function locationOptions(rows, filters, field) {
   const parents = locationFields.slice(0, locationFields.indexOf(field));
   const eligible=rows.filter(p=>parents.every(k=>matchesLocation(p,filters,k)));
   const values=[...new Set(eligible.map(p=>p[field]).filter(Boolean))];
+  if(field==='City')for(const group of [ALL_CABO_LOCATIONS,CABO_CORRIDORS])if(eligible.some(p=>matchesLocation(p,{City:group},field)))values.push(group);
   if(field==='Address_co_Community2'&&eligible.some(p=>matchesLocation(p,{Address_co_Community2:TODOS_SANTOS_COMMUNITIES},field)))values.push(TODOS_SANTOS_COMMUNITIES);
   return values.sort();
 }
@@ -52,7 +69,7 @@ export function filterListings(rows, f) {
   const mlsNumbers = new Set(query.toLowerCase().replace(/[‐-―−]/g, '-').split(/[,;\s]+/).filter(Boolean));
   return rows.filter(p => p.StandardStatus === 'Active' && p.InternetEntireListingDisplayYN !== false)
     .filter(p => locationFields.every(k => matchesLocation(p,f,k)))
-    .filter(p => !f.PropertyType || p.PropertyType === f.PropertyType)
+    .filter(p => !f.PropertyType || (f.PropertyType===HOMES_CONDOS_LAND?['Houses','Condos','Land'].includes(p.PropertyType):p.PropertyType === f.PropertyType))
     .filter(p => !f.minPrice || (p.ListPrice != null && Number(p.ListPrice) >= Number(f.minPrice)))
     .filter(p => !f.maxPrice || (p.ListPrice != null && Number(p.ListPrice) <= Number(f.maxPrice)))
     .filter(p => !f.beds || (p.BedroomsTotal != null && Number(p.BedroomsTotal) >= Number(f.beds)))

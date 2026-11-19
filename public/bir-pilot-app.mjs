@@ -1,5 +1,5 @@
 import {snapshotResponseTime} from './bir-inventory-time.mjs';
-import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates, convertSizeUnits,TODOS_SANTOS_COMMUNITIES} from './bir-pilot-search.mjs';
+import {defaults, locationFields, changeLocation, locationOptions, filterListings, coordinates, convertSizeUnits,searchEntryFilters,HOMES_CONDOS_LAND} from './bir-pilot-search.mjs';
 import {loadInventory,loadGroupedInventory} from './bir-pilot-inventory.mjs';
 const $ = id => document.getElementById(id);
 document.querySelector('.intro').textContent='Choose a property type, then narrow your search by zone, area, community and subdivision. Each choice narrows the options below it. If you already know the subdivision you want, select it directly.';
@@ -22,14 +22,12 @@ for(const [kind,label] of [['Total','TOTAL PROPERTY SIZE'],['AC','INTERIOR SIZE'
 }
 const areaHelp=document.createElement('small');areaHelp.className='hint';areaHelp.textContent='Interior size uses the indoor area reported in MLS. Total property size can include other areas; neither is lot size. Listings without the selected size are excluded when a limit is set.';areaFilters.append(areaHelp);extraFilters.after(areaFilters);
 
-const entryType = new URLSearchParams(location.search).get('type');
-const initialType = ({land:'Land',houses:'Houses',house:'Houses',homes:'Houses',condos:'Condos',condo:'Condos'})[String(entryType||'').toLowerCase()] || '';
+const initialFilters=searchEntryFilters(Object.fromEntries(new URLSearchParams(location.search)));
+const initialType=initialFilters.PropertyType;
 const typeLabel=document.querySelector('label[for="PropertyType"]');typeLabel.textContent='TYPE';
 $('filters').prepend(typeLabel,$('PropertyType'));
-const requestedCommunity=new URLSearchParams(location.search).get('community');
-const initialCommunity=['El Tezal-East','El Tezal-West','Pedregal CSL','Pescadero/Cerritos','Todos Santos','Todos Santos North',TODOS_SANTOS_COMMUNITIES].includes(requestedCommunity)?requestedCommunity:'';
-const initialSubdivision=new URLSearchParams(location.search).get('subdivision')==='Cascadas'?'Cascadas':'';
-let filters={...defaults(),PropertyType:initialType,Address_co_Community2:initialCommunity,SubdivisionName:initialSubdivision},rows=[],matches=[],shown=24,map,layer;
+let filters={...initialFilters},rows=[],matches=[],shown=24,map,layer;
+$('query').value=filters.query;
 const alertParam=new URLSearchParams(location.hash.slice(1)).get('alert');
 const alertIds=alertParam===null?null:[...new Set(alertParam.split(','))];
 const validAlert=alertIds&&alertIds.length>0&&alertIds.length<=20000&&alertIds.every(id=>/^\d{2}-\d{1,10}$/.test(id));
@@ -411,13 +409,13 @@ try{
  if(!Array.isArray(rows))throw new Error('Invalid listing data');
  rows=rows.filter(p=>p.StandardStatus==='Active'&&p.InternetEntireListingDisplayYN!==false&&p.PropertyType!=='Reservations Only');
  controls.forEach(el=>el.disabled=false);
- options('construction',[...new Set(rows.map(p=>p.General_sp_Description_co_Construction).filter(Boolean))].sort(),'');options('PropertyType',[...new Set(rows.map(p=>p.PropertyType).filter(Boolean))].sort(),initialType);options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
+ options('construction',[...new Set(rows.map(p=>p.General_sp_Description_co_Construction).filter(Boolean))].sort(),'');options('PropertyType',[...new Set([...rows.map(p=>p.PropertyType).filter(Boolean),HOMES_CONDOS_LAND])].sort(),initialType);options('view',[...new Set(rows.map(p=>p.General_sp_Description_co_Primary_sp_View).filter(Boolean))].sort(),'');syncLocations();
  $('timestamp').textContent=`All filters ready in ${((performance.now()-started)/1000).toFixed(1)} seconds. ${rows.length.toLocaleString()} public active listings checked ${new Date(data.fetchedAt).toLocaleTimeString()}. Reload for updates.`;
  $('timestamp').dataset.loadingMethod=loadingMethod;
  if(age>=300000)$('timestamp').textContent+=' The latest inventory update is delayed. You can keep searching these last verified listings. Prices and availability may have changed. Reload for an update.';
  if(window.L){map=L.map('map',{zoomControl:false}).setView([23.05,-109.75],9);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);L.control.zoom({position:'topright'}).addTo(map);layer=L.layerGroup().addTo(map);map.on('zoomend',renderMap);}
  else $('map').textContent='Map could not load. You can still browse the matching listings below.';
- render();if(savedDialog.open)renderSaved();
+ render();if(filters.City)fitLocationMap();if(savedDialog.open)renderSaved();
  if(alertIds){
   const note=document.createElement('section');note.setAttribute('aria-label','Properties from your alert');note.style.cssText='padding:18px;margin:12px 0;background:#edf6f2;border:1px solid #b8d5cf;border-radius:8px';
   const heading=document.createElement('h2');heading.textContent='Properties from your alert';
