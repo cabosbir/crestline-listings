@@ -6,11 +6,12 @@ const store=()=>{const values=new Map();return {get:async id=>values.get(id),set
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
 test('desktop and mobile duplicates share one provider call per batch',async()=>{
-  const read=createListingReadCache({shared:store()}); let calls=0,release;
+  const read=createListingReadCache({shared:store()}); let calls=0,release,started;
   const gate=new Promise(resolve=>release=resolve);
-  const load=async()=>{calls++;await gate;return data(1);};
+  const loading=new Promise(resolve=>started=resolve);
+  const load=async()=>{calls++;started();await gate;return data(1);};
   const requests=[read('batch1',load),read('batch1',load),read('batch2',load),read('batch2',load)];
-  await tick();assert.equal(calls,1);release();
+  await loading;assert.equal(calls,1);release();
   const result=await Promise.all(requests);assert.equal(calls,2);
   assert.equal(result[1].source,'coalesced');assert.equal(result[3].source,'coalesced');
 });
@@ -20,6 +21,39 @@ test('another function instance uses shared public data with its original timest
   await first('same',async()=>data(1));
   const result=await second('same',async()=>{throw Error('must not call provider');});
   assert.equal(result.source,'shared');assert.deepEqual(result.data,data(1));
+});
+
+test('two cold instances coordinate a duplicate load before either has cached data',async()=>{
+  const shared=store(),first=createListingReadCache({shared}),second=createListingReadCache({shared});
+  let calls=0;
+  const load=async()=>{calls++;await new Promise(r=>setTimeout(r,250));return data(1);};
+  const results=await Promise.all([first('same-cold-query',load),second('same-cold-query',load)]);
+  assert.equal(calls,1);assert.deepEqual(results[0].data,results[1].data);
+  assert.ok(results.some(r=>r.source==='shared'));
+});
+
+test('cold instances coordinate different initial and gallery loads and release their slot',async()=>{
+  const shared=store(),first=createListingReadCache({shared}),second=createListingReadCache({shared});
+  let active=0,peak=0,calls=0;
+  const load=async()=>{calls++;active++;peak=Math.max(peak,active);await new Promise(r=>setTimeout(r,150));active--;return data(calls);};
+  await Promise.all([first('initial',load),second('gallery',load)]);
+  assert.equal(calls,2);assert.equal(peak,1);
+  assert.equal((await shared.get('provider-lease')).expires,0);
+});
+
+test('a crashed holder cannot leave an indefinite provider lease',async()=>{
+  const shared=store();let time=1000,calls=0;
+  await shared.set('provider-lease',{token:'crashed-instance',expires:1250});
+  const read=createListingReadCache({shared,now:()=>time,leaseWait:async ms=>{time+=ms;}});
+  const result=await read('gallery',async()=>{calls++;return data(1);});
+  assert.equal(calls,1);assert.equal(result.source,'provider');assert.ok(time>=1250);
+});
+
+test('a failed load releases its lease and does not block another query',async()=>{
+  const shared=store(),first=createListingReadCache({shared}),second=createListingReadCache({shared});
+  await assert.rejects(first('bad',async()=>{throw Error('bad response');}));
+  assert.equal((await shared.get('provider-lease')).expires,0);
+  assert.equal((await second('valid',async()=>data(1))).source,'provider');
 });
 
 test('a cached result expires after one minute and does not perpetuate old prices',async()=>{
