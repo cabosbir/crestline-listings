@@ -101,6 +101,24 @@ test('provider cooldown is shared and obeyed, while fresh cached data stays avai
   time=31001;assert.equal((await second('other',async()=>{calls++;return data(2);})).source,'provider');assert.equal(calls,2);
 });
 
+test('delayed visibility of a successful duplicate recovers without a provider retry or global cooldown',async()=>{
+  const shared=store();let time=1000,calls=0;const waits=[],events=[];
+  const read=createListingReadCache({shared,now:()=>time,leaseWait:async ms=>{time+=ms;},sleep:async ms=>{waits.push(ms);time+=ms;if(waits.reduce((a,b)=>a+b,0)>=1750)await shared.set('gallery',{savedAt:time,data:data(7)});},report:event=>events.push(event)});
+  const result=await read('gallery',async()=>{calls++;throw Object.assign(Error('limited'),{status:429,retryAfter:30});});
+  assert.equal(calls,1);assert.equal(result.source,'shared');assert.deepEqual(result.data,data(7));
+  assert.deepEqual(waits,[250,500,1000]);assert.equal(await shared.get('cooldown'),undefined);
+  assert.ok(events.includes('provider-rate-limit-recovered'));
+});
+
+test('an unrecovered throttle has bounded cache-only waits and preserves the provider cooldown',async()=>{
+  const shared=store();let time=1000,calls=0;const waits=[];
+  const read=createListingReadCache({shared,now:()=>time,leaseWait:async ms=>{time+=ms;},sleep:async ms=>{waits.push(ms);time+=ms;}});
+  await assert.rejects(read('gallery',async()=>{calls++;throw Object.assign(Error('limited'),{status:429,retryAfter:30});}),{status:429});
+  assert.equal(calls,1);assert.equal(waits.reduce((a,b)=>a+b,0),3750);
+  assert.equal(await shared.get('cooldown'),time+30000);
+  await assert.rejects(read('another',async()=>{calls++;return data(8);}),{status:429});assert.equal(calls,1);
+});
+
 test('failed requests are not cached as valid inventory and cache outages do not hide successful data',async()=>{
   let calls=0;const read=createListingReadCache({shared:{get:async()=>{throw Error('offline');},set:async()=>{throw Error('offline');}}});
   await assert.rejects(read('x',async()=>{calls++;throw Error('provider outage');}));
