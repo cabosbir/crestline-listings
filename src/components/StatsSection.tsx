@@ -93,7 +93,7 @@ const StatsSection = () => {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="text-5xl md:text-6xl lg:text-7xl font-bold text-accent mb-4 tabular-nums">
-                {formatNumber(counts[index], index)}
+                {formatNumber(import.meta.env.SSR ? stat.number : counts[index], index)}
               </div>
               <p className="text-primary-foreground uppercase text-sm md:text-base tracking-wide font-medium whitespace-pre-line leading-relaxed">
                 {stat.label}
