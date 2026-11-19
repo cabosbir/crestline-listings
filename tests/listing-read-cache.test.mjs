@@ -56,6 +56,23 @@ test('a failed load releases its lease and does not block another query',async()
   assert.equal((await second('valid',async()=>data(1))).source,'provider');
 });
 
+test('a persistently busy or stale shared lease cannot fail a healthy gallery',async()=>{
+  const shared=store();let time=1000,calls=0;
+  await shared.set('provider-lease',{token:'busy-or-stale',expires:26000});
+  const read=createListingReadCache({shared,now:()=>time,leaseWait:async ms=>{time+=ms;}});
+  const result=await read('gallery',async()=>{calls++;return data(1);});
+  assert.equal(calls,1);assert.equal(result.source,'provider');assert.equal(time,2500);
+  assert.equal((await shared.get('provider-lease')).token,'busy-or-stale');
+});
+
+test('a cache that silently drops lease writes cannot prevent healthy listing reads',async()=>{
+  let time=1000,calls=0;
+  const shared={get:async()=>null,set:async()=>{}};
+  const read=createListingReadCache({shared,now:()=>time,leaseWait:async ms=>{time+=ms;}});
+  assert.equal((await read('gallery',async()=>{calls++;return data(1);})).source,'provider');
+  assert.equal(calls,1);assert.equal(time,2500);
+});
+
 test('a cached result expires after one minute and does not perpetuate old prices',async()=>{
   let time=0,calls=0;const read=createListingReadCache({shared:store(),now:()=>time});
   const load=async()=>data(++calls);
@@ -69,6 +86,7 @@ test('a throttled instance can use a successful parallel result without retrying
   const read=createListingReadCache({shared,now:()=>1000,sleep:async()=>shared.set('x',{savedAt:1000,data:data(1)})});
   const result=await read('x',async()=>{calls++;throw Object.assign(Error('limited'),{status:429,retryAfter:30});});
   assert.equal(calls,1);assert.equal(result.source,'shared');assert.deepEqual(result.data,data(1));
+  assert.equal(await shared.get('cooldown'),undefined);
 });
 
 test('provider cooldown is shared and obeyed, while fresh cached data stays available',async()=>{
