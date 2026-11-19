@@ -1,5 +1,7 @@
 import {websiteMailReady, websiteMailSender, createWebsiteMailTransport} from './contact.js';
 import {createHmac, timingSafeEqual} from 'node:crypto';
+import {getCache} from '@vercel/functions';
+import {createListingReadCache} from '../lib/listing-read-cache.mjs';
 
 export const fields = ['ListingKey','ListingId','UnparsedAddress','City','MLSAreaMajor','Address_co_Community2','SubdivisionName','PropertyType','StandardStatus','ListPrice','BedroomsTotal','BathroomsTotalDecimal','BathroomsFull','Latitude','Longitude','General_sp_Description_co_AC_sp_SqFt','General_sp_Description_co_Primary_sp_View','General_sp_Description_co_Seller_sp_Financing_sp_Offered','ListOfficeName','PublicRemarks','InternetAddressDisplayYN','InternetEntireListingDisplayYN','ModificationTimestamp','General_sp_Description_co_Construction','General_sp_Description_co_Lot_sp_M2','General_sp_Description_co_Total_sp_M2','General_sp_Description_co_AC_sp_M2'];
 const sign = (value, key) => createHmac('sha256', key).update(value).digest('base64url');
@@ -206,6 +208,7 @@ export function snapshotCacheHeaders(data,refresh,now=Date.now){
   return {'Cache-Control':'public, max-age=0, must-revalidate','Vercel-CDN-Cache-Control':`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`};
 }
 let snapshotIdentity='',getSnapshot,getVisitorInventory;
+let detailIdentity='',readDetails;
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   if(req.method==='OPTIONS'){res.setHeader('Allow','GET, POST, OPTIONS');return res.status(204).end();}
@@ -253,11 +256,10 @@ export default async function handler(req,res) {
     if(req.query.cursor)url=decodeCursor(req.query.cursor,key,endpoint);
     else url=buildRequest(endpoint,req.query);
   } catch {return res.status(400).json({error:'This inventory request has expired or is invalid. Reload to start again.'});}
-  try {
-    const response=await fetch(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal:AbortSignal.timeout(24000),redirect:'error'});
+  const loadPage=async({timeoutMs=24000}={})=>{
+    const response=await fetch(url,{headers:{Authorization:`Bearer ${key}`,Accept:'application/json'},signal:AbortSignal.timeout(timeoutMs),redirect:'error'});
     if(!response.ok){
-      res.setHeader('Retry-After',String(retrySeconds(response.headers?.get('retry-after'),response.status===429?300:30)));
-      return res.status(response.status===429?429:502).json({error:`The listing provider could not complete this page (status ${response.status}). Reload to retry.`});
+      throw Object.assign(new Error('Listing provider unavailable'),{status:response.status===429?429:502,retryAfter:retrySeconds(response.headers?.get('retry-after'),response.status===429?300:30)});
     }
     const data=await response.json();
     if(!Array.isArray(data.value))throw new Error('Invalid provider response');
@@ -269,12 +271,33 @@ export default async function handler(req,res) {
       next=encodeCursor(nextURL.toString(),key);
     }
     const total=Number(data['@odata.count']);
+    return {results:data.value.map(row=>publicListing(row,req.query.mode==='gallery')).filter(Boolean),received:data.value.length,total:Number.isSafeInteger(total)&&total>=0?total:null,next,fetchedAt:new Date().toISOString()};
+  };
+  try {
+    let data;
+    if(req.query.keys && !req.query.cursor && !req.query.mode){
+      const identity=sign(endpoint.toString(),key);
+      if(identity!==detailIdentity){
+        detailIdentity=identity;
+        readDetails=createListingReadCache({shared:getCache({namespace:'bir-public-details-v1-'+identity,keyHashFunction:value=>value}),report:reason=>console.warn('Listing data cache',reason)});
+      }
+      const result=await readDetails(sign(url.toString(),key),loadPage);
+      data=result.data;
+      res.setHeader('X-BIR-Listing-Source',result.source);
+    } else data=await loadPage();
     if(!req.query.cursor&&req.query.mode!=='inventory'){
-      res.setHeader('Cache-Control','public, max-age=0, must-revalidate');
-      res.setHeader('Vercel-CDN-Cache-Control','public, s-maxage=30, stale-while-revalidate=30');
+      const remaining=Math.max(0,60-Math.ceil((Date.now()-Date.parse(data.fetchedAt))/1000));
+      if(remaining>0){
+        const fresh=Math.min(30,remaining);
+        res.setHeader('Cache-Control','public, max-age=0, must-revalidate');
+        res.setHeader('Vercel-CDN-Cache-Control',`public, s-maxage=${fresh}, stale-while-revalidate=${remaining-fresh}`);
+      }
     }
-    return res.status(200).json({results:data.value.map(row=>publicListing(row,req.query.mode==='gallery')).filter(Boolean),received:data.value.length,total:Number.isSafeInteger(total)&&total>=0?total:null,next,fetchedAt:new Date().toISOString()});
-  } catch {return res.status(502).json({error:'The listing provider did not finish this page. Reload to retry; partial inventory is not shown as complete.'});}
+    return res.status(200).json(data);
+  } catch(error){
+    if(error?.retryAfter)res.setHeader('Retry-After',String(error.retryAfter));
+    return res.status([429,502,503].includes(error?.status)?error.status:502).json({error:'The listing provider did not finish this page. Reload to retry; partial inventory is not shown as complete.'});
+  }
 }
 
 export function inquiryMessage(body,from){
