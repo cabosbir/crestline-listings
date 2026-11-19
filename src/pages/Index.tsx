@@ -142,14 +142,14 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Los Cabos Real Estate &amp; MLS Listings | Baja International Realty</title>
+        <title>Cabo MLS Search &amp; Los Cabos Real Estate | BIR</title>
         <meta 
           name="description" 
           content="Search Cabo MLS listings for houses, condos and land. Compare Cabo San Lucas and San José del Cabo properties, then ask Baja International Realty for local guidance." 
         />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:title" content="Los Cabos Real Estate &amp; MLS Listings | Baja International Realty" />
+        <meta property="og:title" content="Cabo MLS Search &amp; Los Cabos Real Estate | BIR" />
         <meta property="og:description" content="Search Cabo MLS listings for houses, condos and land. Compare Cabo San Lucas and San José del Cabo properties, then ask Baja International Realty for local guidance." />
         <meta property="og:type" content="website" />
       </Helmet>
