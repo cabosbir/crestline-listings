@@ -208,7 +208,7 @@ export function snapshotCacheHeaders(data,refresh,now=Date.now){
   return {'Cache-Control':'public, max-age=0, must-revalidate','Vercel-CDN-Cache-Control':`public, s-maxage=${fresh}, stale-while-revalidate=${stale}`};
 }
 let snapshotIdentity='',getSnapshot,getVisitorInventory;
-let detailIdentity='',readDetails;
+let listingIdentity='',readListings;
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   if(req.method==='OPTIONS'){res.setHeader('Allow','GET, POST, OPTIONS');return res.status(204).end();}
@@ -275,13 +275,17 @@ export default async function handler(req,res) {
   };
   try {
     let data;
-    if(req.query.keys && !req.query.cursor && !req.query.mode){
+    // Initial listings and complete galleries need the same protection as
+    // keyed details. The provider URL separates their response shapes, while
+    // one reader shares the queue and cooldown across all three read types.
+    // Bulk inventory and signed continuation pages keep their existing flow.
+    if(!req.query.cursor && req.query.mode!=='inventory'){
       const identity=sign(endpoint.toString(),key);
-      if(identity!==detailIdentity){
-        detailIdentity=identity;
-        readDetails=createListingReadCache({shared:getCache({namespace:'bir-public-details-v1-'+identity,keyHashFunction:value=>value}),report:reason=>console.warn('Listing data cache',reason)});
+      if(identity!==listingIdentity){
+        listingIdentity=identity;
+        readListings=createListingReadCache({shared:getCache({namespace:'bir-public-details-v1-'+identity,keyHashFunction:value=>value}),report:reason=>console.warn('Listing data cache',reason)});
       }
-      const result=await readDetails(sign(url.toString(),key),loadPage);
+      const result=await readListings(sign(url.toString(),key),loadPage);
       data=result.data;
       res.setHeader('X-BIR-Listing-Source',result.source);
     } else data=await loadPage();
