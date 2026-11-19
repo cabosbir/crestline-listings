@@ -39,7 +39,9 @@ assert(!home.includes('/src/assets/'));
 for (const match of home.matchAll(/(?:src|href)="(\/assets\/[^"?#]+)"/g)) {
   await access(resolve('dist', '.' + match[1]));
 }
-await writeFile('dist/home.html', home);
-// Other React routes keep their own blank shell and page-specific metadata.
-assert.equal(await readFile('dist/index.html', 'utf8'), shell);
+// Vercel serves the existing root index before fallback rewrites. Put the
+// readable homepage there and keep a separate shell for other React routes.
+await writeFile('dist/spa.html', shell);
+await writeFile('dist/index.html', home);
+assert.equal(await readFile('dist/spa.html', 'utf8'), shell);
 console.log(`Homepage pre-rendered: ${Buffer.byteLength(home)} bytes, one canonical, MLS links present.`);
