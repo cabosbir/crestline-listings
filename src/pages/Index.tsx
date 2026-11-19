@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import FloatingContact from "@/components/FloatingContact";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { featuredPhotoOrder, loadFeaturedListings } from "@/lib/featured-listings.mjs";
 
 // Full community guides are served as individual HTML pages in public/.
 const communityGuides = [
@@ -65,10 +66,6 @@ const communityGuides = [
   }
 ];
 
-const featuredPhotoOrder = ['26-1759','24-4467','26-3083','26-3891','25-5698','26-811'];
-const handPickedMLS = new Set(['26-3891','26-1759','26-1326','25-3456','26-481','25-678','26-811','25-2758','26-616','26-246','26-3488','26-3314','26-1965']);
-const isFeaturedListing = (row: any) => String(row.ListOfficeName || '').trim().toLowerCase() === 'baja international realty' || handPickedMLS.has(row.ListingId);
-
 const Index = () => {
   const [featuredProperties, setFeaturedProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,34 +81,15 @@ const Index = () => {
     setLoading(true);
     setFeaturedError(false);
     const timer = setTimeout(() => abort.abort(), 15000);
-    const snapshotStarted = performance.now();
-    fetch('/api/search-pilot?mode=snapshot', { signal: abort.signal })
-      .then(async response => {
-        if (!response.ok) throw new Error('Inventory unavailable');
-        const data = await response.json();
-        // Use the server's time, including CDN age and request duration, not the visitor's clock.
-        const serverTime = Date.parse(response.headers.get('date') || '');
-        const cacheAgeText = response.headers.get('age');
-        const cacheAge = cacheAgeText === null ? 0 : /^\d+$/.test(cacheAgeText.trim()) ? Number(cacheAgeText) : NaN;
-        if (!Number.isFinite(serverTime) || !Number.isSafeInteger(cacheAge) || cacheAge < 0) throw new Error('Inventory response time unavailable');
-        const age = serverTime + cacheAge * 1000 + (performance.now() - snapshotStarted) - Date.parse(data.fetchedAt);
-        if (data.complete !== true || !Array.isArray(data.results) || data.total !== data.results.length || !Number.isFinite(age) || age >= 3600000 || age < -60000) throw new Error('Incomplete or outdated inventory');
-        const office = data.results.filter((row: any) =>
-          row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false &&
-          isFeaturedListing(row)
-        );
-        const batches = [];
-        for (let i = 0; i < office.length; i += 24) batches.push(office.slice(i, i + 24));
-        const detailed = await Promise.all(batches.map(async batch => {
-          const response = await fetch('/api/search-pilot?keys=' + encodeURIComponent(batch.map((row: any) => row.ListingKey).join(',')), { signal: abort.signal });
-          if (!response.ok) throw new Error('Photos unavailable');
-          const result = await response.json();
-          if (!Array.isArray(result.results) || !Number.isSafeInteger(result.total) || result.results.length !== result.total) throw new Error('Incomplete details');
-          const requested = new Set(batch.map((row: any) => row.ListingKey));
-          return result.results.filter((row: any) => requested.has(row.ListingKey) && row.StandardStatus === 'Active' && row.InternetEntireListingDisplayYN !== false && isFeaturedListing(row));
-        }));
-        if (live) setFeaturedProperties(detailed.flat());
-      })
+    loadFeaturedListings({
+      signal: abort.signal,
+      onRows: rows => {
+        if (live) {
+          setFeaturedProperties(rows);
+          setLoading(false);
+        }
+      },
+    })
       .catch(() => { if (live) setFeaturedError(true); })
       .finally(() => { clearTimeout(timer); if (live) setLoading(false); });
     return () => { live = false; clearTimeout(timer); abort.abort(); };
