@@ -1,4 +1,5 @@
 {
+  "buildCommand": "npm run build",
   "rewrites": [
     {
       "source": "/todos-santos-real-estate.html",
