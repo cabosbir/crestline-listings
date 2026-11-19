@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/home.html"
+    },
+    {
       "source": "/todos-santos-real-estate.html",
       "destination": "/api/todos-santos-guide"
     },
@@ -549,6 +553,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/home.html",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/new-client",
       "destination": "/contact",
