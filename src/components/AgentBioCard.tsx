@@ -3,6 +3,7 @@ import { Phone, Mail, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface AgentBioCardProps {
+  loading?: "eager" | "lazy";
   name: string;
   title: string;
   image: string;
@@ -18,7 +19,8 @@ interface AgentBioCardProps {
 }
 
 const AgentBioCard = ({ 
-  name, 
+  name,
+  loading,
   title, 
   image,
   phone,
@@ -50,6 +52,8 @@ const AgentBioCard = ({
       {/* Agent Photo */}
       <img 
         src={image || `https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1200&fit=crop&crop=faces`} 
+        loading={loading}
+        decoding="async"
         alt={name}
         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
       />
