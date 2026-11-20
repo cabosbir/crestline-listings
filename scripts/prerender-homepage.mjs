@@ -32,6 +32,27 @@ let home = shell.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, '')
   .replace('</head>', `${head.title.toString()}${head.meta.toString()}${head.link.toString()}</head>`)
   .replace('<div id="root"></div>', `<div id="root" data-prerendered="homepage">${html}</div>`);
 
+// Deliver the existing homepage styles with its HTML. Slow mobile connections
+// should not have to complete four stylesheet requests before painting the hero.
+// Keep the separate SPA shell and every standalone MLS/guide page unchanged.
+const fontStyles = await readFile('src/styles/homepage-fonts.css', 'utf8');
+for (const match of [...home.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/gi)]) {
+  const href = match[0].match(/href="([^"]+)"/)?.[1];
+  let css;
+  if (href?.startsWith('https://fonts.googleapis.com/')) {
+    css = fontStyles;
+  } else if (href?.startsWith('/') && !href.startsWith('//')) {
+    css = await readFile(resolve('dist', '.' + href.split('?')[0]), 'utf8');
+  } else {
+    continue;
+  }
+  assert(!/<\/style/i.test(css), 'Stylesheet must be safe to inline');
+  home = home.replace(match[0], `<style data-homepage-styles="${href.replaceAll('&', '&amp;')}">${css}</style>`);
+}
+const heroPath = html.match(/<img\b[^>]*src="([^"]+)"[^>]*fetchpriority="high"/i)?.[1];
+assert(heroPath?.startsWith('/assets/'), 'Expected a compiled homepage hero');
+home = home.replace('<head>', `<head>\n<link rel="preload" as="image" href="${heroPath}" fetchpriority="high">`);
+
 assert.equal((home.match(/rel="canonical"/g) || []).length, 1);
 assert(home.includes('href="https://www.bircabo.com/"'));
 // Check compiled asset paths, not Vite's development-only source paths.
