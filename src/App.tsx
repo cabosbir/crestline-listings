@@ -3,41 +3,41 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
+import { HelmetProvider, type HelmetServerState } from "react-helmet-async";
 import Index from "./pages/Index";
-import Properties from "./pages/Properties";
-import AdvancedSearch from "./pages/AdvancedSearch"; // 🔥 NEW: Full-page search with live map
-import PropertiesMap from "./pages/PropertiesMap";
-import PropertyDetail from "./pages/PropertyDetail";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Team from "./pages/Team";
-import AgentDetail from "./pages/AgentDetail";
-import IDXSearch from "./pages/IDXSearch";
-import AlfonsoLandingPage from "./pages/AlfonsoLandingPage";
-import BobLandingPage from "./pages/BobLandingPage";
-import BonnieReneeLandingPage from "./pages/BonnieReneeLandingPage";
-import CharlesLandingPage from "./pages/CharlesLandingPage";
-import CozbiLandingPage from "./pages/CozbiLandingPage";
-import DavidLandingPage from "./pages/DavidLandingPage";
-import DonLandingPage from "./pages/DonLandingPage";
-import EdgarLandingPage from "./pages/EdgarLandingPage";
-import ErikaLandingPage from "./pages/ErikaLandingPage";
-import ErikaGracianoLandingPage from "./pages/ErikaGracianoLandingPage";
-import FernandoLandingPage from "./pages/FernandoLandingPage";
-import HectorLandingPage from "./pages/HectorLandingPage";
-import HumbertoLandingPage from "./pages/HumbertoLandingPage";
-import MarisolLandingPage from "./pages/MarisolLandingPage";
-import OfficeListings from "./pages/OfficeListings";
-import OfficeListingDetail from "./pages/OfficeListingDetail";
-import PacificoHeights from "./pages/PacificoHeights";
-import MarketReport from "./pages/MarketReport";
-import NewClientForm from "./pages/NewClientForm";
-import SellerEvaluationForm from "./pages/SellerEvaluationForm";
-import FilterTrainingDashboard from "./pages/FilterTrainingDashboard"; // 🧠 NEW: AI Filter Training
-import NotFound from "./pages/NotFound";
+const Properties = lazy(() => import("./pages/Properties"));
+const AdvancedSearch = lazy(() => import("./pages/AdvancedSearch"));
+const PropertiesMap = lazy(() => import("./pages/PropertiesMap"));
+const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Team = lazy(() => import("./pages/Team"));
+const AgentDetail = lazy(() => import("./pages/AgentDetail"));
+const IDXSearch = lazy(() => import("./pages/IDXSearch"));
+const AlfonsoLandingPage = lazy(() => import("./pages/AlfonsoLandingPage"));
+const BobLandingPage = lazy(() => import("./pages/BobLandingPage"));
+const BonnieReneeLandingPage = lazy(() => import("./pages/BonnieReneeLandingPage"));
+const CharlesLandingPage = lazy(() => import("./pages/CharlesLandingPage"));
+const CozbiLandingPage = lazy(() => import("./pages/CozbiLandingPage"));
+const DavidLandingPage = lazy(() => import("./pages/DavidLandingPage"));
+const DonLandingPage = lazy(() => import("./pages/DonLandingPage"));
+const EdgarLandingPage = lazy(() => import("./pages/EdgarLandingPage"));
+const ErikaLandingPage = lazy(() => import("./pages/ErikaLandingPage"));
+const ErikaGracianoLandingPage = lazy(() => import("./pages/ErikaGracianoLandingPage"));
+const FernandoLandingPage = lazy(() => import("./pages/FernandoLandingPage"));
+const HectorLandingPage = lazy(() => import("./pages/HectorLandingPage"));
+const HumbertoLandingPage = lazy(() => import("./pages/HumbertoLandingPage"));
+const MarisolLandingPage = lazy(() => import("./pages/MarisolLandingPage"));
+const OfficeListings = lazy(() => import("./pages/OfficeListings"));
+const OfficeListingDetail = lazy(() => import("./pages/OfficeListingDetail"));
+const PacificoHeights = lazy(() => import("./pages/PacificoHeights"));
+const MarketReport = lazy(() => import("./pages/MarketReport"));
+const NewClientForm = lazy(() => import("./pages/NewClientForm"));
+const SellerEvaluationForm = lazy(() => import("./pages/SellerEvaluationForm"));
+const FilterTrainingDashboard = lazy(() => import("./pages/FilterTrainingDashboard"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 function LivePropertySearch() { useEffect(() => { window.location.replace("/property-search.html" + window.location.search); }, []); return <p>Opening property search...</p>; }
 const queryClient = new QueryClient();
@@ -68,15 +68,15 @@ function RetiredAssistantRedirect() {
   return <a href="/property-search.html">Open Cabo MLS Search</a>;
 }
 
-const App = () => (
-  <HelmetProvider>
+export const AppContent = ({ helmetContext }: { helmetContext?: { helmet?: HelmetServerState } }) => (
+  <HelmetProvider context={helmetContext}>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
+          <ScrollToTop />
+          <Suspense fallback={<p role="status" className="p-6">Loading page…</p>}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/properties" element={<Properties />} />
@@ -147,11 +147,13 @@ const App = () => (
           <Route path="/pacifico-heights" element={<PacificoHeights />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+          </Suspense>
         </>
       </TooltipProvider>
     </QueryClientProvider>
   </HelmetProvider>
 );
+
+const App = () => <BrowserRouter><AppContent /></BrowserRouter>;
 
 export default App;

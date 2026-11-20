@@ -30,7 +30,7 @@ let home = shell.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, '')
     return metaKeys.has(key) ? '' : tag;
   })
   .replace('</head>', `${head.title.toString()}${head.meta.toString()}${head.link.toString()}</head>`)
-  .replace('<div id="root"></div>', `<div id="root">${html}</div>`);
+  .replace('<div id="root"></div>', `<div id="root" data-prerendered="homepage">${html}</div>`);
 
 assert.equal((home.match(/rel="canonical"/g) || []).length, 1);
 assert(home.includes('href="https://www.bircabo.com/"'));
