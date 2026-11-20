@@ -1,6 +1,7 @@
 import heroImage from "@/assets/hero-luxury-villa.jpg";
+import heroAvif from "@/assets/hero-luxury-villa.avif";
 const Hero = () => <section className="relative overflow-hidden bg-slate-950 py-14 sm:py-20">
-  <img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" loading="eager" width="1920" height="1080" className="absolute inset-0 h-full w-full object-cover object-[60%_center] sm:object-center" />
+  <picture><source srcSet={heroAvif} type="image/avif" /><img src={heroImage} alt="" aria-hidden="true" fetchPriority="high" loading="eager" width="1920" height="1080" className="absolute inset-0 h-full w-full object-cover object-[60%_center] sm:object-center" /></picture>
   <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/65 to-slate-950/25" />
   <div className="relative container mx-auto px-5 max-w-6xl">
     <p className="text-white/90 font-semibold text-sm tracking-wide mb-4">BAJA INTERNATIONAL REALTY · LOCAL EXPERIENCE SINCE 1987</p>
