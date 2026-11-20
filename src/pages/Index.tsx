@@ -114,28 +114,28 @@ const Index = () => {
       slug: "don",
       name: "Don Weis",
       title: "Founder & Broker",
-      image: "/don-weis.jpg",
+      image: "/homepage-images/don-weis.jpg",
     },
     {
       id: 1,
       slug: "bob",
       name: "Bob Van Patten",
       title: "Senior Real Estate Advisor",
-      image: "/bob-van-patten.jpg",
+      image: "/homepage-images/bob-van-patten.jpg",
     },
     {
       id: 3,
       slug: "alfonso",
       name: "Alfonso Puente",
       title: "Sales Manager & Commercial Real Estate Expert",
-      image: "/alfonso-puente.jpg",
+      image: "/homepage-images/alfonso-puente.jpg",
     },
     {
       id: 8,
       slug: "david",
       name: "David Scott Piper",
       title: "Real Estate Advisor",
-      image: "/david-scott-piper.jpg",
+      image: "/homepage-images/david-scott-piper.jpg",
     },
   ];
 
@@ -227,7 +227,7 @@ const Index = () => {
 
       <section id="rolling-hills-estates" aria-labelledby="rolling-hills-title" className="scroll-mt-24 bg-white py-12 sm:py-16"><div className="container mx-auto px-4 max-w-6xl grid md:grid-cols-2 gap-8 items-center"><a href="/rolling-hills-real-estate.html" aria-label="Explore Rolling Hills Estates"><img src="/bir-rolling-hills-beach-wide.webp" alt="Pacific beach in front of Rolling Hills Estates photographed by Don Weis" width="1800" height="1350" loading="lazy" className="w-full rounded-2xl aspect-[4/3] object-cover" /></a><div><p className="text-blue-900 font-semibold">A personal guide by Don Weis</p><h2 id="rolling-hills-title" className="text-3xl sm:text-4xl font-bold mt-3">Rolling Hills Estates</h2><p className="mt-4 text-slate-700 leading-relaxed">Get to know this Pacific-side community through Don’s own story, beach photos and video. Explore houses and building lots, with room to enjoy the quieter side of Cabo.</p><div className="mt-6 flex flex-wrap gap-3"><a href="/rolling-hills-real-estate.html" className="inline-flex rounded-lg bg-blue-950 text-white font-semibold px-6 py-3">Explore Rolling Hills →</a><a href="/rolling-hills-real-estate.html?kind=Houses#properties" className="inline-flex rounded-lg border border-blue-950 text-blue-950 font-semibold px-5 py-3">Houses for sale</a><a href="/rolling-hills-real-estate.html?kind=Land#properties" className="inline-flex rounded-lg border border-blue-950 text-blue-950 font-semibold px-5 py-3">Land for sale</a></div></div></div></section>
 
-      <section id="casa-oasis" aria-labelledby="casa-oasis-title" className="scroll-mt-24 bg-slate-50 py-12 sm:py-16"><div className="container mx-auto px-4 max-w-6xl grid md:grid-cols-2 gap-8 items-center"><a href="/casa-oasis.html" aria-label="Explore Casa Oasis"><img src="https://cabo-homes.com/casa-oasis-assets/casa-oasis-01.jpg" alt="Casa Oasis private pool and tropical courtyard in Cabo San Lucas" width="1920" height="1280" loading="lazy" className="w-full rounded-2xl aspect-[3/2] object-cover" /></a><div><p className="text-blue-900 font-semibold">New pocket listing · Cabo San Lucas</p><h2 id="casa-oasis-title" className="text-3xl sm:text-4xl font-bold mt-3">Casa Oasis</h2><p className="text-2xl font-bold text-blue-950 mt-4">US$549,000</p><p className="font-semibold mt-3">3 bedrooms · 2 bathrooms · Private pool · No HOA dues</p><p className="mt-4 text-slate-700 leading-relaxed">A walled tropical courtyard, quiet dead-end street and the convenience of Cabo close at hand. Explore the photos and video, then contact Don for a private showing.</p><a href="/casa-oasis.html" className="inline-flex mt-6 rounded-lg bg-blue-950 text-white font-semibold px-6 py-3">View Casa Oasis →</a></div></div></section>
+      <section id="casa-oasis" aria-labelledby="casa-oasis-title" className="scroll-mt-24 bg-slate-50 py-12 sm:py-16"><div className="container mx-auto px-4 max-w-6xl grid md:grid-cols-2 gap-8 items-center"><a href="/casa-oasis.html" aria-label="Explore Casa Oasis"><img src="/homepage-images/casa-oasis.jpg" alt="Casa Oasis private pool and tropical courtyard in Cabo San Lucas" width="1920" height="1280" loading="lazy" className="w-full rounded-2xl aspect-[3/2] object-cover" /></a><div><p className="text-blue-900 font-semibold">New pocket listing · Cabo San Lucas</p><h2 id="casa-oasis-title" className="text-3xl sm:text-4xl font-bold mt-3">Casa Oasis</h2><p className="text-2xl font-bold text-blue-950 mt-4">US$549,000</p><p className="font-semibold mt-3">3 bedrooms · 2 bathrooms · Private pool · No HOA dues</p><p className="mt-4 text-slate-700 leading-relaxed">A walled tropical courtyard, quiet dead-end street and the convenience of Cabo close at hand. Explore the photos and video, then contact Don for a private showing.</p><a href="/casa-oasis.html" className="inline-flex mt-6 rounded-lg bg-blue-950 text-white font-semibold px-6 py-3">View Casa Oasis →</a></div></div></section>
 
       <section aria-label="Cabo property buyer guide" className="border-y border-blue-200 bg-blue-50 py-6"><div className="container mx-auto px-4 max-w-6xl"><h2 className="text-xl sm:text-2xl font-bold text-blue-950">Can foreigners buy property in Cabo?</h2><p className="mt-2 text-slate-700">Yes. Americans, Canadians and other foreign buyers can buy houses and condos in Cabo. For residential property in the coastal restricted zone, the usual route is a Mexican bank trust called a <em>fideicomiso</em>. The bank holds title as trustee, and you hold the beneficial rights to the property.</p><nav aria-label="Buying guide topics" className="mt-4 flex flex-wrap gap-x-6 gap-y-3 font-semibold text-blue-900"><a className="underline" href="/buying-property-in-cabo.html#ownership">How foreign ownership works</a><a className="underline" href="/buying-property-in-cabo.html#closing-costs">See closing-cost examples</a><a className="underline" href="/buying-property-in-cabo.html#annual-costs">Explore annual property taxes</a><a className="underline" href="/buying-property-in-cabo.html">Read the full buying guide →</a></nav><p className="mt-2 text-sm text-slate-600">Ownership, costs and buying questions, together on BIR.</p></div></section>
       <FloatingContact />
@@ -328,6 +328,7 @@ const Index = () => {
             {teamMembers.map((member) => (
               <Link to={member.slug ? `/${member.slug}` : `/team/${member.id}`} key={member.id}>
                 <AgentBioCard
+                  loading="lazy"
                   {...member}
                   showStats={false}
                   landingPageSlug={member.slug}
