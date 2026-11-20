@@ -49,9 +49,9 @@ for (const match of [...home.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/gi)]) 
   assert(!/<\/style/i.test(css), 'Stylesheet must be safe to inline');
   home = home.replace(match[0], `<style data-homepage-styles="${href.replaceAll('&', '&amp;')}">${css}</style>`);
 }
-const heroPath = html.match(/<img\b[^>]*src="([^"]+)"[^>]*fetchpriority="high"/i)?.[1];
+const heroPath = html.match(/<source\b[^>]*srcset="([^"]+)"[^>]*type="image\/avif"/i)?.[1];
 assert(heroPath?.startsWith('/assets/'), 'Expected a compiled homepage hero');
-home = home.replace('<head>', `<head>\n<link rel="preload" as="image" href="${heroPath}" fetchpriority="high">`);
+home = home.replace('<head>', `<head>\n<link rel="preload" as="image" type="image/avif" href="${heroPath}" fetchpriority="high">`);
 
 assert.equal((home.match(/rel="canonical"/g) || []).length, 1);
 assert(home.includes('href="https://www.bircabo.com/"'));
