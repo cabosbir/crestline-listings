@@ -57,8 +57,13 @@ export function cascadasComparison(rows, plans) {
     const unit = possibleUnits.size === 1 ? [...possibleUnits][0] : null;
     const plan = unit && plans.get(unit);
     const price = Number.isFinite(row.price) && row.price > 0 ? '$' + row.price.toLocaleString('en-US') + ' USD' : 'On request';
-    const interior = Number.isFinite(row.interiorSqFt) && row.interiorSqFt > 0
-      ? Math.round(row.interiorSqFt).toLocaleString('en-US') + ' sq ft' : 'Confirm with BIR';
+    // Don verified Unit 934's indoor area against his floor plan on 2026-11-21.
+    // Keep this correction scoped to the identified listing, not other units or MLS searches.
+    const verified934 = unit === '934' && row.key === '20261027233813174620000000' && row.mls === '26-4832';
+    const interior = verified934
+      ? '132.46 m² (1,426 sq ft)<br><small>Floor plan; confirmed by Don.</small>'
+      : Number.isFinite(row.interiorSqFt) && row.interiorSqFt > 0
+        ? Math.round(row.interiorSqFt).toLocaleString('en-US') + ' sq ft' : 'Confirm with BIR';
     const parking = verifiedParking[row.key];
     const parkingText = parking && Date.parse(parking[0]) === Date.parse(row.modifiedAt) ? parking[1] : 'Confirm with BIR';
     const listing = row.mls ? '<a href="?property=' + encodeURIComponent(row.mls) + '#properties">' + escapeHtml(row.mls) + '</a>' : 'On request';
