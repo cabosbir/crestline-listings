@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {todosSantosInventorySummary,todosSantosPreviews,renderTodosSantosGuide} from '../api/todos-santos-guide.js';
+import {todosSantosInventorySummary,todosSantosPreviews,todosSantosBudgets,renderTodosSantosGuide} from '../api/todos-santos-guide.js';
+import {filterRows} from '../public/bir-property-pages.mjs';
 import {defaults,filterListings,locationOptions,changeLocation,TODOS_SANTOS_COMMUNITIES} from '../public/bir-pilot-search.mjs';
 import {mlsPageRows} from '../api/mls-page.js';
 const now=Date.parse('2026-11-17T22:00:00Z');
@@ -44,3 +45,38 @@ test('incomplete, expired and duplicate snapshots cannot publish stale previews'
  assert.doesNotMatch(renderTodosSantosGuide(template,null,now).html,/data-todos-santos-preview/);
  assert.match(renderTodosSantosGuide(template,null,now).html,/cannot confirm current inventory counts/);
 });
+
+test('budget counts match destination filters with strict ceilings and completed public houses only',()=>{
+ const fixture=data([row(11,{ListPrice:299999}),row(12,{ListPrice:300000}),row(13,{ListPrice:499999}),row(14,{ListPrice:500000}),row(15,{ListPrice:999999,Address_co_Community2:'Todos Santos North',SubdivisionName:'Las Playitas'}),row(16,{ListPrice:1000000}),row(17,{ListPrice:1,PropertyType:'Condos'}),row(18,{ListPrice:200000,General_sp_Description_co_Construction:'Pre-Construction'}),row(19,{ListPrice:250000,StandardStatus:'Pending'}),row(20,{ListPrice:null}),row(21,{ListPrice:200000,Address_co_Community2:'Pescadero/Cerritos'}),row(22,{ListPrice:100000,InternetEntireListingDisplayYN:false})]);
+ const completed=todosSantosInventorySummary(fixture,now).completed;
+ const budget=todosSantosBudgets(completed);
+ assert.deepEqual(budget.groups.map(x=>x.count),[1,3,5]);
+ for(const group of budget.groups){
+  assert.equal(group.count,filterRows(completed,{kind:'Houses',price:'0-'+group.limit}).length);
+  assert.ok(group.example.price<group.limit);
+ }
+ assert.equal(budget.groups[2].example.mlsCommunity,'Todos Santos North');
+ const html=renderTodosSantosGuide(template,fixture,now).html;
+ assert.ok(html.indexOf('id="budget-comparison"')<html.indexOf('id="neighborhoods"'));
+ const searchTemplate=readFileSync(new URL('../templates/houses-villas-for-sale-todos-santos.html',import.meta.url),'utf8');
+ for(const limit of [300000,500000,1000000])assert.ok(searchTemplate.includes('value="0-'+limit+'"'));
+});
+
+test('budget examples change when a preferred listing leaves its budget and never repeat',()=>{
+ const rows=todosSantosInventorySummary(data([row(1122,{ListingId:'26-1122',ListPrice:239000}),row(5459,{ListingId:'25-5459',ListPrice:468000}),row(228,{ListingId:'26-228',ListPrice:800000})]),now).completed;
+ assert.deepEqual(todosSantosBudgets(rows).groups.map(x=>x.example.mls),['26-1122','25-5459','26-228']);
+ rows[1].price=1000001;
+ const updated=todosSantosBudgets(rows).groups;
+ assert.equal(updated[1].example,null);
+ assert.equal(updated[1].count,1);
+ assert.equal(updated[2].example.mls,'26-228');
+});
+
+test('unavailable inventory retains budget searches without invented zero counts or stale examples',()=>{
+ const html=renderTodosSantosGuide(template,null,now).html;
+ assert.match(html,/Current availability cannot be confirmed/);
+ assert.doesNotMatch(html,/data-todos-santos-budget-example|0 completed houses/);
+ for(const limit of [300000,500000,1000000])assert.ok(html.includes('?price=0-'+limit+'#ov-status'));
+ assert.deepEqual(todosSantosBudgets([]).groups.map(x=>x.count),[0,0,0]);
+});
+

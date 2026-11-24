@@ -25,6 +25,30 @@ export function todosSantosPreviews(completed){
  }).join('');
  return {selected,html:cards?'<section aria-labelledby="todos-santos-preview-title" id="todos-santos-mls-previews"><h3 id="todos-santos-preview-title">Explore current Todos Santos MLS listings</h3><p>A completed condo, a completed house and a lot from the Todos Santos and Todos Santos North collections above, when available. Asking prices are in USD; these examples use the same availability check as the summary.</p><div class="buyer-columns">'+cards+'</div><p class="buyer-note">Examples refresh with active public MLS availability. Listings may be represented by other offices. All information is deemed reliable but not guaranteed; confirm price, availability and property details with your agent.</p></section>':''};
 }
+const budgets=[
+ {limit:300000,preferred:'26-1122'},
+ {limit:500000,preferred:'25-5459'},
+ {limit:1000000,preferred:'26-228'}
+];
+export function todosSantosBudgets(completed){
+ const used=new Set();
+ const groups=budgets.map(({limit,preferred},index)=>{
+  const rows=completed===null?null:completed.filter(x=>x.kind==='Houses'&&Number.isFinite(x.price)&&x.price>0&&x.price<limit);
+  const candidates=(rows||[]).filter(x=>/^\d{2}-\d+$/.test(x.mls)&&!used.has(x.mls));
+  const floor=index?budgets[index-1].limit:0;
+  const band=candidates.filter(x=>x.price>=floor);
+  const example=band.find(x=>x.mls===preferred)||band.sort((a,b)=>b.price-a.price||a.mls.localeCompare(b.mls))[0]||candidates.sort((a,b)=>b.price-a.price||a.mls.localeCompare(b.mls))[0]||null;
+  if(example)used.add(example.mls);
+  return {limit,count:rows===null?null:rows.length,example,href:'/houses-villas-for-sale-todos-santos.html?price=0-'+limit+'#ov-status'};
+ });
+ const cards=groups.map(({limit,count,example:x,href})=>{
+  const countText=count===null?'Current availability cannot be confirmed.':count+' completed '+(count===1?'house':'houses')+' currently listed below this budget.';
+  const facts=x?[x.beds==null?null:x.beds+' '+(x.beds===1?'bedroom':'bedrooms'),x.baths==null?null:x.baths+' '+(x.baths===1?'bathroom':'bathrooms')].filter(Boolean).join(' · '):'';
+  const example=x?'<div data-todos-santos-budget-example="'+esc(x.mls)+'"><p class="eyebrow">Current MLS example</p><h4><a href="/property-search.html?mls='+encodeURIComponent(x.mls)+'">'+esc(x.name)+'</a></h4><p><strong>'+money(x.price)+' USD</strong> · MLS '+esc(x.mls)+'</p><p>'+esc(facts)+'</p><p>'+esc(x.community)+' · '+esc(x.mlsCommunity)+'</p><p class="buyer-note">Completed house · Listing office: '+esc(x.office||'MLS BCS participant')+'</p></div>':count===null?'':count===0?'<p>No completed houses currently match this price limit. Open the search to check for new listings.</p>':'<p>Open the search to compare the matching houses.</p>';
+  return '<article class="buyer-box" data-todos-santos-budget="'+limit+'"><h3>Under '+money(limit)+' USD</h3><p><strong>'+countText+'</strong></p>'+example+'<a class="button secondary" href="'+href+'">Search houses under '+money(limit)+'</a></article>';
+ }).join('');
+ return {groups,html:'<section id="budget-comparison" aria-labelledby="todos-santos-budget-title"><h2 id="todos-santos-budget-title">What can you buy in Todos Santos under $300K, $500K or $1M?</h2><p>Compare completed houses and villas in Todos Santos and Todos Santos North. Each search includes every priced house below its limit, across all views and bedroom counts. The limits overlap: the under-$500K search also includes homes under $300K.</p><div class="buyer-columns">'+cards+'</div><p class="buyer-note">Counts and examples use the MLS availability check above and refresh together. Examples illustrate individual asking prices, not sold values or a neighborhood average. A higher budget does not guarantee a particular view, location or condition. Confirm the listing details and availability with Don.</p><p>These budgets are for the asking price only. Allow separately for <a href="/buying-property-in-cabo.html#closing-costs">buying and closing costs</a>, any repairs, and ongoing ownership expenses. Compare the actual neighborhood, road access, utilities and maintenance needs before choosing.</p><p>Looking for a different property type? Browse <a href="/condos-for-sale-todos-santos.html">completed condos</a>, <a href="/land-for-sale-todos-santos.html">land and lots</a>, or the <a href="/property-search.html?community=Todos%20Santos%20%2B%20Todos%20Santos%20North">full Todos Santos + Todos Santos North MLS, including preconstruction</a>.</p></section>'};
+}
 export function todosSantosInventorySummary(data,now=Date.now()){
  if(!data)throw Error('Inventory unavailable');
  // The same Pacific North / Todos Santos and Todos Santos North scope as the collections.
@@ -43,9 +67,11 @@ export function todosSantosInventorySummary(data,now=Date.now()){
 export function renderTodosSantosGuide(template,data,now=Date.now()){
  let summary='<aside class="todos-santos-inventory"><h3>Current Todos Santos property choices</h3><p>We cannot confirm current inventory counts or asking prices right now. Open a search below or ask Don for the latest availability.</p></aside>';
  let headers={'Cache-Control':'no-store','Vercel-CDN-Cache-Control':'no-store'},rows=[];
- if(data){const result=todosSantosInventorySummary(data,now);summary=result.html+todosSantosPreviews(result.completed).html;rows=result.completed;headers=snapshotCacheHeaders(data,false,()=>now);}
+ if(data){const result=todosSantosInventorySummary(data,now);summary=result.html+todosSantosPreviews(result.completed).html+todosSantosBudgets(result.completed).html;rows=result.completed;headers=snapshotCacheHeaders(data,false,()=>now);}
+ else summary+=todosSantosBudgets(null).html;
  return {html:template.replace('<!--BIR_TODOS_SANTOS_INVENTORY-->',()=>summary),headers,rows};
 }
 let pending;
 const template=()=>pending??=readFile(join(process.cwd(),'templates/todos-santos-real-estate.html'),'utf8').catch(error=>{pending=null;throw error;});
 export default createHandler({load:createCommunityInventory(),template,render:renderTodosSantosGuide});
+
